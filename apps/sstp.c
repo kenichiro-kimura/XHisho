@@ -9,16 +9,22 @@
 #include <stdlib.h>
 #include <string.h>
 
-int main()
+int main(int argc, char** argv)
 {
   int accept_desc;
   int sockdesc;
   int fromlen;
+  int port;
   struct hostent *hent;
   struct sockaddr_in sockadd;
   struct sockaddr_in fromadd;
   unsigned char* buffer;
   unsigned char* chr_ptr;
+
+  if(argc > 1)
+    port = atoi(argv[1]);
+  else
+    port = 9801;
 
   if((sockdesc = socket(PF_INET, SOCK_STREAM, 0)) < 0){
     perror("fail create socket\n");
@@ -27,7 +33,7 @@ int main()
 
   sockadd.sin_addr.s_addr = htonl(INADDR_ANY);
   sockadd.sin_family = AF_INET;
-  sockadd.sin_port = htons(11000);
+  sockadd.sin_port = htons(port);
   if(bind(sockdesc, &sockadd, sizeof(sockadd)) < 0){
     perror("fail bind\n");
     exit(2);

@@ -87,7 +87,7 @@ KAWARI_LIB = -lstdc++
 
 #define IHaveSubdirs
 
-SUBDIRS = $(IMAGELIBDIR) $(MHCLIBDIR) $(XADLDIR) $(KAWARIDIR)
+SUBDIRS = apps $(IMAGELIBDIR) $(MHCLIBDIR) $(XADLDIR) $(KAWARIDIR)
 
 #define PassCDebugFlags
 
