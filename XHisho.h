@@ -41,12 +41,12 @@ typedef struct _XHishoRec *XHishoWidget;
 #define XtCIsShape "IsShape"
 #define XtNpetnameFile "petnameFile"
 #define XtCPetnameFile "PetnameFile"
-#define PETNAME_F "Petname"
 
 
 #define CGFILE "hisho.xpm"
 #define RCFILE "Messages"
 #define FILTER "nkf -e -m"
+#define PETNAME_F "Petname"
 
 #endif
 

@@ -27,6 +27,7 @@ static int IsSet = 0; /* 1回目のExposeでだけ子Widgetを作る */
 Widget mail,openwin,xhisho,about,editwin,calendarwin,menu,nomail,resedit; 
 int MailWindowShown,OpenWindowShown,MenuWindowShown,AboutWindowShown;
 BiffMethod Biff = LOCAL;
+int UseSound = 1;
 String FilterCommand;
 
 /* external variable */
@@ -94,6 +95,7 @@ static XrmOptionDescRec options[] = {
 #ifdef EXT_FILTER
   {"-filter",  "*extFilter",  XrmoptionSepArg, NULL},
 #endif
+  {"-soundcmd",  "*extSoundCommand",  XrmoptionSepArg, NULL},
   {"-yserver",  "*youbinServer",  XrmoptionSepArg, NULL},
   {"-pserver",  "*popServer",  XrmoptionSepArg, NULL},
 };
@@ -343,6 +345,7 @@ static void PrintUsage(int argc,char** argv){
 #ifdef EXT_FILTER
     "     -filter command             : external filter command\n"
 #endif
+    "     -soundcmd command           : external sound command\n"
     "     -yserver [server_name]      : youbin server name\n"
     "     -pserver [server_name]      : POP3 server name\n"
     "\n";
@@ -350,7 +353,7 @@ static void PrintUsage(int argc,char** argv){
   static char* compile_option = 
     "Compile option:\n"
 #ifdef WITH_XPM
-    "    Use xpm file\n"
+    "    Use XPM file\n"
 #endif
 #ifdef EXT_FILTER
     "    Use external filter command\n"
@@ -360,9 +363,6 @@ static void PrintUsage(int argc,char** argv){
 #endif
 #ifdef ADDRESSBOOK
     "    Use Mew's address book for Petname\n"
-#endif
-#ifdef USE_SOUND
-    "    Use sound\n"
 #endif
     "\n\n";
     
@@ -374,27 +374,27 @@ static void PrintUsage(int argc,char** argv){
   for(i = 1;i < argc;i++){
     if(!strcmp(argv[i],"-version")){
       print_usage = 0;
+      j++;
     } else if(!strcmp(argv[i],"-coption")){
       print_coption = 1;
+      j++;
     } else if(!strcmp(argv[i],"-youbin")){
       Biff = YOUBIN;
-      argc--;
     } else if(!strcmp(argv[i],"-pop")){
       Biff = POP;
-      argc--;
     } else if(!strcmp(argv[i],"-apop")){
       Biff = APOP;
-      argc--;
+    } else if(!strcmp(argv[i],"-nosound")){
+      UseSound = 0;
     } else if(*argv[i] == '-'){
       j++;
       printf("unknown option:%s\n",argv[i]);
     }
   }
   
-  if(j)
-    printf("\n");
    
-  if(argc > 1){
+  if(j){
+    printf("\n");
     fprintf(stderr,"XHisho version:%s[%s]\n\n",XHISHO_VERSION,CODE_NAME);
 
     if(print_coption)

@@ -5,8 +5,9 @@ XHisho - Private secretary on X Window System
 .B  xhisho
 [toolkit options] [-cgfile [cg filename]] [-timeout [mail window
 timeout]] [-mailcheck [mail check interval]] [-filter [filter
-command]] [-noclock] [-focus] [-justify [left/center/right]] [-ypos
-[n]] [-shape]  [-yserver [youbin server]] [-pserver [POP3 server]]
+command]] [-soundcmd [sound command]] [-noclock] [-focus] [-justify
+[left/center/right]] [-ypos [n]] [-shape]  [-yserver [youbin server]]
+[-pserver [POP3 server]] [-youbin] [-pop] [-apop]
 .SH DESCRIPTION
 .I XHisho
 is your private secretary on 
@@ -91,6 +92,10 @@ Interval for checking local mail spool.
 Specify external filter command.
 
 .TP 20
+.BI \-soundcmd " command"
+Specify external sound command.
+
+.TP 20
 .BI \-noclock
 Don't show clock.
 
@@ -150,18 +155,3 @@ Many :-) If you find bugs,please send me.
 Ken'ichirou Kimura
 
 HomePage http://www.db.is.kyushu-u.ac.jp/~kimura/xhisho/
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

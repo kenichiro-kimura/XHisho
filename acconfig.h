@@ -10,9 +10,6 @@
 /* Define if you use petname */
 #undef PETNAME
 
-/* Define if you use sound */
-#undef USE_SOUND
-
 /* Define if you use japasese */
 #undef I18N
 

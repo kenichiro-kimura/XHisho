@@ -36,12 +36,6 @@ AC_ARG_ENABLE(petname,
         [with_petname=yes])
 test "$with_petname" = "yes" && AC_DEFINE(PETNAME)
 
-AC_ARG_ENABLE(sound,
-        [  --enable-sound     use sound],
-        [with_sound=$enableval],
-        [with_sound=no])
-test "$with_sound" = "yes" && AC_DEFINE(USE_SOUND)
-
 AC_ARG_ENABLE(i18n,
         [  --disable-i18n     don't use I18N messages],
         [with_i18n=$enableval],

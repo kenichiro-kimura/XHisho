@@ -136,7 +136,6 @@ From$B$K$O(BMew$B$HF1$87A<0$N(BPetname$B$rMQ$$$F!V(Bhogeyama@dokka.com$B!
 $B$j$^$9!#(B
 
 $B!&(B--enable-personal    : $BA4$F$N%U%!%$%k$r(B$HOME$B0J2<$K%$%s%9%H!<%k$7$^$9(B
-$B!&(B--enable-sound       : $B2;$rLD$i$7$^$9(B
 $B!&(B--enable-abook       : Mew$B$N%"%I%l%9D"$r;H$$$^$9(B
 $B!&(B--disable-i18n       : $B9q:]2=%a%C%;!<%8(B($BF|K\8l$@$1$I(B ^^)$B$r%$%s%9%H!<(B
                          $B%k$7$^$;$s(B
@@ -155,13 +154,6 @@ From$B$K$O(BMew$B$HF1$87A<0$N(BPetname$B$rMQ$$$F!V(Bhogeyama@dokka.com$B!
 $B!V(B--enable-abook$B!W$H$9$k$H(BMew$B$N%"%I%l%9D"$r;H$&$3$H$b$G$-$^$9!#$?$@$7!"(B
 $B%"%I%l%9D"$r;H$&5!G=$O$^$@%F%9%H$,==J,$G$O$J$$$N$G5$$r$D$1$F$/$@$5$$!#(B
 
-$B!V(B--enable-sound$B!W$H$9$k$3$H$G!"%a!<%k$NE~Ce$d%9%1%8%e!<%k$NDLCN;~$K2;(B
-$B$rLD$i$9$3$H$,$G$-$^$9!#(BFreeBSD$B$H(BLinux$B$J$i$P%G%U%)%k%H$N$^$^$G(BWindows
-$B7A<0$N(Bwav$B%U%!%$%k$rLD$i$;$^$9$7!"2;$r:F@8$9$k30It$N%3%^%s%I$r;XDj$9$k(B
-$B$3$H$b$G$-$^$9(B(FreeBSD$B$H(BLinux$B0J30$N(BOS$B$G$O;XDj$7$J$$$H2;$OLD$j$^$;$s(B)$B!#(B
-$BNc$($P!V(Bcat %s > /dev/audio$B!W$J$I$,;H$($^$9!#(B
-$B$/$o$7$/$O(BCustom.jp$B$r$4Mw2<$5$$!#(B
-
 
 $B$^$?!"(Broot$B$K$J$k8"8B$r;}$C$F$$$J$$?M$,<+J,$N4D6-$K%$%s%9%H!<%k$7$?$$>l(B
 $B9g$O!V(B--enable-personal$B!W$H$7$^$9!#$9$k$H!"(B$HOME/bin$B$H(B$HOME/xhisho/$B$K(B
@@ -174,10 +166,14 @@ From$B$K$O(BMew$B$HF1$87A<0$N(BPetname$B$rMQ$$$F!V(Bhogeyama@dokka.com$B!
 %su
 #make install
 
-(#define PERSONAL$B$J$i(Bsu$B$OITMW(B)
+(--enable-personal$B$J$i(Bsu$B$OITMW(B)
 $B$G=*$j$G$9!#$b$7!"(Bmake$B$,$&$^$/$$$+$J$+$C$?$i(Bconfigure$B$N$"$H$K(B
 
 %xmkmf
+
+$B$b$7$/$O(B
+
+%make Makefile
 
 $B$H$7$F$_$F$/$@$5$$!#(B
 
@@ -215,7 +211,7 @@ Petname$B%U%!%$%k!"%a%C%;!<%8%U%!%$%k$N4A;z%3!<%I$O$J$s$G$b$+$^$$$^$;$s!#(B
 $B%$%k$r:n$k%9%/%j%W%H$r!V(Bapps/res2mes.pl$B!W$H$7$FF~$l$F$$$^$9!#$3$l$r;H$C(B
 $B$?$"$H!"?7$7$$%j%=!<%9%U%!%$%k$NCf$N(B
 
-XHisho.messageFile: 
+XHisho*messageFile: 
 
 $B$H$$$&%j%=!<%9$K!"%a%C%;!<%8%U%!%$%kL>$r;XDj$7$F$/$@$5$$!#(B
 
@@ -236,6 +232,7 @@ xhs.holiday$B$H$$$&%U%!%$%k$rCV$$$F$/$@$5$$!#=q<0$O%5%s%W%k$r8+$F$/$@$5(B
 	 [-timeout [mail window timeout]]
 	 [-mailcheck [mail check interval]]
 	 [-noclock]
+         [-nosound]
 	 [-focus]
 	 [-justify [left/center/right]]
 	 [-ypos [n]]
@@ -263,12 +260,13 @@ xhs.holiday$B$H$$$&%U%!%$%k$rCV$$$F$/$@$5$$!#=q<0$O%5%s%W%k$r8+$F$/$@$5(B
 $B$8$^$9!#(B
 
 $B%a%K%e!<$K$O!V5/F0$N$"$$$5$D$r8+$k!W!V:#F|$NM=Dj$r8+$k!W!VM=Dj$rJT=8$9(B
-$B$k!W!V(BXHisho$B$K$D$$$F!W!V=*N;!W$N(B5$B$D$,$"$j$^$9!#!V(BXHisho$B$K$D$$$F!W$H(B
-$B!V=*N;!W$O!"$=$l$>$l!V(BShift + $BCf%/%j%C%/!W!"!V(BShift + $B1&%/%j%C%/!W$K$b(B
-$B3d$jEv$F$F$"$j$^$9!#(B
+$B$k!W!V(BXHisho$B$K$D$$$F!W!V=*N;!W$N(B5$B$D$,$"$j$^$9!#(B
+
+$B!V(BXHisho$B$K$D$$$F!W$H!V=*N;!W$O!"$=$l$>$l!V(BShift + $BCf%/%j%C%/!W!"(B
+$B!V(BShift + $B1&%/%j%C%/!W$K$b3d$jEv$F$F$"$j$^$9!#(B
 
 $B1&%/%j%C%/$G$N?7Ce%a!<%k$N3NG'$O!"(Byoubin$B;HMQ;~$O(Byoubin$B$N@-<A>e;HMQ$G$-(B
-$B$^$;$s!#>o$K!V%a!<%k$,Mh$F$$$J$$!W$HI=<($5$l$^$9!#(B
+$B$^$;$s!#$*$=$i$/>o$K!V%a!<%k$,Mh$F$$$J$$!W$HI=<($5$l$k$H;W$$$^$9!#(B
 
 
 $BM=Dj$N?tJ,A0(B($BM=DjKh$K@_Dj2D(B)$B$K$J$k$H!"!V$b$&$9$0M=Dj$N;~4V$@!W$H$$$&$3(B
@@ -279,6 +277,12 @@ xhs.holiday$B$H$$$&%U%!%$%k$rCV$$$F$/$@$5$$!#=q<0$O%5%s%W%k$r8+$F$/$@$5(B
 $B$$$H$-$K$O!V(BDismiss$B!W$r2!$7$^$9!#C"$7!"!V(BDismiss$B!W$r2!$7$F$b!"M=Dj$N(B1
 $BJ,A0$K$OG0$N$?$a$K$b$&(B1$BEY65$($F$/$l$^$9!#(B
 
+$B%a!<%k$NE~Ce$d%9%1%8%e!<%k$NDLCN;~$K2;$rLD$i$9$3$H$,$G$-$^$9!#(BFreeBSD
+$B$H(BLinux$B$J$i$P%G%U%)%k%H$N$^$^$G(BWindows$B7A<0$N(Bwav$B%U%!%$%k$rLD$i$;$^$9$7!"(B
+$B2;$r:F@8$9$k30It$N%3%^%s%I$r;XDj$9$k$3$H$b$G$-$^$9(B(FreeBSD$B$H(BLinux$B0J30(B
+$B$N(BOS$B$G$O;XDj$7$J$$$H2;$OLD$j$^$;$s(B)$B!#Nc$($P!V(Bcat %s > /dev/audio$B!W$J$I(B
+$B$,;H$($^$9!#$/$o$7$/$O(BCustom.jp$B$r$4Mw2<$5$$!#(B
+
 
 
 $B5/F0%*%W%7%g%s$N0UL#$O0J2<$NDL$j$G$9!#(B
@@ -287,12 +291,15 @@ xhs.holiday$B$H$$$&%U%!%$%k$rCV$$$F$/$@$5$$!#=q<0$O%5%s%W%k$r8+$F$/$@$5(B
 $B!&(B-timeout   $B!D(B $B%a!<%k%&%$%s%I%&$,<+F0E*$KJD$8$k$^$G$N;~4V$rICC10L$G;XDj(B
 $B!&(B-mailcheck $B!D(B $B%a!<%k$r%A%'%C%/$9$k%$%s%?!<%P%k$rICC10L$G;XDj(B
 $B!&(B-noclock   $B!D(B $B;~7W$rI=<($7$J$$(B
+$B!&(B-nosound   $B!D(B $B2;$rLD$i$5$J$$(B
+$B!&(B-chime     $B!D(B $BKh;~(B0$BJ,$K:#F|$NM=Dj$rI=<($9$k(B
 $B!&(B-focus     $B!D(B focusWin$B%b%8%e!<%k$r;H$&(B
 $B!&(B-ypos      $B!D(B focusWin$B$r;H$&$H$-$N=DJ}8~$N%]%8%7%g%s$r%T%/%;%kC10L$G;XDj(B
 $B!&(B-shape     $B!D(B BMP$B$GGX7J$rF)L@$K$9$k!#(BfocusWin$B$HJ;MQ$9$k$H$h$$$G$7$g$&(B
 $B!&(B-justify   $B!D(B focusWin$B$r;H$&$H$-$N(BJustify($BI=<(0LCV(B)$B$r;XDj$9$k!#%G%U%)(B
                 $B%k%H$O(Bleft$B!#(Bleft/center/right$B$r;XDj2DG=!#(B
 $B!&(B-filter    $B!D(B $B30It%U%#%k%?!<%3%^%s%I$r;XDj(B
+$B!&(B-soundcmd  $B!D(B $B30It%5%&%s%I%3%^%s%I$r;XDj(B
 $B!&(B-yserver   $B!D(B Youbin$B%5!<%P$r;XDj(B
 $B!&(B-pserver   $B!D(B POP3$B%5!<%P$r;XDj(B
 $B!&(B-youbin    $B!D(B biff$B$K(BYoubin$B$r;H$&(B

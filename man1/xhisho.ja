@@ -5,8 +5,9 @@ XHisho - X Window System で動く電子秘書
 .B  xhisho
 [toolkit options] [-cgfile [cg filename]] [-timeout [mail window
 timeout]] [-mailcheck [mail check interval]] [-filter [filter
-command]] [-noclock] [-focus] [-justify [left/center/right]] [-ypos
-[n]] [-shape]  [-yserver [youbin server]] [-pserver [POP3 server]]
+command]] [-soundcmd [sound command]] [-noclock] [-focus] [-justify
+[left/center/right]] [-ypos [n]] [-shape]  [-yserver [youbin server]]
+[-pserver [POP3 server]] [-youbin] [-pop] [-apop]
 .SH DESCRIPTION
 .I XHisho
 は
@@ -102,6 +103,10 @@ XHishoを終わります。Shift + 右クリックでも同じです。
 ださい。
 
 .TP 20
+.BI \-soundcmd " command"
+外部サウンドコマンドを指定します。
+
+.TP 20
 .BI \-noclock
 時計を表示しません。
 
@@ -162,18 +167,3 @@ biffでAPOPを使います。
 木村健一郎(Ken'ichirou Kimura)
 
 HomePage http://www.db.is.kyushu-u.ac.jp/~kimura/xhisho/
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

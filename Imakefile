@@ -44,10 +44,6 @@ FILTER = -DEXT_FILTER
 PET = -DPETNAME
 #endif
 
-#ifdef USE_SOUND
-SOUND = -DUSE_SOUND
-#endif
-
 #ifdef ABOOK
 ADD = -DADDRESSBOOK -DPETNAME
 #endif
@@ -56,24 +52,17 @@ IXHISHODIR = $(XHISHODIR)/$(LANG)
 
 
 
-DEFINES = $(FILTER) $(PET) $(SOUND) $(ADD)
+DEFINES = $(FILTER) $(PET) $(ADD)
 
 EXTRA_LIBRARIES = $(LIB_XPM) $(LIB_XPG4) $(LIB_SOLARIS)
 
 DEPLIBS = XawClientDepLibs
 LOCAL_LIBRARIES = XawClientLibs
 
-BASE_OBJS =  mail.o main.o Msgwin.o XHisho.o about.o editor.o schedule.o calendar.o menu.o ResEdit.o load_bmp.o message.o pop.o md5c.o
-
-#ifdef USE_SOUND
-SOUND_OBJS = sound.o
-#endif
-
-#ifdef PETNAME
+BASE_OBJS =  mail.o main.o Msgwin.o XHisho.o about.o editor.o schedule.o calendar.o menu.o ResEdit.o load_bmp.o message.o pop.o md5c.o sound.o
 PETNAME_OBJS = petname.o
-#endif
+OBJS = $(BASE_OBJS) $(PETNAME_OBJS)
 
-OBJS = $(BASE_OBJS) $(SOUND_OBJS) $(PETNAME_OBJS)
 SRCS = $(OBJS:.o=.c)
 
 #ifdef AKARI

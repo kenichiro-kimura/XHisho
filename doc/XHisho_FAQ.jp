@@ -60,10 +60,10 @@ A5.以下の環境での動作を確認しています。
 
 
 
-Q6.ものによっては喋るそうですが...
+Q6.時々喋るそうですが...
 
-A6.FreeBSDかLinuxではconfig.tmpl中で#define USE_SOUNDとすることで
-   Windowsのwavファイルをならすことができます。
+A6.メールの到着時とスケジュール通知時に音を鳴らすことができます。この
+   時、FreeBSDかLinuxではWindowsのwavファイルを鳴らすことができます。
    それ以外のOSではリソース
 
    XHisho*extSoundCommand:
@@ -76,6 +76,16 @@ A6.FreeBSDかLinuxではconfig.tmpl中で#define USE_SOUNDとすることで
    でよいでしょう。
    もちろんFreeBSD、Linuxでも設定可能です。設定すると、そちらのコマン
    ドが優先されます。
+
+   メールが届いたときに鳴らすファイルは
+
+   XHisho.MailAlert.newMailSound: 
+
+   で、予定を知らせる時に鳴らすファイルは
+
+   XHisho.OpenMessage.scheduleAlertSound: 
+
+   で設定します。
 
 
 

@@ -302,7 +302,8 @@ XHisho.MailAlert.maxLines: 2
 XHisho*extFilter: nkf -e -m
 
 $B>e5-$N$h$&$K!"!V(Bnkf -e -m$B!W$,%G%U%)%k%H$K$J$C$F$$$^$9!#(BEUC$B$G$J$$$HJ8;z(B
-$B2=$1$9$k$N$G!"I,$:(BEUC$B$KJQ49$9$k0z?t$rM?$($F$/$@$5$$!#(B
+$B2=$1$9$k$N$G!"I,$:(BEUC$B$KJQ49$9$k0z?t$rM?$($F$/$@$5$$!#5/F0%*%W%7%g%s(B 
+"-filter" $B$G$b;XDj2DG=$G$9!#(B
 
 
 $B$=$7$F!"(BFrom$B$NI=<($K(BMew(see http://www.mew.org/)$B$N(BPetname$B$r;H$&$3$H$,(B
@@ -326,10 +327,12 @@ Mew$B$G;H$C$F$$$k(BPetname$B%U%!%$%k$r$=$N$^$^;H$($^$9!#$H$3$m$,!"(BMew$B$G
 7. sounds $B!A(Bwav$B%U%!%$%k$N@_Dj!A(B
 
 
-config.tmpl$B$G(B#define USE_SOUND$B$H$7$F%3%s%Q%$%k$9$k$H!"(BFreeBSD$B$H(BLinux$B$G(B
-$B$O(BWindows$B7A<0$N(Bwav$B%U%!%$%k$rLD$i$9$3$H$,$G$-$^$9!#LD$i$9$3$H$N$G$-$k>l(B
-$BLL$O!"%a!<%k$,FO$$$?$H$-$HM=Dj$N(B5$BJ,A0(B($B%+%9%?%`2D(B)$B$K65$($F$/$l$k$H$-$G(B
-$B$9!#(B
+FreeBSD$B$H(BLinux$B$G$O(BWindows$B7A<0$N(Bwav$B%U%!%$%k$rLD$i$9$3$H$,$G$-$^$9!#B>$N(B
+OS$B$G$b30It%3%^%s%I$r;H$&$3$H$G2;$rLD$i$;$^$9!#(B
+
+$BLD$i$9$3$H$N$G$-$k>lLL$O!"%a!<%k$,FO$$$?$H$-$HM=Dj$N(B5$BJ,A0(B($B%+%9%?%`2D(B)
+$B$K65$($F$/$l$k$H$-$G$9!#(B
+
 
 $B%a!<%k$,FO$$$?$H$-$KLD$i$9%U%!%$%k$O(B
 
@@ -350,9 +353,12 @@ XHisho*extSoundCommand:
 
 XHisho*extSoundCommand: cat %s >/dev/audio
 
-$B$G$7$g$&!#(BFreeBSD$B$H(BLinux$B0J30$G$O$3$l$r;XDj$7$J$$$H2;$OLD$j$^$;$s!#(B
+$B$G$7$g$&!#(BFreeBSD$B$H(BLinux$B0J30$G$O$3$l$r;XDj$7$J$$$H2;$OLD$j$^$;$s!#5/F0(B
+$B%*%W%7%g%s(B "-soundcmd" $B$G$b;XDj2DG=$G$9!#(B
 
 
+$B2;$rLD$i$7$?$/$J$$>l9g$O!"%U%!%$%kL>$r6u$K$9$k$+!"5/F0%*%W%7%g%s(B 
+"-nosound" $B$r;H$$$^$9!#(B
 
 
 

@@ -21,6 +21,7 @@ OpenMessageRes omr;
 
 extern Widget openwin;
 extern int OpenWindowShown;
+extern int UseSound;
 
 /* function definition */
 
@@ -1088,14 +1089,13 @@ void CheckTimeForSchedule(XtPointer cl, XtIntervalId *id){
       XtPopup(XtParent(openwin),XtGrabNone);
       OpenWindowShown = 1;
 
-#ifdef USE_SOUND
-      if(omr.sound_f){
+      if(omr.sound_f && UseSound){
 	if(0 == fork()){
 	  SoundPlay(omr.sound_f);
 	  exit(0);
 	}
       }
-#endif
+
     }
   }
 

@@ -37,6 +37,7 @@ extern ResEditRes rer;  /* in ResEdit.c */
 extern int MailWindowShown; /* in main.c */
 extern BiffMethod Biff;
 extern String FilterCommand;
+extern int UseSound;
 
 /* function definition */
 
@@ -55,9 +56,7 @@ extern void ReadRcdata(const char*,char*,int);
 extern void SearchPetname(char*,char*); /* in petname.c */
 #endif
 
-#ifdef USE_SOUND
 extern int SoundPlay(char*); /* in sound.c */
-#endif
 
 static void CheckYoubin(Widget,int*,XtInputId*);
 static void YoubinInit();
@@ -260,14 +259,12 @@ int CheckMail(XtPointer cl, XtIntervalId *id){
       XtVaSetValues(mail[0],XtNwindowMode,0,NULL);
       XtPopup(XtParent(mail[0]),XtGrabNone);
 
-#ifdef USE_SOUND
-      if(mar.sound_f){
+      if(mar.sound_f && UseSound){
 	if(0 == fork()){
 	  SoundPlay(mar.sound_f);
 	  exit(0);
 	}
       }
-#endif 
 
       MailWindowShown = 1;
     }
@@ -316,14 +313,13 @@ int CheckPOP3(XtPointer cl, XtIntervalId *id){
   }
 
   if(ret_value >0){
-#ifdef USE_SOUND
-    if(mar.sound_f){
+    if(mar.sound_f && UseSound){
       if(0 == fork()){
 	SoundPlay(mar.sound_f);
 	exit(0);
       }
     }
-#endif 
+
     MailWindowShown = 1;
     XtVaSetValues(from,XtNlabel,buf,NULL);
     XtVaSetValues(mail[0],XtNwindowMode,0,NULL);
@@ -729,14 +725,12 @@ static void CheckYoubin(Widget w,int *fid,XtInputId *id){
       XtVaSetValues(mail[0],XtNwindowMode,0,NULL);
       XtPopup(XtParent(mail[0]),XtGrabNone);
       
-#ifdef USE_SOUND
-      if(mar.sound_f){
+      if(mar.sound_f && UseSound){
 	if(0 == fork()){
 	  SoundPlay(mar.sound_f);
 	  exit(0);
 	}
       }
-#endif 
       
       MailWindowShown = 1;
     }
