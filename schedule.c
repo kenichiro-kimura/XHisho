@@ -421,6 +421,16 @@ int ExistHoliday(int Year, int Month, int Day)
 
   HolidayList *tlist;
   int day;
+  struct tm *tm_now;
+  time_t tval;
+
+  time(&tval);
+  tm_now = localtime(&tval);
+  tm_now->tm_mon = Month;
+  tm_now->tm_mday = Day;
+  tm_now->tm_year = Year - 1900;
+  tval = mktime(tm_now);
+  tm_now = localtime(&tval);
 
   tlist = Hlist[Month];
 
@@ -429,10 +439,15 @@ int ExistHoliday(int Year, int Month, int Day)
       return 1;
 
   /**
-   * 春分の日、秋分の日の計算
+   * 春分の日、秋分の日,成人の日,体育の日の計算
    **/
 
   switch (Month) {
+  case 0:
+  case 9:
+    if(tm_now->tm_wday == 1 && tm_now->tm_mday >= 8 && tm_now->tm_mday <= 14)
+      return 1;
+    return 0;
   case 2:
     day = (int) (20.8431 + 0.242194 * (Year - 1980) - (int) ((Year - 1980) / 4));
     if (day == Day)

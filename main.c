@@ -2,6 +2,7 @@
 #include "globaldefs.h"
 #include <X11/Intrinsic.h>
 #include <X11/StringDefs.h>
+#include <X11/Shell.h>
 #include <X11/Xmu/Atoms.h>
 #include <X11/extensions/shape.h>
 #include <X11/Xlocale.h>
@@ -23,6 +24,7 @@
  **/
 
 static int IsSet = 0;		/** 1回目のExposeでだけ子Widgetを作る **/
+static Widget toplevel;
 
 /**
  * local function
@@ -80,29 +82,29 @@ static void Wait(Widget w, XEvent * e, String * s, unsigned int *i)
 
   if (!IsSet) {
 
-    resedit = CreateResEditWindow(xhisho);
+    resedit = CreateResEditWindow(toplevel);
     XtVaSetValues(xhisho, XtNfocusWinInterval, (int)rer.Pref[4].param, NULL);
 
-    about = CreateAboutWindow(xhisho);
+    about = CreateAboutWindow(toplevel);
 
     /**
      * Mail Windowの生成
      **/
 
-    nomail = CreateMailAlert(xhisho, 1);
-    mail = CreateMailAlert(xhisho, 0);
+    nomail = CreateMailAlert(toplevel, 1);
+    mail = CreateMailAlert(toplevel, 0);
 
     /**
      * OpenMessage Windowを生成し、Opening messageを表示する
      **/
 
-    openwin = CreateEditorWindow(xhisho, 0, *tm_now);
+    openwin = CreateEditorWindow(toplevel, 0, *tm_now);
 
-    calendarwin = CreateCalendarWindow(xhisho, tm_now->tm_mon, *tm_now);
+    calendarwin = CreateCalendarWindow(toplevel, tm_now->tm_mon, *tm_now);
 
-    editwin = CreateEditorWindow(xhisho, 3, *tm_now);
+    editwin = CreateEditorWindow(toplevel, 3, *tm_now);
 
-    menu = CreateMenuWindow(xhisho);
+    menu = CreateMenuWindow(toplevel);
 
     /**
      * openwin のポップアップ
@@ -116,7 +118,7 @@ static void Wait(Widget w, XEvent * e, String * s, unsigned int *i)
      * 起動時のスケジュール時間のチェック
      **/
 
-    CheckTimeForSchedule((XtPointer) xhisho, (XtIntervalId) NULL);
+    CheckTimeForSchedule((XtPointer) toplevel, (XtIntervalId) NULL);
 
     IsSet = 1;
   }
@@ -274,7 +276,7 @@ void CalendarWindowPopup(Widget w, XEvent * event, String * params, unsigned int
   tm_now = localtime(&now);
 
   XtDestroyWidget(XtParent(calendarwin));
-  calendarwin = CreateCalendarWindow(xhisho, tm_now->tm_mon, *tm_now);
+  calendarwin = CreateCalendarWindow(toplevel, tm_now->tm_mon, *tm_now);
   /**
    * Calendar WindowのPopup
    **/
@@ -296,8 +298,8 @@ void CloseEditWindow()
   tm_now = localtime(&now);
 
   XtDestroyWidget(XtParent(openwin));
-  openwin = CreateEditorWindow(xhisho, 0, *tm_now);
-  CheckTimeForSchedule((XtPointer) xhisho, (XtIntervalId) NULL);
+  openwin = CreateEditorWindow(toplevel, 0, *tm_now);
+  CheckTimeForSchedule((XtPointer) toplevel, (XtIntervalId) NULL);
 }
 
 int main(int argc, char **argv)
@@ -328,6 +330,8 @@ int main(int argc, char **argv)
 
   XtSetLanguageProc(NULL, NULL, NULL);
 
+  toplevel = XtVaOpenApplication(&app, "XHisho", options, XtNumber(options)
+			       , &argc, argv, NULL, sessionShellWidgetClass,NULL);
   /**
    * Usageの表示
    **/
@@ -338,8 +342,7 @@ int main(int argc, char **argv)
    * main windowを生成。class名はxhisho。
    **/
 
-  xhisho = XtVaOpenApplication(&app, "XHisho", options, XtNumber(options)
-			       , &argc, argv, NULL, xHishoWidgetClass,NULL);
+  xhisho = XtVaCreateManagedWidget("xhisho",xHishoWidgetClass,toplevel,NULL);
 
   /**
    * rcfileとfilter commandとpetname fileをセット
@@ -373,7 +376,7 @@ int main(int argc, char **argv)
    *  WidgetのRealize
    **/
 
-  XtRealizeWidget(xhisho);
+  XtRealizeWidget(toplevel);
 
   /**
    * Event Loop
