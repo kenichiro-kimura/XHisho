@@ -173,19 +173,17 @@ static void Destroy(Widget w, caddr_t client_data, caddr_t call_data)
   }
   XtPopdown(top[Mode]);
   XtVaSetValues(xhisho, XtNanimType, USUAL, NULL);
-  MailWindowShown = 0;
 }
 
 static void TimerCheck(XtPointer cl, XtIntervalId * id)
 {
-  if (MailWindowShown) {
+  if (IsPopped(mail)) {
     MailCount++;
     if (MailCount == MailTimeout) {
       MailCount = 0;
       isMailChecked = 2;
       XtPopdown(top[0]);
       XtVaSetValues(xhisho, XtNanimType, USUAL, NULL);
-      MailWindowShown = 0;
     }
   }
   if(MailTimeoutId){
@@ -247,9 +245,8 @@ int CheckMail(XtPointer cl, XtIntervalId * id)
   case 0:
     break;
   case 1:
-    if (!MailWindowShown) {
+    if (!IsPopped(mail)) {
       isMailChecked = 1;
-      MailWindowShown = 1;
       GetFromandSubject(m_filename, buf);
       XtVaSetValues(from, XtNlabel, buf, NULL);
       MailPopup();
@@ -258,7 +255,7 @@ int CheckMail(XtPointer cl, XtIntervalId * id)
   case 2:
     switch (isMailChecked) {
     case 1:
-      if (!MailWindowShown) {
+      if (!IsPopped(mail)) {
 	MailPopup();
       }
       break;
@@ -374,7 +371,6 @@ Widget CreateMailAlert(Widget w, int Mode)
     {XtNheight, 0}
   };
 
-  MailWindowShown = 0;
   /**
    * Popdown処理のための準備
    **/
@@ -799,7 +795,7 @@ static void CheckYoubin(Widget w, int *fid, XtInputId * id)
   }
 
   XtVaSetValues(from, XtNlabel, From, NULL);
-  if (!MailWindowShown) {
+  if (!IsPopped(mail)) {
     isMailChecked = 1;
     MailPopup();
   }
@@ -833,7 +829,6 @@ static void MailPopup(){
   XtVaSetValues(xhisho, XtNanimType, MAIL, NULL);
 
   XtPopup(XtParent(local_mail[0]), XtGrabNone);
-  MailWindowShown = 1;
   if (mar.sound_f  && UseSound) {
     SoundPlay(mar.sound_f);
   }

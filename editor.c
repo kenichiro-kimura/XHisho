@@ -240,14 +240,12 @@ static void DestroyEdit(Widget w, caddr_t client_data, caddr_t call_data)
     (int) schedule[i].is_checked = 0;
 
   XtPopdown(XtParent(XtParent(w)));
-  OpenWindowShown = 0;
   CloseEditWindow();
 }
 
 static void Destroy(Widget w, caddr_t client_data, caddr_t call_data)
 {
   XtPopdown(XtParent(XtParent(w)));
-  OpenWindowShown = 0;
 }
 
 static void Dismiss(Widget w, caddr_t client_data, caddr_t call_data)
@@ -255,7 +253,6 @@ static void Dismiss(Widget w, caddr_t client_data, caddr_t call_data)
   int i;
 
   XtPopdown(XtParent(XtParent(w)));
-  OpenWindowShown = 0;
 
   for (i = 0; i < past_index + 1; i++) {
     schedule[i].is_checked = 1;
@@ -1232,7 +1229,6 @@ static void OpenPopup(){
   XtVaSetValues(xhisho, XtNanimType, SCHEDULE, NULL);
   XtVaSetValues(openwin, XtNwindowMode, 0, NULL);
   XtPopup(XtParent(openwin), XtGrabNone);
-  OpenWindowShown = 1;
 
   if (omr.sound_f && UseSound) {
     SoundPlay(omr.sound_f);

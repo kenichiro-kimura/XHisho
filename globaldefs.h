@@ -160,6 +160,8 @@ MAIN_GLOBAL void MenuWindowPopup(Widget, XEvent *, String *, unsigned int *);
 MAIN_GLOBAL void CalendarWindowPopup(Widget, XEvent *, String *, unsigned int *);
 MAIN_GLOBAL void ResEditWindowPopup(Widget, XEvent *, String *, unsigned int *);
 
+MAIN_GLOBAL int IsPopped(Widget);
+
 MENU_GLOBAL Widget CreateMenuWindow(Widget);
 
 MESSAGE_GLOBAL void Escape2Return(char *);
@@ -191,8 +193,6 @@ MAIN_GLOBAL int UseSound;
 MAIN_GLOBAL String FilterCommand, SoundCommand;
 MAIN_GLOBAL Widget mail, openwin, xhisho, about, editwin, calendarwin, menu
                   ,nomail, resedit;
-MAIN_GLOBAL int MailWindowShown, OpenWindowShown, MenuWindowShown
-              , AboutWindowShown, CalendarWindowShown, ResEditWindowShown;
 MAIN_GLOBAL ResEditRes rer;
 MAIN_GLOBAL OpenMessageRes omr;
 

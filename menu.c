@@ -117,7 +117,6 @@ static XtResource resources[] = {
 static void Destroy(Widget w, caddr_t client_data, caddr_t call_data)
 {
   XtPopdown(XtParent(XtParent(w)));
-  MenuWindowShown = 0;
 }
 
 static void SubWindowPopup(Widget w, caddr_t client_data, caddr_t call_data)
@@ -125,7 +124,6 @@ static void SubWindowPopup(Widget w, caddr_t client_data, caddr_t call_data)
   int menu_pos;
   menu_pos = (int) client_data;
   XtPopdown(XtParent(XtParent(w)));
-  MenuWindowShown = 0;
 
   if(menu_pos > 0 && menu_pos <= MENU_NUM){
     PopupFunctions[menu_pos - 1].WindowPopup(top,NULL,NULL,NULL);

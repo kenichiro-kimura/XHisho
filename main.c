@@ -16,6 +16,8 @@
 
 #include <X11/Xaw/Label.h>
 
+#include <X11/IntrinsicP.h>
+#include <X11/ShellP.h>
 #include "XHisho.h"
 #include "Msgwin.h"
 
@@ -114,7 +116,6 @@ static void Wait(Widget w, XEvent * e, String * s, unsigned int *i)
 
     XtVaSetValues(openwin, XtNwindowMode, 0, NULL);
     XtPopup(XtParent(openwin), XtGrabNone);
-    OpenWindowShown = 1;
 
     /**
      * 起動時のスケジュール時間のチェック
@@ -143,11 +144,10 @@ static void CheckMailNow(Widget w, XEvent * event, String * params, unsigned int
 {
   int ret_value = 0;
 
-  if (MailWindowShown) {
+  if (IsPopped(mail) || IsPopped(nomail)) {
     XtPopdown(XtParent(mail));
     XtPopdown(XtParent(nomail));
     XtVaSetValues(xhisho, XtNanimType, USUAL, NULL);
-    MailWindowShown = 0;
     return;
   }
   IsMailChecked(1);
@@ -160,7 +160,6 @@ static void CheckMailNow(Widget w, XEvent * event, String * params, unsigned int
   if (ret_value == 0) {
     XtVaSetValues(nomail, XtNwindowMode, 0, NULL);
     XtPopup(XtParent(nomail), XtGrabNone);
-    MailWindowShown = 1;
   }
 }
 
@@ -170,10 +169,9 @@ void ScheduleWindowPopup(Widget w, XEvent * event, String * params, unsigned int
   time_t now;
   struct tm *tm_now;
 
-  if (OpenWindowShown) {
+  if (IsPopped(openwin)) {
     XtPopdown(XtParent(openwin));
     XtVaSetValues(xhisho, XtNanimType, USUAL, NULL);
-    OpenWindowShown = 0;
     return;
   }
   time(&now);
@@ -187,7 +185,6 @@ void ScheduleWindowPopup(Widget w, XEvent * event, String * params, unsigned int
    **/
   XtVaSetValues(openwin, XtNwindowMode, 0, NULL);
   XtPopup(XtParent(openwin), XtGrabNone);
-  OpenWindowShown = 1;
 }
 
 void OpeningWindowPopup(Widget w, XEvent * event, String * params, unsigned int *num_params)
@@ -195,10 +192,9 @@ void OpeningWindowPopup(Widget w, XEvent * event, String * params, unsigned int 
   time_t now;
   struct tm *tm_now;
 
-  if (OpenWindowShown) {
+  if (IsPopped(openwin)) {
     XtPopdown(XtParent(openwin));
     XtVaSetValues(xhisho, XtNanimType, USUAL, NULL);
-    OpenWindowShown = 0;
     return;
   }
   time(&now);
@@ -212,15 +208,13 @@ void OpeningWindowPopup(Widget w, XEvent * event, String * params, unsigned int 
    **/
   XtVaSetValues(openwin, XtNwindowMode, 0, NULL);
   XtPopup(XtParent(openwin), XtGrabNone);
-  OpenWindowShown = 1;
 }
 
 void AboutWindowPopup(Widget w, XEvent * event, String * params, unsigned int *num_params)
 {
 
-  if (AboutWindowShown) {
+  if (IsPopped(about)) {
     XtPopdown(XtParent(about));
-    AboutWindowShown = 0;
     return;
   }
   /**
@@ -228,15 +222,13 @@ void AboutWindowPopup(Widget w, XEvent * event, String * params, unsigned int *n
    **/
   XtVaSetValues(about, XtNwindowMode, 0, NULL);
   XtPopup(XtParent(about), XtGrabNone);
-  AboutWindowShown = 1;
 }
 
 void ResEditWindowPopup(Widget w, XEvent * event, String * params, unsigned int *num_params)
 {
 
-  if (ResEditWindowShown) {
+  if (IsPopped(resedit)) {
     XtPopdown(XtParent(resedit));
-    ResEditWindowShown = 0;
     return;
   }
   /**
@@ -244,15 +236,13 @@ void ResEditWindowPopup(Widget w, XEvent * event, String * params, unsigned int 
    **/
   XtVaSetValues(resedit, XtNwindowMode, 0, NULL);
   XtPopup(XtParent(resedit), XtGrabNone);
-  ResEditWindowShown = 1;
 }
 
 void MenuWindowPopup(Widget w, XEvent * event, String * params, unsigned int *num_params)
 {
 
-  if (MenuWindowShown) {
+  if (IsPopped(menu)) {
     XtPopdown(XtParent(menu));
-    MenuWindowShown = 0;
     return;
   }
   /**
@@ -260,7 +250,6 @@ void MenuWindowPopup(Widget w, XEvent * event, String * params, unsigned int *nu
    **/
   XtVaSetValues(menu, XtNwindowMode, 0, NULL);
   XtPopup(XtParent(menu), XtGrabNone);
-  MenuWindowShown = 1;
 }
 
 void CalendarWindowPopup(Widget w, XEvent * event, String * params, unsigned int *num_params)
@@ -268,9 +257,8 @@ void CalendarWindowPopup(Widget w, XEvent * event, String * params, unsigned int
   time_t now;
   struct tm *tm_now;
 
-  if(CalendarWindowShown){
+  if(IsPopped(calendarwin)){
     XtPopdown(XtParent(calendarwin));
-    CalendarWindowShown = 0;
     return;
   }
 
@@ -284,7 +272,6 @@ void CalendarWindowPopup(Widget w, XEvent * event, String * params, unsigned int
    **/
   XtVaSetValues(calendarwin, XtNwindowMode, 0, NULL);
   XtPopup(XtParent(calendarwin), XtGrabNone);
-  CalendarWindowShown = 1;
 }
 
 void CloseEditWindow()
@@ -303,6 +290,12 @@ void CloseEditWindow()
   openwin = CreateEditorWindow(toplevel, 0, *tm_now);
   CheckTimeForSchedule((XtPointer) toplevel, (XtIntervalId) NULL);
 }
+
+int IsPopped(Widget w)
+{
+  return ((ShellWidget)XtParent(w))->shell.popped_up;
+}
+  
 
 int main(int argc, char **argv)
 {
