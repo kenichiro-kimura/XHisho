@@ -167,7 +167,7 @@ int CheckSchedule(OpenMessageRes * l_omr, Schedule * schedule, int WeeklyCheck, 
   }
 
 #ifdef LIBMHC
-  if(1){ /*WeeklyCheck){*/
+  if(WeeklyCheck){
     t_filename = malloc(BUFSIZ * 2);
     Tmp_dir = malloc(BUFSIZ);
 
