@@ -8421,6 +8421,7 @@ static void sstp(int port)
       /*      write(accept_desc,"200 OK\r\n",strlen("200 OK\r\n")); */
       is_script = is_command = 0;
       stream = fdopen(accept_desc,"a+");
+      strcpy(sstp_version,"0.0");
       while(1){
 	if(fgets(buffer,BUFSIZ * 10,stream) == NULL) break;
 	/*
@@ -8515,7 +8516,7 @@ static void sstp(int port)
 	    chr_ptr += strlen("SSTP/");
 	    strncpy(sstp_version,chr_ptr,MIN(strlen("1.2"),strlen(chr_ptr)));
 	  } else {
-	    strcpy(sstp_version,"1.0");
+	    strcpy(sstp_version,"0.0");
 	  }
 	  break;
 	} else if(!strncmp(buffer,"GIVE",strlen("GIVE"))){
@@ -8528,7 +8529,7 @@ static void sstp(int port)
 	    chr_ptr += strlen("SSTP/");
 	    strncpy(sstp_version,chr_ptr,MIN(strlen("1.2"),strlen(chr_ptr)));
 	  } else {
-	    strcpy(sstp_version,"1.0");
+	    strcpy(sstp_version,"0.0");
 	  }
 	  break;
 	} else if(!strncmp(buffer,"SEND",strlen("SEND"))){
@@ -8542,7 +8543,7 @@ static void sstp(int port)
 	    chr_ptr += strlen("SSTP/");
 	    strncpy(sstp_version,chr_ptr,MIN(strlen("1.2"),strlen(chr_ptr)));
 	  } else {
-	    strcpy(sstp_version,"1.0");
+	    strcpy(sstp_version,"0.0");
 	  }
 	  break;
 	} else if(!strncmp(buffer,"COMMUNICATE",strlen("COMMUNICATE"))){
@@ -8555,7 +8556,7 @@ static void sstp(int port)
 	    chr_ptr += strlen("SSTP/");
 	    strncpy(sstp_version,chr_ptr,MIN(strlen("1.2"),strlen(chr_ptr)));
 	  } else {
-	    strcpy(sstp_version,"1.0");
+	    strcpy(sstp_version,"0.0");
 	  }
 	  break;
 	} else if(!strncmp(buffer,"NOTIFY",strlen("NOTIFY"))){
@@ -8569,7 +8570,7 @@ static void sstp(int port)
 	    chr_ptr += strlen("SSTP/");
 	    strncpy(sstp_version,chr_ptr,MIN(strlen("1.2"),strlen(chr_ptr)));
 	  } else {
-	    strcpy(sstp_version,"1.0");
+	    strcpy(sstp_version,"0.0");
 	  }
 	  break;
 	} else if(is_script){
