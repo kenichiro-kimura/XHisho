@@ -14,12 +14,15 @@ static int virgine = 1;
 static char option_command[] = "/home/show/bin/hoge.pl";
 
 static void Destroy(Widget,XEvent *, String *, unsigned int *);
-
 static void CommandInit();
 static void CheckOption(Widget, int *, XtInputId *);
 static int Option_exit(Display *);
 static char* or2string(char*);
 static void SakuraParser(char*);
+static char * nstrncpy(char*,const char*,size_t);
+static messageStack* messageStack_new(char*);
+static messageStack* messageStack_pop(messageStack**);
+static void messageStack_push(messageStack**,char*);
 
 static XtActionsRec actionTable[] = {
   {"Destroy", Destroy},
@@ -158,9 +161,9 @@ static void CommandInit()
 
 static void CheckOption(Widget w, int *fid, XtInputId * id)
 {
-  char message_buffer[BUFSIZ * 20];
-  char _buffer[BUFSIZ * 5];
-  char buffer[BUFSIZ* 5];
+  char *message_buffer;
+  char *_buffer;
+  char *buffer;
   static int x = 0;
   int len;
   char* chr_ptr;
@@ -174,6 +177,9 @@ static void CheckOption(Widget w, int *fid, XtInputId * id)
   int chr_length,dword,pos,mpos;
   XawTextPosition current,last;
   XawTextBlock textblock;
+  int cg_num = -1;
+  char str_num[128];
+
 #ifdef EXT_FILTER
   char command[128];
   char t_filename[BUFSIZ];
@@ -182,11 +188,33 @@ static void CheckOption(Widget w, int *fid, XtInputId * id)
   FILE* in;
 #endif			
 
+  message_buffer = (char *)malloc(BUFSIZ * 20);
+  if(message_buffer == NULL) return;
+  _buffer = (char *)malloc(BUFSIZ * 5);
+  if(_buffer == NULL){
+    free(message_buffer);
+    return;
+  }
+  buffer = (char *)malloc(BUFSIZ * 5);
+  if(buffer == NULL){
+    free(_buffer);
+    free(message_buffer);
+    return;
+  }
+
+  memset(message_buffer,'\0',BUFSIZ * 20);
+  memset(_buffer,'\0',BUFSIZ * 5);
+  memset(buffer,'\0',BUFSIZ * 5);
 
   if ((len = read(*fid,_buffer,BUFSIZ * 5)) == 0) {
+    XtRemoveInput(OptionId);
+    OptionId = 0;
     fprintf(stderr, "option command died!\n");
     XtDestroyWidget(optionwin);
     optionwin = CreateOptionWindow(XtParent(xhisho));
+    free(buffer);
+    free(_buffer);
+    free(message_buffer);
     return;
   } else if (len == -1) {
     fprintf(stderr, "Can't read from option command!\n");
@@ -194,7 +222,6 @@ static void CheckOption(Widget w, int *fid, XtInputId * id)
 
   _buffer[len] = '\0';
 
-  memset(message_buffer,'\0',BUFSIZ * 20);
 
   x = 1;
 
@@ -244,17 +271,12 @@ static void CheckOption(Widget w, int *fid, XtInputId * id)
 
   if((chr_ptr = strchr(buffer,'(')) != NULL){
     if(!strncasecmp(chr_ptr + 1,"Surface:",strlen("Surface:"))){
-      int cg_num;
-      char str_num[128];
-
       chr_ptr += strlen("(Surface:");
       next_ptr = chr_ptr;
       while(isdigit((unsigned char)(*next_ptr))) next_ptr++;
       strncpy(str_num,chr_ptr,next_ptr - chr_ptr);
 
       cg_num = atoi(str_num);
-      if(sakura)
-	XtVaSetValues(xhisho,XtNforceCG,True,XtNcgNumber,cg_num,NULL);
       chr_ptr = strchr(buffer,')') + 1;
       strcpy(_buffer,chr_ptr);
       strcpy(strchr(buffer,'('),_buffer);
@@ -262,66 +284,43 @@ static void CheckOption(Widget w, int *fid, XtInputId * id)
   }
   
   chr_ptr = buffer;
-  /*
-  if(len >= strlen("Surface:0")){
-    if(!strncasecmp(buffer,"Surface:",strlen("Surface:"))){
-      int cg_num;
-      char str_num[128];
-
-      next_ptr = chr_ptr = buffer + strlen("Surface:");
-      while(isdigit((unsigned char)(*next_ptr))) next_ptr++;
-      strncpy(str_num,chr_ptr,next_ptr - chr_ptr);
-
-      cg_num = atoi(str_num);
-      XtVaSetValues(xhisho,XtNforceCG,True,XtNcgNumber,cg_num,NULL);
-      chr_ptr = next_ptr;
-    }
-  }
-  */
 
   if(next_ptr = strstr(chr_ptr,"\\e")){
     is_end = 1;
     *next_ptr = '\0';
   }
 
-  /**
-   * font
-   **/
-
   XtVaGetValues(label, XtNfontSet, &fset, XtNwidth,&width,NULL);
   XmbTextExtents(fset, "a", 1, &ink, &log);
-  /*
-  width = log.width;
-  height = log.height;
-  height += 20;
-  */
 
   SakuraParser(chr_ptr);
 
   max_len = width / log.width - 1;
   chr_length = strlen(chr_ptr);
 
-  for(dword = pos = 0;pos < chr_length;){
+  for(dword = pos = 0;pos < chr_length;pos++){
     if(((signed char)chr_ptr[pos]) < 0) dword ++;
-    if(strncmp(chr_ptr + pos, "\n",1) == 0){
-      strcat(message_buffer,"\n");
-      if(pos < 1)
-	chr_ptr++;
-      else 
+    if(chr_ptr[pos] == '\n'){
+      if(pos > 0){
+	strncat(message_buffer,chr_ptr, pos);
 	chr_ptr += pos;
-      chr_length = strlen(chr_ptr);
-      pos = 0;
+	chr_length -= pos;
+	chr_length--;
+      } else{
+	chr_ptr++;
+	chr_length--;
+      strcat(message_buffer,"\n");
+      }
+      pos = -1;
       dword = 0;
     } else if(pos >= max_len && dword % 2 == 0){
       strncat(message_buffer,chr_ptr, pos - 1);
       strcat(message_buffer,"\n");
       chr_ptr += pos;
       chr_ptr--;
-      chr_length = strlen(chr_ptr);
-      pos = 0;
+      chr_length -= pos;
+      pos = -1;
       dword = 0;
-    } else {
-      pos++;
     }
   }
   strcat(message_buffer,chr_ptr);
@@ -339,32 +338,13 @@ static void CheckOption(Widget w, int *fid, XtInputId * id)
     XawTextSetInsertionPoint(label
 			     , last + textblock.length);
 
-  /*
-  chr_ptr = strtok(message_buffer,"\n");
-  if(chr_ptr == NULL) max_len = strlen(message_buffer);
-
-  while(chr_ptr){
-    next_ptr = strtok(NULL,"\n");
-    if(next_ptr == NULL)
-      if(max_len < strlen(message_buffer))
-	max_len = strlen(message_buffer);
-    else 
-      if(max_len < strlen(chr_ptr) - strlen(next_ptr))
-	max_len = strlen(chr_ptr) - strlen(next_ptr);
-
-    chr_ptr = next_ptr;
-  }
-
-  printf("%d\n", max_len * log.width);
-  width = max_len * log.width;
-
-
-  XtVaSetValues(label
-		,XtNstring,message_buffer
-		,NULL);
-  */
   XtPopup(XtParent(local_option), XtGrabNone);
+  if(sakura && cg_num != -1)
+    XtVaSetValues(xhisho,XtNforceCG,True,XtNcgNumber,cg_num,NULL);
 
+  free(buffer);
+  free(_buffer);
+  free(message_buffer);
 }
 
 static int Option_exit(Display * disp)
@@ -422,10 +402,16 @@ static char* or2string(char* in)
   char* buffer;
   char* chr_ptr;
   char* in_ptr;
+  int num_of_item;
+  int pos;
+  messageStack* top;
+  messageStack* item;
+
   out = (char*)malloc(strlen(in) + 1);
   buffer = (char*)malloc(strlen(in) + 1);
   memset(buffer,'\0',strlen(in) + 1);
   memset(out,'\0',strlen(in) + 1);
+  num_of_item = pos = 0;
 
   if((chr_ptr = strchr(in,'(')) != NULL)
     in_ptr = chr_ptr + 1;
@@ -435,8 +421,74 @@ static char* or2string(char* in)
   if((chr_ptr = strchr(in_ptr,'|')) == NULL)
     return out;
 
-  strncpy(out,in_ptr,chr_ptr - in_ptr);
+  top = NULL;
+
+  while((chr_ptr = strchr(in_ptr,'|')) != NULL){
+    nstrncpy(buffer,in_ptr,chr_ptr - in_ptr);
+    in_ptr = chr_ptr + 1;
+    messageStack_push(&top,buffer);
+    num_of_item++;
+  }
+
+  pos = rand() % num_of_item;
+  do{
+    if((item = messageStack_pop(&top)) == NULL) break;
+
+    if(pos-- == 0)
+      strcpy(out,item->message);
+
+    free(item->message);
+    free(item);
+  } while(top);
+
   return out;
 }
 
+static char* nstrncpy(char* dst, const char* src, size_t n){
+  if (n != 0) {
+    register char *d = dst;
+    register const char *s = src;
 
+    do {
+      if(*s == '\n') s++;
+      if ((*d++ = *s++) == 0) {
+	/* NUL pad the remaining n-1 bytes */
+	while (--n != 0)
+	  *d++ = 0;
+	break;
+      }
+    } while (--n != 0);
+  }
+  return (dst);
+}
+
+static messageStack* messageStack_new(char* s)
+{
+  messageStack* r;
+
+  r = (messageStack*)malloc(sizeof(messageStack));
+  r->next = NULL;
+  r->message = strdup(s);
+  return r;
+}
+  
+static messageStack* messageStack_pop(messageStack** t)
+{
+  messageStack* r;
+
+  if(t == NULL) return NULL;
+  if(*t == NULL) return NULL;
+
+  r = *t;
+  *t = r->next;
+  return r;
+}
+
+static void messageStack_push(messageStack** t,char* s)
+{
+  messageStack* n;
+
+  n = messageStack_new(s);
+  n->next = *t;
+  *t = n;
+}

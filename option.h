@@ -30,5 +30,9 @@ typedef struct {
   Dimension height;
 } OptionRes;
 
-
+typedef struct _messagestack{
+  struct _messagestack* next;
+  char* message;
+} messageStack;
+  
 #endif
