@@ -19,6 +19,13 @@ configureのオプションで、
 %./configure --with-option
 
 とすると、「あれ以外の何かwith任意」対応になります。
+さらに、
+
+%./configure --with-option --with-unyuu
+
+とすると、うにゅうにも対応しますが、まゆらでしか試してませんので変な動
+きをするかもしれません。
+
 
 
 
@@ -80,6 +87,19 @@ http://meister-d-i.hoops.ne.jp/
 ふきだしは、右/中/左クリックいずれでも閉じます。ふきだしの上の適当なと
 ころでクリックしてください。
 
+
+以下に、with任意のカスタムに役立つオプションを列挙します。
+
+・-xoff             : ふきだしの位置補正(x方向)
+・-yoff             : ふきだしの位置補正(y方向)
+・-optionheight     : "任意"のふきだしの幅
+・-optionheight     : "任意"のふきだしの高さ
+・-nogreeting       : 起動時に挨拶を出さない
+・-uxoff            : うにゅうのふきだしの位置補正(x方向)
+・-uyoff            : うにゅうのふきだしの位置補正(y方向)
+・-uwidth           : うにゅうのふきだしの幅
+・-uheight          : うにゅうのふきだしの高さ
+・-optiontimeout    : "任意"のふきだしの自動Popdownまでの時間
 
 
 
