@@ -2,6 +2,7 @@
 #include "globaldefs.h"
 #include "Msgwin.h"
 #include "calendar.h"
+#include "config.h"
 #ifdef LIBMHC
 #include "mhc.h"
 #endif
