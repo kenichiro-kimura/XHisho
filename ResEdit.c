@@ -211,8 +211,8 @@ static void Destroy(Widget w, caddr_t cdata, caddr_t p)
     WritePrefFile();
   }
 
-  ResEditWindowShown = 0;
   XtPopdown(XtParent(XtParent(w)));
+  ResEditWindowShown = 0;
 }
 
 void ChangeBar(Widget w, caddr_t cdata, int p)

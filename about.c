@@ -35,8 +35,8 @@ static XtResource resources[] = {
 
 static void Destroy(Widget w, caddr_t client_data, caddr_t call_data)
 {
-  AboutWindowShown = 0;
   XtPopdown(top);
+  AboutWindowShown = 0;
 }
 
 Widget CreateAboutWindow(Widget w)

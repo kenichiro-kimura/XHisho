@@ -66,8 +66,8 @@ static XtResource resources[] = {
 
 static void Destroy(Widget w, caddr_t client_data, caddr_t call_data)
 {
-  CalendarWindowShown = 0;
   XtPopdown(XtParent(XtParent(w)));
+  CalendarWindowShown = 0;
 }
 
 static void EditorWindowPopup(Widget w, caddr_t client_data, caddr_t call_data)
@@ -84,9 +84,10 @@ static void EditorWindowPopup(Widget w, caddr_t client_data, caddr_t call_data)
 
   XtDestroyWidget(XtParent(editwin));
   editwin = CreateEditorWindow(XtParent(top), 3, *tm_now);
-  CalendarWindowShown = 0;
   XtPopdown(XtParent(XtParent(w)));
+  CalendarWindowShown = 0;
   XtPopup(XtParent(editwin), XtGrabNone);
+  OpenWindowShown = 1;
 }
 
 static void PrevMonth(Widget w, caddr_t client_data, caddr_t call_data)

@@ -167,13 +167,13 @@ static void Destroy(Widget w, caddr_t client_data, caddr_t call_data)
 {
   int Mode = (int) (client_data);
 
-  MailWindowShown = 0;
   if (!Mode) {
     isMailChecked = 0;
     MailCount = 0;
   }
   XtPopdown(top[Mode]);
   XtVaSetValues(xhisho, XtNanimType, USUAL, NULL);
+  MailWindowShown = 0;
 }
 
 static void TimerCheck(XtPointer cl, XtIntervalId * id)
@@ -182,10 +182,10 @@ static void TimerCheck(XtPointer cl, XtIntervalId * id)
     MailCount++;
     if (MailCount == MailTimeout) {
       MailCount = 0;
-      MailWindowShown = 0;
       isMailChecked = 2;
       XtPopdown(top[0]);
       XtVaSetValues(xhisho, XtNanimType, USUAL, NULL);
+      MailWindowShown = 0;
     }
   }
   if(MailTimeoutId){
@@ -829,11 +829,11 @@ static int Youbin_exit(Display * disp)
 }
 
 static void MailPopup(){
-  MailWindowShown = 1;
   XtVaSetValues(local_mail[0], XtNwindowMode, 0, NULL);
   XtVaSetValues(xhisho, XtNanimType, MAIL, NULL);
 
   XtPopup(XtParent(local_mail[0]), XtGrabNone);
+  MailWindowShown = 1;
   if (mar.sound_f  && UseSound) {
     SoundPlay(mar.sound_f);
   }
