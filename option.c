@@ -821,7 +821,7 @@ static void InsertMessage(XtPointer cl,XtIntervalId* id)
 	case 'x':
 	  pause_message = 1;
 	  is_display = 1;
-	  strcpy(chr_ptr,"\n[click]");
+	  strcpy(chr_ptr,"\n[click]\n");
 	  break;
 	case 'c':
 	  ClearMessage((dest_win == SAKURA? label:ulabel));
