@@ -26,8 +26,6 @@
 #define XtCMailLabel "MailLabel"
 #define XtNnoMailLabel "noMailLabel"
 #define XtCNoMailLabel "NoMailLabel"
-#define XtNyoubinLabel "youbinLabel"
-#define XtCYoubinLabel "YoubinLabel"
 #define XtNmaxLines "maxLines"
 #define XtNfromMaxLen "fromMaxLen"
 #define XtCMaxLines "MaxLines"
@@ -51,7 +49,6 @@
 
 #define MAILLABEL "You have new mail."
 #define NOLABEL "You have no new mail."
-#define YOUBINLABEL "You have %d mail."
 
 typedef struct {
   int m_timeout;
@@ -59,7 +56,6 @@ typedef struct {
   String mailbox;
   String mail_l;
   String no_l;
-  String y_l;
   int mail_lines;
   int from_maxlen;
   String sound_f;

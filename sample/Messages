@@ -1,7 +1,5 @@
-newmail Master, You have new mail.
+newmail Master, You have %d new mail.
 nomail Master, You have no new mail.
-youbin Master, You have %d mail.
-
 open1 Today is %s/%s. Your schedule is
 open2 .
 open3 no schedule.

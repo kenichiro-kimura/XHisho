@@ -265,7 +265,7 @@ Widget CreateResEditWindow(Widget w)
 
   Longest_label = 0;
   message = malloc(BUFSIZ);
-  memset(message,0,BUFSIZ);
+  memset(message,'\0',BUFSIZ);
   ReadRcdata("resource", message, BUFSIZ);
 
   /**

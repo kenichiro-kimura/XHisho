@@ -372,16 +372,16 @@ Widget CreateEditorWindow(Widget w, int Mode, struct tm tm_now)
   string_e = malloc(256);
   tmpstring = malloc(BUFSIZ * 2);
 
-  memset(string_f, 0, BUFSIZ * 2);
-  memset(tmpstring, 0, BUFSIZ * 2);
-  memset(string_e, 0, 256);
+  memset(string_f, '\0', BUFSIZ * 2);
+  memset(tmpstring, '\0', BUFSIZ * 2);
+  memset(string_e, '\0', 256);
 
 
   for (i = 0; i < MAX_SCHED_NUM; i++) {
     sched_list[i] = malloc(BUFSIZ * 3);
     since_minutes[i] = malloc(BUFSIZ);
-    memset(sched_list[i], 0, BUFSIZ * 3);
-    memset(since_minutes[i], 0, BUFSIZ);
+    memset(sched_list[i], '\0', BUFSIZ * 3);
+    memset(since_minutes[i], '\0', BUFSIZ);
   }
 
   /**
@@ -404,12 +404,12 @@ Widget CreateEditorWindow(Widget w, int Mode, struct tm tm_now)
   if (virgine) {
     virgine = 0;
     schedule = malloc(sizeof(Schedule) * MAX_SCHED_NUM);
-    memset(schedule, 0, sizeof(Schedule) * MAX_SCHED_NUM);
+    memset(schedule, '\0', sizeof(Schedule) * MAX_SCHED_NUM);
     ReadHoliday();
   }
   for (i = 0; i < NUM_OF_ARRAY(ResName); i++) {
     messages[i] = malloc(BUFSIZ);
-    memset(messages[i], 0, BUFSIZ);
+    memset(messages[i], '\0', BUFSIZ);
     ReadRcdata(ResName[i], messages[i], BUFSIZ);
   }
 
@@ -520,7 +520,7 @@ Widget CreateEditorWindow(Widget w, int Mode, struct tm tm_now)
 
 
   for (j = 0; j < i; j++) {
-    memset(tmpstring, 0, BUFSIZ * 2);
+    memset(tmpstring, '\0', BUFSIZ * 2);
     if (j < schedules) {
       /**
        * もしスケジュールがあるならそっちの幅優先
@@ -629,9 +629,9 @@ Widget CreateEditorWindow(Widget w, int Mode, struct tm tm_now)
        * 開始時間表示textWidgetの作成
        **/
 
-      memset(tmpstring, 0, BUFSIZ * 2);
+      memset(tmpstring, '\0', BUFSIZ * 2);
       strcpy(tmpstring, "00000");
-      memset(daystring[j], 0, 256);
+      memset(daystring[j], '\0', 256);
       daystring[j][0] = '*';
 
       XmbTextExtents(fset, tmpstring, strlen(tmpstring), &ink, &log);
@@ -733,7 +733,7 @@ Widget CreateEditorWindow(Widget w, int Mode, struct tm tm_now)
        * 取得した大きさを元にdayなるtextWidgetを作る
        **/
 
-      memset(leavestring[j], 0, 256);
+      memset(leavestring[j], '\0', 256);
       if (j < schedules) {
 	if(schedule[j].leave <= 0){
 	  sprintf(leavestring[j], "*");
@@ -918,8 +918,8 @@ static int WriteSchedule(struct tm tm_now)
   }
   dtmp = malloc(BUFSIZ);
   etmp = malloc(BUFSIZ);
-  memset(dtmp, 0, BUFSIZ);
-  memset(etmp, 0, BUFSIZ);
+  memset(dtmp, '\0', BUFSIZ);
+  memset(etmp, '\0', BUFSIZ);
 
   XtSetArg(darg[n], XtNstring, &dbuf);
   XtSetArg(earg[n], XtNstring, &ebuf);

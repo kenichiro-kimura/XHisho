@@ -19,14 +19,13 @@ static HolidayList *HolidayList_new(int, char *);
 static HolidayList *HolidayList_new(int day, char *name)
 {
   /**
-   * HolidayListのコンストラクタ。memsetによる0クリアは念のため。たぶんいらん。
+   * HolidayListのコンストラクタ。
    * day,nameに引数で与えたものをセットし、nextをNULLにする。
    **/
 
   HolidayList *h_ptr;
 
   h_ptr = (HolidayList *) malloc(sizeof(HolidayList));
-  memset(h_ptr, 0, sizeof(HolidayList));
 
   h_ptr->day = day;
   h_ptr->next = NULL;

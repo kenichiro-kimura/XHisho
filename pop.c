@@ -31,7 +31,7 @@ static int ReadPOPMessage(int sock, char *buffer, int size)
   comm_buffer = malloc(size + 1);
 
   do {
-    memset(comm_buffer, 0, size + 1);
+    memset(comm_buffer, '\0', size + 1);
     i = recv(sock, comm_buffer, size, 0);
     comm_buffer[i] = '\0';
     if (i + strlen(buffer) >= size) {
@@ -437,18 +437,18 @@ static void GetFromandSubject(int sock, char *buffer)
 #endif
 
   buf = malloc(BUFSIZ * 5);
-  memset(buf, 0, BUFSIZ * 5);
+  memset(buf, '\0', BUFSIZ * 5);
   tmp = malloc(BUFSIZ * 5);
   tmp3 = malloc(BUFSIZ * 5);
-  memset(tmp, 0, BUFSIZ * 5);
+  memset(tmp, '\0', BUFSIZ * 5);
 
 #ifdef PETNAME
   from = malloc(BUFSIZ);
   who = malloc(BUFSIZ);
   pname = malloc(BUFSIZ);
-  memset(from,0,BUFSIZ);
-  memset(who,0,BUFSIZ);
-  memset(pname,0,BUFSIZ);
+  memset(from,'\0',BUFSIZ);
+  memset(who,'\0',BUFSIZ);
+  memset(pname,'\0',BUFSIZ);
 #endif
 
   WritePOPCommand(sock, "TOP 1 0\n");
@@ -456,7 +456,7 @@ static void GetFromandSubject(int sock, char *buffer)
     fprintf(stderr, "fail pop command: TOP\n");
     goto End;
   }
-  memset(buf, 0, BUFSIZ * 5);
+  memset(buf, '\0', BUFSIZ * 5);
 
   do {
     ReadPOPMessage(sock, buf, BUFSIZ * 5);
@@ -520,7 +520,7 @@ static void GetFromandSubject(int sock, char *buffer)
       }
 
       strncat(buffer, tmp, mar.from_maxlen);
-      memset(tmp, 0, BUFSIZ * 5);
+      memset(tmp, '\0', BUFSIZ * 5);
       i++;
     }
     tmp2 = strtok(NULL, "\n");

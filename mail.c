@@ -11,7 +11,7 @@
  * local variable
  **/
 
-static Widget top[2], local_mail[2], from;
+static Widget top[2], local_mail[2], from, label;
 static int MailCount = 0;
 static char m_filename[256];
 static int TimeoutInterval = 1 * 1000;
@@ -97,15 +97,6 @@ static XtResource resources[] = {
     XtOffsetOf(MailAlertRes, no_l),
     XtRImmediate,
     (XtPointer) NOLABEL
-  },
-  {
-    XtNyoubinLabel,
-    XtCYoubinLabel,
-    XtRString,
-    sizeof(String),
-    XtOffsetOf(MailAlertRes, y_l),
-    XtRImmediate,
-    (XtPointer) YOUBINLABEL
   },
   {
     XtNmaxLines,
@@ -243,13 +234,29 @@ int CheckMail(XtPointer cl, XtIntervalId * id)
   static int OldSize = 0;
   int NewSize = 0;
   struct stat MailStat;
+  int num_of_mail = 0;
+  FILE* fp;
+  char* tmp;
+  char* message;
 
   NewSize = (stat(m_filename, &MailStat) == 0) ? MailStat.st_size : 0;
 
-  buf = malloc(mar.from_maxlen * mar.mail_lines + 1);
-  memset(buf, 0, mar.from_maxlen * mar.mail_lines + 1);
+  buf = (char*)malloc(mar.from_maxlen * mar.mail_lines + 1);
+  memset(buf, '\0', mar.from_maxlen * mar.mail_lines + 1);
+  tmp = (char*)malloc(BUFSIZ);
+  message = (char*)malloc(BUFSIZ);
+
+  if((fp = fopen(m_filename,"r")) != NULL){
+    while(fgets(tmp,BUFSIZ,fp) != NULL){
+      if(!strncmp(tmp,"From ",strlen("From ")))
+	num_of_mail++;
+    }
+    fclose(fp);
+  }
 
   i = isMail(&OldSize,NewSize);
+  ReadRcdata("newmail",tmp,BUFSIZ);
+  sprintf(message,tmp,num_of_mail);
 
   switch (i) {
   case 0:
@@ -259,6 +266,7 @@ int CheckMail(XtPointer cl, XtIntervalId * id)
       isMailChecked = 1;
       GetFromandSubject(m_filename, buf);
       XtVaSetValues(from, XtNlabel, buf, NULL);
+      XtVaSetValues(label, XtNlabel, message, NULL);
       MailPopup();
     }
     break;
@@ -266,6 +274,7 @@ int CheckMail(XtPointer cl, XtIntervalId * id)
     switch (isMailChecked) {
     case 1:
       if (!IsPopped(mail)) {
+	XtVaSetValues(label, XtNlabel, message, NULL);
 	MailPopup();
       }
       break;
@@ -288,17 +297,23 @@ int CheckMail(XtPointer cl, XtIntervalId * id)
 				, (XtPointer) local_mail[0]);
 
   free(buf);
-
-  return i;
+  free(tmp);
+  free(message);
+  return num_of_mail;
 }
 
 int CheckPOP3(XtPointer cl, XtIntervalId * id)
 {
   int ret_value = 0;
   char *buf;
+  char *message;
+  char *tmp;
 
   buf = malloc(mar.from_maxlen * mar.mail_lines + 1);
-  memset(buf, 0, mar.from_maxlen * mar.mail_lines + 1);
+  memset(buf, '\0', mar.from_maxlen * mar.mail_lines + 1);
+  message = (char*)malloc(BUFSIZ);
+  tmp = (char*)malloc(BUFSIZ);
+  memset(tmp, '\0', BUFSIZ);
 
   switch (Biff) {
   case APOP:
@@ -310,12 +325,17 @@ int CheckPOP3(XtPointer cl, XtIntervalId * id)
   default:
   }
 
+  ReadRcdata("newmail",tmp,BUFSIZ);
+  if(*tmp == '\0')
+    sprintf(message,mar.mail_l,ret_value);
+  else
+    sprintf(message,tmp,ret_value);
+
   if (ret_value > 0) {
-    printf("%s\n",buf);
     XtVaSetValues(from, XtNlabel, buf, NULL);
+    XtVaSetValues(label, XtNlabel, message, NULL);
     MailPopup();
   }
-  free(buf);
 
   if (MailCheckInterval < 60 * 1000)
     MailCheckInterval = 60 * 1000;
@@ -329,6 +349,11 @@ int CheckPOP3(XtPointer cl, XtIntervalId * id)
 				,MailCheckInterval
 				, (XtTimerCallbackProc) CheckPOP3
 				, (XtPointer) local_mail[0]);
+  free(buf);
+
+  free(message);
+  free(tmp);
+
   return ret_value;
 }
 
@@ -351,9 +376,9 @@ int CheckYoubinNow(XtPointer cl, XtIntervalId * id){
   }
 
 
-  ReadRcdata("youbin",tmp,BUFSIZ);
+  ReadRcdata("newmail",tmp,BUFSIZ);
   if(*tmp == '\0')
-    sprintf(message,mar.y_l,num_of_mail);
+    sprintf(message,mar.mail_l,num_of_mail);
   else
     sprintf(message,tmp,num_of_mail);
 
@@ -365,7 +390,7 @@ int CheckYoubinNow(XtPointer cl, XtIntervalId * id){
   case 1:
     if (!IsPopped(mail)) {
       isMailChecked = 1;
-      XtVaSetValues(from, XtNlabel, message, NULL);
+      XtVaSetValues(label, XtNlabel, message, NULL);
       MailPopup();
     }
     break;
@@ -373,6 +398,7 @@ int CheckYoubinNow(XtPointer cl, XtIntervalId * id){
     switch (isMailChecked) {
     case 1:
       if (!IsPopped(mail)) {
+	XtVaSetValues(label, XtNlabel, message, NULL);
 	MailPopup();
       }
       break;
@@ -406,7 +432,7 @@ Widget CreateMailAlert(Widget w, int Mode)
    * Mode = 1 ... No Mail
    **/
 
-  Widget ok, label;
+  Widget ok;
   static XtPopdownIDRec pdrec;
   int i;
   XFontSet fset;
@@ -612,8 +638,8 @@ static void GetFromandSubject(char *m_file, char *From)
   tmp2 = malloc(mar.from_maxlen + 2);
   tmp1 = malloc(mar.from_maxlen + 1);
 
-  memset(tmp1, 0, mar.from_maxlen + 1);
-  memset(tmp2, 0, mar.from_maxlen + 2);
+  memset(tmp1, '\0', mar.from_maxlen + 1);
+  memset(tmp2, '\0', mar.from_maxlen + 2);
   buf = malloc(BUFSIZ);
   head1 = malloc(BUFSIZ);
   head2 = malloc(BUFSIZ);
@@ -668,7 +694,7 @@ static void GetFromandSubject(char *m_file, char *From)
 
 #ifdef PETNAME
 	if (!strncmp(buf, "From:", 5)) {
-	  memset(who, 0, BUFSIZ);
+	  memset(who, '\0', BUFSIZ);
 	  strcpy(tmp1, buf);
 
 	  strcpy(who, buf + 6);
@@ -782,13 +808,13 @@ static void CheckYoubin(Widget w, int *fid, XtInputId * id)
 
 
   From = malloc(mar.from_maxlen * mar.mail_lines + 1);
-  memset(From, 0, mar.from_maxlen * mar.mail_lines + 1);
+  memset(From, '\0', mar.from_maxlen * mar.mail_lines + 1);
 
   tmp2 = malloc(mar.from_maxlen + 1);
-  memset(tmp2, 0, mar.from_maxlen + 1);
+  memset(tmp2, '\0', mar.from_maxlen + 1);
 
   buf = malloc(BUFSIZ);
-  memset(buf, 0, BUFSIZ);
+  memset(buf, '\0', BUFSIZ);
 
 #ifdef PETNAME
   from_who = malloc(BUFSIZ);
