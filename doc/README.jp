@@ -1,6 +1,6 @@
 ******************************************************************
  XHisho Ver. 1.80 [Lime Release 8] 
- Copyright(c) 1998-2000 Ken'ichirou Kimura (kimura@db.is.kyushu-u.ac.jp)
+ Copyright(c) 1998-2001 Ken'ichirou Kimura (kimura@db.is.kyushu-u.ac.jp)
     ******************************************************************
 
 
@@ -137,7 +137,23 @@ MHC$B$N%G!<%?$r;H$&$3$H$b$G$-$^$9!#$3$N>l9g!"(BXHisho$B$+$i%(%G%#%C%H$O=PMh(
 
 
 
-4.How to install $B!A$5$"!"%$%s%9%H!<%k!A(B
+4.Environment $B!AF0:n4D6-!A(B
+
+X$B$,F0$/(BUNIX$B7O$N4D6-$J$iBgDq$I$3$G$b!#F0:n$r3NG'$7$F$$$k$N$O<!$N4D6-$G(B
+$B$9!#(B
+
+$B!&(BFreeBSD 2.X,3.X,4.X
+$B!&(BSolaris 2.5,2.6,7,8(8$B$O0lItIT6q9g$"$j(B)
+$B!&(BWindows 2000 + cygwin + Astec-X
+
+Linux$B$G$bB?$/$NF0:nJs9p$,$"$j$^$9!#F0$+$J$+$C$?$i65$($F$/$@$5$$!#(B
+
+
+
+
+
+
+5.How to install $B!A$5$"!"%$%s%9%H!<%k!A(B
 
 $B$^$:!"(Bconfigure$B%9%/%j%W%H$rF0$+$7$^$9!#(Bconfigure$B$K$O<!$N%*%W%7%g%s$,$"(B
 $B$j$^$9!#(B
@@ -245,7 +261,7 @@ make$B$K<:GT$7$?$H$-$O!"$b$&0lEY(Bmake$B$r<B9T$7$F$_$F$/$@$5$$!#(B
 
 
 
-5.How to custom $B!A%+%9%?%^%$%:$7$F$_$h$&!A(B
+6.How to custom $B!A%+%9%?%^%$%:$7$F$_$h$&!A(B
 
 $B>\:Y$O(BCustom.jp$B$rFI$s$G$/$@$5$$!#(B
 
@@ -281,7 +297,7 @@ xhs.holiday$B$H$$$&%U%!%$%k$rCV$$$F$/$@$5$$!#=q<0$O%5%s%W%k$r8+$F$/$@$5(B
 
 
 
-6.How to use $B!A$I$&$d$C$F;H$&$N!)!A(B
+7.How to use $B!A$I$&$d$C$F;H$&$N!)!A(B
 
 % xhisho [toolkit options]
 	 [-cgfile [cg filename]]
@@ -377,7 +393,7 @@ xhs.holiday$B$H$$$&%U%!%$%k$rCV$$$F$/$@$5$$!#=q<0$O%5%s%W%k$r8+$F$/$@$5(B
 
 
 
-7.Edit schedules $B!A%9%1%8%e!<%k$rJT=8$7$F$_$h$&!A(B
+8.Edit schedules $B!A%9%1%8%e!<%k$rJT=8$7$F$_$h$&!A(B
 
 $B$=$NF|$N%9%1%8%e!<%k@_Dj%U%!%$%k$O(B$HOME/.Schedule/xhs****$B$H$$$&%U%!%$(B
 $B%k$K$J$j$^$9(B($B%G%#%l%/%H%j$O%+%9%?%`2D(B)$B!#(B****$B$K$OF|IU$,F~$j$^$9!#Nc$($P(B
@@ -441,7 +457,7 @@ XHisho*extEditCommand: xcalendar
 
 
 
-8.Edit Preferences $B!A@_Dj$rJQ99$7$h$&!A(B
+9.Edit Preferences $B!A@_Dj$rJQ99$7$h$&!A(B
 
 $B?tCM$N%j%=!<%9$N$&$A!"(B
 
@@ -464,7 +480,7 @@ XHisho*extEditCommand: xcalendar
 
 
 
-9.Authorization with POP3 and IMAP4 $B!A(BPOP3$B$H(BIMAP4$B$G$NG'>Z$K$D$$$F!A(B
+10.Authorization with POP3 and IMAP4 $B!A(BPOP3$B$H(BIMAP4$B$G$NG'>Z$K$D$$$F!A(B
 
 $B5/F0%*%W%7%g%s$G!V(B-pop$B!W!"!V(B-apop$B!W!"!V(B-imap$B!W$r;XDj$9$k$H%a!<%k$N%A%'%C(B
 $B%/$K(BPOP3$B$d(BIMAP4$B$r;H$&$3$H$,$G$-$^$9!#$3$N;~(BPOP3(IMAP4)$B%5!<%P$O%3%^%s%I(B
@@ -494,7 +510,7 @@ PASS:$B%Q%9%o!<%I(B
 
 
 
-10.Copyright $B!ACx:n8"$HG[I[>r7o!A(B
+11.Copyright $B!ACx:n8"$HG[I[>r7o!A(B
 
 $B!&K\%=%U%H%&%'%"$O%U%j!<%=%U%H%&%'%"$G$9!#K\%=%U%H%&%'%"$N0lIt$^$?$OA4(B
   $BBN$N2~JQ!":FG[I[!";HMQ$O$$$C$5$$K8$2$^$;$s!#C"$7!"2~JQ$7$?$b$N$r:FG[(B
@@ -528,7 +544,7 @@ PASS:$B%Q%9%o!<%I(B
 
 
 
-11.Contact address $B!AO"Mm@h!A(B
+12.Contact address $B!AO"Mm@h!A(B
 
 $B3F<oO"Mm!&6l>p!&46A[!&4sIU$N?=$7=P(B(^^;)$BEy$O0J2<$N%"%I%l%9$X(BE-mail$B$G$*(B
 $B4j$$$7$^$9!#(B
@@ -549,7 +565,7 @@ PASS:$B%Q%9%o!<%I(B
 
 
 
-12.Acknowledgement $B!A<U<-!A(B
+13.Acknowledgement $B!A<U<-!A(B
 
 $B8D?ME*$KLL<1$O$"$j$^$;$s$,!"K\%=%U%H$r:n$k$-$C$+$1$K$J$C$?(Bxmascot$B$H(B
 xmaid(xmulti)$B$r:n$i$l$?EOn49d$5$s(B(go@denpa.org)$B!#N>%=%U%H$N%3!<%I$OHs(B

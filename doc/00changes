@@ -8,7 +8,7 @@
   を "navy" にしてたが、分かりにくかった ^^;
 ・libmhcの高速化・バグフィックス
 ・--enable-shared で、libmhcとlibxhimageをshared libraryに。
-・「あれ以外の何かwith任意」対応モジュール(see doc/README.option)
+・「あれ以外の何かwith任意」,SSTP対応モジュール(see doc/README.option)
 
 
 

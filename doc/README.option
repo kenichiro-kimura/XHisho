@@ -106,11 +106,15 @@ UTF-8は現在日本語のみです(たぶん)。
 
 
 
+
 6. 使い方
 
 
-外部コマンドを使うときは、起動時に-optioncmd オプションで外部コマンド
-を指定します。例えば
+「華和梨」を組み込んだときには、起動オプション「-kawaridir」と「-kwait」
+を適当な値にセットして起動すれば、色々おしゃべりします。
+
+おしゃべりに「華和梨」ではなく外部コマンドを使うときは、起動時に-
+optioncmd オプションで外部コマンドを指定します。例えば
 
 %xhisho -optioncmd /usr/local/bin/nisesakura
 
@@ -118,8 +122,13 @@ UTF-8は現在日本語のみです(たぶん)。
 '/usr/local/bin/nisesakura 60')。ふきだしの大きさは -optionwidth と
 -optionheightで指定可能です。
 
-で、はっきり言ってしまうとまゆらでしか試してません。まゆらを使うときは
-アニメーションファイルにまゆらのSurfaceを並べて記述し、
+まゆらを使うときはアニメーションファイルにまゆらのSurfaceを並べて記述
+し、
+
+%xhisho -kawaridir /usr/local/share/mayura/ -kwait 60 \
+        -cgfile mayura.anim -shape -noclock -unyuu
+
+とか
 
 %xhisho -optioncmd /usr/local/bin/nisesakura -cgfile mayura.anim \
         -shape -noclock -unyuu
@@ -229,7 +238,19 @@ XHisho*userName: ユーザの名前
 
 
 
-7. 制限事項
+7. 試したゴースト
+
+・まゆら
+・ショーちゃん
+
+他のゴーストでも、「華和梨」を使ったものは動くと思いますが、試してませ
+ん。
+
+
+
+
+
+8. 制限事項
 
 ・結構メモリを食います。
 ・外部コマンドが不意に死ぬとひどいことになります。XHishoを再起動してく
@@ -252,7 +273,8 @@ XHisho*userName: ユーザの名前
 
 
 
-8. Copyright
+
+9. Copyright
 
 ディレクトリ kawari 以下のファイルの、以下のものについてはMeister氏
 (meister@24h.co.jp)が原作者です。
@@ -272,7 +294,7 @@ XHishoのライセンスに従います。
 
 
 
-8. 謝辞
+10. 謝辞
 
 「華和梨」の作者のMeisterさん。そもそも「華和梨」が無ければこの機能は
 実現できませんでした。また、再配布を快く承諾して頂きありがとうございま
@@ -282,7 +304,7 @@ XHishoのライセンスに従います。
 
 
 
-9. 将来
+11. 将来
 
 こうなると「skinがそのまま使えて欲しい」とか「選択肢が選べるように」と
 いった要望もあるわけですが、はっきり言ってそこまでやる気ないです(笑) 
