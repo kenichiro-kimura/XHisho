@@ -79,7 +79,7 @@ Widget CreateAboutWindow(Widget w)
 
   XtGetApplicationResources(top, &abr, resources, XtNumber(resources), NULL, 0);
 
-  aboutMessage = malloc(strlen(abr.about_s) + 20);
+  aboutMessage = malloc(strlen(abr.about_s) + strlen(XHISHO_VERSION) + 1);
   sprintf(aboutMessage,abr.about_s,XHISHO_VERSION);
 
   labelargs[0].value = (XtArgVal) POINT_WIDTH + LABEL_OFFSET;
