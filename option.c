@@ -39,6 +39,8 @@ static void GetBuffer(messageBuffer*,char*);
 static void HeadOfBuffer(messageBuffer*,char*);
 static void _GetBuffer(messageBuffer*,char*,int);
 static char* SJIS2EUC(char*);
+static int IsKinsoku(char*);
+
 
 #ifdef USE_KAWARI
 static void GetMessageFromKawari(Widget, int *, XtInputId *);
@@ -46,7 +48,6 @@ extern char* RandomMessage(char*);
 #endif
 
 static void SakuraParser(char*); /* only for reference */
-
 
 static XtActionsRec actionTable[] = {
   {"Destroy", Destroy},
@@ -381,11 +382,6 @@ static void GetMessageFromKawari(Widget w, int * i, XtInputId * id){
   if(opr.k_wait == 0)
     opr.k_wait = 60;
 
-  KAWARITimeoutId = XtAppAddTimeOut(XtWidgetToApplicationContext(local_option)
-				    , opr.k_wait * 1000
-				    , (XtTimerCallbackProc) GetMessageFromKawari
-				    , NULL
-				    );
 }
 #endif
 
@@ -709,15 +705,18 @@ static void InsertMessage(XtPointer cl,XtIntervalId* id)
 	is_end = 1;
 	pos[0] = pos[1] = 0;
 	if(opr.timeout > 0){
-	  if(OptionTimeoutId){
-	    XtRemoveTimeOut(OptionTimeoutId);
-	    OptionTimeoutId = 0;
-	  }
 	  OptionTimeoutId = XtAppAddTimeOut(XtWidgetToApplicationContext(local_option)
 					    , opr.timeout * 1000
 					    , (XtTimerCallbackProc) Destroy
 					    , NULL);
 	}
+#ifdef USE_KAWARI
+	KAWARITimeoutId = XtAppAddTimeOut(XtWidgetToApplicationContext(local_option)
+					  , opr.k_wait * 1000
+					  , (XtTimerCallbackProc) GetMessageFromKawari
+					  , NULL
+					  );
+#endif
 	break;
       case 'w':
 	cg_num = atoi(chr_ptr + 2);
@@ -744,9 +743,21 @@ static void InsertMessage(XtPointer cl,XtIntervalId* id)
 	is_end = 0;
       }
 
+#ifdef USE_KAWARI
+      if(KAWARITimeoutId){
+	XtRemoveTimeOut(KAWARITimeoutId);
+	KAWARITimeoutId = 0;
+      }
+#endif
+
+      if(OptionTimeoutId){
+	XtRemoveTimeOut(OptionTimeoutId);
+	OptionTimeoutId = 0;
+      }
+
       XtVaGetValues(w, XtNfontSet, &fset, XtNwidth,&width,NULL);
       XmbTextExtents(fset, chr_ptr, strlen(chr_ptr), &ink, &log);
-      max_len = width - 2;
+      max_len = width - log.width - 1;
 
       if(!IsPopped(XtParent(w)))
 	XtPopup(XtParent(XtParent(w)), XtGrabNone);
@@ -761,7 +772,11 @@ static void InsertMessage(XtPointer cl,XtIntervalId* id)
       } else {
 	if((pos[dest_win] += log.width) > max_len){
 	  pos[dest_win] = log.width;
-	  sprintf(buffer,"\n%s",chr_ptr);
+	  if(IsKinsoku(chr_ptr)){
+	    sprintf(buffer,"%s\n",chr_ptr);
+	  } else {
+	    sprintf(buffer,"\n%s",chr_ptr);
+	  }
 	} else {
 	  strcpy(buffer,chr_ptr);
 	}
@@ -1083,3 +1098,21 @@ static char* SJIS2EUC(char* in) {
 
   return ret;
 }
+
+static int IsKinsoku(char* in)
+{
+  int i;
+  const char* table[] = {
+    "。", "、", "！", "？", "ー", "」", "』", "）",
+    "ぁ", "ぃ", "ぅ", "ぇ", "ぉ", "ゃ", "ゅ", "ょ",
+    "っ", "ァ", "ィ", "ゥ", "ェ", "ォ", "ャ", "ュ",
+    "ョ", "ッ", "　", NULL, 
+  };
+
+  for(i = 0; table[i] != NULL;i++) {
+    if(strcmp(in, table[i]) == 0) return 1;
+  }
+
+  return 0;
+}
+
