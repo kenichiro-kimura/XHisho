@@ -1,7 +1,7 @@
 'XHisho*international: TRUE
 XHisho*thickness: 5
 XHisho*frameMode: 0
-XHisho*messageFile: XHISHODIR/Messages
+XHisho*messageFile: IXHISHODIR/Messages
 
 XHisho*FontSet: -*-fixed-medium-r-normal--16-*
 XHisho*cgFile: XHISHODIR/akari.bmp
@@ -11,7 +11,7 @@ XHisho*extFilter: nkf -e -m
 !!biff関係のリソース
 !!
 
-XHisho*petnameFile: XHISHODIR/Petname
+XHisho*petnameFile: IXHISHODIR/Petname
 XHisho.MailAlert.youbinServer: localhost
 XHisho.MailAlert.youbinCommand: /usr/local/bin/youbin
 XHisho.MailAlert.popServer: localhost
@@ -28,7 +28,7 @@ XHisho*clockArg:hMs
 !!予定表示のリソース
 !!
 
-XHisho.OpenMessage.configFile: XHISHODIR/aisatu.cfg
+XHisho.OpenMessage.configFile: IXHISHODIR/aisatu.cfg
 XHisho.OpenMessage.messageArg: hme
 XHisho.OpenMessage.pastSchedColor: LightGrey
 XHisho.OpenMessage.alertSchedColor: red

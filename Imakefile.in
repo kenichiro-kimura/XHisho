@@ -4,7 +4,7 @@ CC = @CC@
 CCOPTIONS = @CFLAGS@ @LDFLAGS@
 PREFIX = @prefix@
 XCOMM CDEBUGFLAGS = -g -Wall -DDEBUG
-YOUR_NAME = $B9@G7(B
+YOUR_NAME = ¹ÀÇ·
 
 XCOMM
 XCOMM	do not touch below
@@ -12,6 +12,12 @@ XCOMM
 
 XHISHODIR = $(LIBDIR)/xhisho
 LOCALEDIR = $(LIBDIR)/$(LANG)/app-defaults
+
+#ifdef AKARI
+#ifndef I18N
+#define I18N
+#endif
+#endif
 
 #ifdef PERSONAL
 BINDIR	= $(HOME)/bin
@@ -75,21 +81,24 @@ ComplexProgramTarget(xhisho)
 
 #ifdef I18N
 all:: XHisho.ad XHisho.jp
+#ifdef AKARI
+all:: XHisho.ad XHisho.jp sample/Messages.akari
+#endif
 #else
 all:: XHisho.ad
 #endif
 
-#ifdef AKARI
-XHisho.ad:: XAkari.ad.sed
-	sed 's!XHISHODIR!$(XHISHODIR)!' XAkari.ad.sed  >$@
-#else
 XHisho.ad:: XHisho.ad.sed
 	sed 's!XHISHODIR!$(XHISHODIR)!' XHisho.ad.sed >$@
-#endif
 
 #ifdef I18N
+#ifdef AKARI
+XHisho.jp:: XAkari.ad.sed
+	sed 's!IXHISHODIR!$(IXHISHODIR)!' XAkari.ad.sed | sed 's!XHISHODIR!$(XHISHODIR)!' >$@
+#else
 XHisho.jp:: XHisho.jp.sed
 	sed 's!IXHISHODIR!$(IXHISHODIR)!' XHisho.jp.sed | sed 's!XHISHODIR!$(XHISHODIR)!' >$@
+#endif
 #endif
 
 xhisho.man:: man1/xhisho.1
@@ -100,7 +109,7 @@ sample/Messages.akari:: sample/Messages.akari.sed
 	sed 's!YOUR_NAME!$(YOUR_NAME)!' sample/Messages.akari.sed >$@
 
 clean:: 
-	$(RM) XHisho.ad sample/Messages.akari
+	$(RM) XHisho.ad XHisho.jp sample/Messages.akari
 #endif
 
 clean:: 
@@ -127,11 +136,17 @@ InstallNonExec(XHisho.jp,$(LOCALEDIR)/XHisho)
 
 
 #ifdef I18N
-InstallNonExec(sample/aisatu.cfg,$(IXHISHODIR))
 InstallNonExec(sample/xhs.weekly.jp,$(IXHISHODIR)/xhs.weekly)
 InstallNonExec(sample/xhs0720.jp,$(IXHISHODIR)/xhs0720)
-InstallNonExec(sample/Messages.jp,$(IXHISHODIR)/Messages)
 InstallNonExec(sample/xhs.holiday,$(IXHISHODIR)/xhs.holiday)
+InstallNonExec(sample/Petname.jp,$(IXHISHODIR))
+#ifdef AKARI
+InstallNonExec(sample/aisatu.cfg.akari,$(IXHISHODIR)/xhs.aisatu.cfg)
+InstallNonExec(sample/Messages.akari,$(IXHISHODIR)/Messages)
+#else
+InstallNonExec(sample/aisatu.cfg,$(IXHISHODIR))
+InstallNonExec(sample/Messages.jp,$(IXHISHODIR)/Messages)
+#endif
 #endif
 
 InstallNonExec(sample/xhs.weekly,$(XHISHODIR))
@@ -146,9 +161,7 @@ InstallNonExec(sample/biffempty.bmp,$(XHISHODIR))
 InstallNonExec(sample/bifffull.bmp,$(XHISHODIR))
 
 #ifdef AKARI
-InstallNonExec(sample/aisatu.cfg.akari,$(XHISHODIR)/xhs.aisatu.cfg)
 InstallNonExec(sample/akari.bmp,$(XHISHODIR))
-InstallNonExec(sample/Messages.akari,$(XHISHODIR)/Messages)
 #else
 InstallNonExec(sample/hisho.bmp,$(XHISHODIR))
 #endif
