@@ -5,6 +5,11 @@
 ・Translationに"OpeningWindowPopup"を追加
 ・CG全体が画面に収まらない位置にウインドが来た場合、CGが画面に収まるよ
   うに位置を補正するようにした(-focus時は補正しない)
+・Animationファイルを使うとSegmentation Faultになる場合があったのを修
+  正
+・フルカラーのXPMがうまく扱えなかったのを修正
+・細部バグフィックス
+
 
 
 

@@ -379,7 +379,6 @@ Widget CreateEditorWindow(Widget w, int Mode, struct tm tm_now)
   if (virgine) {
     virgine = 0;
     schedule = malloc(sizeof(Schedule) * MAX_SCHED_NUM);
-    memset(schedule, 0, sizeof(Schedule) * MAX_SCHED_NUM);
     ReadHoliday();
   }
   for (i = 0; i < NUM_OF_ARRAY(ResName); i++) {
@@ -396,6 +395,8 @@ Widget CreateEditorWindow(Widget w, int Mode, struct tm tm_now)
     local_open = XtCreateManagedWidget("open", msgwinWidgetClass, top
 				 ,editargs, XtNumber(editargs));
   }
+
+  memset(schedule, 0, sizeof(Schedule) * MAX_SCHED_NUM);
 
   /**
    * read Schedule
