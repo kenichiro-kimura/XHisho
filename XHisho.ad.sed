@@ -84,6 +84,14 @@ XHisho.MailAlert.newMailSound: XHISHODIR/newmail.wav
 !XHisho*extSoundCommand: cat %s > /dev/audio
 
 !!
+!! resources for option window
+!!
+
+XHisho*optionTimeout: 5
+XHisho*optionWidth:200
+XHisho*optionHeight:300
+
+!!
 !!About XHisho...
 !!
 

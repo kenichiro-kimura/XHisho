@@ -189,6 +189,7 @@ static void CheckOption(Widget w, int *fid, XtInputId * id)
   static unsigned char *buffer;
   static int x = 0;
   int len;
+  int message_buffer_size = BUFSIZ * 20;
   unsigned char* chr_ptr;
   unsigned char* next_ptr;
   static int is_end = 0;
@@ -213,17 +214,17 @@ static void CheckOption(Widget w, int *fid, XtInputId * id)
 #endif			
 
   if(x == 0){
-    message_buffer = (char *)malloc(BUFSIZ * 20);
-    _buffer = (char *)malloc(BUFSIZ * 5);
-    buffer = (char *)malloc(BUFSIZ * 5);
+    message_buffer = (char *)malloc(message_buffer_size);
+    _buffer = (char *)malloc(message_buffer_size);
+    buffer = (char *)malloc(message_buffer_size);
   }
   x = 1;
 
-  memset(message_buffer,'\0',BUFSIZ * 20);
-  memset(_buffer,'\0',BUFSIZ * 5);
-  memset(buffer,'\0',BUFSIZ * 5);
+  memset(message_buffer,'\0',message_buffer_size);
+  memset(_buffer,'\0',message_buffer_size);
+  memset(buffer,'\0',message_buffer_size);
 
-  if ((len = read(*fid,_buffer,BUFSIZ * 5)) == 0) {
+  if ((len = read(*fid,_buffer,message_buffer_size)) == 0) {
     XtRemoveInput(OptionId);
     OptionId = 0;
     fprintf(stderr, "option command died!\n");
@@ -256,6 +257,7 @@ static void CheckOption(Widget w, int *fid, XtInputId * id)
 
 #ifdef EXT_FILTER
 
+  len = 0;
   strcpy(t_filename, tempnam(Tmp_dir, "xhtmp"));
   if ((t_file = fopen(t_filename, "w")) == NULL) {
     fprintf(stderr, "can't open temporary file,%s\n", t_filename);
@@ -271,6 +273,7 @@ static void CheckOption(Widget w, int *fid, XtInputId * id)
 
     while((fgets(d_buffer, BUFSIZ * 5, in)) != NULL){
       strcat(buffer,d_buffer);
+      if((len += strlen(d_buffer)) >= message_buffer_size) break;
     }
     pclose(in);
     unlink(t_filename);
@@ -281,6 +284,15 @@ static void CheckOption(Widget w, int *fid, XtInputId * id)
 #endif
 
   /* here is script decoder .. */
+
+#ifdef DEBUG
+  printf("#%s\n",buffer);
+#endif
+
+  while((chr_ptr = strstr(buffer,"\\n")) != NULL)
+    strcpy(chr_ptr,chr_ptr +2);
+
+  /* surface changer */
 
   while((chr_ptr = strstr(buffer,"(Surface:")) != NULL){
     if(*(chr_ptr - 2) == 'a')
@@ -300,27 +312,6 @@ static void CheckOption(Widget w, int *fid, XtInputId * id)
     strcpy(strstr(buffer,"(Surface:"),_buffer);
   }
 
-  /*
-  if(strstr(buffer,"sakura(Surface:"))
-    sakura = 1;
-  else 
-    sakura = 0;
-
-  if((chr_ptr = strchr(buffer,'(')) != NULL){
-    if(!strncasecmp(chr_ptr + 1,"Surface:",strlen("Surface:"))){
-      chr_ptr += strlen("(Surface:");
-      next_ptr = chr_ptr;
-      while(isdigit((unsigned char)(*next_ptr))) next_ptr++;
-      strncpy(str_num,chr_ptr,next_ptr - chr_ptr);
-
-      cg_num = atoi(str_num);
-      chr_ptr = strchr(buffer,')') + 1;
-      strcpy(_buffer,chr_ptr);
-      strcpy(strchr(buffer,'('),_buffer);
-    }
-  }
-  */
-
   chr_ptr = buffer;
   ChangeBadKanjiCode(buffer);
 
@@ -332,14 +323,21 @@ static void CheckOption(Widget w, int *fid, XtInputId * id)
   XtVaGetValues(label, XtNfontSet, &fset, XtNwidth,&width,NULL);
   XmbTextExtents(fset, "a", 1, &ink, &log);
 
+
   SakuraParser(chr_ptr);
 
   max_len = width / log.width - 2;
   chr_length = strlen(chr_ptr);
+
+  memset(message_buffer,'\0',message_buffer_size);
+  len = 0;
+
   /*
-  printf("#%s\n",chr_ptr);
+    insert '\n' into lineend
+    (with check EUC kanji code)
   */
-  memset(message_buffer,'\0',BUFSIZ * 20);
+
+
   for(pos = 0;pos < chr_length;pos++){
     unsigned char first_byte;
 
@@ -351,6 +349,7 @@ static void CheckOption(Widget w, int *fid, XtInputId * id)
     if(chr_ptr[pos] == '\n'){
       if(pos > 0){
 	strncat(message_buffer,chr_ptr, pos);
+	if((len += pos) >= message_buffer_size) break;
 	chr_ptr += pos;
 	chr_length -= pos;
 	chr_length--;
@@ -358,11 +357,14 @@ static void CheckOption(Widget w, int *fid, XtInputId * id)
 	chr_ptr++;
 	chr_length--;
 	strcat(message_buffer,"\n");
+	if((len ++) >= message_buffer_size) break;
       }
       pos = -1;
     } else if(pos >= max_len){
       strncat(message_buffer,chr_ptr, pos);
+      if((len += pos) >= message_buffer_size) break;
       strcat(message_buffer,"\n");
+      if((len ++) >= message_buffer_size) break;
       chr_ptr += pos;
       chr_length -= pos;
       pos = -1;
@@ -372,10 +374,25 @@ static void CheckOption(Widget w, int *fid, XtInputId * id)
 	pos--;
     }
   }
-  strcat(message_buffer,chr_ptr);
-  /*
+
+  strncat(message_buffer,chr_ptr,MIN(message_buffer_size,strlen(chr_ptr)));
+
+  if(message_buffer[strlen(message_buffer) - 1] != '\n'){
+    if(strlen(message_buffer) >= message_buffer_size){
+      message_buffer[strlen(message_buffer) - 1] = '\n';
+    } else {
+      strcat(message_buffer,"\n");
+    }
+  }
+#ifdef DEBUG
   printf("*%s\n",message_buffer);
+#endif
+
+
+  /*
+    insert message into window
   */
+
   current = XawTextGetInsertionPoint(label);
   last = XawTextSourceScan (XawTextGetSource (label),(XawTextPosition) 0,
 			    XawstAll, XawsdRight, 1, TRUE);
@@ -391,7 +408,9 @@ static void CheckOption(Widget w, int *fid, XtInputId * id)
     XawTextSetInsertionPoint(label
 			     , last + textblock.length);
 
-  XtPopup(XtParent(local_option), XtGrabNone);
+  if(strlen(message_buffer) > 0)
+     XtPopup(XtParent(local_option), XtGrabNone);
+
   if(sakura && cg_num != -1)
     XtVaSetValues(xhisho,XtNforceCG,True,XtNcgNumber,cg_num,NULL);
 
@@ -405,11 +424,6 @@ static void CheckOption(Widget w, int *fid, XtInputId * id)
 				      , (XtTimerCallbackProc) Destroy
 				      , NULL);
   }
-  /*
-  free(buffer);
-  free(_buffer);
-  free(message_buffer);
-  */
 }
 
 static int Option_exit(Display * disp)
@@ -423,6 +437,10 @@ static int Option_exit(Display * disp)
 
 void SakuraParser(char* in)
 {
+  /*
+    parse random scripts
+  */
+
   char* in_buffer;
   char* tmp_buffer;
   char* tmp_string;
@@ -463,6 +481,11 @@ void SakuraParser(char* in)
       
 static char* or2string(char* in)
 {
+  /*
+    translate OR-string to string
+    '(aa|bb)' -> 'aa' in 50%, 'bb' in 50%
+  */
+
   char* out;
   char* buffer;
   char* chr_ptr;
@@ -510,6 +533,10 @@ static char* or2string(char* in)
 }
 
 static char* nstrncpy(char* dst, const char* src, size_t n){
+  /*
+    strncpy, but not '\n'
+  */
+
   if (n != 0) {
     register char *d = dst;
     register const char *s = src;
@@ -560,6 +587,11 @@ static void messageStack_push(messageStack** t,char* s)
 
 static void ChangeBadKanjiCode(char *source)
 {
+  /*
+    change some bad EUC kanji code to '#'
+    (because of outputs of Sakura is SJIS kanji code,
+     some of them include bad kanji codes... sigh.)
+  */
     int i,chnum = 0;
     unsigned char tmp[4];
     unsigned char first_byte, second_byte;

@@ -88,6 +88,14 @@ XHisho.MailAlert.newMailSound: XHISHODIR/newmail.wav
 !XHisho*extSoundCommand: cat %s > /dev/audio
 
 !!
+!! 任意用ウインドウのリソース
+!!
+
+XHisho*optionTimeout: 5
+XHisho*optionWidth:200
+XHisho*optionHeight:300
+
+!!
 !!About XHisho
 !!
 
@@ -99,4 +107,3 @@ Copyright(c) 1998-2001  木村健一郎<Ken'ichirou Kimura>\n\
 \n\
 XHishoはあなたのデスクトップに常駐する秘書さんです。\n\
 Biffやスケジューラとして使ってください。
-
