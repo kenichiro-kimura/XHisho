@@ -745,7 +745,8 @@ static void InsertMessage(XtPointer cl,XtIntervalId* id)
       }
       break;
     default:
-      is_display = 1;
+      if(strncmp(chr_ptr,"\r\n",2) != 0)
+	is_display = 1;
     }
 
     if(is_display){
@@ -757,13 +758,13 @@ static void InsertMessage(XtPointer cl,XtIntervalId* id)
       }
 
 #ifdef USE_KAWARI
-      if(KAWARITimeoutId){
+      if(KAWARITimeoutId && !is_end){
 	XtRemoveTimeOut(KAWARITimeoutId);
 	KAWARITimeoutId = 0;
       }
 #endif
 
-      if(OptionTimeoutId){
+      if(OptionTimeoutId && !is_end){
 	XtRemoveTimeOut(OptionTimeoutId);
 	OptionTimeoutId = 0;
       }
