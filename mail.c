@@ -242,8 +242,8 @@ int CheckMail(XtPointer cl, XtIntervalId * id)
 
   NewSize = (stat(m_filename, &MailStat) == 0) ? MailStat.st_size : 0;
 
-  buf = (char*)malloc(mar.from_maxlen * mar.mail_lines + 1);
-  memset(buf, '\0', mar.from_maxlen * mar.mail_lines + 1);
+  buf = (char*)malloc(BUFSIZ);
+  memset(buf, '\0', BUFSIZ);
   tmp = (char*)malloc(BUFSIZ);
   message = (char*)malloc(BUFSIZ);
 
@@ -310,8 +310,8 @@ int CheckPOP3(XtPointer cl, XtIntervalId * id)
   char *message;
   char *tmp;
 
-  buf = malloc(mar.from_maxlen * mar.mail_lines + 1);
-  memset(buf, '\0', mar.from_maxlen * mar.mail_lines + 1);
+  buf = (char*)malloc(BUFSIZ);
+  memset(buf, '\0', BUFSIZ);
   message = (char*)malloc(BUFSIZ);
   tmp = (char*)malloc(BUFSIZ);
   memset(tmp, '\0', BUFSIZ);
@@ -376,7 +376,6 @@ int CheckYoubinNow(XtPointer cl, XtIntervalId * id){
 
   }
 
-
   ReadRcdata("newmail",tmp,BUFSIZ);
   if(*tmp == '\0')
     sprintf(message,mar.mail_l,num_of_mail);
@@ -411,15 +410,6 @@ int CheckYoubinNow(XtPointer cl, XtIntervalId * id){
     break;
   }
 
-  if(MailCheckId){
-    XtRemoveTimeOut(MailCheckId);
-    MailTimeoutId = 0;
-  }
-    
-  MailCheckId = XtAppAddTimeOut(XtWidgetToApplicationContext(local_mail[0])
-				,MailCheckInterval
-				, (XtTimerCallbackProc) CheckYoubinNow
-				, (XtPointer) local_mail[0]);
   free(tmp);
   free(message);
   return i;
@@ -604,7 +594,6 @@ Widget CreateMailAlert(Widget w, int Mode)
     switch (Biff) {
     case YOUBIN:
       YoubinInit();
-      CheckYoubinNow((XtPointer) (w), (XtIntervalId) NULL);
       XSetIOErrorHandler(Youbin_exit);	/** child process ¤Î youbin ¤ò»¦¤¹ **/
       break;
     case POP:
@@ -637,11 +626,11 @@ static void GetFromandSubject(char *m_file, char *From)
 #endif				/** PETNAME **/
 
   *From = '\0';
-  tmp2 = malloc(mar.from_maxlen + 2);
-  tmp1 = malloc(mar.from_maxlen + 1);
+  tmp2 = malloc(BUFSIZ);
+  tmp1 = malloc(BUFSIZ);
 
-  memset(tmp1, '\0', mar.from_maxlen + 1);
-  memset(tmp2, '\0', mar.from_maxlen + 2);
+  memset(tmp1, '\0', BUFSIZ);
+  memset(tmp2, '\0', BUFSIZ);
   buf = malloc(BUFSIZ);
   head1 = malloc(BUFSIZ);
   head2 = malloc(BUFSIZ);
@@ -809,11 +798,11 @@ static void CheckYoubin(Widget w, int *fid, XtInputId * id)
 #endif
 
 
-  From = malloc(mar.from_maxlen * mar.mail_lines + 1);
-  memset(From, '\0', mar.from_maxlen * mar.mail_lines + 1);
+  From = malloc(BUFSIZ);
+  memset(From, '\0', BUFSIZ);
 
-  tmp2 = malloc(mar.from_maxlen + 1);
-  memset(tmp2, '\0', mar.from_maxlen + 1);
+  tmp2 = malloc(BUFSIZ);
+  memset(tmp2, '\0', BUFSIZ);
 
   buf = malloc(BUFSIZ);
   memset(buf, '\0', BUFSIZ);
@@ -896,23 +885,23 @@ static void CheckYoubin(Widget w, int *fid, XtInputId * id)
       strcpy(t_filename, tempnam(Tmp_dir, "xhtmp"));
       if ((t_file = fopen(t_filename, "w")) == NULL) {
 	fprintf(stderr, "can't open temporary file,%s\n", t_filename);
-	exit(1);
-      }
-      fprintf(t_file, "%s\n", tmp1);
-      fclose(t_file);
+      } else {
+	fprintf(t_file, "%s\n", tmp1);
+	fclose(t_file);
 
-      sprintf(command, "%s %s", FilterCommand, t_filename);
-      if ((in = popen(command, "r")) == NULL) {
-	fprintf(stderr, "no such filter command:%s\n", command);
-	exit(1);
+	sprintf(command, "%s %s", FilterCommand, t_filename);
+	if ((in = popen(command, "r")) == NULL) {
+	  fprintf(stderr, "no such filter command:%s\n", command);
+	  exit(1);
+	}
+	if (*tmp2 == '\0') {
+	  fgets(tmp2, mar.from_maxlen + 1, in);
+	}
+	pclose(in);
+	unlink(t_filename);
       }
-      if (*tmp2 == '\0') {
-	fgets(tmp2, mar.from_maxlen + 1, in);
-      }
-      pclose(in);
-      unlink(t_filename);
 #else
-      strcpy(tmp2, tmp1);
+	strcpy(tmp2, tmp1);
 #endif
 
       length = MIN(mar.from_maxlen, strlen(tmp2));

@@ -181,19 +181,18 @@ int CheckSchedule(OpenMessageRes * l_omr, Schedule * schedule, int WeeklyCheck, 
 #ifdef EXT_FILTER
       if ((t_file = fopen(t_filename, "w")) == NULL) {
 	fprintf(stderr, "can't open temporary file,%s\n", t_filename);
-	perror("popen");
-	exit(1);
+      } else {
+	fprintf(t_file, "%s\n", ent_ptr->Entry[X_SC_Subject]);
+	fclose(t_file);
+
+	sprintf(command, "%s %s", FilterCommand, t_filename);
+	if((inputfile = popen(command, "r")) != NULL){
+	  fgets(tmp1, BUFSIZ, inputfile);
+
+	  pclose(inputfile);
+	}
+	unlink(t_filename);
       }
-      fprintf(t_file, "%s\n", ent_ptr->Entry[X_SC_Subject]);
-      fclose(t_file);
-
-      sprintf(command, "%s %s", FilterCommand, t_filename);
-      inputfile = popen(command, "r");
-
-      fgets(tmp1, BUFSIZ, inputfile);
-
-      pclose(inputfile);
-      unlink(t_filename);
 #else
       strncpy(tmp1, ent_ptr->Entry[X_SC_Subject],MIN(strlen(ent_ptr->Entry[X_SC_Subject],BUFSIZ)));
 #endif

@@ -469,6 +469,7 @@ static void GetFromandSubject(int sock, char *buffer)
 
   while (tmp2 && (i < mar.mail_lines)) {
     if (!strncmp(tmp2, "From:", 5) || !strncmp(tmp2, "Subject:", 8)) {
+      tmp2[strlen(tmp2) - 1] = '\0';
       strcpy(tmp3, tmp2);
 #ifdef PETNAME
       if (!strncmp(tmp2, "From:", 5)) {
@@ -493,19 +494,19 @@ static void GetFromandSubject(int sock, char *buffer)
 #ifdef EXT_FILTER
       if ((t_file = fopen(t_filename, "w")) == NULL) {
 	fprintf(stderr, "can't open temporary file,%s\n", t_filename);
-	perror("popen");
-	exit(1);
+      } else {
+	fprintf(t_file, "%s\n", tmp3);
+	fclose(t_file);
+
+	sprintf(command, "%s %s", FilterCommand, t_filename);
+	if((in = popen(command, "r")) != NULL){
+
+	  fgets(tmp, BUFSIZ, in);
+
+	  pclose(in);
+	}
+	  unlink(t_filename);
       }
-      fprintf(t_file, "%s\n", tmp3);
-      fclose(t_file);
-
-      sprintf(command, "%s %s", FilterCommand, t_filename);
-      in = popen(command, "r");
-
-      fgets(tmp, BUFSIZ, in);
-
-      pclose(in);
-      unlink(t_filename);
 #else
       strcpy(tmp, tmp3);
 #endif
