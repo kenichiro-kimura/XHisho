@@ -1,6 +1,6 @@
+#include "config.tmpl"
 #include "config.h"
 
-CC = gcc
 CDEBUGFLAGS = -g -Wall
 XCOMM CCOPTIONS = 
 
@@ -162,3 +162,4 @@ InstallNonExec(sample/Messages.akari,$(XHISHODIR)/Messages)
 #else
 InstallNonExec(sample/hisho.bmp,$(XHISHODIR))
 #endif
+

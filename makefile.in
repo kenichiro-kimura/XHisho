@@ -2,6 +2,7 @@ all: Makefile
 	make -f Makefile
 
 Makefile: makefile Imakefile config.h
+	csh -c 'echo "CC = @CC@" > config.tmpl'
 	xmkmf
 
 makefile:
