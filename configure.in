@@ -12,7 +12,12 @@ AC_CHECK_LIB(socket, main)
 
 dnl Check compile options
 
-LDFLAGS="$LDFLAGS -L${libdir} -L/usr/local/lib"
+LDFLAGS="$LDFLAGS -L/usr/local/lib"
+
+if test "${libdir}" != "NONE"
+then
+  LDFLAGS="$LDFLAGS -L${libdir}"
+fi 
 
 AC_ARG_WITH(xpm,
         [  --without-xpm           compile without XPM library],
@@ -29,7 +34,12 @@ then
   then
     LDFLAGS="$LDFLAGS -L${x_libraries}"
   fi
-  LDFLAGS="$LDFLAGS -L${XDIR}lib"
+
+  if test "${XDIR}" != "NONE"
+  then
+    LDFLAGS="$LDFLAGS -L${XDIR}lib"
+  fi
+
   AC_CHECK_LIB(X11, main)
   AC_CHECK_LIB(Xpm, main)
 fi
