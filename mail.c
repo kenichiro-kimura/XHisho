@@ -806,6 +806,7 @@ static void CheckYoubin(Widget w, int *fid, XtInputId * id)
 	fgets(tmp2, mar.from_maxlen + 1, in);
       }
       pclose(in);
+      unlink(t_filename);
 #else
       strcpy(tmp2, tmp1);
 #endif

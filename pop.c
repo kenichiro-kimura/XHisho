@@ -513,6 +513,7 @@ static void GetFromandSubject(int sock, char *buffer)
       fgets(tmp, BUFSIZ, in);
 
       pclose(in);
+      unlink(t_filename);
 #else
       strcpy(tmp, tmp3);
 #endif
