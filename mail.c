@@ -782,7 +782,7 @@ static void CheckYoubin(Widget w, int *fid, XtInputId * id)
 {
   int len;
   char *buf, *tmp1 ,*tmp, *message;
-  char *cp, *q, *From, *tmp2;
+  char *cp, *q, *From, *tmp2,*ch_ptr;
   int mail_size, length;
   static int old_mail_size = 0;
   long date;
@@ -835,23 +835,26 @@ static void CheckYoubin(Widget w, int *fid, XtInputId * id)
     goto End;
 
   while (tmp1 && i < mar.mail_lines && !(isFrom && isSubject)) {
-    if (!strncmp(tmp1, "From:", 5) || !strncmp(tmp1, "Subject:", 8)) {
+    ch_ptr = tmp1;
+    while(ch_ptr && (isdigit(*ch_ptr) || isspace(*ch_ptr)))
+	  ch_ptr++;
+    if (!strncmp(ch_ptr, "From:", 5) || !strncmp(ch_ptr, "Subject:", 8)) {
       *tmp2 = '\0';
 
-      if(*tmp1 == 'S')
+      if(*ch_ptr == 'S')
 	isSubject = 1;
 
 #ifdef PETNAME
-      if (!strncmp(tmp1, "From:", 5) && !isFrom) {
+      if (!strncmp(ch_ptr, "From:", 5) && !isFrom) {
 	isFrom = 1;
-	next_ptr = tmp1;
-	sscanf(tmp1, "%s %s", from_who, who);
+	next_ptr = ch_ptr;
+	sscanf(ch_ptr, "%s %s", from_who, who);
 
 	for (j = 0; j < strlen(from_who); j++)
 	  if (isspace(tmp1[j]))
 	    break;
 
-	strcpy(who, tmp1 + j);
+	strcpy(who, ch_ptr + j);
 	
 	if (strchr(who, '@') != NULL && strchr(who,'<') == NULL){
 	  strcpy(pname, who);
@@ -868,7 +871,7 @@ static void CheckYoubin(Widget w, int *fid, XtInputId * id)
 	    *pname = '\0';
 	  }
 	}
-	SearchPetname(tmp1, pname);
+	SearchPetname(ch_ptr, pname);
       }
 #endif
 
@@ -892,7 +895,7 @@ static void CheckYoubin(Widget w, int *fid, XtInputId * id)
 	unlink(t_filename);
       }
 #else
-	strcpy(tmp2, tmp1);
+	strcpy(tmp2, ch_ptr);
 #endif
 
       strncat(From, tmp2, MIN(mar.from_maxlen - 1, strlen(tmp2)));

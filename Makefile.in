@@ -1,22 +1,22 @@
-all: _makefile image/makefile xadl/makefile libmhc/makefile
+all: _makefile image/Makefile xadl/Makefile libmhc/Makefile
 	make -f _makefile
 
 _makefile: Imakefile config.h
 	./my_xmkmf
 	mv makefile _makefile
 
-image/makefile: config.h image/Imakefile
-	cd image;../my_xmkmf
+image/Makefile: config.h image/Imakefile
+	cd image;xmkmf
 
-xadl/makefile: config.h xadl/Imakefile
-	cd xadl;../my_xmkmf
+xadl/Makefile: config.h xadl/Imakefile
+	cd xadl;xmkmf
 
-libmhc/makefile: config.h libmhc/Imakefile
-	cd libmhc;../my_xmkmf
+libmhc/Makefile: config.h libmhc/Imakefile
+	cd libmhc;xmkmf
 
 clean:
 	make -f _makefile clean
-	rm -f _makefile */makefile
+	rm -f _makefile */Makefile
 
 install:
 	make -f _makefile install
