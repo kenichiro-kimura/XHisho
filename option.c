@@ -414,7 +414,7 @@ static void CheckOption(Widget w, int *fid, XtInputId * id)
   if(sakura && cg_num != -1)
     XtVaSetValues(xhisho,XtNforceCG,True,XtNcgNumber,cg_num,NULL);
 
-  if(is_end){
+  if(is_end && opr.timeout > 0){
     if(OptionTimeoutId){
       XtRemoveTimeOut(OptionTimeoutId);
       OptionTimeoutId = 0;
