@@ -87,7 +87,7 @@ int LoadPng(ImageInfo * i_info)
     png_get_PLTE(png_ptr, info_ptr, &palette, &num_palette);
     i_info->colorsuu = num_palette;
 
-    if(num_palette > 256){
+    if(num_palette > 256 || num_palette == -1){
       if (color_type == PNG_COLOR_TYPE_PALETTE)
 	png_set_expand(png_ptr);
       i_info->BitCount = 24;
