@@ -31,6 +31,7 @@ static void ChangeReturn(String, char *);
 static void ScheduleSort();
 static int ChangeColorPastSched();
 static void OpenPopup();
+static void texteh(Widget ,XtPointer , XEvent *, Boolean *);
 
 /**
  * resources
@@ -261,6 +262,31 @@ static void Dismiss(Widget w, caddr_t client_data, caddr_t call_data)
   }
 }
 
+static void texteh(Widget w, XtPointer p, XEvent *ev, Boolean *cont)
+{
+  Window win;
+  int r;
+
+  switch (ev->type) {
+  case EnterNotify:
+    if ( ev->xcrossing.detail==NotifyInferior ) break;
+    XSetInputFocus( XtDisplay(w),XtWindow(w)
+		    ,RevertToPointerRoot,CurrentTime );
+    break;
+  case LeaveNotify:
+    if ( ev->xcrossing.detail==NotifyInferior ) break;
+    XGrabServer( XtDisplay(w) );
+    XGetInputFocus( XtDisplay(w),&win,&r );
+    if ( win==XtWindow(w) )
+      {
+	XSetInputFocus( XtDisplay(w),PointerRoot
+			,RevertToPointerRoot,CurrentTime );
+      }
+    XUngrabServer( XtDisplay(w) );
+    break;
+  default: break;
+  }
+}
 
 
 
@@ -371,7 +397,7 @@ Widget CreateEditorWindow(Widget w, int Mode, struct tm tm_now)
    * toplevel Widgetの生成
    **/
 
-  top = XtCreatePopupShell("OpenMessage", transientShellWidgetClass
+  top = XtCreatePopupShell("OpenMessage", overrideShellWidgetClass
 			   ,w, editargs, XtNumber(editargs));
 
   XtGetApplicationResources(top, &omr, resources, XtNumber(resources), NULL, 0);
@@ -631,6 +657,9 @@ Widget CreateEditorWindow(Widget w, int Mode, struct tm tm_now)
       day[j] = XtCreateManagedWidget("day", asciiTextWidgetClass, editor
 				     ,dargs, XtNumber(dargs));
 
+      XtAddEventHandler(day[j], (EnterWindowMask | LeaveWindowMask),
+			False, texteh, NULL);
+
       /**
        * 開始時間とスケジュールの間にはいるlabelWidgetを作る
        **/
@@ -684,6 +713,9 @@ Widget CreateEditorWindow(Widget w, int Mode, struct tm tm_now)
       XtVaSetValues(editlist[j], XtNwrap, XawtextWrapNever, XtNscrollHorizontal
 		    ,XawtextScrollAlways, XtNthickness,2,NULL);
 
+      XtAddEventHandler(editlist[j], (EnterWindowMask | LeaveWindowMask),
+			False, texteh, NULL);
+
       /**
        * leave time 入力用 textWidgetの作成
        **/
@@ -718,6 +750,9 @@ Widget CreateEditorWindow(Widget w, int Mode, struct tm tm_now)
 
       leave_t[j] = XtCreateManagedWidget("leave", asciiTextWidgetClass, editor
 					 ,dargs, XtNumber(dargs));
+
+      XtAddEventHandler(leave_t[j], (EnterWindowMask | LeaveWindowMask),
+			False, texteh, NULL);
     }
   }
   /**
