@@ -8,7 +8,7 @@
 XHisho is your private secretary on X Window System. It works as
 biff,scheduler, and so on.
 
-You can custom every message,CG,etc.
+You can customize every message, CG, etc.
 
 *)The word 'Hisho' means 'private secretary' in Japanese.
 
@@ -17,8 +17,8 @@ You can custom every message,CG,etc.
 
  (1) As accessory clock
  (2) As biff. You can use POP3 and Youbin.
- (3) As scheduler. XHisho notice your today's schedule.
- (4) As "leave" command. XHisho notice schedule before some min.
+ (3) As scheduler. XHisho lets you know your today's schedule.
+ (4) As "leave" command. XHisho tells schedule before some minutes.
 
 
 3.How to install
@@ -63,12 +63,12 @@ You can custom every message,CG,etc.
   * Click 2 button,open/close today's schedule.
   * Click 3 button,check your mail box/close mail window.
 
-If you want to use POP(or APOP),create ~/.pop_password.
+Create ~/.pop_password if you want to use POP(or APOP).
 ~/.pop_password has following lines.
 
 USER:your name
 PASS:your password or APOP pass phrase
 
-and,change permission.
+and, change permission.
 
 %chmod 700 ~/.pop_password
