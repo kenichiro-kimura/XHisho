@@ -72,11 +72,12 @@ Widget CreateOptionWindow(Widget w){
 				  ,local_option
 				  ,XtNvertDistance,10
 				  ,XtNhorizDistance, POINT_WIDTH + LABEL_OFFSET
-				  ,XtNborderWidth,1
+				  ,XtNborderWidth,0
 				  ,XtNwidth,opr.width
 				  ,XtNheight,opr.height
 				  ,XtNleft,XtChainLeft
 				  ,XtNright,XtChainRight
+				  ,XtNdisplayCaret,False
 				  ,XtNsensitive,True
 				  ,XtNjustify,XtJustifyLeft
 				  /*
@@ -151,6 +152,7 @@ static void CheckOption(Widget w, int *fid, XtInputId * id)
   XRectangle ink, log;
   int max_len;
   Dimension width;
+  int chr_length,dword,pos,mpos;
 #ifdef EXT_FILTER
   char command[128];
   char t_filename[BUFSIZ];
@@ -245,7 +247,7 @@ static void CheckOption(Widget w, int *fid, XtInputId * id)
    * fontの大きさを取得し、表示領域の大きさを決める
    **/
 
-  XtVaGetValues(label, XtNfontSet, &fset, NULL);
+  XtVaGetValues(label, XtNfontSet, &fset, XtNwidth,&width,NULL);
   XmbTextExtents(fset, "a", 1, &ink, &log);
   /*
   width = log.width;
@@ -253,8 +255,24 @@ static void CheckOption(Widget w, int *fid, XtInputId * id)
   height += 20;
   */
 
+  max_len = width / log.width - 4;
+  chr_length = strlen(chr_ptr);
+
+  for(dword = pos = 0;pos < chr_length;pos++){
+    if(((signed char)chr_ptr[pos]) < 0) dword ++;
+    if(pos > max_len && dword % 2 == 0){
+      strncat(message_buffer,chr_ptr, pos + 1);
+      strcat(message_buffer,"\n");
+      chr_ptr += pos + 1;
+      chr_length = strlen(chr_ptr);
+      pos = dword = 0;
+    }
+  }
+
   strcat(message_buffer,chr_ptr);
-  max_len = 0;
+  printf("%s\n",message_buffer);
+
+  /*
   chr_ptr = strtok(message_buffer,"\n");
   if(chr_ptr == NULL) max_len = strlen(message_buffer);
 
@@ -269,8 +287,10 @@ static void CheckOption(Widget w, int *fid, XtInputId * id)
 
     chr_ptr = next_ptr;
   }
+
   printf("%d\n", max_len * log.width);
   width = max_len * log.width;
+  */
 
   XtVaSetValues(label
 		,XtNstring,message_buffer
@@ -280,8 +300,9 @@ static void CheckOption(Widget w, int *fid, XtInputId * id)
 
   XtPopup(XtParent(local_option), XtGrabNone);
 
-  if(is_end)
-    message_buffer[0] = '\0';
+  if(is_end){
+    memset(message_buffer,'\0',BUFSIZ * 20);
+  }
 }
 
 static int Option_exit(Display * disp)
