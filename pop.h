@@ -26,7 +26,7 @@ enum {
 
 typedef struct _UserData {
   /**
-   * user data for POP Authorization
+   * user data for POP Authentication
    **/
   char name[128];
   char pass[256];

@@ -228,7 +228,7 @@ int pop3(AuthMethod method, char *server, char *From)
   }
 
   /**
-   * Authorization
+   * Authentication
    **/
 
   switch (method) {
