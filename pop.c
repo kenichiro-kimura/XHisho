@@ -488,8 +488,11 @@ static void GetFromandSubject(int sock, char *buffer)
 	} else {
 	  if (!strchr(tmp2, '<'))
 	    tmp2 = strtok(NULL, "\n");
-	  if (strchr(tmp2, '<') && strchr(tmp2, '>'))
+	  if (strchr(tmp2, '<') && strchr(tmp2, '>')){
 	    strcpy(pname, strtok(strchr(tmp2, '<') + 1, ">"));
+	  } else {
+	    pname[0] = '\0';
+	  }
 	}
 	SearchPetname(tmp3, pname);
       }

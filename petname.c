@@ -350,6 +350,8 @@ void SearchPetname(char *ret_value, char *pname)
   PetnameList *plist;
   int hashed;
 
+  if(pname[0] == '\0') return;
+
   hashed = StrHash(pname);
   plist = Petname[hashed];
 
@@ -360,7 +362,6 @@ void SearchPetname(char *ret_value, char *pname)
     }
     plist = plist->next;
   }
-
 
   return;
 }

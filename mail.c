@@ -626,8 +626,11 @@ static void GetFromandSubject(char *m_file, char *From)
 	  } else {
 	    if (!strchr(buf, '<'))
 	      fgets(buf, BUFSIZ, fp);
-	    if (strchr(buf, '<') && strchr(buf, '>'))
+	    if (strchr(buf, '<') && strchr(buf, '>')){
 	      strcpy(pname, strtok(strchr(buf, '<') + 1, ">"));
+	    } else {
+	      pname[0] = '\0';
+	    }
 	  }
 	  SearchPetname(tmp1, pname);
 	  length = MIN(strlen(tmp1), mar.from_maxlen);
@@ -773,8 +776,11 @@ static void CheckYoubin(Widget w, int *fid, XtInputId * id)
 	    next_ptr = strtok(NULL, "\n");
 	  left_ptr = strchr(next_ptr, '<');
 	  right_ptr = strchr(next_ptr, '>');
-	  if (left_ptr != NULL && right_ptr != NULL)
+	  if (left_ptr != NULL && right_ptr != NULL){
 	    strcpy(pname, strtok(left_ptr + 1, ">"));
+	  } else {
+	    pname[0] = '\0';
+	  }
 	}
 	SearchPetname(tmp2, pname);
       }
