@@ -30,17 +30,17 @@ ac_help="$ac_help
 ac_help="$ac_help
   --enable-akari          for XAkari :-)"
 ac_help="$ac_help
-  --with-libmhc       use libmhc"
+  --enable-libmhc         use libmhc"
 ac_help="$ac_help
   --without-xadl          compile without XADL "
 ac_help="$ac_help
-  --without-option          compile without 'Something except that with option' "
+  --with-option           compile with 'Something except that with option' "
 ac_help="$ac_help
-  --with-shared          compile with shared library(image,mhc)"
+  --with-kawari           compile with KAWARI module"
 ac_help="$ac_help
-  --with-kawari          compile with KAWARI module"
+  --enable-mayura         for Mayura :-) (is equal to --with-option --with-kawari)"
 ac_help="$ac_help
-  --enable-mayura          for Mayura :-) (is equal to --with-option --with-kawari)"
+  --enable-shared         compile with shared library(image,mhc)"
 
 # Initialize some variables set by options.
 # The variables have the same names as the options, with
@@ -1640,19 +1640,6 @@ test "$with_option" = "yes" && cat >> confdefs.h <<\EOF
 EOF
 
 
-# Check whether --with-shared or --without-shared was given.
-if test "${with_shared+set}" = set; then
-  withval="$with_shared"
-  with_shared=$withval
-else
-  with_shared=no
-fi
-
-test "$with_shared" = "yes" && cat >> confdefs.h <<\EOF
-#define USE_SHARED 1
-EOF
-
-
 # Check whether --with-kawari or --without-kawari was given.
 if test "${with_kawari+set}" = set; then
   withval="$with_kawari"
@@ -1685,6 +1672,19 @@ EOF
 EOF
 
 fi
+
+# Check whether --with-shared or --without-shared was given.
+if test "${with_shared+set}" = set; then
+  withval="$with_shared"
+  with_shared=$enableval
+else
+  with_shared=no
+fi
+
+test "$with_shared" = "yes" && cat >> confdefs.h <<\EOF
+#define USE_SHARED 1
+EOF
+
 
 trap '' 1 2 15
 cat > confcache <<\EOF

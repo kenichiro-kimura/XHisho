@@ -118,7 +118,7 @@ AC_ARG_ENABLE(akari,
 test "$with_akari" = "yes" && AC_DEFINE(AKARI)
 
 AC_ARG_WITH(libmhc,
-        [  --with-libmhc       use libmhc],
+        [  --enable-libmhc         use libmhc],
         [with_libmhc=$enableval],
         [with_libmhc=no])
 test "$with_libmhc" = "yes" && AC_DEFINE(LIBMHC)
@@ -130,25 +130,19 @@ AC_ARG_WITH(xadl,
 test "$with_xadl" = "yes" && AC_DEFINE(XADL)
 
 AC_ARG_WITH(option,
-        [  --without-option          compile without 'Something except that with option' ],
+        [  --with-option           compile with 'Something except that with option' ],
         [with_option=$withval],
         [with_option=no])
 test "$with_option" = "yes" && AC_DEFINE(OPTION)
 
-AC_ARG_WITH(shared,
-        [  --with-shared          compile with shared library(image,mhc)],
-        [with_shared=$withval],
-        [with_shared=no])
-test "$with_shared" = "yes" && AC_DEFINE(USE_SHARED)
-
 AC_ARG_WITH(kawari,
-        [  --with-kawari          compile with KAWARI module],
+        [  --with-kawari           compile with KAWARI module],
         [with_kawari=$withval],
         [with_kawari=no])
 test "$with_kawari" = "yes" && AC_DEFINE(USE_KAWARI)
 
 AC_ARG_ENABLE(mayura,
-        [  --enable-mayura          for Mayura :-) (is equal to --with-option --with-kawari)],
+        [  --enable-mayura         for Mayura :-) (is equal to --with-option --with-kawari)],
         [with_mayura=$enableval],
         [with_mayura=no])
 if test "$with_mayura" = "yes";
@@ -156,5 +150,11 @@ then
 	AC_DEFINE(OPTION)
 	AC_DEFINE(USE_KAWARI)
 fi
+
+AC_ARG_WITH(shared,
+        [  --enable-shared         compile with shared library(image,mhc)],
+        [with_shared=$enableval],
+        [with_shared=no])
+test "$with_shared" = "yes" && AC_DEFINE(USE_SHARED)
 
 AC_OUTPUT(Makefile apps/Makefile Imakefile image/Imakefile xadl/Imakefile libmhc/Imakefile kawari/Makefile)

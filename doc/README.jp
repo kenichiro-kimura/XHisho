@@ -148,8 +148,8 @@ MHC$B$N%G!<%?$r;H$&$3$H$b$G$-$^$9!#$3$N>l9g!"(BXHisho$B$+$i%(%G%#%C%H$O=PMh(
                          $B%k$7$^$;$s(B
 $B!&(B--disable-ext_filter : $B30It%U%#%k%?$r;H$$$^$;$s(B
 $B!&(B--disable-petname    : Petname$B$r;H$$$^$;$s(B
-$B!&(B--with-libmhc        : MHC$B$N%G!<%?$r;H$$$^$9(B
-$B!&(B--with-shared        : $B%i%$%V%i%j$r(Bshared library$B$H$7$F%$%s%9%H!<%k(B
+$B!&(B--enable-libmhc      : MHC$B$N%G!<%?$r;H$$$^$9(B
+$B!&(B--enable-shared      : $B%i%$%V%i%j$r(Bshared library$B$H$7$F%$%s%9%H!<%k(B
                          $B$7$^$9(B
 $B!&(B--with-option        : $B!V$"$l0J30$N2?$+(Bwith$BG$0U!WBP1~(B
 $B!&(B--with-kawari        : $B!V$"$l0J30$N2?$+(Bwith$BG$0U!W$N%b%8%e!<%k$H$7$F(B
@@ -198,7 +198,7 @@ JPEG$B%i%$%V%i%j$d(BPNG$B%i%$%V%i%j$,$&$^$/8+$D$+$i$J$$$H$-$O!"(Bconfigure$
 
 $B!V(B--enable-abook$B!W$H$9$k$H(BMew$B$N%"%I%l%9D"$r;H$&$3$H$b$G$-$^$9!#(B
 
-$B!V(B--with-libmhc$B!W$H$9$k$H(BMHC$B$N%G!<%?$r;H$&$3$H$,$G$-$^$9!#(B
+$B!V(B--enable-libmhc$B!W$H$9$k$H(BMHC$B$N%G!<%?$r;H$&$3$H$,$G$-$^$9!#(B
 
 $B!V(B--with-shared$B!W$H$9$k$H!"%i%$%V%i%j$r(Bshared library$B$H$7$F%$%s%9%H!<(B
 $B%k$7$^$9!#(B
@@ -591,6 +591,8 @@ special thanks to...
 13.To do $B!A=IBj5Z$S(BVer.2$B$G$NLnK>!A(B
 
 $B!&3F<o5!G=$N%b%8%e!<%k2=!#(BXHisho$B$O>r7o$K9g$o$;$F$U$-$@$7$r=P$9$@$1$K$7(B
-  $B$F$7$^$&(B
+  $B$F$7$^$&(B("$BG$0U(B"$BBP1~$O$=$NBh0lJb(B)
 $B!&(BXHisho server$B2=!#(BWeb$B$d(Bi-mode$B$H$NO"7H!"J#?t4D6-$G$N%9%1%8%e!<%k$N6&M-$J$I(B
-$B!&M=Dj$N>\:Y>pJs$NI=<(!#(BMHC$B$G8@$($P(Bbody$B$NItJ,!#(B
+$B!&M=Dj$N>\:Y>pJs$NI=<(!#(BMHC$B$G8@$($P(Bbody$B$NItJ,!#<+A0$NM=Dj%(%G%#%C%?$b(B
+  $B$b$&$A$g$$%^%7$J$b$N$K$7$?$$(B
+
