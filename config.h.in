@@ -18,6 +18,9 @@
 /* Define for XAkari :-) */
 #undef AKARI
 
+/* Define PREFIX */
+#undef PREF
+
 /* Define if you have the X11 library (-lX11).  */
 #undef HAVE_LIBX11
 

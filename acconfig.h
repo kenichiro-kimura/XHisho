@@ -15,3 +15,6 @@
 
 /* Define for XAkari :-) */
 #undef AKARI
+
+/* Define PREFIX */
+#undef PREF

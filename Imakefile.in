@@ -2,6 +2,7 @@
 
 CC = @CC@
 CCOPTIONS = @CFLAGS@ @LDFLAGS@
+PREFIX = @prefix@
 XCOMM CDEBUGFLAGS = -g -Wall -DDEBUG
 YOUR_NAME = 浩之
 
@@ -16,6 +17,13 @@ LOCALEDIR = $(LIBDIR)/$(LANG)/app-defaults
 BINDIR	= $(HOME)/bin
 XHISHODIR = $(HOME)/xhisho
 LOCALEDIR = $(HOME)/$(LANG)/app-defaults
+#endif
+
+#ifdef PREF
+BINDIR	= $(PREFIX)/bin
+XHISHODIR = $(PREFIX)/xhisho
+XAPPLOADDIR = $(PREFIX)/app-defaults
+LOCALEDIR = $(PREFIX)/$(LANG)/app-defaults
 #endif
 
 #ifdef EXT_FILTER
@@ -42,7 +50,7 @@ STD_INCLUDES = -I$(IMAGELIBDIR) -I/usr/local/include
 EXTRA_LDOPTIONS = -L/usr/local/lib
 
 #define IHaveSubdirs
-SUBDIRS = $(IMAGELIBDIR)
+SUBDIRS = $(IMAGELIBDIR) xadl
 #define PassCDebugFlags
 
 MakeSubdirs($(SUBDIRS))
@@ -66,8 +74,6 @@ ComplexProgramTarget(xakari)
 #else
 ComplexProgramTarget(xhisho)
 #endif
-
-ComplexProgramTarget(xadl/xadl)
 
 #ifdef I18N
 all:: XHisho.ad XHisho.jp

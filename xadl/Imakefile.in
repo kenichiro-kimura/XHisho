@@ -1,0 +1,41 @@
+#include "../config.h"
+CC = @CC@
+CCOPTIONS = @CFLAGS@ @LDFLAGS@
+PREFIX = @prefix@
+
+#DEBUG_FLAGS = -g -DDEBUG
+
+#ifdef PERSONAL
+BINDIR	= $(HOME)/bin
+XHISHODIR = $(HOME)/xhisho
+LOCALEDIR = $(HOME)/$(LANG)/app-defaults
+#endif
+
+#ifdef PREF
+BINDIR	= $(PREFIX)/bin
+XHISHODIR = $(PREFIX)/xhisho
+XAPPLOADDIR = $(PREFIX)/app-defaults
+LOCALEDIR = $(PREFIX)/$(LANG)/app-defaults
+#endif
+
+InstallProgram(xadl,$(BINDIR))
+
+all:: xadl
+
+xadl: y.tab.o lex.yy.o
+	@CC@ @CFLAGS@ $(DEBUG_FLAGS) -o xadl y.tab.o lex.yy.o -ll -ly 
+
+lex.yy.o: lex.yy.c 
+	@CC@ -c @CFLAGS@ lex.yy.c
+
+y.tab.o: y.tab.c
+	@CC@ -c @CFLAGS@ y.tab.c
+
+lex.yy.c: xadl.l y.tab.h
+	@LEX@ xadl.l
+
+y.tab.h y.tab.c: xadl.y
+	@YACC@ -d xadl.y
+
+clean::
+	rm -f *.o y.tab.[ch] lex.yy.[ch] xadl

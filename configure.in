@@ -6,6 +6,9 @@ AC_PROG_CC
 AC_PROG_INSTALL
 AC_PROG_LEX
 AC_PROG_YACC
+AC_SUBST(prefix)
+AC_SUBST(exec_prefix)
+AC_SUBST(bindir)
 
 dnl Replace `main' with a function in -lxpg4,-nsl,-lsocket:
 AC_CHECK_LIB(xpg4, main)
@@ -13,6 +16,11 @@ AC_CHECK_LIB(nsl, main)
 AC_CHECK_LIB(socket, main)
 
 dnl Check compile options
+
+if test "$prefix" != "NONE" 
+   then PR="PREFIX=$prefix"
+   AC_DEFINE(PREF)
+fi
 
 LDFLAGS="$LDFLAGS -L/usr/local/lib"
 
@@ -45,7 +53,6 @@ then
   AC_CHECK_LIB(X11, main)
   AC_CHECK_LIB(Xpm, main)
 fi
-
 
 AC_ARG_WITH(jpeg,
         [  --without-jpeg          compile without JPEG library],
@@ -108,4 +115,4 @@ test "$with_akari" = "yes" && AC_DEFINE(AKARI)
 
 
 
-AC_OUTPUT(makefile apps/Makefile Imakefile image/Imakefile xadl/Makefile)
+AC_OUTPUT(makefile apps/Makefile Imakefile image/Imakefile xadl/Imakefile)
