@@ -1,7 +1,7 @@
 #include "openwin.h"
 #include "Msgwin.h"
 #include "globaldefs.h"
-
+#include "config.h"
 
 /**
  * local variable
@@ -1138,7 +1138,7 @@ void CheckTimeForSchedule(XtPointer cl, XtIntervalId * id)
 {
   time_t now;
   struct tm *tmp;
-  int i, check = 1;
+  int i, check = 1, pid, status;
 
   if (LeaveWindowID) {
     XtRemoveTimeOut(LeaveWindowID);
@@ -1183,9 +1183,15 @@ void CheckTimeForSchedule(XtPointer cl, XtIntervalId * id)
       OpenWindowShown = 1;
 
       if (omr.sound_f && UseSound) {
-	if (0 == fork()) {
+	if ((pid = fork()) == 0) {
 	  SoundPlay(omr.sound_f);
 	  exit(0);
+	} else {
+#ifdef HAVE_WAITPID
+	  waitpid(pid,&status,0);
+#else
+	  wait(&status);
+#endif
 	}
       }
     }

@@ -3,6 +3,7 @@
 #include "Msgwin.h"
 #include "globaldefs.h"
 #include "ResEdit.h"
+#include "config.h"
 #include <ctype.h>
 #include <signal.h>
 
@@ -238,7 +239,7 @@ static int isMail()
 
 int CheckMail(XtPointer cl, XtIntervalId * id)
 {
-  int i;
+  int i,pid,status;
 #ifndef YOUBIN
   char *buf;
 
@@ -264,10 +265,16 @@ int CheckMail(XtPointer cl, XtIntervalId * id)
       XtVaSetValues(mail[0], XtNwindowMode, 0, NULL);
       XtPopup(XtParent(mail[0]), XtGrabNone);
 
-      if (mar.sound_f && UseSound) {
-	if (0 == fork()) {
+      if (mar.sound_f  && UseSound) {
+	if ((pid = fork()) == 0) {
 	  SoundPlay(mar.sound_f);
-	  exit(0);
+	  exit(1);
+	} else {
+#ifdef HAVE_WAITPID
+	  waitpid(pid,&status,0);
+#else
+	  wait(&status);
+#endif
 	}
       }
       MailWindowShown = 1;
@@ -301,7 +308,7 @@ int CheckMail(XtPointer cl, XtIntervalId * id)
 
 int CheckPOP3(XtPointer cl, XtIntervalId * id)
 {
-  int ret_value = 0;
+  int ret_value = 0,pid,status;
   char *buf;
 
   buf = malloc(mar.from_maxlen * mar.mail_lines + 1);
@@ -319,9 +326,15 @@ int CheckPOP3(XtPointer cl, XtIntervalId * id)
 
   if (ret_value > 0) {
     if (mar.sound_f && UseSound) {
-      if (0 == fork()) {
+      if ((pid = fork()) == 0) {
 	SoundPlay(mar.sound_f);
 	exit(0);
+      } else {
+#ifdef HAVE_WAITPID
+	waitpid(pid,&status,0);
+#else
+	  wait(&status);
+#endif
       }
     }
     MailWindowShown = 1;
@@ -705,7 +718,7 @@ static void CheckYoubin(Widget w, int *fid, XtInputId * id)
   int mail_size, length;
   static int old_mail_size = 0;
   long date;
-  int i = 0, j;
+  int i = 0, j,pid,status;
 
 #ifdef PETNAME
   unsigned char *from_who, *who, *pname, *next_ptr, *left_ptr, *right_ptr;
@@ -829,9 +842,15 @@ static void CheckYoubin(Widget w, int *fid, XtInputId * id)
     XtPopup(XtParent(mail[0]), XtGrabNone);
 
     if (mar.sound_f && UseSound) {
-      if (0 == fork()) {
+      if ((pid= fork()) == 0) {
 	SoundPlay(mar.sound_f);
 	exit(0);
+      } else {
+#ifdef HAVE_WAITPID
+	waitpid(pid,&status,0);
+#else
+	  wait(&status);
+#endif
       }
     }
   }
