@@ -51,4 +51,9 @@ enum {
   SAKURA = 0,
   UNYUU = 1
 };
+
+typedef struct _messagebuffer{
+  char* buffer;
+  size_t size;
+} messageBuffer;
 #endif

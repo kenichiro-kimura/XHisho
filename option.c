@@ -15,6 +15,7 @@ static Widget utop,ulabel,ulocal_option;
 static XtInputId OptionId;
 static int virgine = 1;
 static XtIntervalId OptionTimeoutId = 0;
+static messageBuffer mbuf,mdest;
 
 static void Destroy(Widget,XEvent *, String *, unsigned int *);
 static void CommandInit();
@@ -28,9 +29,14 @@ static messageStack* messageStack_pop(messageStack**);
 static void messageStack_push(messageStack**,char*);
 static void ChangeBadKanjiCode(char *);
 static void ClearMessage(Widget);
-static void InsertMessage(Widget,char*);
+static void InsertMessage(Widget,char*,int);
+static void _InsertMessage(XtPointer,XtIntervalId*);
 static void InsertReturn(char*,char*,int,int);
 static void RemoveStr(char*,char*);
+static void AddBuffer(messageBuffer*,char*);
+static char* GetBuffer(messageBuffer*);
+static char* HeadOfBuffer(messageBuffer*);
+static char* _GetBuffer(messageBuffer*,int);
 
 static XtActionsRec actionTable[] = {
   {"Destroy", Destroy},
@@ -126,6 +132,14 @@ Widget CreateOptionWindow(Widget w){
   pdrec.shell_widget = top;
   pdrec.enable_widget = w;
 
+  mbuf.buffer = (char*)malloc(BUFSIZ * 10);
+  mbuf.size = BUFSIZ * 10;
+  *mbuf.buffer = '\0';
+
+  mdest.buffer = (char*)malloc(BUFSIZ);
+  mdest.size = BUFSIZ;
+  *mdest.buffer = '\0';
+  
   top = XtVaCreatePopupShell("OptionWindow", transientShellWidgetClass
 			     ,w,NULL);
   XtGetApplicationResources(top, &opr, resources, XtNumber(resources), NULL, 0);
@@ -205,6 +219,12 @@ Widget CreateOptionWindow(Widget w){
 #endif
 
   CommandInit();
+
+  if(opr.m_wait)
+    XtAppAddTimeOut(XtWidgetToApplicationContext(local_option)
+				      , opr.m_wait * 10
+				      , (XtTimerCallbackProc) _InsertMessage
+				      , NULL);
   return(local_option);
 }
 
@@ -423,7 +443,11 @@ static void CheckOption(Widget w, int *fid, XtInputId * id)
 	cg_num = atoi(str_num);
       else 
 	u_cg_num = atoi(str_num) + 10;
-      strcpy(_buffer,c_ptr + 1);
+
+      if(opr.m_wait)
+	sprintf(_buffer,"\\%d%s",atoi(str_num),c_ptr + 1);
+      else
+	strcpy(_buffer,c_ptr + 1);
       strcpy(strstr(message_ptr,"(Surface:"),_buffer);
     }
 
@@ -443,18 +467,18 @@ static void CheckOption(Widget w, int *fid, XtInputId * id)
     *message_ptr = '\0';
     InsertReturn(message_ptr,_buffer,max_len,message_buffer_size);
 
-    if(cg_num != -1 || u_cg_num != -1)
+    if((cg_num != -1 || u_cg_num != -1) && opr.m_wait == 0)
       XtVaSetValues(xhisho,XtNforceCG,True,XtNcgNumber,cg_num
 		    ,XtNucgNumber,u_cg_num
 		    ,NULL);
     cg_num = u_cg_num = -1;
 #ifdef USE_UNYUU
     if(last_message == SAKURA)
-      InsertMessage(label,message_ptr);
+      InsertMessage(label,message_ptr,SAKURA);
     else 
-      InsertMessage(ulabel,message_ptr);
+      InsertMessage(ulabel,message_ptr,UNYUU);
 #else
-    InsertMessage(label,message_ptr);
+    InsertMessage(label,message_ptr,SAKURA);
 #endif
 
     if((chr_ptr = next_ptr) == NULL) break;
@@ -709,12 +733,12 @@ static void ClearMessage(Widget w)
   XtVaSetValues(w,XtNeditType,XawtextRead,NULL);
 }
 
-static void InsertMessage(Widget w,char* message_buffer)
+static void InsertMessage(Widget w,char* message_buffer,int mode)
 {
   XawTextPosition current,last;
   XawTextBlock textblock;
   int true_length;
-  unsigned char* chr_ptr;
+  char* chr_ptr;
   int i;
 
   if(strlen(message_buffer) > 0){
@@ -728,30 +752,14 @@ static void InsertMessage(Widget w,char* message_buffer)
 
   current = XawTextGetInsertionPoint(w);
   if(opr.m_wait){
-    for(chr_ptr = message_buffer;*chr_ptr;chr_ptr++){
-      last = XawTextSourceScan (XawTextGetSource (w),(XawTextPosition) 0,
-				XawstAll, XawsdRight, 1, TRUE);
-      textblock.firstPos = 0;
-      if ((*chr_ptr >= 0xa1 && *chr_ptr <= 0xfe) ||
-	  (*chr_ptr == 0x8e) || (*chr_ptr == 0x8f))
-	textblock.length = 2;
-      else 
-	textblock.length = 1;
-      textblock.ptr = chr_ptr;
-      textblock.format = FMT8BIT;
-      XtVaSetValues(w,XtNeditType,XawtextEdit,NULL);
-      XawTextReplace(w,last,last,&textblock);
-      XtVaSetValues(w,XtNeditType,XawtextRead,NULL);
-      XFlush(XtDisplay(XtParent(w)));
-      
-      if ((*chr_ptr >= 0xa1 && *chr_ptr <= 0xfe) ||
-	  (*chr_ptr == 0x8e) || (*chr_ptr == 0x8f))
-	chr_ptr++;
-      
-      usleep(100 * opr.m_wait);
-      /*  if (current == last)*/
-      XawTextSetInsertionPoint(w , last + textblock.length);
-    }
+    chr_ptr = (char*) malloc(strlen(message_buffer) + 2);
+    sprintf(chr_ptr,"%s$",message_buffer);
+    AddBuffer(&mbuf,chr_ptr);
+    if(mode == SAKURA)
+      AddBuffer(&mdest,"s");
+    else
+      AddBuffer(&mdest,"u");
+    free(chr_ptr);
   } else {
     last = XawTextSourceScan (XawTextGetSource (w),(XawTextPosition) 0,
 			      XawstAll, XawsdRight, 1, TRUE);
@@ -765,6 +773,59 @@ static void InsertMessage(Widget w,char* message_buffer)
     XFlush(XtDisplay(XtParent(w)));
     XawTextSetInsertionPoint(w , last + textblock.length);
   }
+}
+
+static void _InsertMessage(XtPointer cl,XtIntervalId* id)
+{
+  XawTextPosition current,last;
+  XawTextBlock textblock;
+  Widget w;
+  unsigned char* chr_ptr;
+  char* dest;
+  int cg_num;
+
+  chr_ptr = HeadOfBuffer(&mbuf);
+  dest = HeadOfBuffer(&mdest);
+
+  if(chr_ptr && dest){
+    chr_ptr = GetBuffer(&mbuf);
+
+    switch(*chr_ptr){
+    case '$':
+      dest = GetBuffer(&mdest);
+      break;
+    case '\\':
+      cg_num = atoi(chr_ptr + 1);
+      if (*dest == 'u') cg_num += 10;
+      XtVaSetValues(xhisho,XtNforceCG,True
+		    ,(*dest == 's')? XtNcgNumber:XtNucgNumber
+		    ,cg_num
+		    ,NULL);
+      break;
+    default:
+      w = (*dest == 's')? label:ulabel;
+      last = XawTextSourceScan (XawTextGetSource (w),(XawTextPosition) 0,
+			      XawstAll, XawsdRight, 1, TRUE);
+      textblock.firstPos = 0;
+      if ((*chr_ptr >= 0xa1 && *chr_ptr <= 0xfe) ||
+	  (*chr_ptr == 0x8e) || (*chr_ptr == 0x8f))
+	textblock.length = 2;
+      else 
+	textblock.length = 1;
+      textblock.ptr = chr_ptr;
+      textblock.format = FMT8BIT;
+      XtVaSetValues(w,XtNeditType,XawtextEdit,NULL);
+      XawTextReplace(w,last,last,&textblock);
+      XtVaSetValues(w,XtNeditType,XawtextRead,NULL);
+      XFlush(XtDisplay(XtParent(w)));
+      XawTextSetInsertionPoint(w , last + textblock.length);
+    }
+  }
+
+  XtAppAddTimeOut(XtWidgetToApplicationContext(local_option)
+		  , opr.m_wait * 10
+		  , (XtTimerCallbackProc) _InsertMessage
+		  , NULL);
 }
 
 static void InsertReturn(char* message_buffer,char* chr_ptr,int max_len,int message_buffer_size)
@@ -833,3 +894,57 @@ static void RemoveStr(char* message_buffer,char* str)
   while((chr_ptr = strstr(message_buffer,str)) != NULL)
     strcpy(chr_ptr,chr_ptr + strlen(str));
 }
+
+static void AddBuffer(messageBuffer* buffer,char* message)
+{
+  size_t newsize;
+  char* b;
+
+  newsize = buffer->size + strlen(message);
+
+  if(newsize > strlen(buffer->buffer) + strlen(message) + 1){
+    b = strdup(buffer->buffer);
+    buffer->buffer = (char*)realloc(buffer->buffer,newsize);
+    strcpy(buffer->buffer,b);
+    free(b);
+    buffer->size = newsize;
+  }
+
+  strcat(buffer->buffer,message);
+}
+
+static char* _GetBuffer(messageBuffer* buffer,int mode)
+{
+  char* ret;
+  unsigned char first_byte;
+  int is_wbyte = 0;
+
+  ret = (char*)malloc(3);
+  ret[0] = first_byte = *(buffer->buffer);
+
+  if((ret[0] = first_byte = *(buffer->buffer)) == '\0') return NULL;
+
+  if ((first_byte >= 0xa1 && first_byte <= 0xfe) ||
+      (first_byte == 0x8e) || (first_byte == 0x8f) || first_byte == '\\'){
+    is_wbyte = 1;
+    ret[1] = *(buffer->buffer + 1);
+  } else {
+    ret[1] = '\0';
+  }
+
+  ret[2] = '\0';
+  if(mode)
+    strcpy(buffer->buffer,buffer->buffer + 1 + is_wbyte);
+  return ret;
+}
+  
+static char* HeadOfBuffer(messageBuffer* buffer)
+{
+  return _GetBuffer(buffer,0);
+}
+
+static char* GetBuffer(messageBuffer* buffer)
+{
+  return _GetBuffer(buffer,1);
+}
+
