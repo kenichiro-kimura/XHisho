@@ -196,6 +196,19 @@ UTF-8は現在日本語のみです(たぶん)。
 
 
 
+「華和梨」を使ってSSTPのメタ文字を置き換える場合に使われる、ユーザ名等
+は以下のリソースで設定します。
+
+
+XHisho*sakuraName: さくらの名前
+XHisho*sakuraName2: さくらの名前(偽)
+XHisho*keroName: うにゅうの名前
+XHisho*userName: ユーザの名前
+
+
+
+
+
 
 7. 制限事項
 
