@@ -534,7 +534,7 @@ Widget CreateMailAlert(Widget w,int Mode){
 static void GetFromandSubject(char* m_file,char* From){
   FILE *fp;
   char *tmp1,*tmp2,*buf,*head1,*head2;
-  int i = 0,length;
+  int i = 0,length,j;
   int isheader = 0;
   int filehead = 1;
   
@@ -603,6 +603,12 @@ static void GetFromandSubject(char* m_file,char* From){
 	if(!strncmp(buf,"From:",5)){
 	  memset(who,0,BUFSIZ);
 	  sscanf(buf,"%s %s",from_who,who);
+
+	  for(j = 0; j < strlen(from_who);j++)
+	    if(isspace(tmp2[j])) break;
+
+	  strcpy(who,tmp2 + j);
+
 	  if(strchr(who,'@')){
 	    strcpy(pname,who);
 	  } else {

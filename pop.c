@@ -4,9 +4,9 @@
 #include "md5.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <ctype.h>
 
 static char* MD5Digest(unsigned char*);
-static int ApopAuth(int,UserData);
 
 #ifdef PETNAME
 extern void SearchPetname(char*,char*);
@@ -16,6 +16,7 @@ static int ReadPOPMessage(int,char*,int);
 static int WritePOPCommand(int,char*);
 static int ReadUserFile(UserData*);
 static int Auth(int,UserData);
+static int ApopAuth(int,UserData);
 static int RpopAuth(int,UserData);
 static void GetFromandSubject(int,char*);
 
@@ -421,8 +422,8 @@ static char* MD5Digest(unsigned char *s){
 
 
 static void GetFromandSubject(int sock,char* buffer){
-  char *buf,*tmp,*tmp2;
-  int i = 0;
+  char *buf,*tmp,*tmp2,*tmp3;
+  int i = 0,j;
   int length;
 
 #ifdef PETNAME
@@ -447,6 +448,7 @@ static void GetFromandSubject(int sock,char* buffer){
   buf = malloc(BUFSIZ * 5);
   memset(buf,0,BUFSIZ * 5);
   tmp = malloc(BUFSIZ * 5);
+  tmp3 = malloc(BUFSIZ * 5);
   memset(tmp,0,BUFSIZ * 5);
 
 #ifdef PETNAME
@@ -468,14 +470,22 @@ static void GetFromandSubject(int sock,char* buffer){
 	 (!strstr(buf,"From:")));
   tmp2 = strtok(buf,"\n");
 
+
   i = 0;
 
   while(tmp2 && (i < mar.mail_lines)){
     if(!strncmp(tmp2,"From:",5) || !strncmp(tmp2,"Subject:",8)){
+      strcpy(tmp3,tmp2);
 
 #ifdef PETNAME
       if(!strncmp(tmp2,"From:",5)){
 	sscanf(tmp2,"%s %s",from,who);
+
+	for(j = 0; j < strlen(from);j++)
+	  if(isspace(tmp2[j])) break;
+
+	strcpy(who,tmp2 + j);
+
 	if(strchr(who,'@')){
 	  strcpy(pname,who);
 	} else {
@@ -483,7 +493,8 @@ static void GetFromandSubject(int sock,char* buffer){
 	  if(strchr(tmp2,'<') && strchr(tmp2,'>'))	  
 	    strcpy(pname, strtok(strchr(tmp2,'<') + 1,">"));
 	}
-	SearchPetname(tmp2,pname);
+	SearchPetname(tmp3,pname);
+	if(tmp3[0] == '\0') strcpy(tmp3,tmp2);
       }
 #endif
 
@@ -494,7 +505,7 @@ static void GetFromandSubject(int sock,char* buffer){
 	exit(1);
       }
       
-      fprintf(t_file,"%s\n",tmp2);
+      fprintf(t_file,"%s\n",tmp3);
       fclose(t_file);
       
       sprintf(command,"%s %s",mar.ext_filter,t_filename);
@@ -504,7 +515,7 @@ static void GetFromandSubject(int sock,char* buffer){
 
       pclose(in);
 #else
-      strcpy(tmp,tmp2);
+      strcpy(tmp,tmp3);
 #endif
 
       length = MIN(mar.from_maxlen,strlen(tmp));
@@ -527,6 +538,7 @@ End:
   
   free(buf);
   free(tmp);
+  free(tmp3);
 #ifdef PETNAME
   free(from);
   free(who);
