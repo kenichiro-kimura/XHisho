@@ -115,10 +115,38 @@ int CheckSchedule(OpenMessageRes * l_omr, Schedule * schedule, int WeeklyCheck, 
       *tmp2 = *tmp3 = *leave = '\0';
 
       if (tmp1[0] != '#' && tmp1[0] != '\0' && tmp1[0] != '\n' && tmp1[0] != ' ') {
-	sscanf(tmp1, "%s %s %s", tmp2, leave, tmp3);
+	unsigned char *chr_ptr,*d_ptr;
+
+	chr_ptr = tmp1;
+	d_ptr = tmp2;
+	while(!isspace(*chr_ptr))
+	  *(d_ptr++) = *(chr_ptr++);
+
+	*(d_ptr) = '\0';
+	chr_ptr++;
+	d_ptr = leave;
+
+	while(!isspace(*chr_ptr))
+	  *(d_ptr++) = *(chr_ptr++);
+
+	*(d_ptr) = '\0';
+	chr_ptr++;
+	d_ptr = tmp3;
+
+	while(!isspace(*chr_ptr))
+	  *(d_ptr++) = *(chr_ptr++);
+	*(d_ptr) = '\0';
+	  
+	//	sscanf(tmp1, "%s %s %s", tmp2, leave, tmp3);
 
 	if (!atoi(leave)) {
-	  sscanf(tmp1, "%s %s", tmp2, tmp3);
+	  chr_ptr = tmp1;
+	  d_ptr = tmp2;
+	  while(!isspace(*chr_ptr))
+	    *(d_ptr++) = *(chr_ptr++);
+	  *(d_ptr) = '\0';
+	  strcpy(tmp3,++chr_ptr);
+	  //	  sscanf(tmp1, "%s %s", tmp2, tmp3);
 	  if(!strcmp(leave,"*") || !strcmp(leave,"0")){
 	    schedule[i].leave = -1;
 	  } else {
@@ -270,9 +298,10 @@ int CheckSchedule(OpenMessageRes * l_omr, Schedule * schedule, int WeeklyCheck, 
      **/
 
     if (tmp1[0] != '#' && tmp1[0] != '\0' && tmp1[0] != '\n') {
+      *tmp4 = *tmp2 = *leave = *tmp3 = '\0';
       sscanf(tmp1, "%s %s %s %s", tmp4, tmp2, leave, tmp3);
 
-      if (!isdigit((unsigned char)leave[0])) {
+      if (!isdigit((unsigned char)leave[0]) || strlen(tmp3) < 1) {
 	sscanf(tmp1, "%s %s %s", tmp4, tmp2, tmp3);
 	for ( j = 0; j < strlen(tmp1);j++)
 	  if(isspace((unsigned char)tmp1[j])) break;
