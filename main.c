@@ -37,7 +37,6 @@ static Widget toplevel;
 static void Wait(Widget, XEvent *, String *, unsigned int *);
 static void CheckMailNow(Widget, XEvent *, String *, unsigned int *);
 static void PrintUsage(int, char **);
-static void SigChild(int);
 
 /**
  * action table
@@ -144,7 +143,6 @@ void Quit(Widget w, XEvent * event, String * params, unsigned int *num_params)
   if(Biff == YOUBIN){
     kill(youbin_pid[0], SIGTERM);
     kill(youbin_pid[1], SIGTERM);
-    printf("hogehoge3\n");
   }
 
   if(Biff == YOUBIN)
@@ -356,7 +354,6 @@ int main(int argc, char **argv)
   IsMailChecked(0);
   UseSound = 1;
   ExistMailNum = HaveSchedule = 0;
-  signal(SIGCHLD,SigChild);
 
   if(!IsSet)
     BeforeAnimatonMode = USUAL;
@@ -525,13 +522,5 @@ static void PrintUsage(int argc, char **argv)
       fprintf(stderr, "Usage:%s [options] \n%s", argv[0], usages);
     exit(1);
   }
-}
-
-static void SigChild(int x){
-  int status;
-
-  wait(&status);
-
-  signal(SIGCHLD,SigChild);
 }
 
