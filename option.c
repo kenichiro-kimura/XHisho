@@ -682,7 +682,7 @@ static void InsertMessage(XtPointer cl,XtIntervalId* id)
   int max_len;
   Dimension width;
 
-  static int pos = 0;
+  static int pos[2] = {0,0};
   int is_display = 0;
   static int is_end = 0;
 
@@ -695,18 +695,19 @@ static void InsertMessage(XtPointer cl,XtIntervalId* id)
       switch(*(chr_ptr + 1)){
       case 'h':
 	dest_win = SAKURA;
-	pos = 0;
+	//	pos = 0;
 	break;
       case 'u':
 	dest_win = UNYUU;
-	pos = 0;
+	//	pos = 0;
 	break;
       case 'n':
 	is_display = 2;
-	pos = 0;
+	pos[dest_win] = 0;
 	break;
       case 'e':
 	is_end = 1;
+	pos[0] = pos[1] = 0;
 	if(opr.timeout > 0){
 	  if(OptionTimeoutId){
 	    XtRemoveTimeOut(OptionTimeoutId);
@@ -753,13 +754,13 @@ static void InsertMessage(XtPointer cl,XtIntervalId* id)
       last = XawTextSourceScan (XawTextGetSource (w),(XawTextPosition) 0,
 				XawstAll, XawsdRight, 1, TRUE);
 
-      if(*chr_ptr == '\n') pos = 0;
+      if(*chr_ptr == '\n') pos[dest_win] = 0;
 
       if(is_display == 2){
 	strcpy(buffer,"\n");
       } else {
-	if((pos += log.width) > max_len){
-	  pos = log.width;
+	if((pos[dest_win] += log.width) > max_len){
+	  pos[dest_win] = log.width;
 	  sprintf(buffer,"\n%s",chr_ptr);
 	} else {
 	  strcpy(buffer,chr_ptr);
@@ -848,18 +849,26 @@ static void _GetBuffer(messageBuffer* buffer,char* ret,int mode)
       case 'b':
       case 'i':
 	c_ptr = buffer->buffer + 2;
-	while(isdigit(*c_ptr) || *c_ptr == '\n'){
+	while(isdigit(*c_ptr) || *c_ptr == '\n' 
+	      || *c_ptr == '[' || *c_ptr == ']'){
 	  /*
 	   * if "\w10HOGE" -> "\w1\n0HOGE" ,
 	   *  this function return "\w10" 
 	   *     and rest of message should be "\nHOGE".
 	   */
-	  if(*c_ptr == '\n'){
+	  switch(*c_ptr){
+	  case '\n':
 	    skip_return++;
 	    strcpy(c_ptr,c_ptr + 1);
-	  } else {
+	    break;
+	  case '[':
+	  case ']':
+	    strcpy(c_ptr,c_ptr + 1);
+	    break;
+	  default:
 	    c_ptr++;
 	    is_wbyte++;
+	    break;
 	  }
 	}
 	strncpy(str_num,buffer->buffer + 2
