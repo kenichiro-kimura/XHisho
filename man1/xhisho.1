@@ -5,8 +5,8 @@ XHisho - Private secretary on X Window System
 .B  xhisho
 [toolkit options] [-cgfile [cg filename]] [-filter [filter
 command]] [-soundcmd [sound command]] [-noclock] [-focus] [-justify
-[left/center/right]] [-ypos [n]] [-shape]  [-yserver [youbin server]]
-[-pserver [POP3 server]] [-youbin] [-pop] [-apop]
+[left/center/right]] [-shape] [-ypos [n]] [-chime/-nochime]
+ [-yserver [youbin server]] [-pserver [POP3 server]] [-youbin] [-pop] [-apop]
 .SH DESCRIPTION
 .I XHisho
 is your private secretary on 
@@ -117,6 +117,10 @@ Specify schedule directory.
 .TP 20
 .BI \-chime
 Use 0-hour chime.
+
+.TP 20
+.BI \-nochime
+Don't use 0-hour chime.
 
 .TP 20
 .BI  \-yserver " servername"
