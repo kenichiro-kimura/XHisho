@@ -989,7 +989,7 @@ void MailPopup(int mode){
   MailCount = 0;
 
   XtPopup(XtParent(local_mail[mode]), XtGrabNone);
-  if (mar.sound_f  && UseSound) {
+  if (mar.sound_f  && UseSound && mode == 0) {
     SoundPlay(mar.sound_f);
   }
 }

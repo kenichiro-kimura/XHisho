@@ -471,7 +471,7 @@ CheckMailNow()        : メールをチェックする
 
 そして、デフォルトのトランスレーションは以下のようになっています。
 
-XHisho*translations: #override Shift<Btn2Down> : AboutWindowPopup()\n\
+XHisho.XHisho.translations: #override Shift<Btn2Down> : AboutWindowPopup()\n\
                                     <Btn2Down> : ScheduleWindowPopup()\n\
                                Shift<Btn3Down> : Quit()\n\
                                     <Btn1Down> : MenuWindowPopup()\n\
