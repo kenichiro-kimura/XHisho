@@ -28,10 +28,16 @@ static PetnameList *Petname_new(char *pname, char *addr)
   PetnameList *pname_ptr;
 
   pname_ptr = (PetnameList *) malloc(sizeof(PetnameList));
+  if(pname_ptr == NULL) return NULL;
   pname_ptr->next = NULL;
-
+  /*
   pname_ptr->petname = strdup(pname);
   pname_ptr->mail_address = strdup(addr);
+  */
+  pname_ptr->petname = malloc(strlen(pname) + 1);
+  strcpy(pname_ptr->petname,pname);
+  pname_ptr->mail_address = malloc(strlen(addr) + 1);
+  strcpy(pname_ptr->mail_address,addr);
 
   if(pname_ptr->petname[strlen(pname) - 1] == '\n')
     pname_ptr->petname[strlen(pname) - 1] = '\0';
@@ -46,6 +52,7 @@ static PetnameList *Petname_new(char *pname, char *addr)
 
 static void Petname_delete(PetnameList * ptr)
 {
+  if(ptr == NULL) return;
   free(ptr->mail_address);
   free(ptr->petname);
   free(ptr);
@@ -73,7 +80,7 @@ static int StrHash(char *string)
     ret %= HASH_KEY;
   }
 
-  if (ret > HASH_KEY)
+  if (abs(ret) > HASH_KEY)
     ret %= HASH_KEY;
   return abs(ret);
 }
@@ -94,6 +101,8 @@ static void ReadAddrBook()
   FILE *fp;
   unsigned char *buffer, *pname, *addr;
   char fname[128];
+  char* ch_ptr;
+  char* dst_ptr;
   int i, in_quote, j;
   PetnameList *address_list, *pname_ptr, *ptr;
 #ifdef EXT_FILTER
@@ -125,61 +134,69 @@ static void ReadAddrBook()
     j = 0;
     address_list = NULL;
 
-    if (buffer[0] == ';')
-      goto End;
+    if (buffer[0] == ';' || strlen(buffer) < 1)
+      continue;
 
     /**
      * short name を読み飛ばす
      **/
-    for (i = 0; i < strlen(buffer); i++) {
-      if (isspace((unsigned char)buffer[i]))
-	break;
-      if (buffer[i] == '#')
-	goto End;
-    }
+    ch_ptr = buffer;
+    while(ch_ptr != NULL && *ch_ptr != '\0'
+	  &&!isspace((unsigned char)*ch_ptr) && *ch_ptr != ':')
+      ch_ptr++;
+
+    if(ch_ptr == NULL || *ch_ptr == '\0')
+      continue;
 
     /**
      * 展開規則の定義は読み飛ばす
      **/
 
-    if (buffer[i++] == ':')
-      goto End;
+    if(*ch_ptr == ':') continue;
+
+    ch_ptr++;
+    if(ch_ptr == NULL || *ch_ptr == '\0')
+      continue;
 
     /**
      * アドレスを読む。複数ある場合もあるので、リストで保持する。
      **/
 
-    for (j = 0; i < strlen(buffer); i++) {
-      if (buffer[i] == ',') {
+    dst_ptr = addr;
+    while(strlen(ch_ptr) > 0){
+      if(isspace((unsigned char)*ch_ptr)) break;
+      if(*ch_ptr == ','){
 	/**
 	 * 1つのアドレスの読み込みが終わったので、リストに登録
 	 **/
-	addr[j] = '\0';
+	*dst_ptr = '\0';
 
-	if (strlen(addr) > 1) {
+	if (strlen(addr) > 0) {
 	  pname_ptr = Petname_new("dummy", addr);
-
 	  if (address_list != NULL) {
 	    pname_ptr->next = address_list;
 	  }
 	  address_list = pname_ptr;
 	}
-	i++;
-	j = 0;
-	while (isspace((unsigned char)buffer[i])) {
-	  i++;
-	  if (buffer[i] == '#')
-	    goto End;
-	}
+	dst_ptr = addr;
+	ch_ptr++;
+	while(ch_ptr != NULL && isspace((unsigned char)*ch_ptr))
+	  ch_ptr++;
       }
-      if (isspace((unsigned char)buffer[i]))
-	break;
-      if (buffer[i] == '#')
-	goto End;
-      addr[j++] = buffer[i];
+      while(ch_ptr != NULL && isspace((unsigned char)*ch_ptr))
+	ch_ptr++;
+      if (*ch_ptr == '#'){
+	for(ptr = address_list;ptr!= NULL;){
+	  pname_ptr = ptr->next;
+	  Petname_delete(ptr);
+	  ptr = pname_ptr;
+	}
+	goto W_End;
+      }
+      *dst_ptr++ = *ch_ptr++;
     }
 
-    addr[j] = '\0';
+    *dst_ptr = '\0';
 
     /**
      * 最後に読み込んだアドレスをリストに登録
@@ -193,6 +210,7 @@ static void ReadAddrBook()
       }
       address_list = pname_ptr;
     }
+
     /**
      * Petname の読み込み。"" で囲まれた文字列中の空白文字はPetnameの1
      * 部。"" で囲まれていない空白文字はPetnameの区切り文字。
@@ -201,18 +219,21 @@ static void ReadAddrBook()
      *                   である)
      **/
 
-    for (i++, j = in_quote = 0; i < strlen(buffer) && j < BUFSIZ; i++) {
-      if (buffer[i] == '"') {
+    while(ch_ptr != NULL && isspace((unsigned char)*ch_ptr))
+      ch_ptr++;
+
+    for (j = in_quote = 0; ch_ptr!= NULL && j < BUFSIZ; ch_ptr++) {
+      if (*ch_ptr == '"') {
 	if (in_quote == 1)
 	  break;
 	in_quote = 1;
       } else {
-	if (in_quote == 0 && isspace((unsigned char)buffer[i]))
+	if (in_quote == 0 && isspace((unsigned char)*ch_ptr))
 	  break;
-	if (buffer[i] == '#')
+	if (*ch_ptr == '#')
 	  break;
-	if (buffer[i] != '"') {
-	  pname[j] = buffer[i];
+	if (*ch_ptr != '"') {
+	  pname[j] = *ch_ptr;
 	  j++;
 	}
       }
@@ -239,9 +260,10 @@ static void ReadAddrBook()
       Petname_delete(ptr);
       ptr = pname_ptr;
     }
+  W_End:
   }
 
-End:
+
   /**
    * 終了処理。通常の終了以外にコメント行以下の作業中止(行頭の ";",途
    * 中の "#")がある。Petnameの途中で "#" が出たら、そこまでをPetname
@@ -270,7 +292,7 @@ void ReadPetname(char *petname_f)
    * 要素を追加していっている。
    **/
 
-  unsigned char *who, *tmp, *tmp2, *buffer;
+  char *who, *tmp, *tmp2, *buffer;
   FILE *pfp;
   PetnameList *pname_ptr;
   int i, hashed;

@@ -138,7 +138,6 @@ void Quit(Widget w, XEvent * event, String * params, unsigned int *num_params)
 
   WritePrefFile();
   XCloseDisplay(XtDisplay(top));
-
   exit(0);
 }
 
@@ -343,6 +342,7 @@ int main(int argc, char **argv)
   IsMailChecked(0);
   UseSound = 1;
   ExistMailNum = HaveSchedule = 0;
+
   if(!IsSet)
     BeforeAnimatonMode = USUAL;
 

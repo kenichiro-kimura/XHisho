@@ -3,7 +3,7 @@
 CC = @CC@
 CCOPTIONS = @CFLAGS@ @LDFLAGS@ 
 PREFIX = @prefix@
-XCOMM CDEBUGFLAGS = -g -Wall -DDEBUG -DFIND_LEAK
+CDEBUGFLAGS = -g -Wall -DDEBUG
 YOUR_NAME = ¹ÀÇ·
 
 XCOMM
@@ -61,6 +61,7 @@ IMAGELIBDIR = image
 IMAGELIB = $(IMAGELIBDIR)/libimage.a
 STD_INCLUDES = -I$(IMAGELIBDIR) -I/usr/local/include -I$(MHCLIBDIR)
 EXTRA_LDOPTIONS = -L/usr/local/lib
+
 
 #define IHaveSubdirs
 SUBDIRS = $(IMAGELIBDIR) $(MHCLIBDIR) xadl
