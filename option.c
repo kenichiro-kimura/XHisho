@@ -8359,7 +8359,7 @@ void sstpinit(int port)
   mbuf.size = BUFSIZ * 10;
   mbuf.buffer[0] = '\0';
 
-  if((pid = fork()) == 0){
+  if((pid = vfork()) == 0){
     if((spid = fork()) == 0){
       sstp(port);
       exit(0);

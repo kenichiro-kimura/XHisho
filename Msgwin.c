@@ -215,6 +215,7 @@ static void Realize(Widget w, XtValueMask * valueMask, XSetWindowAttributes * at
   if (msw->msgwin.is_shaped == FALSE)
     ShapeWindow(msw);
   DrawFrame(msw);
+  SetWindowLocate(msw);
 
   XtCreateWindow(w, (unsigned) InputOutput, (Visual *) CopyFromParent, *valueMask, attrs);
 
@@ -395,8 +396,8 @@ static void Redraw(Widget w, XEvent * event, Region region)
    * Redraw 毎にWindowModeをチェック
    **/
 
-  if(!msw->msgwin.force_m)
-    SetWindowLocate(msw);
+  /*  if(!msw->msgwin.force_m)*/
+  SetWindowLocate(msw);
 
   /**
    * WindowModeが変っていたりすればShapeしなおす
@@ -496,12 +497,14 @@ static Boolean SetValues(Widget current, Widget request, Widget new, ArgList arg
    * is_shapedをFALSEにする
    **/
 
-  if(!mswnew->msgwin.force_m)
-    SetWindowLocate(mswnew);
+  SetWindowLocate(mswnew);
+  if(mswnew->msgwin.force_m)
+    mswnew->msgwin.WindowMode =  mswold->msgwin.WindowMode;
 
   if (mswold->msgwin.WindowMode != mswnew->msgwin.WindowMode) {
     mswnew->msgwin.is_shaped = FALSE;
   }
+
   ret = (formClassRec.core_class.set_values) (current, request, new, args, num_args);
 
   if (XtIsRealized((Widget) mswnew)) {
@@ -607,7 +610,10 @@ static void SetWindowLocate(MsgwinWidget msw)
 
   if (Old != WindowMode)
     msw->msgwin.is_shaped = FALSE;
-  msw->msgwin.WindowMode = WindowMode;
+
+
+  if(!msw->msgwin.force_m)
+    msw->msgwin.WindowMode = WindowMode;
 }
 
 static void ManageChild(Widget parent)
