@@ -18,6 +18,7 @@
 #include "mail.h"
 #include "openwin.h"
 #include "about.h"
+#include "option.h"
 
 #ifdef _RESEDIT_GLOBAL 
 #define RESEDIT_GLOBAL 
@@ -89,6 +90,12 @@
 #define SOUND_GLOBAL
 #else
 #define SOUND_GLOBAL extern
+#endif
+
+#ifdef _OPTION_GLOBAL
+#define OPTION_GLOBAL
+#else
+#define OPTION_GLOBAL extern
 #endif
 
 /**
@@ -189,18 +196,20 @@ SCHEDULE_GLOBAL void ReadHoliday();
 
 SOUND_GLOBAL int SoundPlay(const char *filename);
 
+OPTION_GLOBAL Widget CreateOptionWindow(Widget);
 
 /**
  * global variables define
  **/
 
+MAIN_GLOBAL OptionRes opr;
 MAIN_GLOBAL MailAlertRes mar;
 MAIN_GLOBAL BiffMethod Biff;
 MAIN_GLOBAL int UseSound;
 MAIN_GLOBAL int BeforeAnimatonMode;
 MAIN_GLOBAL String FilterCommand, SoundCommand, EditCommand;
 MAIN_GLOBAL Widget mail, openwin, xhisho, about, editwin, calendarwin, menu
-                  ,nomail, resedit;
+                  ,nomail, resedit, optionwin;
 MAIN_GLOBAL ResEditRes rer;
 MAIN_GLOBAL OpenMessageRes omr;
 MAIN_GLOBAL char Tmp_dir[256];
@@ -208,4 +217,7 @@ MAIN_GLOBAL int ExistMailNum,HaveSchedule;
 MAIN_GLOBAL char YoubinFile[256];
 MAIN_GLOBAL pid_t youbin_pid[2];
 MAIN_GLOBAL FILE* youbin_fd;
+MAIN_GLOBAL pid_t option_pid;
+MAIN_GLOBAL FILE* option_fd;
+
 #endif

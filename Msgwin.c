@@ -86,6 +86,24 @@ static XtResource resources[] = {
     XtRImmediate,
     0,
   },
+  {
+    XtNyoff,
+    XtCYoff,
+    XtRInt,
+    sizeof(int),
+    XtOffset(MsgwinWidget, msgwin.yoff),
+    XtRImmediate,
+    0,
+  },
+  {
+    XtNxoff,
+    XtCXoff,
+    XtRInt,
+    sizeof(int),
+    XtOffset(MsgwinWidget, msgwin.xoff),
+    XtRImmediate,
+    0,
+  },
 };
 
 
@@ -218,8 +236,8 @@ static void ShapeWindow(MsgwinWidget msw)
    *     WindowMode は
    *
    *     0   |   1
-   *      -----+------
-   *       2   |   3
+   *    -----+------
+   *     2   |   3
    *
    *          と画面を4分割する
    **/
@@ -552,6 +570,24 @@ static void SetWindowLocate(MsgwinWidget msw)
   (XtParent(msw))->core.width = msw->core.width;
   (XtParent(msw))->core.height = msw->core.height;
 
+  switch(WindowMode){
+  case 0:
+    new_x += msw->msgwin.xoff;
+    new_y += msw->msgwin.yoff;
+    break;
+  case 1:
+    new_x -= msw->msgwin.xoff;
+    new_y += msw->msgwin.yoff;
+    break;
+  case 2:
+    new_x += msw->msgwin.xoff;
+    new_y -= msw->msgwin.yoff;
+    break;
+  case 3:
+    new_x -= msw->msgwin.xoff;
+    new_y -= msw->msgwin.yoff;
+    break;
+  }
   XtMoveWidget(XtParent(msw), new_x, new_y);
 
   if (Old != WindowMode)

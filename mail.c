@@ -893,7 +893,7 @@ static void CheckYoubin(Widget w, int *fid, XtInputId * id)
   if ((len = read(*fid, buf, BUFSIZ)) == 0) {
     fprintf(stderr, "Youbin died!\n");
   } else if (len == -1) {
-    fprintf(stderr, "Can;'t read from Youbin!\n");
+    fprintf(stderr, "Can't read from Youbin!\n");
   }
   buf[MIN(len, BUFSIZ) - 1] = '\0';
 

@@ -75,6 +75,9 @@ static XrmOptionDescRec options[] = {
   {"-soundcmd", "*extSoundCommand", XrmoptionSepArg, NULL},
   {"-yserver", "*youbinServer", XrmoptionSepArg, NULL},
   {"-pserver", "*popServer", XrmoptionSepArg, NULL},
+  {"-xoff", "*xoff", XrmoptionSepArg, NULL},
+  {"-yoff", "*yoff", XrmoptionSepArg, NULL},
+  {"-optioncmd", "*optionCommand", XrmoptionSepArg, NULL},
 };
 
 static void Wait(Widget w, XEvent * e, String * s, unsigned int *i)
@@ -110,6 +113,7 @@ static void Wait(Widget w, XEvent * e, String * s, unsigned int *i)
     tm_now = localtime(&now);
     calendarwin = CreateCalendarWindow(toplevel, tm_now->tm_mon, *tm_now);
     menu = CreateMenuWindow(toplevel);
+    optionwin = CreateOptionWindow(toplevel);
 
     /**
      * openwin のポップアップ
@@ -464,6 +468,9 @@ static void PrintUsage(int argc, char **argv)
   "     -soundcmd command           : external sound command\n"
   "     -yserver [server_name]      : youbin server name\n"
   "     -pserver [server_name]      : POP3(or IMAP4) server name\n"
+  "     -xoff [n]                   : Popup Window X-offset\n"
+  "     -yoff [n]                   : Popup Window Y-offset\n"
+  "     -optioncmd                  : Option Command\n"
   "\n";
 
   static char *compile_option =
