@@ -8439,17 +8439,20 @@ static void sstp(int port)
 	    conv = SJIS2EUC;
 	  }
 	} else if(!strncmp(buffer,"EXECUTE SSTP/1.0",strlen("EXECUTE SSTP/1.0"))){
-	  /*
-	   *  not supported
-	   */
 	  is_command = 1;
+	  status = 1;
+	} else if(!strncmp(buffer,"EXECUTE SSTP/1.2",strlen("EXECUTE SSTP/1.2"))){
+	  is_command = 2;
 	  status = 1;
 	} else if(!strncmp(buffer,"Command:",strlen("Command:"))
 		  && is_command){
 	  for(chr_ptr = buffer + strlen("Command:");
 	      isspace(*chr_ptr);chr_ptr++);
 	  
-	  if(!strncmp(chr_ptr,"GetName",strlen("GetName"))){
+	  if(!strncmp(chr_ptr,"GetName",strlen("GetName")) && is_command == 1){
+	    status++;
+	  } else if(!strncmp(chr_ptr,"GetVersion",strlen("GetVersion"))
+		    && is_command == 2){
 	    status++;
 	  } else {
 	    status = -1;
@@ -8508,15 +8511,26 @@ static void sstp(int port)
       case 3:
 	if(is_script){
 	  fprintf(stream,"204 No Connect\r\n");
-	} 
-	if (is_command){
+	}
+
+	switch(is_command){
+	case 1:
 	  fprintf(stream,"200 OK\r\n");
+	  fprintf(stream,"\r\n");
 	  chr_ptr = EUC2SJIS(opr.s_name);
 	  fprintf(stream,"%s,",chr_ptr);
 	  free(chr_ptr);
 	  chr_ptr = EUC2SJIS(opr.k_name);
 	  fprintf(stream,"%s\r\n",chr_ptr);
 	  free(chr_ptr);
+	  break;
+	case 2:
+	  fprintf(stream,"200 OK\r\n");
+	  fprintf(stream,"\r\n");
+	  fprintf(stream,"%s %s\r\n",XHISHO_PACKAGE,XHISHO_VERSION);
+	  break;
+	default:
+	  is_command = 0;
 	}
 	if(!is_script && !is_command){
 	  fprintf(stream,"204 No Connect\r\n");
@@ -8526,7 +8540,8 @@ static void sstp(int port)
 	fprintf(stream,"501 Not Implemented\r\n");
 	break;
       }
-      
+
+      fprintf(stream,"\r\n");
       fflush(stream);
       fclose(stream);
       
