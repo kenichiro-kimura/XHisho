@@ -1028,6 +1028,7 @@ static void _GetBuffer(messageBuffer* buffer,char* ret,int mode)
   unsigned char str_num[128];
   int wait;
   unsigned char* c_ptr;
+  int skip_return = 0;
 
   ret[0] = first_byte = *(buffer->buffer);
 
@@ -1043,13 +1044,20 @@ static void _GetBuffer(messageBuffer* buffer,char* ret,int mode)
 
     if(strncmp(ret,"\\w",strlen("\\w")) == 0){
       c_ptr = buffer->buffer + 2;
-      while(isdigit(*c_ptr)){
-	c_ptr++;
-	is_wbyte++;
+      while(isdigit(*c_ptr) || *c_ptr == '\n'){
+	if(*c_ptr == '\n' && isdigit(*(c_ptr + 1))){
+	  strcpy(c_ptr,c_ptr + 1);
+	  skip_return = 1;
+	} else {
+	  c_ptr++;
+	  is_wbyte++;
+	}
       }
       strncpy(str_num,buffer->buffer + 2
 	      ,is_wbyte);
       sprintf(ret,"\\w%d",atoi(str_num));
+      if(skip_return)
+	*(c_ptr - 1) = '\n';
     }
   } else {
     ret[1] = '\0';
