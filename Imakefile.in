@@ -16,7 +16,7 @@ LOCALEDIR = $(LIBDIR)/$(LANG)/app-defaults
 #ifdef PERSONAL
 BINDIR	= $(HOME)/bin
 XHISHODIR = $(HOME)/xhisho
-LOCALEDIR = $(HOME)/$(LANG)/app-defaults
+LOCALEDIR = $(HOME)/$(LANG)/
 #endif
 
 #ifdef PREF
@@ -91,8 +91,7 @@ XHisho.ad:: XHisho.ad.sed
 
 #ifdef I18N
 XHisho.jp:: XHisho.jp.sed
-	sed 's!XHISHODIR!$(XHISHODIR)!' XHisho.jp.sed >$@
-	sed 's!IXHISHODIR!$(IXHISHODIR)!' XHisho.jp.sed >$@
+	sed 's!XHISHODIR!$(XHISHODIR)!' XHisho.jp.sed | sed 's!IXHISHODIR!$(IXHISHODIR)!' >$@
 #endif
 
 xhisho.man:: man1/xhisho.1
