@@ -27,6 +27,7 @@
 #endif
   static item *item_head,*item_tail,*labels,*lp_stack,*loop_l;
   char tmp[BUFSIZ];
+  FILE *out;
 
 %}
 
@@ -106,6 +107,16 @@ int main(int argc,char** argv)
       fprintf(stderr,"can't open input file:%s\n",argv[1]);
       return 1;
     }
+
+    if(argc > 2){
+      if((out = fopen(argv[2],"w")) == NULL){
+	fprintf(stderr,"can't open output file:%s\n",argv[2]);
+	return 1;
+      }
+    } else {
+      out = stdout;
+    }
+
   } else {
     fprintf(stderr,"usage: %s input_file [output file] \n",argv[0]);
     return 1;
@@ -115,7 +126,7 @@ int main(int argc,char** argv)
 
   loop_l = malloc(sizeof(item));
 
-  printf("XHisho Animation File\n");
+  fprintf(out,"XHisho Animation File\n");
   while(!feof(yyin)){
     yyparse();
   }
@@ -168,10 +179,10 @@ static int print_all()
 
   for(it_p = item_head;it_p;){
 #ifdef DEBUG
-    printf("%d:",i);
+    fprintf(out,"%d:",i);
     i++;
 #endif
-    printf("%s\n",it_p->val);
+    fprintf(out,"%s\n",it_p->val);
     tmp = it_p->next;
     free(it_p->val);
     free(it_p);

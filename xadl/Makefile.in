@@ -1,6 +1,8 @@
 #DEBUG_FLAGS = -g -DDEBUG
 
-all: y.tab.o lex.yy.o
+all: xadl
+
+xadl: y.tab.o lex.yy.o
 	@CC@ @CFLAGS@ $(DEBUG_FLAGS) -o xadl y.tab.o lex.yy.o -ll -ly 
 
 lex.yy.o: lex.yy.c 

@@ -194,9 +194,9 @@ schedule
 
    使い方は
 
-   %xadl input_file > output_file
+   %xadl input_file output_file
 
-   です。
+   です。output_fileを省略すると、標準出力に出力されます。
 
 
 
