@@ -11,11 +11,48 @@ static char *MD5Digest(unsigned char *);
 
 static int ReadPOPMessage(int, char *, int);
 static int WritePOPCommand(int, char *);
+static int ReadIMAPMessage(int, char *, int);
+static int WriteIMAPCommand(int, char *);
 static int ReadUserFile(UserData *);
+static int ImapAuth(int, UserData);
 static int Auth(int, UserData);
 static int ApopAuth(int, UserData);
 static int RpopAuth(int, UserData);
-static void GetFromandSubject(int, char *);
+static void GetFromandSubject(int, char *,int);
+
+static int ReadIMAPMessage(int sock, char *buffer, int size)
+{
+
+  /**
+   * IMAP4の,サーバからの応答メッセージを読む
+   **/
+
+  int i, ret_value;
+  char *comm_buffer;
+
+  *buffer = '\0';
+  comm_buffer = (char*)malloc(size + 1);
+
+  do {
+    i = recv(sock, comm_buffer, size, 0);
+    comm_buffer[i] = '\0';
+    if (i + strlen(buffer) >= size) {
+      ret_value = BUFFER_IS_TOO_SMALL;
+      goto End;
+    }
+    strcat(buffer, comm_buffer);
+  } while (!strstr(comm_buffer, "completed") && !strstr(comm_buffer,"ready"));
+
+  if (strstr(buffer,"xhisho OK") || strstr(comm_buffer,"ready")){
+    ret_value = OK;
+  } else {
+    ret_value = ERR;
+  }
+
+End:
+  free(comm_buffer);
+  return ret_value;
+}
 
 static int ReadPOPMessage(int sock, char *buffer, int size)
 {
@@ -175,7 +212,11 @@ int pop3(AuthMethod method, char *server, char *From)
     goto POPQUITCLOSE;
   }
   memcpy(&sockadd.sin_addr, hent->h_addr, hent->h_length);
-  sockadd.sin_port = htons(110);
+  if(method == IMAP_AUTH){
+    sockadd.sin_port = htons(143);
+  } else {
+    sockadd.sin_port = htons(110);
+  }
   sockadd.sin_family = AF_INET;
   for (loop = 0; 0 != connect(sockdsc, (struct sockaddr *) & sockadd, sizeof(sockadd)); ++loop) {
     if (10 < loop) {
@@ -200,6 +241,9 @@ int pop3(AuthMethod method, char *server, char *From)
   case RPOP_AUTH:
     ret_value = RpopAuth(sockdsc, user);
     break;
+  case IMAP_AUTH:
+    ret_value = ImapAuth(sockdsc, user);
+    break;
   }
 
   if (ret_value == ERR) {
@@ -211,28 +255,46 @@ int pop3(AuthMethod method, char *server, char *From)
    * スプールの状態の取得
    **/
 
-  WritePOPCommand(sockdsc, "STAT\n");
-
-  if (OK == ReadPOPMessage(sockdsc, comm_buffer, BUFSIZ)) {
-    sscanf(comm_buffer, "%s %d %d", tmp, &mailNumber, &mailSize);
-
-    ret_value = mailNumber;
+  if(method == IMAP_AUTH){
+    WritePOPCommand(sockdsc, "xhisho select inbox\n");
+    if(ERR == ReadIMAPMessage(sockdsc, comm_buffer, BUFSIZ)){
+      fprintf(stderr,"Fail Read IMAP Message:select\n%s\n",comm_buffer);
+      ret_value = 0;
+      goto POPQUITEND;
+    }
+    WritePOPCommand(sockdsc,"xhisho status inbox (unseen)\n");
+    if(OK == ReadIMAPMessage(sockdsc, comm_buffer, BUFSIZ)){
+      sscanf(comm_buffer,"* STATUS inbox (UNSEEN %d)",&mailNumber);
+      ret_value = mailNumber;
+    } else {
+      fprintf(stderr,"Fail Read IMAP Message:status\n%s\n",comm_buffer);
+      ret_value = 0;
+      goto POPQUITEND;
+    }
   } else {
-    fprintf(stderr, "Fail Read POP Message:STAT\n%s\n", comm_buffer);
-    ret_value = 0;
-    goto POPQUITEND;
-  }
+    WritePOPCommand(sockdsc, "STAT\n");
+    
+    if (OK == ReadPOPMessage(sockdsc, comm_buffer, BUFSIZ)) {
+      sscanf(comm_buffer, "%s %d %d", tmp, &mailNumber, &mailSize);
 
-#ifdef DEBUG
-  printf("%s\n",comm_buffer);
-#endif
+      ret_value = mailNumber;
+    } else {
+      fprintf(stderr, "Fail Read POP Message:STAT\n%s\n", comm_buffer);
+      ret_value = 0;
+      goto POPQUITEND;
+    }
+  }
 
   if (ret_value > 0) {
     From[0] = '\0';
-    GetFromandSubject(sockdsc, From);
+    GetFromandSubject(sockdsc, From,method);
   }
 POPQUITEND:
-  WritePOPCommand(sockdsc, "QUIT\n");
+  if(method == IMAP_AUTH){
+    WritePOPCommand(sockdsc, "xhisho logout\n");
+  } else {
+    WritePOPCommand(sockdsc, "QUIT\n");
+  }
 POPQUITCLOSE:
   close(sockdsc);
 
@@ -243,6 +305,40 @@ POPQUITCLOSE:
 POPQUIT:
   free(comm_buffer);
   return (ret_value);
+}
+
+static int ImapAuth(int sock, UserData user)
+{
+  /**
+   * IMAP4 Authentication
+   **/
+
+  char *comm_buffer;
+  int ret_value;
+
+  comm_buffer = (char*)malloc(BUFSIZ);
+
+  if (ERR == ReadIMAPMessage(sock, comm_buffer, BUFSIZ)) {
+    ret_value = ERR;
+    goto End;
+  }
+  sprintf(comm_buffer, "xhisho login %s %s\n", user.name,user.pass);
+  WritePOPCommand(sock, comm_buffer);
+
+  if (ERR == ReadIMAPMessage(sock, comm_buffer, BUFSIZ)) {
+#ifdef DEBUG
+    fprintf(stderr, "%s\n", comm_buffer);
+#endif
+    ret_value = ERR;
+    goto End;
+  }
+
+  ret_value = OK;
+
+End:
+  
+  free(comm_buffer);
+  return ret_value;
 }
 
 static int Auth(int sock, UserData user)
@@ -411,7 +507,7 @@ static char *MD5Digest(unsigned char *s)
 }
 
 
-static void GetFromandSubject(int sock, char *buffer)
+static void GetFromandSubject(int sock, char *buffer,int method)
 {
   unsigned char *buf, *tmp, *tmp2, *tmp3;
   int i = 0;
@@ -443,16 +539,26 @@ static void GetFromandSubject(int sock, char *buffer)
 #endif
 
   *buffer = '\0';
-  WritePOPCommand(sock, "TOP 1 0\n");
-  if (ERR == ReadPOPMessage(sock, buf, BUFSIZ)) {
-    fprintf(stderr, "fail pop command: TOP\n");
-    goto End;
+  if(method == IMAP_AUTH){
+    WritePOPCommand(sock, "xhisho fetch 1 RFC822.HEADER\n");
+    if (ERR == ReadIMAPMessage(sock, buf, BUFSIZ)) {
+      fprintf(stderr, "fail IMAP command: fetch\n");
+      goto End;
+    }
+
+  } else {
+    WritePOPCommand(sock, "TOP 1 0\n");
+    if (ERR == ReadPOPMessage(sock, buf, BUFSIZ)) {
+      fprintf(stderr, "fail pop command: TOP\n");
+      goto End;
+    }
+
+    do {
+      ReadPOPMessage(sock, buf, BUFSIZ * 5);
+    } while ((strncmp(buf + strlen(buf) - 4, "\n.", 2) != 0) &&
+	     (!strstr(buf, "From:")));
   }
 
-  do {
-    ReadPOPMessage(sock, buf, BUFSIZ * 5);
-  } while ((strncmp(buf + strlen(buf) - 4, "\n.", 2) != 0) &&
-      	   (!strstr(buf, "From:")));
   tmp2 = strtok(buf, "\n");
 
 

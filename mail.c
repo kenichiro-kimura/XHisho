@@ -368,6 +368,9 @@ int CheckPOP3(int mode)
   case APOP:
     ret_value = pop3(APOP_AUTH, mar.p_server, buf);
     break;
+  case IMAP:
+    ret_value = pop3(IMAP_AUTH, mar.p_server, buf);
+    break;
   case POP:
     ret_value = pop3(POP_AUTH, mar.p_server, buf);
     break;

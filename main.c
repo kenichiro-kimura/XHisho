@@ -174,6 +174,7 @@ static void CheckMailNow(Widget w, XEvent * event, String * params, unsigned int
   switch(Biff){
   case POP:
   case APOP:
+  case IMAP:
     ret_value = CheckPOP3(2);
     break;
   case YOUBIN:
@@ -505,6 +506,8 @@ static void PrintUsage(int argc, char **argv)
       Biff = POP;
     } else if (!strcmp(argv[i], "-apop")) {
       Biff = APOP;
+    } else if (!strcmp(argv[i], "-imap")) {
+      Biff = IMAP;
     } else if (!strcmp(argv[i], "-nosound")) {
       UseSound = 0;
     } else if (*argv[i] == '-') {

@@ -115,11 +115,11 @@ enum {
 };
 
 typedef enum _Method {
-  POP_AUTH, APOP_AUTH, RPOP_AUTH
+  POP_AUTH, APOP_AUTH, RPOP_AUTH, IMAP_AUTH
 }   AuthMethod;
 
 typedef enum _Biff {
-  POP, APOP, YOUBIN, LOCAL
+  POP, APOP, YOUBIN, LOCAL, IMAP
 }   BiffMethod;
 
 typedef struct _hlist {
