@@ -218,6 +218,11 @@ static void CommandInit()
 static void CheckOption(Widget w, int *fid, XtInputId * id)
 {
   static unsigned char *message_buffer;
+#ifdef USE_UNYUU
+  static unsigned char *umessage_buffer;
+  static int last_message;
+  int b_message;
+#endif
   static unsigned char *_buffer;
   static unsigned char *buffer;
   static int x = 0;
@@ -248,12 +253,18 @@ static void CheckOption(Widget w, int *fid, XtInputId * id)
 
   if(x == 0){
     message_buffer = (char *)malloc(message_buffer_size);
+#ifdef USE_UNYUU
+    umessage_buffer = (char *)malloc(message_buffer_size);
+#endif
     _buffer = (char *)malloc(message_buffer_size);
     buffer = (char *)malloc(message_buffer_size);
   }
   x = 1;
 
   memset(message_buffer,'\0',message_buffer_size);
+#ifdef USE_UNYUU
+  memset(umessage_buffer,'\0',message_buffer_size);
+#endif
   memset(_buffer,'\0',message_buffer_size);
   memset(buffer,'\0',message_buffer_size);
 
@@ -415,6 +426,32 @@ static void CheckOption(Widget w, int *fid, XtInputId * id)
   printf("*%s\n",message_buffer);
 #endif
 
+  /* split message int sakura & unyuu */
+
+#ifdef USE_UNYUU
+  if(strncmp(message_buffer,"sakura:",strlen("sakura:")) != 0
+     && last_message == UNYUU){
+    if((chr_ptr = strstr(message_buffer,"sakura:")) != NULL){
+      strncat(umessage_buffer,message_buffer,chr_ptr - message_buffer);
+      strcpy(message_buffer,chr_ptr);
+    } else {
+      strcpy(umessage_buffer,message_buffer);
+      message_buffer[0] = '\0';
+    }
+  }
+
+  while((chr_ptr = strstr(message_buffer,"unyuu:")) != NULL){
+    if((next_ptr = strstr(chr_ptr,"sakura:")) != NULL){
+      strncat(umessage_buffer,chr_ptr,next_ptr - chr_ptr);
+      strcpy(chr_ptr,next_ptr);
+      last_message = SAKURA;
+    } else {
+      strcat(umessage_buffer,chr_ptr);
+      *chr_ptr = '\0';
+      last_message = UNYUU;
+    }
+  }
+#endif
 
   /*
     insert message into window
@@ -422,7 +459,7 @@ static void CheckOption(Widget w, int *fid, XtInputId * id)
 
   InsertMessage(label,message_buffer);
 #ifdef USE_UNYUU
-  InsertMessage(ulabel,message_buffer);
+  InsertMessage(ulabel,umessage_buffer);
 #endif
 
   if(sakura && cg_num != -1)

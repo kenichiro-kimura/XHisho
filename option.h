@@ -37,5 +37,9 @@ typedef struct _messagestack{
   struct _messagestack* next;
   char* message;
 } messageStack;
-  
+
+enum {
+  SAKURA = 0,
+  UNYUU = 1
+};
 #endif
