@@ -47,9 +47,9 @@ static void AddBuffer(messageBuffer*,char*);
 static void GetBuffer(messageBuffer*,char*);
 static void HeadOfBuffer(messageBuffer*,char*);
 static void _GetBuffer(messageBuffer*,char*,int);
-static char* SJIS2EUC(char*);
 static int IsKinsoku(char*);
-static unsigned char* UTF82EUC(unsigned char*);
+static char* SJIS2EUC(char*);
+static char* UTF82EUC(unsigned char*);
 static unsigned int UNICODE2EUC(unsigned int);
 static void sstp(int);
 
@@ -379,15 +379,19 @@ static void CheckOption(Widget w, int *fid, XtInputId * id)
   if(len == 0) return;
   _buffer[len] = '\0';
 
-  //  ClearMessage(label);
-  //  ClearMessage(ulabel);
+  /*
+  ClearMessage(label);
+  ClearMessage(ulabel);
+  */
 
   message_ptr = SJIS2EUC(_buffer);
   strncpy(_buffer,message_ptr,MIN(message_buffer_size -1,strlen(message_ptr)));
   free(message_ptr);
+  /*
   message_ptr = ChangeBadKanjiCode(_buffer);
   strncpy(_buffer,message_ptr,MIN(message_buffer_size -1,strlen(message_ptr)));
   free(message_ptr);
+  */
 
 #ifdef DEBUG
   printf("#%s\n",_buffer);
@@ -431,11 +435,11 @@ static void GetMessageFromKawari(Widget w, int * i, XtInputId * id){
   message_ptr = SJIS2EUC(_buffer);
   strncpy(_buffer,message_ptr,MIN(message_buffer_size -1,strlen(message_ptr)));
   free(message_ptr);
-
+  /*
   message_ptr = ChangeBadKanjiCode(_buffer);
   strncpy(_buffer,message_ptr,MIN(message_buffer_size -1,strlen(message_ptr)));
   free(message_ptr);
-
+  */
 #ifdef DEBUG
   printf("#%s\n",buffer);
 #endif
@@ -753,11 +757,9 @@ static void InsertMessage(XtPointer cl,XtIntervalId* id)
       switch(*(chr_ptr + 1)){
       case 'h':
 	dest_win = SAKURA;
-	//	pos = 0;
 	break;
       case 'u':
 	dest_win = UNYUU;
-	//	pos = 0;
 	break;
       case 'n':
 	is_display = 2;
@@ -1192,7 +1194,9 @@ static char* SJIS2EUC(char* in) {
   }
   *out_ptr = '\0';
 
-  return ret;
+  out_ptr = ChangeBadKanjiCode(ret);
+  free(ret);
+  return out_ptr;
 }
 
 static int IsKinsoku(char* in)
@@ -1212,7 +1216,7 @@ static int IsKinsoku(char* in)
   return 0;
 }
 
-static unsigned char* UTF82EUC(unsigned char* in)
+static char* UTF82EUC(unsigned char* in)
 {
   unsigned char* out;
   unsigned char* chr_ptr;
@@ -1247,7 +1251,9 @@ static unsigned char* UTF82EUC(unsigned char* in)
   
   *out_ptr = '\0';
 
-  return out;
+  out_ptr = ChangeBadKanjiCode(out);
+  free(out);
+  return out_ptr;
 }
       
 static unsigned int UNICODE2EUC(unsigned int ucode)
@@ -8202,7 +8208,10 @@ static void sstp(int port)
   unsigned char* chr_ptr;
   int is_script;
   messageBuffer kbuf;
+  FILE* stream;
+  char* (*conv)(char*);
 
+  conv = SJIS2EUC;
   if((sockdesc = socket(PF_INET, SOCK_STREAM, 0)) < 0){
     perror("fail create socket\n");
     exit(1);
@@ -8227,18 +8236,67 @@ static void sstp(int port)
     if(accept_desc != -1){
       write(accept_desc,"200 OK\r\n",strlen("200 OK\r\n"));
       is_script = 0;
+      stream = fdopen(accept_desc,"rw");
       while(1){
+	if(fgets(buffer,BUFSIZ * 10,stream) == NULL) break;
+	/*
 	do{
 	  fromlen = read(accept_desc,buffer,BUFSIZ * 10);
 	} while(fromlen < 1);
 	buffer[fromlen] = '\0';
+	*/
 	while((chr_ptr = strstr(buffer,"\r")) != NULL){
 	  strcpy(chr_ptr,chr_ptr + 1);
 	}
 
-	if(strstr(buffer,"Script:")){
+	if(!strncmp(buffer,"Script:",strlen("Script:"))){
 	  is_script = 1;
-	  AddBuffer(&kbuf,strstr(buffer,"Script:") + strlen("Script:"));
+	  AddBuffer(&kbuf,buffer + strlen("Script:"));
+	} else if(!strncmp(buffer,"SEND SSTP/1.1",strlen("SEND SSTP/1.1"))){
+	  /* NULL */
+	} else if(!strncmp(buffer,"Sender:",strlen("Sender:"))){
+	  /* NULL */
+	} else if(!strncmp(buffer,"Option:",strlen("Option:"))){
+	  /* NULL */
+	} else if(!strncmp(buffer,"Charset:",strlen("Charset:"))){
+	  /* 
+	   * select charset converter
+	   */
+	  for(chr_ptr = buffer + strlen("Charset:")
+		;isspace(*chr_ptr);chr_ptr++);
+
+	  switch(*chr_ptr){
+	  case 'S':
+	    /* is Shift_JIS */
+	    printf("is SJIS\n");
+	    conv = SJIS2EUC;
+	    break;
+	  case 'I':
+	    /* is ISO-2022-JP */
+	    /* conv = JIS2EUC() */
+	    break;
+	  case 'E':
+	    /* is EUC-JP */
+	    conv = ChangeBadKanjiCode;
+	    break;
+	  case 'U':
+	    /* is UTF-8 */
+	    conv = UTF82EUC;
+	    break;
+	  default:
+	    /* oh, it's not good! */
+	    conv = SJIS2EUC;
+	  }
+	} else if(!strncmp(buffer,"EXECUTE",strlen("EXECUTE"))){
+	  /*
+	    not supported
+	  */
+	  break;
+	} else if(!strncmp(buffer,"GIVE",strlen("GIVE"))){
+	  /*
+	    not supported
+	  */
+	  break;
 	} else if(is_script){
 	  AddBuffer(&kbuf,buffer);
 	}
@@ -8246,17 +8304,19 @@ static void sstp(int port)
 	if(strncmp(buffer,"\n",2) == 0 || strstr(buffer,"\n\n")) break;
       }
       /*    write(accept_desc,"200 OK\r\n",strlen("200 OK\r\n"));*/
-      close(accept_desc);
+      fclose(stream);
 
       /*
 	SSTPParser(kbuf.buffer);
       */
 
-      chr_ptr = SJIS2EUC(kbuf.buffer);
+      chr_ptr = conv(kbuf.buffer);
+      /*
       *kbuf.buffer = '\0';
       AddBuffer(&kbuf,chr_ptr);
       free(chr_ptr);
       chr_ptr = ChangeBadKanjiCode(kbuf.buffer);
+      */
       AddBuffer(&mbuf,chr_ptr);
       free(chr_ptr);
       *kbuf.buffer = '\0';
