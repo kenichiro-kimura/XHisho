@@ -47,8 +47,7 @@ int main(int argc, char** argv)
 
   buffer = (unsigned char*)malloc(BUFSIZ * 10);
 
-  listen(sockdesc, 5);
-  printf("listen %d\n",sockdesc);
+  listen(sockdesc, 1);
   while(1){
     accept_desc = accept(sockdesc, &fromadd, &fromlen);
     if(accept_desc < 0){
