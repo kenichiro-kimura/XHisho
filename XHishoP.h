@@ -45,7 +45,7 @@ typedef struct _XHishoPart{
   Display* d;
   Window w;
   GC gc;
-  XpmAttributes xpmatt;
+  int width,height;
   Pixmap pixmap;
   Pixmap pmask;
   Window focus;

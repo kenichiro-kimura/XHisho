@@ -115,7 +115,7 @@ focusの当っているウインドウのタイトルバーに"お座り"します。
 
 .TP 20
 .BI \-shape
-BMPファイルの背景を透明にします。
+画像ファイルの背景を透明にします。
 
 .TP 20
 .BI \-message " message filename"

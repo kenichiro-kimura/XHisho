@@ -42,9 +42,23 @@ EXTRA_LIBRARIES = @LIBS@ $(LIB_XPM)
 DEPLIBS = XawClientDepLibs
 LOCAL_LIBRARIES = XawClientLibs
 
-BASE_OBJS =  mail.o main.o Msgwin.o XHisho.o about.o editor.o schedule.o calendar.o menu.o ResEdit.o load_bmp.o message.o pop.o md5c.o sound.o
+BASE_OBJS =  mail.o main.o Msgwin.o XHisho.o about.o editor.o schedule.o calendar.o menu.o ResEdit.o load_bmp.o message.o pop.o md5c.o sound.o image.o
+
+#ifdef PETNAME
 PETNAME_OBJS = petname.o
-OBJS = $(BASE_OBJS) $(PETNAME_OBJS)
+#endif
+
+#ifdef HAVE_LIBJPEG
+#ifdef WITH_JPEG
+JPEG_OBJS = load_jpeg.o
+#endif
+#endif
+
+#ifdef WITH_XPM
+XPM_OBJS = load_xpm.o
+#endif
+
+OBJS = $(BASE_OBJS) $(PETNAME_OBJS) $(JPEG_OBJS) $(XPM_OBJS)
 
 SRCS = $(OBJS:.o=.c)
 

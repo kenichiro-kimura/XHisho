@@ -12,10 +12,26 @@ enum {
 };
 
 struct palette {
-  /* 
-   *画像パレットテーブル 
-   */
+  /**
+   * 画像パレットテーブル 
+   **/
   unsigned char r,g,b,pad;
 };
+
+typedef struct _ImageInfo{
+  /**
+   * 画像データ
+   */
+
+  Display *d;
+  Window w;
+  struct palette *ImagePalette;
+  int colorsuu;
+  int width,height;
+  int depth;
+  short BitCount;
+  unsigned char* ImageData;
+} ImageInfo;
+  
 
 #endif

@@ -24,7 +24,8 @@ You can custom every message,CG,etc.
 3.How to install
 
  (1) run "./configure" script. If you don't use "--without-xpm"
-       option, xpm library is required.
+       option, xpm library is required.If you don't use
+       "--without-jpeg" option, jpeg library is required.
  (2) run "make".
  (3) run "make install"
 

@@ -1,5 +1,8 @@
-/* Define if you use XPM library */
+/* Define if you use XPM */
 #undef WITH_XPM
+
+/* Define if you use JPEG */
+#undef WITH_JPEG
 
 /* Define if you use for personal */
 #undef PERSONAL

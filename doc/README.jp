@@ -142,11 +142,16 @@ From$B$K$O(BMew$B$HF1$87A<0$N(BPetname$B$rMQ$$$F!V(Bhogeyama@dokka.com$B!
 $B!&(B--disable-ext_filter : $B30It%U%#%k%?$r;H$$$^$;$s(B
 $B!&(B--disable-petname    : Petname$B$r;H$$$^$;$s(B
 $B!&(B--without-xpm        : $B2hA|7A<0$H$7$F(Bxpm$B$r;H$$$^$;$s(B
+$B!&(B--without-jpeg       : $B2hA|7A<0$H$7$F(Bjpeg$B$r;H$$$^$;$s(B
 
 
 $B!V(B--without-xpm($B$b$7$/$O(B--with-xpm=no)$B!W$r;XDj$7$J$$>l9g$O(Bxpm$B%i%$%V%i(B
 $B%j$,I,MW$G$9$N$GA0;}$C$FF~$l$F$*$$$F$/$@$5$$!#(BFreeBSD$B$J$i(Bport$B$d(Bpackage
 $B$K$"$j$^$9!#(B
+
+$B!V(B--without-jpeg($B$b$7$/$O(B--with-jpeg=no)$B!W$r;XDj$7$J$$>l9g$O(Bjpeg$B%i%$%V(B
+$B%i%j$,I,MW$G$9$N$GA0;}$C$FF~$l$F$*$$$F$/$@$5$$!#(BFreeBSD$B$J$i(Bport$B$d(B
+package$B$K$"$j$^$9!#$b$7F~$C$F$$$J$+$C$?$iC1$K;H$($J$/$J$k$@$1$G$9!#(B
 
 $B!V(B--disable-ext_filter$B!W$r;XDj$7$J$1$l$P!"%a%C%;!<%8$NI=<($K30It%U%#%k(B
 $B%?$r;H$$$^$9!#%G%U%)%k%H$G$O30It%U%#%k%?%3%^%s%I$O!V(Bnkf -e -m$B!W$G$9!#(B
@@ -180,8 +185,9 @@ From$B$K$O(BMew$B$HF1$87A<0$N(BPetname$B$rMQ$$$F!V(Bhogeyama@dokka.com$B!
 
 
 $B$^$?!"GX7J$KD%$jIU$1$k3($N%G!<%?$OI,?\$G$9!#L5$$$H5/F0$7$^$;$s!#%5%]!<(B
-$B%H$7$F$$$k2hA|7A<0$O8=:_$N$H$3$m(BXPM$B$H(BBMP$B$@$1$G$9$N$G!"(BJPG$B$d(BGIF$BEy$O2hA|(B
-$B7A<0$rJQ99$7$F$/$@$5$$!#(B
+$B%H$7$F$$$k2hA|7A<0$O8=:_$N$H$3$m(BXPM$B$H(BBMP$B$H(BJPEG$B$G$9$N$G!"$3$l0J30$N%G!<(B
+$B%?$O2hA|7A<0$rJQ99$7$F$/$@$5$$!#(B
+
 
 $B%5%s%W%k$N%&%$!<%/%j!<%G!<%?(B(xhs.weekly)$B$H=KF|%G!<%?(B(xhs.holiday)$B$O<j(B
 $BF0$G%9%1%8%e!<%k%G%#%l%/%H%j$K0\F0$5$;$F$/$@$5$$!#(B
@@ -291,7 +297,7 @@ xhs.holiday$B$H$$$&%U%!%$%k$rCV$$$F$/$@$5$$!#=q<0$O%5%s%W%k$r8+$F$/$@$5(B
 $B!&(B-chime     $B!D(B $BKh;~(B0$BJ,$K:#F|$NM=Dj$rI=<($9$k(B
 $B!&(B-focus     $B!D(B focusWin$B%b%8%e!<%k$r;H$&(B
 $B!&(B-ypos      $B!D(B focusWin$B$r;H$&$H$-$N=DJ}8~$N%]%8%7%g%s$r%T%/%;%kC10L$G;XDj(B
-$B!&(B-shape     $B!D(B BMP$B$GGX7J$rF)L@$K$9$k!#(BfocusWin$B$HJ;MQ$9$k$H$h$$$G$7$g$&(B
+$B!&(B-shape     $B!D(B $B2hA|$NGX7J$rF)L@$K$9$k!#(BfocusWin$B$HJ;MQ$9$k$H$h$$$G$7$g$&(B
 $B!&(B-justify   $B!D(B focusWin$B$r;H$&$H$-$N(BJustify($BI=<(0LCV(B)$B$r;XDj$9$k!#%G%U%)(B
                 $B%k%H$O(Bleft$B!#(Bleft/center/right$B$r;XDj2DG=(B
 $B!&(B-filter    $B!D(B $B30It%U%#%k%?!<%3%^%s%I$r;XDj(B
@@ -479,7 +485,6 @@ special thanks to...
 
 13.To do $B!A=IBj5Z$S(BVer.2$B$G$NLnK>!A(B
 
-$B!&(Bjpg$B$d(Bgif$B$r;H$($k$h$&$K$9$k(B($B;~4V$,$"$l$P$9$0$K$G$b$G$-$k$O$:(B)
 $B!&1Q8l$,E,Ev$9$.(B ^^;
 $B!&(Bimpwagent$B$KBP1~$7$F!"(B~/.pop_password$B$r=q$+$J$$$G$b$$$$$h$&$K$9$k(B($B%*(B
   $B%W%7%g%s(B)
