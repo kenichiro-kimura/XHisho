@@ -100,20 +100,31 @@ static mhcent* ReadEntry(FILE* fp)
 {
   mhcent* mhcent_ptr;
   char* buffer;
+  char* b_buffer;
   char* chr_ptr;
-  int tag;
+  int tag,b_tag;
 
   buffer = (char*)malloc(BUFSIZ);
   if(!buffer) return NULL;
 
-  mhcent_ptr = EntryNew();
-  if(!mhcent_ptr){
+  b_buffer = (char*)malloc(BUFSIZ);
+  if(!b_buffer) {
     free(buffer);
     return NULL;
   }
 
+  mhcent_ptr = EntryNew();
+  if(!mhcent_ptr){
+    free(buffer);
+    free(b_buffer);
+    return NULL;
+  }
+
+  b_tag = tag = -1;
+
   while(fgets(buffer,BUFSIZ - 1,fp) != NULL){
     tag = -1;
+    if(buffer[0] == '\n') break;
 
     if(buffer[strlen(buffer) - 1] == '\n')
       buffer[strlen(buffer) - 1] = '\0';
@@ -133,29 +144,49 @@ static mhcent* ReadEntry(FILE* fp)
       tag = X_SC_Alarm;
     } else if(!istrncmp("X-SC-Subject:",buffer,strlen("X-SC-Subject:"))){
       tag = X_SC_Subject;
+    } else if(buffer[0] == ' '){
+      /*
+       * in this case, this line should be append before line.
+       */
+      tag = -2;
     }
 
     if(tag != -1){
-      /*
-       * ignore TAG
-       */
-      for(chr_ptr = buffer;chr_ptr;chr_ptr++)
-	if(*chr_ptr == ':') break;
+      chr_ptr = buffer;
+      if(tag != -2){
+	b_tag = tag;
+	/*
+	 * ignore TAG
+	 */
+	for(;chr_ptr;chr_ptr++)
+	  if(*chr_ptr == ':') break;
 
-      /*
-       * ignore white spaces.
-       */
+	/*
+	 * ignore white spaces.
+	 */
+      } 
       for(chr_ptr++;chr_ptr;chr_ptr++)
 	if(!isspace((unsigned char)*chr_ptr)) break;
-      mhcent_ptr->Entry[tag] = strdup(chr_ptr);
+
+      if(tag == -2){
+	strcpy(b_buffer,mhcent_ptr->Entry[b_tag]);
+	free(mhcent_ptr->Entry[b_tag]);
+	mhcent_ptr->Entry[b_tag] = 
+	  (char*)malloc(strlen(b_buffer) + strlen(chr_ptr) + 1);
+	strcpy(mhcent_ptr->Entry[b_tag],b_buffer);
+	strcat(mhcent_ptr->Entry[b_tag],chr_ptr);
+      } else {
+	mhcent_ptr->Entry[tag] = strdup(chr_ptr);
       /*
 	mhcent_ptr->Entry[tag] = (char*)malloc(strlen(chr_ptr) + 1);
 	strcpy(mhcent_ptr->Entry[tag],chr_ptr);
       */
+      }
     }
   }
 
   free(buffer);
+  free(b_buffer);
   return mhcent_ptr;
 }
 

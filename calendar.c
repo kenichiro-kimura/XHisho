@@ -85,6 +85,7 @@ static void EditorWindowPopup(Widget w, caddr_t client_data, caddr_t call_data)
 
   time(&tval);
   tm_now = localtime(&tval);
+  tm_now->tm_year = Edited_Year;
   tm_now->tm_mon = Edited_Month;
   tm_now->tm_mday = (int) client_data;
   tval = mktime(tm_now);
