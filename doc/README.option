@@ -124,11 +124,21 @@ UTF-8は現在日本語のみです(たぶん)。
 %xhisho -optioncmd /usr/local/bin/nisesakura -cgfile mayura.anim \
         -shape -noclock -unyuu
 
-とかやるとそれっぽくなります。うにゅうを使うときは、うにゅうのCGは12行
-目以降に書いてください(11行目まではさくらのsurfaceかダミーのファイル名
-を記述。ただし、ダミーのファイルもCGファイルの必要あり)。サンプルとし
-て、sample/mayura.anim を置いてますのでこれをsurfaceのCGのあるディレク
-トリに置いてください。
+とかやるとそれっぽくなります。CGのファイル名はIDの順に並べ、行数とID番
+号が一致するようにしてください。対応するIDのCGが無い場合は、ダミーの行
+として「GOTO 1」とでも書いてください。例えばsurface0、3の2枚しかない場
+合は以下のようになります。
+
+---------------------
+XHisho Animation File
+surface0.png
+GOTO 1
+GOTO 1
+surface3.png
+---------------------
+
+「surface1000.png」なんてのが要るときは...がんばってください ^^;
+まゆらについては、sample/mayura.animというファイルを用意してます。
 
 
 ふきだしの位置が気にくわないときは-xoff オプションと -yoff オプション

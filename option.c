@@ -859,7 +859,8 @@ static void InsertMessage(XtPointer cl,XtIntervalId* id)
 	  break;
 	case 's':
 	  cg_num = atoi(chr_ptr + 2);
-	  if (dest_win == UNYUU) cg_num += 10;
+	  printf("%d\n",cg_num);
+	  /*	  if (dest_win == UNYUU) cg_num += 10;*/
 	  XtVaSetValues(xhisho,XtNforceCG,True
 			,(dest_win == SAKURA)? XtNcgNumber:XtNucgNumber
 			,cg_num
@@ -996,6 +997,8 @@ static void _GetBuffer(messageBuffer* buffer,char* ret,int mode)
   int wait;
   unsigned char* c_ptr;
   int i;
+  static int dest_win = SAKURA;
+  int use_blaket = 0;
 
   ret[0] = first_byte = *(buffer->buffer);
 
@@ -1013,7 +1016,6 @@ static void _GetBuffer(messageBuffer* buffer,char* ret,int mode)
       c_ptr = buffer->buffer + 1;
       switch(*c_ptr){
       case 'w':
-      case 's':
       case 'j':
       case 'b':
       case 'i':
@@ -1037,6 +1039,33 @@ static void _GetBuffer(messageBuffer* buffer,char* ret,int mode)
 		,is_wbyte - 1);
 	str_num[is_wbyte - 1] = '\0';
 	sprintf(ret + 2,"%d",atoi(str_num));
+	break;
+      case 's':
+	c_ptr = buffer->buffer + 2;
+	while(isdigit(*c_ptr) || *c_ptr == '[' || *c_ptr == ']'){
+	  switch(*c_ptr){
+	  case '[':
+	    use_blaket = 1;
+	    strcpy(c_ptr,c_ptr + 1);
+	    break;
+	  default:
+	    c_ptr++;
+	    is_wbyte++;
+	    break;
+	  }
+	  if(*c_ptr == ']'){
+	    strcpy(c_ptr,c_ptr + 1);
+	    break;
+	  }
+	}
+	strncpy(str_num,buffer->buffer + 2
+		,is_wbyte - 1);
+	str_num[is_wbyte - 1] = '\0';
+	
+	if(use_blaket == 0 && dest_win == UNYUU)
+	  sprintf(ret + 2,"%d",atoi(str_num) + 10);
+	else 
+	  sprintf(ret + 2,"%d",atoi(str_num));
 	break;
       case '_':
 	c_ptr = buffer->buffer + 2;
@@ -1070,6 +1099,12 @@ static void _GetBuffer(messageBuffer* buffer,char* ret,int mode)
 	  printf("%s\n",ret);
 	  break;
 	}
+      case 'h':
+	dest_win = SAKURA;
+	break;
+      case 'u':
+	dest_win = UNYUU;
+	break;
       default:
 	break;
       }
