@@ -295,7 +295,8 @@ int CheckMail(int mode)
     case 1:
       if (!IsPopped(mail) && mode) {
 	XtVaSetValues(label, XtNlabel, message, NULL);
-	MailPopup(0,mode);
+	/*	MailPopup(0,mode);*/
+	MailPopup(0,0);
       }
       break;
     case 2:
