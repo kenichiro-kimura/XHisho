@@ -13,15 +13,6 @@
 /* Define if you use sound */
 #undef USE_SOUND
 
-/* Define if you use youbin */
-#undef USE_YOUBIN
-
-/* Define if you use POP */
-#undef USE_POP
-
-/* Define if you use APOP */
-#undef USE_APOP
-
 /* Define if you use japasese */
 #undef I18N
 

@@ -26,6 +26,7 @@ static int IsSet = 0; /* 1回目のExposeでだけ子Widgetを作る */
 
 Widget mail,openwin,xhisho,about,editwin,calendarwin,menu,nomail,resedit; 
 int MailWindowShown,OpenWindowShown,MenuWindowShown,AboutWindowShown;
+BiffMethod Biff = LOCAL;
 
 /* external variable */
 
@@ -47,9 +48,8 @@ void CloseEditWindow();
 
 extern Widget CreateMailAlert(Widget,int);   /* in mail.c  */
 extern int CheckMail(XtPointer, XtIntervalId*);
-#ifdef POP
 extern int CheckPOP3(XtPointer, XtIntervalId*);
-#endif
+
 #ifdef PETNAME
 extern void ReadPetname(); /* in petname.c */
 #endif
@@ -93,12 +93,8 @@ static XrmOptionDescRec options[] = {
 #ifdef EXT_FILTER
   {"-filter",  "*extFilter",  XrmoptionSepArg, NULL},
 #endif
-#ifdef YOUBIN
   {"-yserver",  "*youbinServer",  XrmoptionSepArg, NULL},
-#endif
-#ifdef POP
   {"-pserver",  "*popServer",  XrmoptionSepArg, NULL},
-#endif
 };
 
 static void Wait(Widget w,XEvent* e,String* s,unsigned int* i){
@@ -148,7 +144,9 @@ static void Wait(Widget w,XEvent* e,String* s,unsigned int* i){
 }
 
 static void Quit(Widget w,XEvent *event,String *params,unsigned int *num_params){
+
   WritePrefFile();
+  XCloseDisplay(XtDisplay(w)); /* child process の youbin を殺すため */
   exit(0);
 }
 
@@ -163,13 +161,11 @@ static void CheckMailNow(Widget w,XEvent *event,String *params,unsigned int *num
   }
 
   isMailChecked = 1;
-#ifndef YOUBIN
-#ifdef POP
-  ret_value = CheckPOP3((XtPointer)(mail),(XtIntervalId)NULL);
-#else
-  ret_value = CheckMail((XtPointer)(mail),(XtIntervalId)NULL);
-#endif
-#endif
+
+  if(Biff == POP || Biff == APOP)
+    ret_value = CheckPOP3((XtPointer)(mail),(XtIntervalId)NULL);
+  else 
+    ret_value = CheckMail((XtPointer)(mail),(XtIntervalId)NULL);
 
   if(ret_value == 0){
     MailWindowShown = 1;
@@ -334,12 +330,8 @@ static void PrintUsage(int argc,char** argv){
 #ifdef EXT_FILTER
     "     -filter command             : external filter command\n"
 #endif
-#ifdef YOUBIN
     "     -yserver [server_name]      : youbin server name\n"
-#endif
-#ifdef POP
     "     -pserver [server_name]      : POP3 server name\n"
-#endif
     "\n";
 
   static char* compile_option = 
@@ -359,16 +351,6 @@ static void PrintUsage(int argc,char** argv){
 #ifdef USE_SOUND
     "    Use sound\n"
 #endif
-#ifdef YOUBIN
-    "    Use Youbin\n"
-#endif
-#ifdef POP
-#ifdef APOP
-    "    Use APOP\n"
-#else
-    "    Use POP3\n"
-#endif
-#endif
     "\n\n";
     
   int i,print_usage,j,print_coption;
@@ -381,6 +363,15 @@ static void PrintUsage(int argc,char** argv){
       print_usage = 0;
     } else if(!strcmp(argv[i],"-coption")){
       print_coption = 1;
+    } else if(!strcmp(argv[i],"-youbin")){
+      Biff = YOUBIN;
+      argc--;
+    } else if(!strcmp(argv[i],"-pop")){
+      Biff = POP;
+      argc--;
+    } else if(!strcmp(argv[i],"-apop")){
+      Biff = APOP;
+      argc--;
     } else if(*argv[i] == '-'){
       j++;
       printf("unknown option:%s\n",argv[i]);

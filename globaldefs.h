@@ -14,5 +14,6 @@
 #define HASH_KEY 253 
 
 typedef enum _Method{POP_AUTH,APOP_AUTH,RPOP_AUTH}AuthMethod;
+typedef enum _Biff{POP,APOP,YOUBIN,LOCAL}BiffMethod;
 
 #endif

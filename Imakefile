@@ -48,22 +48,6 @@ PET = -DPETNAME
 SOUND = -DUSE_SOUND
 #endif
 
-#ifdef USE_YOUBIN
-YOUBIN = -DYOUBIN
-#endif
-
-#ifdef USE_POP
-#undef USE_YOUBIN
-YOUBIN =
-POP = -DPOP
-#endif
-
-#ifdef USE_APOP
-#undef USE_YOUBIN
-YOUBIN =
-POP = -DAPOP -DPOP
-#endif
-
 #ifdef ABOOK
 ADD = -DADDRESSBOOK -DPETNAME
 #endif
@@ -72,32 +56,24 @@ IXHISHODIR = $(XHISHODIR)/$(LANG)
 
 
 
-DEFINES = $(FILTER) $(PET) $(SOUND) $(YOUBIN) $(POP) $(ADD)
+DEFINES = $(FILTER) $(PET) $(SOUND) $(ADD)
 
 EXTRA_LIBRARIES = $(LIB_XPM) $(LIB_XPG4) $(LIB_SOLARIS)
 
 DEPLIBS = XawClientDepLibs
 LOCAL_LIBRARIES = XawClientLibs
 
-BASE_OBJS =  mail.o main.o Msgwin.o XHisho.o about.o editor.o schedule.o calendar.o menu.o ResEdit.o load_bmp.o message.o
+BASE_OBJS =  mail.o main.o Msgwin.o XHisho.o about.o editor.o schedule.o calendar.o menu.o ResEdit.o load_bmp.o message.o pop.o md5c.o
 
 #ifdef USE_SOUND
 SOUND_OBJS = sound.o
-#endif
-
-#ifdef USE_POP
-POP_OBJS = pop.o
-#endif
-
-#ifdef USE_APOP
-POP_OBJS = pop.o md5c.o
 #endif
 
 #ifdef PETNAME
 PETNAME_OBJS = petname.o
 #endif
 
-OBJS = $(BASE_OBJS) $(SOUND_OBJS) $(POP_OBJS) $(PETNAME_OBJS)
+OBJS = $(BASE_OBJS) $(SOUND_OBJS) $(PETNAME_OBJS)
 SRCS = $(OBJS:.o=.c)
 
 #ifdef AKARI

@@ -4,6 +4,7 @@
 #include "globaldefs.h"
 #include "ResEdit.h"
 #include <ctype.h>
+#include <signal.h>
 
 /* local variable */
 
@@ -16,11 +17,9 @@ static XtIntervalId MailTimeoutId;
 static int MailCheckInterval;
 static const char ResName[][256] = {"newmail","nomail"};
 
-#ifdef YOUBIN
 static XtInputId YoubinId;
 static int virgine = 1;
 static char Tmp_dir[256];
-#endif
 
 int isMailChecked = 0; 
 /* isMailChecked = 
@@ -36,12 +35,14 @@ MailAlertRes mar;
 
 extern ResEditRes rer;  /* in ResEdit.c */
 extern int MailWindowShown; /* in main.c */
+extern BiffMethod Biff;
 
 /* function definition */
 
 static void Destroy(Widget w,caddr_t client_data,caddr_t call_data);
 static int isMail();
 static void SetPrefVal(int,float);
+static int Youbin_exit(Display*);
 Widget CreateMailAlert(Widget,int);
 int CheckMail(XtPointer,XtIntervalId*);
 
@@ -57,17 +58,12 @@ extern void SearchPetname(char*,char*); /* in petname.c */
 extern int SoundPlay(char*); /* in sound.c */
 #endif
 
-#ifdef YOUBIN
 static void CheckYoubin(Widget,int*,XtInputId*);
 static void YoubinInit();
-#else
 static void GetFromandSubject(char*,char*);
-#endif
 
-#ifdef POP
 extern int pop3(AuthMethod,char*,char*); /* in pop.c */
 int CheckPOP3(XtPointer,XtIntervalId*);
-#endif
 
 /* resources */
 
@@ -319,7 +315,6 @@ int CheckMail(XtPointer cl, XtIntervalId *id){
   return i;
 }
 
-#ifdef POP
 int CheckPOP3(XtPointer cl, XtIntervalId *id){
   int ret_value;
   char *buf;
@@ -327,15 +322,14 @@ int CheckPOP3(XtPointer cl, XtIntervalId *id){
   buf = malloc(mar.from_maxlen * mar.mail_lines + 1);
   memset(buf,0,mar.from_maxlen * mar.mail_lines + 1);
 
-#ifdef APOP
-  ret_value = pop3(APOP_AUTH,mar.p_server,buf);
-#else
-#ifdef RPOP
-  ret_value = pop3(RPOP_AUTH,mar.p_server,buf);
-#else
-  ret_value = pop3(POP_AUTH,mar.p_server,buf);
-#endif
-#endif
+  switch(Biff){
+  case APOP:
+    ret_value = pop3(APOP_AUTH,mar.p_server,buf);
+    break;
+  case POP:
+    ret_value = pop3(POP_AUTH,mar.p_server,buf);
+    break;
+  }
 
   if(ret_value >0){
 #ifdef USE_SOUND
@@ -359,7 +353,7 @@ int CheckPOP3(XtPointer cl, XtIntervalId *id){
 		  ,MailCheckInterval,(XtTimerCallbackProc)CheckPOP3,(XtPointer)mail[0]);
   return ret_value;
 }
-#endif
+
 
 Widget CreateMailAlert(Widget w,int Mode){
 
@@ -517,16 +511,17 @@ Widget CreateMailAlert(Widget w,int Mode){
   if(!Mode){
   /* 起動時のメールチェック と mail checkをtimer eventに追加 */
 
-#ifdef YOUBIN
-    YoubinInit();
-#else
-#ifdef POP
-    CheckPOP3((XtPointer)(w),(XtIntervalId)NULL);
-#else
-    CheckMail((XtPointer)(w),(XtIntervalId)NULL);
-#endif
-#endif
-
+    switch(Biff){
+    case YOUBIN:
+      YoubinInit();
+      XSetIOErrorHandler(Youbin_exit); /* child process の youbin を殺す */
+      break;
+    case POP:
+    case APOP:
+      CheckPOP3((XtPointer)(w),(XtIntervalId)NULL);
+    default:
+      CheckMail((XtPointer)(w),(XtIntervalId)NULL);
+    }
   }
 
   for(i = 0; i < 2; i++)
@@ -535,8 +530,6 @@ Widget CreateMailAlert(Widget w,int Mode){
   return(mail[Mode]);
 }
   
-#ifndef YOUBIN
-
 static void GetFromandSubject(char* m_file,char* From){
   FILE *fp;
   char *tmp1,*tmp2,*buf,*head1,*head2;
@@ -650,14 +643,10 @@ static void GetFromandSubject(char* m_file,char* From){
 #endif
 }
 
-#endif
-
-#ifdef YOUBIN  /* if define YOUBIN */
-
 static void YoubinInit(){
   char *command;
-  static FILE *pfp;
   struct stat Ystat;
+  static FILE* pfp;
 
   command = malloc(256);
 
@@ -680,7 +669,7 @@ static void YoubinInit(){
     }
     virgine = 0;
   }
-  
+
   YoubinId = XtAppAddInput(XtWidgetToApplicationContext(top[0]),
 			   fileno(pfp),(XtPointer)XtInputReadMask,
 			   (XtInputCallbackProc)CheckYoubin,NULL);
@@ -842,5 +831,7 @@ static void CheckYoubin(Widget w,int *fid,XtInputId *id){
 
   return;
 }
-#endif  /* end if define YOUBIN */
 
+static int Youbin_exit(Display* disp){
+    kill(0, SIGTERM);           /* kill all the children */
+}

@@ -137,9 +137,6 @@ From$B$K$O(BMew$B$HF1$87A<0$N(BPetname$B$rMQ$$$F!V(Bhogeyama@dokka.com$B!
 
 $B!&(B--enable-personal    : $BA4$F$N%U%!%$%k$r(B$HOME$B0J2<$K%$%s%9%H!<%k$7$^$9(B
 $B!&(B--enable-sound       : $B2;$rLD$i$7$^$9(B
-$B!&(B--enable-youbin      : biff$B$K(BYoubin$B$r;H$$$^$9(B
-$B!&(B--enable-pop         : biff$B$K(BPOP$B$r;H$$$^$9(B
-$B!&(B--enable-apop        : biff$B$K(BAPOP$B$r;H$$$^$9(B
 $B!&(B--enable-abook       : Mew$B$N%"%I%l%9D"$r;H$$$^$9(B
 $B!&(B--disable-i18n       : $B9q:]2=%a%C%;!<%8(B($BF|K\8l$@$1$I(B ^^)$B$r%$%s%9%H!<(B
                          $B%k$7$^$;$s(B
@@ -165,15 +162,6 @@ From$B$K$O(BMew$B$HF1$87A<0$N(BPetname$B$rMQ$$$F!V(Bhogeyama@dokka.com$B!
 $BNc$($P!V(Bcat %s > /dev/audio$B!W$J$I$,;H$($^$9!#(B
 $B$/$o$7$/$O(BCustom.jp$B$r$4Mw2<$5$$!#(B
 
-
-youbin$B$r;H$&>l9g$O!V(B--enable-youbin$B!W$G$9!#$3$l$r;XDj$9$k$H%a!<%k$N(B
-$BDLCN$O(Byoubin$B$r8+D%$k$h$&$K$J$j$^$9!#(B
-
-POP3$B$r;H$&>l9g$O!"G'>ZJ}<0$K1~$8$F!V(B-enable-{pop,apop}$B!W$rA*$s$G$/$@$5(B
-$B$$!#(B($BCm(B:POP3$B$r;H$&$h$&$K$9$k$H!"(Byoubin$B$O;H$($^$;$s(B)
-
-youbin$B5Z$S(BPOP3$B$r;H$o$J$$$H$-$O%m!<%+%k%^%7%s$N%a!<%k%9%W!<%k$r%]!<%j%s(B
-$B%0$7$F!"%a!<%k$,Mh$F$$$J$$$+D4$Y$^$9!#(B
 
 $B$^$?!"(Broot$B$K$J$k8"8B$r;}$C$F$$$J$$?M$,<+J,$N4D6-$K%$%s%9%H!<%k$7$?$$>l(B
 $B9g$O!V(B--enable-personal$B!W$H$7$^$9!#$9$k$H!"(B$HOME/bin$B$H(B$HOME/xhisho/$B$K(B
@@ -259,10 +247,12 @@ xhs.holiday$B$H$$$&%U%!%$%k$rCV$$$F$/$@$5$$!#=q<0$O%5%s%W%k$r8+$F$/$@$5(B
 	 [-filter [filter command]]
 	 [-yserver [youbin server]]
 	 [-pserver [POP3 server]]
+         [-youbin]
+         [-pop]
+         [-apop]
 
-
-$B5/F0$9$k$H!"Dj4|E*$K%a!<%k%\%C%/%9(B(YOUBIN$B$d(BPOP3)$B$r%A%'%C%/$7!"%a!<%k$,(B
-$BMh$F$$$k$H?a$-=P$7$,=P$FDLCN$7$F$/$l$^$9!#(B
+$B5/F0$9$k$H!"Dj4|E*$K%a!<%k%\%C%/%9(B($B$b$7$/$O(BYOUBIN$B$d(BPOP3)$B$r%A%'%C%/$7!"(B
+$B%a!<%k$,Mh$F$$$k$H?a$-=P$7$,=P$FDLCN$7$F$/$l$^$9!#(B
 
 $B%^%&%9$G$NA`:n$O<!$N$h$&$K$J$C$F$$$^$9!#(B
 
@@ -305,9 +295,14 @@ xhs.holiday$B$H$$$&%U%!%$%k$rCV$$$F$/$@$5$$!#=q<0$O%5%s%W%k$r8+$F$/$@$5(B
                 $B%k%H$O(Bleft$B!#(Bleft/center/right$B$r;XDj2DG=!#(B
 $B!&(B-filter    $B!D(B $B30It%U%#%k%?!<%3%^%s%I$r;XDj(B
 $B!&(B-yserver   $B!D(B Youbin$B%5!<%P$r;XDj(B
-$B!&(B-pserver   $B!D(B Pop3$B%5!<%P$r;XDj(B
+$B!&(B-pserver   $B!D(B POP3$B%5!<%P$r;XDj(B
+$B!&(B-youbin    $B!D(B biff$B$K(BYoubin$B$r;H$&(B
+$B!&(B-pop       $B!D(B biff$B$K(BPOP$B$r;H$&(B
+$B!&(B-apop      $B!D(B biff$B$K(BAPOP$B$r;H$&(B
 
-
+$B%*%W%7%g%s(B [-youbin] $B$H(B [-pop] $B$H(B [-apop] $B$O!"F1;~$K$O;H$($^$;$s!#:G8e(B
+$B$K;XDj$7$?J*$,M-8z$K$J$j$^$9!#$$$:$l$+$,;XDj$5$l$k$H!"%m!<%+%k$N%9%W!<(B
+$B%k$O8+D%$i$J$/$J$j$^$9!#(B
 
 
 
@@ -365,8 +360,8 @@ XHisho.OpenMessage.xcalendarCompatible: TRUE
 
 9.Authorization with POP3 $B!A(BPOP3$B$G$NG'>Z$K$D$$$F!A(B
 
-config.tmpl$B$G!V(B#define POP$B!W$b$7$/$O!V(B#define APOP$B!W$H$9$k$H%a!<%k$N%A%'%C(B
-$B%/$K(BPOP3$B$r;H$&$3$H$,$G$-$^$9!#$3$N;~(BPOP3$B%5!<%P$O%3%^%s%I%i%$%s%*%W%7%g(B
+$B5/F0%*%W%7%g%s$G!V(B-pop$B!W$b$7$/$O!V(B-apop$B!W$r;XDj$9$k$H%a!<%k$N%A%'%C%/(B
+$B$K(BPOP3$B$r;H$&$3$H$,$G$-$^$9!#$3$N;~(BPOP3$B%5!<%P$O%3%^%s%I%i%$%s%*%W%7%g(B
 $B%s!V(B-pserver$B!W$+!"%j%=!<%9!V(BXHisho.MailAlert.popServer$B!W$G;XDj$7$^$9!#(B
 
 POP3$B$G$NG'>Z$K$b$A$$$k%f!<%6L>5Z$S%Q%9%o!<%I$O(B ~/.pop_password $B$H$$$&(B
@@ -383,9 +378,9 @@ PASS:$B%Q%9%o!<%I(B
 $BG=$7$^$;$s!#(B
 
 $B$^$?!"%Q%9%o!<%I$,4V0c$C$F$$$?$j!"%5!<%P$,(BAPOP$B$KBP1~$7$F$$$J$$$N$K(BAPOP
-$BBP1~$K%3%s%Q%$%k$7$?(B($B$b$7$/$O$=$N5U(B)$B>l9g$O!"%a!<%k%A%'%C%/;~$K%(%i!<$,(B
-$BI=<($5$l$^$9!#$$$:$l$N>l9g$b!"%a!<%kDLCN%&%$%s%I%&$N(BFrom:$B$H(BSubject:$B$r(B
-$BI=<($9$kItJ,$KI=<($5$l$^$9!#(B
+$B$G@\B3$7$h$&$H$7$?(B($B$b$7$/$O$=$N5U(B)$B>l9g$O!"%a!<%k%A%'%C%/;~$K%(%i!<$,I=(B
+$B<($5$l$^$9!#$$$:$l$N>l9g$b!"%a!<%kDLCN%&%$%s%I%&$N(BFrom:$B$H(BSubject:$B$rI=(B
+$B<($9$kItJ,$KI=<($5$l$^$9!#(B
 
 
 

@@ -39,24 +39,6 @@ AC_ARG_ENABLE(sound,
         [with_sound=no])
 test "$with_sound" = "yes" && AC_DEFINE(USE_SOUND)
 
-AC_ARG_ENABLE(youbin,
-        [  --enable-youbin     use youbin],
-        [with_youbin=$enableval],
-        [with_youbin=no])
-test "$with_youbin" = "yes" && AC_DEFINE(USE_YOUBIN)
-
-AC_ARG_ENABLE(pop,
-        [  --enable-pop     use pop],
-        [with_pop=$enableval],
-        [with_pop=no])
-test "$with_pop" = "yes" && AC_DEFINE(USE_POP)
-
-AC_ARG_ENABLE(apop,
-        [  --enable-apop     use apop],
-        [with_apop=$enableval],
-        [with_apop=no])
-test "$with_apop" = "yes" && AC_DEFINE(USE_APOP)
-
 AC_ARG_ENABLE(i18n,
         [  --disable-i18n     don't use I18N messages],
         [with_i18n=$enableval],

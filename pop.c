@@ -1,14 +1,12 @@
 #include "globaldefs.h"
 #include "mail.h"
 #include "pop.h"
+#include "md5.h"
 #include <stdio.h>
 #include <stdlib.h>
 
-#ifdef APOP
-#include "md5.h"
 static char* MD5Digest(unsigned char*);
 static int ApopAuth(int,UserData);
-#endif
 
 #ifdef PETNAME
 extern void SearchPetname(char*,char*);
@@ -200,9 +198,7 @@ int pop3(AuthMethod method,char* server,char* From){
     ret_value = Auth(sockdsc,user);
     break;
   case APOP_AUTH:
-#ifdef APOP
     ret_value = ApopAuth(sockdsc,user);
-#endif
     break;
   case RPOP_AUTH:
     ret_value = RpopAuth(sockdsc,user);
@@ -302,7 +298,6 @@ End:
   return ret_value;
 }
 
-#ifdef APOP
 static int ApopAuth(int sock,UserData user){
   /*
     APOPによる認証
@@ -366,7 +361,6 @@ End:
   free(digest);
   return ret_value;
 }
-#endif
 
 static int RpopAuth(int sock,UserData user){
   /*
@@ -405,7 +399,6 @@ End:
 }
 
 
-#ifdef APOP  
 static char* MD5Digest(unsigned char *s){
   /*
     MD5ダイジェストを計算する。RFC1321のAppendixそのまま。本体はmd5c.c。
@@ -425,17 +418,12 @@ static char* MD5Digest(unsigned char *s){
  
   return(ascii_digest);
 }
-#endif    
 
 
 static void GetFromandSubject(int sock,char* buffer){
   char *buf,*tmp,*tmp2;
-<<<<<<< pop.c
   int i = 0;
   int length;
-=======
-  int i = 0,length;
->>>>>>> 1.2
 
 #ifdef PETNAME
   char *from,*who,*pname;

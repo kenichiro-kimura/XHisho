@@ -45,6 +45,9 @@ You can custom every message,CG,etc.
 	 [-filter [filter command]]
 	 [-yserver [youbin server]]
 	 [-pserver [POP3 server]]
+         [-youbin]
+         [-pop]
+         [-apop]
 
   * Click 1 button,open/close Menu window.
   * Click 2 button,open/close today's schedule.
