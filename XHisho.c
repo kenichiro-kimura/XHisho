@@ -369,6 +369,9 @@ static void Realize(Widget w, XtValueMask * valueMask, XSetWindowAttributes * at
     fprintf(stderr, "fail read CG data,%s\n", BCG);
     exit(1);
   }
+
+  if(xhw->xhisho.i_info->num_of_images < 10) xhw->xhisho.use_unyuu = False;
+
 #ifdef USE_UNYUU
   if(xhw->xhisho.use_unyuu && xhw->xhisho.i_info->is_shape){
     MGC = XCreateGC(DISPLAY

@@ -8,18 +8,17 @@ CCPP = @CXX@
 all: kawari_interface.o
 
 kawari_interface.o : $(OBJS)
-	$(CCPP) -c $(CFLAGS) -o $(<:.cpp=.o) $<
+	$(CCPP) -c $(CFLAGS) -o kawari_interface.o kawari_interface.cpp
 
 kawari.o : kawari.cpp
-	$(CCPP) -c $(CFLAGS) -o $(<:.cpp=.o) $<
+	$(CCPP) -c $(CFLAGS) -o kawari.o kawari.cpp
 
 kawari_crypt.o : kawari_crypt.cpp
-	$(CCPP) -c $(CFLAGS) -o $(<:.cpp=.o) $<
+	$(CCPP) -c $(CFLAGS) -o kawari_crypt.o kawari_crypt.cpp
 
 base64.o : base64.cpp
-	$(CCPP) -c $(CFLAGS) -o $(<:.cpp=.o) $<
+	$(CCPP) -c $(CFLAGS) -o base64.o base64.cpp
 
 clean :
 	rm -rf *.o
 install :
-	
