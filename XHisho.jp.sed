@@ -92,8 +92,8 @@ XHisho.MailAlert.newMailSound: XHISHODIR/newmail.wav
 !!
 
 XHisho*optionTimeout: 5
-XHisho*optionWidth:200
-XHisho*optionHeight:300
+XHisho*optionWidth:300
+XHisho*optionHeight:200
 
 !!
 !!About XHisho
