@@ -702,18 +702,12 @@ static void InsertMessage(Widget w,char* message_buffer)
   XtVaSetValues(w,XtNeditType,XawtextEdit,NULL);
   XawTextReplace(w,last,last,&textblock);
   XtVaSetValues(w,XtNeditType,XawtextRead,NULL);
-
   if (current == last)
     XawTextSetInsertionPoint(w
 			     , last + textblock.length);
   chr_ptr = message_buffer;
-  true_length = 0;
-  while(*chr_ptr && true_length == 0){
-    if(*chr_ptr != '\n') true_length++;
-    chr_ptr++;
-  }
 
-  if(true_length > 0)
+  if(strlen(message_buffer) > 0)
      XtPopup(XtParent(XtParent(w)), XtGrabNone);
 }
 
