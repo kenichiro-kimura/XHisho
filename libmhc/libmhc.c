@@ -710,7 +710,7 @@ MHCD* openmhc(const char* home_dir, const char* year_month){
   char* filename;
   mhcent* entry = NULL;
   MHCD* mhc_ptr = NULL;
-  _MHCD* tmp_ptr;
+  _MHCD* tmp_ptr = NULL;
 
   filename = NULL;
   i = (home_dir[strlen(home_dir) - 1] == '/')? 1:2;
@@ -743,8 +743,8 @@ MHCD* openmhc(const char* home_dir, const char* year_month){
 
     filename_length = 0;
     is_mhcfile = 1;
-    while(filename_length <= strlen(dp->d_name)){
-      if(!isdigit((unsigned char)dp->d_name[filename_length])){
+    while(filename_length < strlen(dp->d_name)){
+      if(!isdigit((unsigned char)(dp->d_name[filename_length]))){
 	is_mhcfile = 0;
 	break;
       }
@@ -752,6 +752,7 @@ MHCD* openmhc(const char* home_dir, const char* year_month){
     }
      
     if(!is_mhcfile) continue;
+
     strcpy(filename,dirname);
     strcat(filename,dp->d_name);
     fp = fopen(filename,"r");
@@ -780,9 +781,11 @@ MHCD* openmhc(const char* home_dir, const char* year_month){
   }
   closedir(dirp);
 
-  tmp_ptr->next = _MHCDNew(NULL);
-  tmp_ptr->next->prev = tmp_ptr;
-  tmp_ptr = tmp_ptr->next;
+  if(tmp_ptr != NULL){
+    tmp_ptr->next = _MHCDNew(NULL);
+    tmp_ptr->next->prev = tmp_ptr;
+    tmp_ptr = tmp_ptr->next;
+  }
 
   free(dirname);
   free(filename);
