@@ -580,7 +580,7 @@ void Animation(XHishoWidget xhw,int force)
 	change = 1;
       }
     }
-    if(CG_NUM >= xhw->xhisho.i_info->num_of_images - 1 ||
+    if(CG_NUM > xhw->xhisho.i_info->num_of_images - 1 ||
        CG_NUM < 0) CG_NUM = 0;
   }
 

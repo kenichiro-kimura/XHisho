@@ -1,0 +1,143 @@
+XADL(XHisho Animation Definition Language) 言語仕様書
+
+1. 表示
+
+   書式: display(FILENAME,TIME);
+   機能: FILENAMEというCGを、TIME x 0.1秒表示する。TIME = -1 で永久表示
+      
+   書式: display(FILENAME);
+   機能: display(FILENAME,-1); と同じ
+
+
+2. ラベル
+
+   書式: LABEL:
+   機能: その位置にLABELという名前をつける
+
+
+3. 無条件ジャンプ
+
+   書式: goto LABLE;
+   機能: LABELと名前をつけられた位置に飛ぶ
+
+   制限: LABELは必ずgoto の行よりも前に現れていなければならない
+
+
+
+4. ループ
+
+   書式: loop(NUMBER) COMMAND
+   機能: COMMAND(普通はdisplay)を NUMBER回 繰り返す
+
+   書式: loop(NUMBER){ COMMAND COMMAND ... COMMAND }
+   機能: {}内のCOMMAND群(display、goto、LABEL、loop)を NUMBER回繰り返す
+
+
+5. Biff通知イベント
+
+   書式: mail COMMAND
+   機能: Biff通知イベント時に COMMAND を実行する
+ 
+   書式: mail{ COMMAND COMMAND ... COMMAND }
+   機能: Biff通知イベント時に {}内の COMMAND群を実行する
+
+   制限: Biff通知イベントの定義は1ファイル中1度しか出来ない
+         Biff通知イベントの定義は、通常時のアクションの定義の前には書けない
+
+
+
+6. Schedule通知イベント
+
+   書式: schedule COMMAND
+   機能: Schedule通知イベント時に COMMAND を実行する
+ 
+   書式: schedule { COMMAND COMMAND ... COMMAND }
+   機能: Schedule通知イベント時に {}内の COMMAND群を実行する
+
+   制限: Schedule通知イベントの定義は1ファイル中1度しか出来ない
+
+         Schedule通知イベントの定義は、通常時のアクションの定義の前に
+         は書けない
+
+
+7. コメント
+
+   '#'以下行末まではコメントになる
+
+
+8. 例
+
+   8.1 通常時定義のみ。1.bmpを1秒、2.bmpを1秒を繰り返す
+
+       display(1.bmp,10);
+       display(2.bmp,10);
+  
+   8.2 通常時定義のみ。1.bmpを1秒、その後「2.bmpを1秒、3.bmpを2秒」と
+       いうシーケンスを3回繰り返し、最初に戻る
+
+       display(1.bmp,10);
+       loop(3){
+          display(2.bmp,10);
+          display(3.bmp,20);
+       }
+
+   8.3 Biffアクションも定義。通常は 8.1 と同じで、Biffイベント時には 
+       8.2 のアクションを行う
+
+       display(1.bmp,10);
+       display(2.bmp,10);
+  
+       mail{
+         display(1.bmp,10);
+         loop(3){
+            display(2.bmp,10);
+            display(3.bmp,20);
+         }
+       }
+
+   8.4 8.3の定義にScheduleアクションを定義。スケジュールイベント時には 
+       4.bmpを表示する
+
+       display(1.bmp,10);
+       display(2.bmp,10);
+  
+       mail{
+         display(1.bmp,10);
+         loop(3){
+            display(2.bmp,10);
+            display(3.bmp,20);
+         }
+       }
+
+       schedule display(4.bmp);
+
+
+9. その他
+
+   ・Biffイベントとscheduleイベントはどちらを先に書いてもかまわないが、
+     いずれも通常イベントのあとにしか書けない
+
+   ・通常イベントが空白なのは許されない
+
+   ・通常イベントとしてdisplay()のないもの(つまりLABELやgoto、loopのみ)
+     はsyntaxとしては許されるが、動作保証はしない。
+
+   ・ファイル名及びLABELに許されるのは、以下の正規表現で表される文字列
+     である。
+
+     [[:alnum:]\./][[:alnum:]\./_]*
+
+     通常の英数字、'.'、'/'、'_' からなる文字列と思って差し支えない。
+     ただし、数字のみのもの及び '_' で始まる物は許されない。コマンドと
+     同じ文字列も使えない。ただし、大文字小文字は区別されるので、
+     「LOOP」などは良い。
+
+   ・TAB、空白、改行は無視される。
+
+   ・コマンド文字列(display,loop,goto,mail,schedule)は小文字のみ。
+    
+     Display(hoge,10);
+
+     などは許されない。
+    
+   ・入れ子のループは許される。

@@ -4,6 +4,8 @@ AC_CONFIG_HEADER(config.h )
 
 AC_PROG_CC
 AC_PROG_INSTALL
+AC_PROG_LEX
+AC_PROG_YACC
 
 dnl Replace `main' with a function in -lxpg4,-nsl,-lsocket:
 AC_CHECK_LIB(xpg4, main)
@@ -106,4 +108,4 @@ test "$with_akari" = "yes" && AC_DEFINE(AKARI)
 
 
 
-AC_OUTPUT(makefile apps/Makefile Imakefile image/Imakefile)
+AC_OUTPUT(makefile apps/Makefile Imakefile image/Imakefile xadl/Makefile)
