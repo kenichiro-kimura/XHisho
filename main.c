@@ -392,6 +392,9 @@ static void PrintUsage(int argc, char **argv)
 #ifdef HAVE_LIBJPEG
   ",JPEG"
 #endif
+#ifdef HAVE_LIBPNG
+  ",PNG"
+#endif
   ")\n"
   "     -noclock                    : don't draw clock\n"
   "     -focus                      : use Focuswin module\n"
@@ -416,6 +419,9 @@ static void PrintUsage(int argc, char **argv)
 #endif
 #ifdef HAVE_LIBJPEG
   "    Use JPEG file\n"
+#endif
+#ifdef HAVE_LIBPNG
+  "    Use PNG file\n"
 #endif
 #ifdef EXT_FILTER
   "    Use external filter command\n"
