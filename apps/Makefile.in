@@ -4,10 +4,10 @@ PROGS    = countdown sstp
 all: $(PROGS)
 
 countdown: countdown.c
-	@CC@ -g -O2 countdown.c -o $@
+	@CC@ @CFLAGS@ @LDFLAGS@ -g -O2 countdown.c -o $@
 
 sstp: sstp.c
-	@CC@ -g -O2 sstp.c -o $@
+	@CC@ @CFLAGS@ @LDFLAGS@ -g -O2 sstp.c -o $@
 
 clean:
 	rm -rf *.o $(PROGS)

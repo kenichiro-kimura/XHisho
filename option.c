@@ -40,7 +40,7 @@ static char* nstrncpy(char*,const char*,size_t);
 static messageStack* messageStack_new(char*);
 static messageStack* messageStack_pop(messageStack**);
 static void messageStack_push(messageStack**,char*);
-static char* ChangeBadKanjiCode(char *);
+static unsigned char* ChangeBadKanjiCode(unsigned char *);
 static void ClearMessage(Widget);
 static void InsertMessage(XtPointer,XtIntervalId*);
 static void AddBuffer(messageBuffer*,char*);
@@ -48,8 +48,8 @@ static void GetBuffer(messageBuffer*,char*);
 static void HeadOfBuffer(messageBuffer*,char*);
 static void _GetBuffer(messageBuffer*,char*,int);
 static int IsKinsoku(char*);
-static char* SJIS2EUC(char*);
-static char* UTF82EUC(unsigned char*);
+static unsigned char* SJIS2EUC(unsigned char*);
+static unsigned char* UTF82EUC(unsigned char*);
 static unsigned int UNICODE2EUC(unsigned int);
 static void sstp(int);
 
@@ -622,7 +622,7 @@ static void messageStack_push(messageStack** t,char* s)
   *t = n;
 }
 
-static char* ChangeBadKanjiCode(char *source)
+static unsigned char* ChangeBadKanjiCode(unsigned char *source)
 {
   /*
    * change some bad EUC kanji code to '#'
@@ -896,7 +896,7 @@ static void AddBuffer(messageBuffer* buffer,char* message)
     b = strdup(buffer->buffer);
     if(UseSSTP){
       char* file;
-
+      /*
       file = (char*)malloc(strlen("/tmp/") + strlen(BufferFileName) + 10);
 
       sprintf(file,"/tmp/%s.%d",BufferFileName,getpid());
@@ -905,7 +905,7 @@ static void AddBuffer(messageBuffer* buffer,char* message)
 	printf("error open sstp file\n");
 	exit(1);
       }
-
+      */
       _b_ptr = (unsigned char*)mmap(NULL,newsize + sizeof(pid_t)
 				    ,PROT_WRITE|PROT_READ
 				    ,MAP_SHARED,sstp_fd,(off_t)0);
@@ -913,8 +913,10 @@ static void AddBuffer(messageBuffer* buffer,char* message)
       write(sstp_fd,&_i,sizeof(int));
 
       buffer->buffer = _b_ptr + sizeof(pid_t);
+      /*
       close(sstp_fd);
       unlink(file);
+      */
       free(file);
     } else {
       buffer->buffer = (unsigned char*)realloc(buffer->buffer,newsize);
@@ -1131,7 +1133,7 @@ static void SakuraParser(char* in_ptr)
   return ;
 }
 
-static char* SJIS2EUC(char* in) {
+static unsigned char* SJIS2EUC(unsigned char* in) {
   /*
    * change SJIS to EUC. original is in xakane by NAO.
    */
@@ -1216,7 +1218,7 @@ static int IsKinsoku(char* in)
   return 0;
 }
 
-static char* UTF82EUC(unsigned char* in)
+static unsigned char* UTF82EUC(unsigned char* in)
 {
   unsigned char* out;
   unsigned char* chr_ptr;
@@ -8174,7 +8176,7 @@ void sstpinit(int port)
   sstp_pid = (pid_t*)(_b_ptr);
   lseek(sstp_fd, BUFSIZ * 10 + sizeof(pid_t),  0L);
   write(sstp_fd,&_i,sizeof(int));
-  close(sstp_fd);
+  /*  close(sstp_fd);*/
   unlink(file);
   free(file);
 
@@ -8206,10 +8208,10 @@ static void sstp(int port)
   struct sockaddr_in fromadd;
   unsigned char* buffer;
   unsigned char* chr_ptr;
-  int is_script;
+  int is_script,i;
   messageBuffer kbuf;
   FILE* stream;
-  char* (*conv)(char*);
+  unsigned char* (*conv)(unsigned char*);
 
   conv = SJIS2EUC;
   if((sockdesc = socket(PF_INET, SOCK_STREAM, 0)) < 0){
@@ -8220,6 +8222,11 @@ static void sstp(int port)
   sockadd.sin_addr.s_addr = htonl(INADDR_ANY);
   sockadd.sin_family = AF_INET;
   sockadd.sin_port = htons(port);
+
+  i = 1;
+  if(setsockopt(sockdesc, SOL_SOCKET, SO_REUSEADDR,&i, sizeof(i)))
+    perror("setsockopt() failed");
+
   if(bind(sockdesc, (struct sockaddr*)&sockadd, sizeof(sockadd)) < 0){
     fprintf(stderr,"fail bind port %d\n",port);
     exit(2);

@@ -15,9 +15,9 @@ int main(int argc, char** argv)
   int sockdesc;
   int fromlen;
   int port;
-  struct hostent *hent;
+  int temp=1;
   struct sockaddr_in sockadd;
-  struct sockaddr_in fromadd;
+  struct sockaddr fromadd;
   unsigned char* buffer;
   unsigned char* chr_ptr;
 
@@ -26,24 +26,35 @@ int main(int argc, char** argv)
   else
     port = 9801;
 
+  memset(&sockadd,0,sizeof(sockadd));
+  sockadd.sin_addr.s_addr = htonl(INADDR_ANY);
+  sockadd.sin_family = AF_INET;
+  sockadd.sin_port = htons(port);
+
   if((sockdesc = socket(PF_INET, SOCK_STREAM, 0)) < 0){
     perror("fail create socket\n");
     exit(1);
   }
+ 
+  if(setsockopt(sockdesc, SOL_SOCKET, SO_REUSEADDR,
+                    &temp, sizeof(temp)))
+    fprintf(stderr, "setsockopt() failed");
 
-  sockadd.sin_addr.s_addr = htonl(INADDR_ANY);
-  sockadd.sin_family = AF_INET;
-  sockadd.sin_port = htons(port);
-  if(bind(sockdesc, &sockadd, sizeof(sockadd)) < 0){
+  if(bind(sockdesc, (struct sockaddr*)&sockadd, sizeof(struct sockaddr_in)) < 0){
     fprintf(stderr,"fail bind port %d\n",port);
     exit(2);
   }
 
   buffer = (unsigned char*)malloc(BUFSIZ * 10);
 
-  listen(sockdesc, 1);
+  listen(sockdesc, 5);
+  printf("listen %d\n",sockdesc);
   while(1){
     accept_desc = accept(sockdesc, &fromadd, &fromlen);
+    if(accept_desc < 0){
+      perror("accept");
+      break;
+    }
     write(accept_desc,"200 OK\r\n",strlen("200 OK\r\n"));
     while(1){
       do{
