@@ -59,7 +59,7 @@ int CheckSchedule(OpenMessageRes * l_omr, Schedule * schedule, int WeeklyCheck, 
   MHC* mhc_ptr;
   mhcent* ent_ptr;
   FILE *t_file;
-  char *t_filename, *Tmp_dir;
+  char *t_filename;
   char home[BUFSIZ];
 #endif      
 
@@ -166,10 +166,6 @@ int CheckSchedule(OpenMessageRes * l_omr, Schedule * schedule, int WeeklyCheck, 
 #ifdef LIBMHC
   if(WeeklyCheck){
     t_filename = (char*)malloc(BUFSIZ * 2);
-    Tmp_dir = (char*)malloc(BUFSIZ);
-
-    sprintf(Tmp_dir, "/tmp/xhtmp%s", getenv("USER"));
-    mkdir(Tmp_dir, S_IRWXU);
 
     t_filename[0] = '\0';
     sprintf(t_filename, "%s", tempnam(Tmp_dir, "xhtmp"));
@@ -224,7 +220,6 @@ int CheckSchedule(OpenMessageRes * l_omr, Schedule * schedule, int WeeklyCheck, 
 
     CloseMHC(mhc_ptr);
     free(t_filename);
-    free(Tmp_dir);
   }
 #endif      
     

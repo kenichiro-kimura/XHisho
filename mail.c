@@ -22,7 +22,6 @@ static const char ResName[][256] = {"newmail", "nomail"};
 
 static XtInputId YoubinId;
 static int virgine = 1;
-static char Tmp_dir[256];
 static int isMailChecked;
 static char YoubinFile[256];
 
@@ -363,6 +362,9 @@ int CheckYoubinNow(XtPointer cl, XtIntervalId * id){
   char* tmp;
   char* message;
   struct stat MailStat;
+  int mode;
+
+  mode = (int)cl;
 
   tmp = (char*)malloc(BUFSIZ);
   message = (char*)malloc(BUFSIZ);
@@ -380,6 +382,7 @@ int CheckYoubinNow(XtPointer cl, XtIntervalId * id){
   else
     sprintf(message,tmp,num_of_mail);
 
+  /*
   i = isMail(&OldSize,num_of_mail);
 
   switch (i) {
@@ -407,10 +410,16 @@ int CheckYoubinNow(XtPointer cl, XtIntervalId * id){
 
     break;
   }
+  */
+
+  if(num_of_mail > 0 && mode){
+    XtVaSetValues(label, XtNlabel, message, NULL);
+    MailPopup();
+  }
 
   free(tmp);
   free(message);
-  return i;
+  return num_of_mail;
 }
 
 Widget CreateMailAlert(Widget w, int Mode)
@@ -741,10 +750,7 @@ static void YoubinInit()
     exit(1);
   }
 
-  sprintf(Tmp_dir, "/tmp/xhtmp%s-%d", getenv("USER"),getpid());
-  sprintf(YoubinFile, "/tmp/xhtmp%s/xhyoubin", getenv("USER"));
-
-  mkdir(Tmp_dir, S_IRWXU);
+  sprintf(YoubinFile, "/tmp/xhtmp%s-%d/xhyoubin", getenv("USER"),getpid());
 
   if (virgine) {
     sprintf(command, "exec %s -m %s -s %s", mar.y_command
@@ -935,6 +941,7 @@ static int Youbin_exit(Display * disp)
    **/
   kill(0, SIGTERM);
   return 0;
+  rmdir(Tmp_dir);
 }
 
 static void MailPopup(){

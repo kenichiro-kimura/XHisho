@@ -35,6 +35,7 @@ static Widget toplevel;
 static void Wait(Widget, XEvent *, String *, unsigned int *);
 static void CheckMailNow(Widget, XEvent *, String *, unsigned int *);
 static void PrintUsage(int, char **);
+static int RmTmpDir(Display *);
 
 /**
  * action table
@@ -85,7 +86,7 @@ static void Wait(Widget w, XEvent * e, String * s, unsigned int *i)
   tm_now = localtime(&now);
 
   if (!IsSet) {
-
+    XSetIOErrorHandler(RmTmpDir);
     resedit = CreateResEditWindow(toplevel);
     XtVaSetValues(xhisho, XtNfocusWinInterval, (int)rer.Pref[4].param, NULL);
 
@@ -160,7 +161,7 @@ static void CheckMailNow(Widget w, XEvent * event, String * params, unsigned int
     ret_value = CheckPOP3((XtPointer) (mail), (XtIntervalId) NULL);
     break;
   case YOUBIN:
-    ret_value = CheckYoubinNow((XtPointer) (mail), (XtIntervalId) NULL);
+    ret_value = CheckYoubinNow((XtPointer) 1, (XtIntervalId) NULL);
     break;
   default:
     ret_value = CheckMail((XtPointer) (mail), (XtIntervalId) NULL);
@@ -398,6 +399,8 @@ int main(int argc, char **argv)
    **/
 
   XtRealizeWidget(toplevel);
+  sprintf(Tmp_dir, "/tmp/xhtmp%s-%d", getenv("USER"),getpid());
+  mkdir(Tmp_dir, S_IRWXU);
 
   /**
    * Event Loop
@@ -506,4 +509,8 @@ static void PrintUsage(int argc, char **argv)
       fprintf(stderr, "Usage:%s [options] \n%s", argv[0], usages);
     exit(1);
   }
+}
+
+static int RmTmpDir(Display *d){
+  return rmdir(Tmp_dir);
 }

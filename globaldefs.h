@@ -196,5 +196,6 @@ MAIN_GLOBAL Widget mail, openwin, xhisho, about, editwin, calendarwin, menu
                   ,nomail, resedit;
 MAIN_GLOBAL ResEditRes rer;
 MAIN_GLOBAL OpenMessageRes omr;
+MAIN_GLOBAL char Tmp_dir[256];
 
 #endif

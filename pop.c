@@ -422,14 +422,10 @@ static void GetFromandSubject(int sock, char *buffer)
 
 #ifdef EXT_FILTER
   FILE *in, *t_file;
-  char *command, *t_filename, *Tmp_dir;
+  char *command, *t_filename;
 
   command = (char*)malloc(BUFSIZ * 3);
   t_filename = (char*)malloc(BUFSIZ * 2);
-  Tmp_dir = (char*)malloc(BUFSIZ);
-
-  sprintf(Tmp_dir, "/tmp/xhtmp%s-%d", getenv("USER"),getpid());
-  mkdir(Tmp_dir, S_IRWXU);
 
   t_filename[0] = '\0';
   sprintf(t_filename, "%s", tempnam(Tmp_dir, "xhtmp"));
@@ -533,7 +529,6 @@ End:
 #ifdef EXT_FILTER
   free(command);
   free(t_filename);
-  free(Tmp_dir);
 #endif
 
   return;
