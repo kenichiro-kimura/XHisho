@@ -489,9 +489,12 @@ static void GetMessageFromKawari(Widget w, int * i, XtInputId * id){
   free(message_ptr);
 
   message_ptr = SJIS2EUC(kbuf.buffer);
+
   *kbuf.buffer = '\0';
   AddBuffer(&kbuf,message_ptr,0);
+
   free(message_ptr);
+
 
 #ifdef DEBUG
   printf("#%s\n",kbuf.buffer);
@@ -8672,6 +8675,8 @@ static unsigned char* SSTPParser(unsigned char* in)
   int i;
 
   static const char escape[][256] = {
+    "%sakuraname2",
+    "%sakuraname",
     "%selfname2",
     "%selfname",
     "%username",
@@ -8695,6 +8700,10 @@ static unsigned char* SSTPParser(unsigned char* in)
 
   kbuf.buffer = (unsigned char*)strdup(in);
   kbuf.size = strlen(in) + 1;
+
+#ifdef DEBUG
+  printf("%s\n",in);
+#endif
 
   for(i = 0; strlen(escape[i]) && strchr(kbuf.buffer,'%');i++)
     ReplaceSSTPMetaString(&kbuf,escape[i]);
@@ -8752,9 +8761,9 @@ static unsigned char* Meta2Message(const unsigned char* in){
 
   if(!strcmp(in,"%username")){
     return (unsigned char*)strdup(opr.u_name);
-  } else if (!strcmp(in,"%selfname")){
+  } else if (!strcmp(in,"%selfname") || !strcmp(in,"sakuraname")){
     return (unsigned char*)strdup(opr.s_name);
-  } else if (!strcmp(in,"%selfname2")){
+  } else if (!strcmp(in,"%selfname2")|| !strcmp(in,"sakuraname2")){
     return (unsigned char*)strdup(opr.sn_name);
   } else if (!strcmp(in,"%keroname")){
     return (unsigned char*)strdup(opr.k_name);
