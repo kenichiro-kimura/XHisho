@@ -4,7 +4,7 @@
 #include "ResEdit.h"
 #include "mail.h"
 
-static Widget top, resedit, ok, scrollbar[5], label[5], parameter[5], toplabel,
+static Widget top, resedit, ok, scrollbar[MAX_PREF_NUM], label[MAX_PREF_NUM], parameter[MAX_PREF_NUM], toplabel,
     cancel;
 
 static int PrefHash(char *);
@@ -469,6 +469,5 @@ void WritePrefFile()
   mar.m_check = (int) rer.Pref[1].param;
   mar.from_maxlen = (int) rer.Pref[2].param;
   mar.mail_lines = (int) rer.Pref[3].param;
-
   fclose(fp);
 }

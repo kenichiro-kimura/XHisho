@@ -44,6 +44,8 @@
 #define XtCExtFilter "ExtFilter"
 #define XtNscheduleAlertSound "scheduleAlertSound"
 #define XtCScheduleAlertSound "ScheduleAlertSound"
+#define XtNchimeSound "chimeSound"
+#define XtCChimeSound "ChimeAlertSound"
 #define XtNscheduleEditMessage "scheduleEditMessage"
 #define XtCScheduleEditMessage "ScheduleEditMessage"
 #define XtNweeklyEditMessage "weeklyEditMessage"
@@ -105,6 +107,7 @@ typedef struct {
   int leave_t;
   String ext_filter;
   String sound_f;
+  String chimesound_f;
   String edit_m;
   String edit_w;
   String sched_dir;

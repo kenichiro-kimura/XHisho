@@ -14,6 +14,7 @@ static int virgine = 1;
 static Schedule *schedule;
 static int Edited_Month, Edited_Day;
 static XtIntervalId LeaveWindowID = 0;
+static XtIntervalId TimeoutID = 0;
 static const char ResName[][128] = {"open1", "open2", "open3", "alert1", "alert2"
 ,"alertformat", "schedule", "messagearg"};
 
@@ -30,7 +31,7 @@ static int CheckIsSchedPast(int, Schedule *);
 static void ChangeReturn(String, char *);
 static void ScheduleSort();
 static int ChangeColorPastSched();
-static void OpenPopup();
+static void OpenPopup(int);
 static void texteh(Widget ,XtPointer , XEvent *, Boolean *);
 
 /**
@@ -165,6 +166,15 @@ static XtResource resources[] = {
     (XtPointer) OPEN_SOUND_F
   },
   {
+    XtNchimeSound,
+    XtCChimeSound,
+    XtRString,
+    sizeof(String),
+    XtOffsetOf(OpenMessageRes, chimesound_f),
+    XtRImmediate,
+    (XtPointer) OPEN_SOUND_F
+  },
+  {
     XtNscheduleEditMessage,
     XtCScheduleEditMessage,
     XtRString,
@@ -257,6 +267,18 @@ static void Dismiss(Widget w, caddr_t client_data, caddr_t call_data)
   for (i = 0; i < past_index + 1; i++) {
     schedule[i].is_checked = 1;
   }
+}
+
+static void TimerCheck(XtPointer cl, XtIntervalId * id)
+{
+  if (IsPopped(openwin))
+    XtPopdown(top);
+
+  if(TimeoutID){
+    XtRemoveTimeOut(TimeoutID);
+    TimeoutID = 0;
+  }
+    
 }
 
 static void texteh(Widget w, XtPointer p, XEvent *ev, Boolean *cont)
@@ -1192,7 +1214,7 @@ void CheckTimeForSchedule(XtPointer cl, XtIntervalId * id)
      **/
     XtDestroyWidget(XtParent(openwin));
     openwin = CreateEditorWindow(cl, 0, *tmp);
-    OpenPopup();
+    OpenPopup(1);
   }
 
   if (ChangeColorPastSched()) {
@@ -1212,7 +1234,7 @@ void CheckTimeForSchedule(XtPointer cl, XtIntervalId * id)
 
     if (check == 0) {
       HaveSchedule = 1;
-      OpenPopup();
+      OpenPopup(0);
     }
   } else {
     HaveSchedule = 0;
@@ -1229,12 +1251,30 @@ void CheckTimeForSchedule(XtPointer cl, XtIntervalId * id)
 				  ,cl);
 }
 
-static void OpenPopup(){
+static void OpenPopup(int mode){
+  /*
+   * mode = 0: alert
+   *      = 1: chime
+   */
   XtVaSetValues(xhisho, XtNanimType, SCHEDULE, NULL);
   XtVaSetValues(openwin, XtNwindowMode, 0, NULL);
   XtPopup(XtParent(openwin), XtGrabNone);
 
-  if (omr.sound_f && UseSound) {
-    SoundPlay(omr.sound_f);
+  if(UseSound){
+    switch(mode){
+    case 0:
+      if (omr.sound_f)
+	SoundPlay(omr.sound_f);
+      break;
+    case 1:
+      if (omr.chimesound_f)
+	SoundPlay(omr.chimesound_f);
+      break;
+    }
   }
+
+  if(mode)
+    TimeoutID = XtAppAddTimeOut(XtWidgetToApplicationContext(top)
+				,mar.m_timeout * 1000, TimerCheck
+				, (XtPointer) top);
 }

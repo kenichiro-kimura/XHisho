@@ -89,7 +89,7 @@ typedef struct _Preference {
 #define INTERVAL_LABEL "mail check interval(sec.)"
 #define LENGTH_LABEL "message columns"
 #define LINES_LABEL "message lines"
-#define FOCUS_LABEL "focuswin interval"
+#define FOCUS_LABEL "focuswin interval(sec.)"
 
 #define MAX_PREF_NUM 5
 
