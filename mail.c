@@ -802,8 +802,6 @@ static void YoubinInit()
 {
   char *command;
   struct stat Ystat;
-  static FILE* pfp;
-  static FILE* pfp2;
   int youbin_pfp[2];
 
   command = (char*)malloc(256);
@@ -816,24 +814,39 @@ static void YoubinInit()
   sprintf(YoubinFile, "/tmp/xhtmp%s-%d/xhyoubin", getenv("USER"),getpid());
 
   if (virgine) {
-    sprintf(command,"%s -m %s -s %s",mar.y_command,YoubinFile,mar.y_server);
-    pfp2 = popen(command,"r");
-    if(!pfp2){
-      perror("youbin_init:execl");
+    if((youbin_pid[0] = fork()) < 0){
+      perror("youbin fork");
       exit(1);
     }
-
-    sprintf(command,"%s -b -s %s",mar.y_command,mar.y_server);
-    pfp = popen(command,"r");
-    if(!pfp){
-      perror("youbin_init:execl");
+    if(youbin_pid[0] == 0){
+      execl(mar.y_command,"youbin","-m",YoubinFile,"-s",mar.y_server,NULL);
       exit(1);
     }
+    if(pipe(youbin_pfp)){
+      perror("youbin pipe");
+      exit(1);
+    }
+    if((youbin_pid[1] = fork()) < 0){
+      perror("youbin fork");
+      exit(1);
+    }
+    if(youbin_pid[1] == 0){
+      close(1);
+      dup(youbin_pfp[1]);
+      close(youbin_pfp[1]);
+      execl(mar.y_command,"youbin","-b","-s",mar.y_server,NULL);
+      exit(1);
+    }
+    close(youbin_pfp[1]);
     virgine = 0;
   }
-
+  if ((youbin_fd = fdopen(youbin_pfp[0], "r")) == NULL) {
+    perror("youbin fdopen");
+    exit(1);
+  }
+ 
   YoubinId = XtAppAddInput(XtWidgetToApplicationContext(top[0]),
-			   fileno(pfp), (XtPointer) XtInputReadMask,
+			   fileno(youbin_fd), (XtPointer) XtInputReadMask,
 			   (XtInputCallbackProc) CheckYoubin, NULL);
   free(command);
 }

@@ -146,7 +146,11 @@ void Quit(Widget w, XEvent * event, String * params, unsigned int *num_params)
   while((i = rmdir(Tmp_dir)) < 0);
 
   if(Biff == YOUBIN){
-    kill(0, SIGTERM);
+    fclose(youbin_fd);
+    kill(youbin_pid[1],SIGTERM);
+    /*while(wait(&i) != youbin_pid[1]);*/
+    kill(youbin_pid[0],SIGTERM);
+    /*while(wait(&i) != youbin_pid[0]);*/
   }
 
   exit(0);

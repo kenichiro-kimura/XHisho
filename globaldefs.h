@@ -202,5 +202,6 @@ MAIN_GLOBAL OpenMessageRes omr;
 MAIN_GLOBAL char Tmp_dir[256];
 MAIN_GLOBAL int ExistMailNum,HaveSchedule;
 MAIN_GLOBAL char YoubinFile[256];
-MAIN_GLOBAL int youbin_pid[2];
+MAIN_GLOBAL pid_t youbin_pid[2];
+MAIN_GLOBAL FILE* youbin_fd;
 #endif
