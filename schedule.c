@@ -48,7 +48,7 @@ int CheckSchedule(OpenMessageRes * l_omr, Schedule * schedule, int WeeklyCheck, 
   FILE *inputfile;
   time_t tval;
   int i, j,is_week,nth_week,uru_adjust;
-  char filename[128], day[3], month[4], tdate[5], week[2], year[5];
+  char filename[128], day[3], month[3], tdate[5], week[2], year[5];
   unsigned char *tmp1, *tmp2, *tmp3, *tmp4, *leave;
   unsigned char *string_index;
 
@@ -78,19 +78,15 @@ int CheckSchedule(OpenMessageRes * l_omr, Schedule * schedule, int WeeklyCheck, 
    * 今日の日付を取得する。7/20ならdate="0720"になる。
    **/
 
-  strftime(day, 3, "%d", localtime(&tval));
-  strftime(month, 3, "%m", localtime(&tval));
-  strftime(week, 2, "%w", localtime(&tval));
-  strftime(year, 5, "%Y", localtime(&tval));
-  week[1] = '\0';
-  year[4] = '\0';
-  day[2] = '\0';
-  month[2] = '\0';
+  strftime(day, sizeof day, "%d", localtime(&tval));
+  strftime(month, sizeof month , "%m", localtime(&tval));
+  strftime(week, sizeof week, "%w", localtime(&tval));
+  strftime(year, sizeof year, "%Y", localtime(&tval));
+  week[1] = year[4] = day[2] = month[2] = '\0';
 
   strncpy(l_omr->month, month, 2);
-  l_omr->month[2] = '\0';
   strncpy(l_omr->day, day, 2);
-  l_omr->day[2] = '\0';
+  l_omr->month[2] = l_omr->day[2] = '\0';
 
   if (l_omr->xcalendar) {
     setlocale(LC_TIME, "C");
