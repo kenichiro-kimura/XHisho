@@ -1,6 +1,6 @@
 .TH XHISHO 1 "7 July 1999" "X Version 11"
 .SH NAME
-XHisho - X Window System で動く電子秘書
+XHisho - Private secretary on X Window System
 .SH SYNOPSIS
 .B  xhisho
 [toolkit options] [-cgfile [cg filename]] [-timeout [mail window
@@ -9,145 +9,134 @@ command]] [-noclock] [-focus] [-justify [left/center/right]] [-ypos
 [n]] [-shape]  [-yserver [youbin server]] [-pserver [POP3 server]]
 .SH DESCRIPTION
 .I XHisho
-は
+is your private secretary on 
 .B X Window System
-で動く秘書プログラムです。以下のような機能があります。
+.
 
 .TP 15
-biff
-メール到着を通知してくれます。
-From: Subject: も表示され、外部フィルタを用いてMIMEをデコードすること
-もできます。
+Biff
+XHisho works as biff and  show From: and Subject: .
 
 .TP 15
-leave
-予定の5分前に教えてくれます。
+Leave
+XHisho notices schedule before some min.
 
 .TP 15
-時計
-現在時刻が表示されます。
+Clock
+XHisho works as accessory clock.
 
 .TP 15
-スケジューラ
-今日の予定が表示されます。予定を編集することもできます。
+Scheduler
+XHisho notices your today's schedule.
 
 .TP 15
-あいさつ
-起動時に、時間にしたがって異なるあいさつを表示します。
+Greeting
+On startup,XHisho greets you.
 
 .TP 15
-喋る
-Windowsのwaveファイルをイベントに応じて再生することができます。
+Talk
+XHisho can play Windows' wave file.
 
 .SH OPERATION
-基本的な操作は次の通りです。
+Basic actions.
 
 .TP 12
-左クリック
-メニューの表示/非表示
+Click 1 button
+Show/Hide menu.
 
 .TP 12
-中クリック
-今日の予定の表示/非表示
+Click 2 button
+Show/Hide today's schedule.
 
 .TP 12
-右クリック
-メールのチェック/ウインドウの非表示
+Click 3 button
+Show/Hide mail check window.
 
 .SH MENU
-左クリックで表示されるメニューには、つぎの項目があります。
+Menu items.
 
 .TP 20
-起動のあいさつ表示
-起動時のあいさつを表示します。
+Show opening message.
 
 .TP 20
-今日の予定表示
-今日の予定を表示します。中クリックでも同じです。
+Show today's schedule.
 
 .TP 20
-予定を編集
-カレンダが表示されるので、予定を編集したい日を左クリックします。エディッ
-ト画面が開くので、そこで予定を入力できます。
+Edit schedule.
 
 .TP 20
 About XHisho
-XHishoのクレジットを表示します。
 
 .TP 20
-終了
-XHishoを終わります。Shift + 右クリックでも同じです。
+Quit.
 
 .SH OPTIONS
 .I XHisho
-は
-.B X Toolkit
-の標準オプション以外に、以下のようなオプションが指定できます。
+has some options.
 
 .TP 20
 .BI  \-cgfile " filename"
-張り付けるCGを指定します。
+Specify CG file.
 
 .TP 20
 .BI  \-timeout " n"
-メール着信を知らせるふきだしが消えるまでの時間を秒単位で指定します。
+Timeout for popdown mail window.
 
 .TP 20
 .BI  \-mailcheck " n"
-ローカルなメールスプールを調べるインターバルを秒単位で指定します。
+Interval for checking local mail spool.
 
 .TP 20
 .BI \-filter " command"
-外部フィルタに使うコマンドを指定します。出力がEUCになるものを選んでく
-ださい。
+Specify external filter command.
 
 .TP 20
 .BI \-noclock
-時計を表示しません。
+Don't show clock.
 
 .TP 20
 .BI \-focus 
-focusの当っているウインドウのタイトルバーに"お座り"します。
+Sit on active window's title bar.
 
 .TP 20
 .BI \-justify " left/center/right"
-タイトルバーのどの位置に座るか指定します。
+Specify where sit on.
 
 .TP 20
 .BI \-ypos " n"
-タイトルバーの座る位置の高さを調整します。
+Height for sitting on title bar.
 
 .TP 20
 .BI \-shape
-BMPファイルの背景を透明にします。
+Use transparent BMP background.
 
 .TP 20
 .BI \-message " message filename"
-メッセージファイルを指定します。
+Specify message file.
 
 .TP 20
 .BI \-scheddir " dir_name"
-スケジュールファイルのあるディレクトリを指定します。
+Specify schedule directory.
 
 .TP 20
 .BI \-chime
-0分チャイムを使います。
+Use 0-hour chime.
 
 
 .TP 20
 .BI  \-yserver " servername"
-YOUBINサーバの名前を指定します。
+Specify Youbin server.
 
 .TP 20
 .BI  \-pserver " servername"
-POP3サーバの名前を指定します。
+Specify POP3 server.
 
 .SH BUGS
-色々(笑)。見つけたら報告してください。
+Many :-) If you find bugs,please send me.
 
 .SH AUTHORS
 .sp
-木村健一郎(Ken'ichirou Kimura)
+Ken'ichirou Kimura
 
 HomePage http://www.db.is.kyushu-u.ac.jp/~kimura/xhisho/
 

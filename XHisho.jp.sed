@@ -1,6 +1,6 @@
 XHisho*international: TRUE
 XHisho*thickness: 5
-XHisho*messageFile: XHISHODIR/Messages
+XHisho*messageFile: IXHISHODIR/Messages
 
 XHisho*FontSet: -*-fixed-medium-r-normal--16-*
 XHisho*cgFile: XHISHODIR/hisho.bmp
@@ -33,7 +33,7 @@ XHisho*clockArg: hMs
 !!
 
 XHisho.OpenMessage.zeroChime: True
-XHisho.OpenMessage.configFile: XHISHODIR/aisatu.cfg
+XHisho.OpenMessage.configFile: IXHISHODIR/aisatu.cfg
 XHisho.OpenMessage.messageArg: hme
 XHisho.OpenMessage.pastSchedColor: LightGrey
 XHisho.OpenMessage.alertSchedColor: red

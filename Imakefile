@@ -31,8 +31,8 @@ LIB_XPM = -lXpm
 #endif
 
 #ifdef PERSONAL
-BINDIR	= $(HOME)/bin/
-XHISHODIR = $(HOME)/xhisho/
+BINDIR	= $(HOME)/bin
+XHISHODIR = $(HOME)/xhisho
 LOCALEDIR = $(HOME)/$(LANG)/app-defaults
 #endif
 
@@ -67,6 +67,9 @@ POP = -DAPOP -DPOP
 #ifdef ABOOK
 ADD = -DADDRESSBOOK -DPETNAME
 #endif
+
+IXHISHODIR = $(XHISHODIR)/$(LANG)
+
 
 
 DEFINES = $(FILTER) $(PET) $(SOUND) $(YOUBIN) $(POP) $(ADD)
@@ -121,9 +124,11 @@ XHisho.ad:: XHisho.ad.sed
 #ifdef I18N
 XHisho.jp:: XHisho.jp.sed
 	sed 's!XHISHODIR!$(XHISHODIR)!' XHisho.jp.sed >$@
+	sed 's!IXHISHODIR!$(IXHISHODIR)!' XHisho.jp.sed >$@
 #endif
 
-
+xhisho.man:: man1/xhisho.1
+	cp man1/xhisho.1 xhisho.man
 
 #ifdef AKARI
 sample/Messages.akari:: sample/Messages.akari.sed
@@ -140,6 +145,7 @@ MakeDirectories(install,$(XHISHODIR))
 
 #ifdef I18N
 MakeDirectories(install,$(LOCALEDIR))
+MakeDirectories(install,$(IXHISHODIR))
 #endif
 
 #ifdef PERSONAL
@@ -156,15 +162,15 @@ InstallNonExec(XHisho.jp,$(LOCALEDIR)/XHisho)
 
 
 #ifdef I18N
-InstallNonExec(sample/aisatu.cfg,$(XHISHODIR))
-InstallNonExec(sample/xhs.weekly.jp,$(XHISHODIR)/xhs.weekly)
-InstallNonExec(sample/Messages.jp,$(XHISHODIR)/Messages)
-InstallNonExec(sample/xhs.holiday,$(XHISHODIR)/xhs.holiday)
-#else
+InstallNonExec(sample/aisatu.cfg,$(IXHISHODIR))
+InstallNonExec(sample/xhs.weekly.jp,$(IXHISHODIR)/xhs.weekly)
+InstallNonExec(sample/Messages.jp,$(IXHISHODIR)/Messages)
+InstallNonExec(sample/xhs.holiday,$(IXHISHODIR)/xhs.holiday)
+#endif
+
 InstallNonExec(sample/xhs.weekly,$(XHISHODIR))
 InstallNonExec(sample/Messages,$(XHISHODIR))
 InstallNonExec(sample/greeting.cfg,$(XHISHODIR))
-#endif
 
 InstallNonExec(sample/Petname,$(XHISHODIR))
 
