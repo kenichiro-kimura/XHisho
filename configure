@@ -1318,8 +1318,9 @@ test "$with_png" = "yes"
 
 if test "$with_png" = "yes";
 then
-echo $ac_n "checking for png_create_read_struct in -lpng""... $ac_c" 1>&6
-echo "configure:1323: checking for png_create_read_struct in -lpng" >&5
+    LDFLAGS="$LDFLAGS -lm"
+    echo $ac_n "checking for png_create_read_struct in -lpng""... $ac_c" 1>&6
+echo "configure:1324: checking for png_create_read_struct in -lpng" >&5
 ac_lib_var=`echo png'_'png_create_read_struct | sed 'y%./+-%__p_%'`
 if eval "test \"`echo '$''{'ac_cv_lib_$ac_lib_var'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
@@ -1327,7 +1328,7 @@ else
   ac_save_LIBS="$LIBS"
 LIBS="-lpng  $LIBS"
 cat > conftest.$ac_ext <<EOF
-#line 1331 "configure"
+#line 1332 "configure"
 #include "confdefs.h"
 /* Override any gcc2 internal prototype to avoid an error.  */
 /* We use char because int might match the return type of a gcc2
@@ -1338,7 +1339,7 @@ int main() {
 png_create_read_struct()
 ; return 0; }
 EOF
-if { (eval echo configure:1342: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
+if { (eval echo configure:1343: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
   rm -rf conftest*
   eval "ac_cv_lib_$ac_lib_var=yes"
 else
@@ -1458,7 +1459,10 @@ test "$with_libmhc" = "yes" && cat >> confdefs.h <<\EOF
 EOF
 
 
-
+sed "/^config/!d" /usr/X11R6/bin/xmkmf|sed 's/"/\\"/g' | sed 's/\//\\\//g' > _xmkmf
+X_CONFIG_DIR=`sed "/^config/!d" _xmkmf`
+sed "s/CONFIG_DIR/$X_CONFIG_DIR/" my_xmkmf.in > my_xmkmf
+chmod +x my_xmkmf
 
 
 trap '' 1 2 15
