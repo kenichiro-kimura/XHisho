@@ -711,6 +711,11 @@ static void InsertMessage(XtPointer cl,XtIntervalId* id)
 					    , NULL);
 	}
 #ifdef USE_KAWARI
+	if(KAWARITimeoutId){
+	  XtRemoveTimeOut(KAWARITimeoutId);
+	  KAWARITimeoutId = 0;
+	}
+
 	KAWARITimeoutId = XtAppAddTimeOut(XtWidgetToApplicationContext(local_option)
 					  , opr.k_wait * 1000
 					  , (XtTimerCallbackProc) GetMessageFromKawari
