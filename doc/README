@@ -1,0 +1,59 @@
+******************************************************************
+ XHisho Ver. 1.00 [Lime Release 0]
+ Copyright(c) 1998,1999 Ken'ichirou Kimura (kimura@db.is.kyushu-u.ac.jp)
+    ******************************************************************
+
+1.What is XHisho ?
+
+XHisho is your private secretary on X Window System. It works as
+biff,scheduler, and so on.
+
+You can custom every message,CG,etc.
+
+
+2.Ability
+
+ (1) As accessory clock
+ (2) As biff. You can use POP3 and Youbin.
+ (3) As scheduler. XHisho notice your today's schedule.
+ (4) As "leave" command. XHisho notice schedule before some min.
+
+
+3.How to install
+
+ (1) Edit config.tmpl. 
+ (2) Type "xmkmf -a;make;make install". Xpm library is required.
+
+
+
+4.How to use
+
+% xhisho [toolkit options]
+	 [-cgfile [cg filename]]
+	 [-timeout [mail window timeout]]
+	 [-mailcheck [mail check interval]]
+	 [-clock]
+	 [-focus]
+	 [-justify [left/center/right]]
+	 [-ypos [n]]
+	 [-shape]
+         [-message [message filename]]
+	 [-scheddir [dir_name]]
+	 [-chime]
+	 [-filter [filter command]]
+	 [-yserver [youbin server]]
+	 [-pserver [POP3 server]]
+
+  * Click 1 button,open/close Menu window.
+  * Click 2 button,open/close today's schedule.
+  * Click 3 button,check your mail box/close mail window.
+
+If you want to use POP(or APOP),create ~/.pop_password.
+~/.pop_password has following lines.
+
+USER:your name
+PASS:your password or APOP pass phrase
+
+and,change permission.
+
+%chmod 700 ~/.pop_password

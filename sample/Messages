@@ -1,0 +1,18 @@
+newmail Master, You have new mail.
+nomail Master, You have no new mail.
+open1 Today is %s/%s. Your schedule is
+open2 .
+open3 no schedule.
+alert1 Master,now the time for
+alert2 .
+alertformat %s,from %s:%s
+schedule What is your schedule at %s/%s ?
+menul What's happened ?
+menu0 Show me opening message.
+menu1 Show me today's schedules.
+menu2 Edit schedules.
+menu3 Edit preferences.
+menu4 about XHisho.
+menu5 Quit.
+calendar Calendar for %d th month.
+resource Please change preferences.

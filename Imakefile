@@ -1,0 +1,160 @@
+#include "config.tmpl"
+
+
+XCOMM
+XCOMM	do not touch below
+XCOMM
+
+#ifdef XAW3D
+DEF_XAW3D = -DXaw3D
+DEPXAWLIB = $(USRLIBDIR)/libXaw3d.a
+XAWLIB = -lXaw3d
+#endif
+
+#ifdef FREEBSD22
+LIB_XPG4 = -lxpg4
+#endif
+
+#ifdef SOLARIS
+LIB_SOLARIS = -lnsl -lsocket
+DSP_FILE = "/dev/audio"
+#endif
+
+#ifdef PERSONAL
+BINDIR	= $(HOME)/bin
+XHISHODIR = $(HOME)/xhisho
+#endif
+
+#ifdef USE_SHAPE
+SHAPE = -DSHAPE
+#endif
+
+#ifdef EXT_FILTER
+FILTER = -DEXT_FILTER
+#endif
+
+#ifdef PETNAME
+PET = -DPETNAME
+#endif
+
+#ifdef USE_SOUND
+SOUND = -DUSE_SOUND
+#endif
+
+#ifdef USE_YOUBIN
+YOUBIN = -DYOUBIN
+#endif
+
+#ifdef USE_POP
+#undef USE_YOUBIN
+YOUBIN =
+POP = -DPOP
+#endif
+
+#ifdef USE_APOP
+#undef USE_YOUBIN
+YOUBIN =
+POP = -DAPOP -DPOP
+#endif
+
+#ifdef JAPANESE
+LNG = -DJP
+#endif
+
+#ifdef ABOOK
+ADD = -DADDRESSBOOK -DPETNAME
+#endif
+
+DEFINES = $(DEF_XAW3D) $(FILTER) $(PET) $(SOUND) $(YOUBIN) $(POP) $(SHAPE) $(LNG) $(ADD)
+
+EXTRA_LIBRARIES = -lXpm $(LIB_XPG4) $(LIB_SOLARIS)
+
+DEPLIBS = XawClientDepLibs
+LOCAL_LIBRARIES = XawClientLibs
+
+BASE_OBJS =  mail.o main.o Msgwin.o XHisho.o about.o editor.o schedule.o calendar.o menu.o ResEdit.o load_bmp.o message.o
+
+#ifdef USE_SOUND
+SOUND_OBJS = sound.o
+#endif
+
+#ifdef USE_POP
+POP_OBJS = pop.o
+#endif
+
+#ifdef USE_APOP
+POP_OBJS = pop.o md5c.o
+#endif
+
+#ifdef PETNAME
+PETNAME_OBJS = petname.o
+#endif
+
+OBJS = $(BASE_OBJS) $(SOUND_OBJS) $(POP_OBJS) $(PETNAME_OBJS)
+SRCS = $(OBJS:.o=.c)
+
+#ifdef AKARI
+ComplexProgramTarget(xakari)
+#else
+ComplexProgramTarget(xhisho)
+#endif
+
+#ifdef PERSONAL
+InstallNonExec(XHisho.ad,$(HOME)/XHisho)
+#else
+InstallAppDefaults(XHisho)
+#endif
+
+all:: XHisho.ad
+
+#ifdef AKARI
+XHisho.ad:: XAkari.ad.sed
+	sed 's!XHISHODIR!$(XHISHODIR)!' XAkari.ad.sed  >$@
+#else
+#ifdef JAPANESE
+XHisho.ad:: XHisho.jp.sed
+	sed 's!XHISHODIR!$(XHISHODIR)!' XHisho.jp.sed >$@
+#else
+XHisho.ad:: XHisho.ad.sed
+	sed 's!XHISHODIR!$(XHISHODIR)!' XHisho.ad.sed >$@
+#endif
+#endif
+
+#ifdef AKARI
+sample/Messages.akari:: sample/Messages.akari.sed
+	sed 's!XHISHODIR!$(XHISHODIR)!' sample/Messages.akari.sed | sed 's!YOUR_NAME!$(YOUR_NAME)!' >$@
+
+clean:: 
+	$(RM) XHisho.ad sample/Messages.akari
+#endif
+
+clean:: 
+	$(RM) XHisho.ad
+
+MakeDirectories(install,$(XHISHODIR))
+
+#ifdef JAPANESE
+InstallNonExec(sample/aisatu.cfg,$(XHISHODIR))
+InstallNonExec(sample/xhs.weekly.jp,$(XHISHODIR)/xhs.weekly)
+InstallNonExec(sample/Messages.jp,$(XHISHODIR)/Messages)
+InstallNonExec(sample/xhs.holiday,$(XHISHODIR)/xhs.holiday)
+#else
+InstallNonExec(sample/xhs.weekly,$(XHISHODIR))
+InstallNonExec(sample/Messages,$(XHISHODIR))
+InstallNonExec(sample/greeting.cfg,$(XHISHODIR))
+#endif
+
+InstallNonExec(sample/Petname,$(XHISHODIR))
+
+#ifdef USE_SOUND
+InstallNonExec(sample/newmail.wav,$(XHISHODIR))
+InstallNonExec(sample/schedule.wav,$(XHISHODIR))
+#endif
+
+#ifdef AKARI
+InstallNonExec(sample/aisatu.cfg.akari,$(XHISHODIR)/xhs.aisatu.cfg)
+InstallNonExec(sample/akari.bmp,$(XHISHODIR))
+InstallNonExec(sample/Messages.akari,$(XHISHODIR)/Messages)
+#else
+InstallNonExec(sample/hisho.bmp,$(XHISHODIR))
+#endif

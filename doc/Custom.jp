@@ -1,0 +1,441 @@
+	*****************************
+	 XHishoカスタマイズマニュアル
+	   *****************************
+
+
+1. files and times 〜各種ファイル名と時間の設定〜
+
+張り付けるCGのファイル名やメールをチェックするインターバルを設定します。
+以下のリソースがあります。
+
+XHisho.messageFile:            メッセージファイル。起動オプション 
+                               '-message'でも指定可能。
+
+XHisho.cgfile:                 張り付けるCGファイル名。起動オプション 
+                               '-cgfile'でも指定可能。
+
+XHisho.MailAlert.m_timeout:    メールが来たときの通知ウインドを何秒で
+                               消すか。この時間が経過するかOKをクリッ
+                               クすると、ウインドが消える。
+
+XHisho.MailAlert.mailbox:      メールボックスファイルのあるディレクト
+                               リ。デフォルトは/var/mail/。Linuxだと
+                               /var/spool/mailかな?
+
+XHisho.MailAlert.m_check:      メールをチェックする間隔。メールのチェッ
+                               クにPOP3を指定している場合、1分未満の数
+                               字は1分に置き換えられます(サーバに負荷
+                               をかけすぎないようにするため)。起動オプ
+                               ション'-mailcheck'でも指定可能。
+
+XHisho.MailAlert.petnameFile:  Petnameファイル
+
+XHisho.OpenMessage.configFile: 挨拶データのデータファイル名
+
+XHisho.OpenMessage.scheduleDir: スケジュールファイルを置いておくディレ
+                                クトリ。$HOME以下を指定する。デフォル
+                                トは.  Schedule/ これで、実際のディレ
+                                クトリは$HOME/.Scheduleになる。起動オ
+                                プション '-scheddir'でも指定可能。
+
+XHisho.OpenMessage.leaveTime:  予定の何分前に知らせてくれるかのデフォ
+                               ルト値
+
+XHisho.OpenMessage.zeroChime:  0分チャイムを使うかどうか(TRUE/FALSE)
+                              
+
+
+挨拶データファイルの書式はサンプルのaisatu.cfgを見てください。また、あ
+いさつデータに外部のコマンドの出力を使うこともできます。その場合は
+
+XHisho.OpenMessage.extHelloCommand: 外部コマンド
+
+とします。外部コマンドのサンプルとして、appsディレクトリに「countdown」
+というコマンドのソースを入れています。これは、予定までの時間をカウント
+ダウンしてくれるものです。詳しくはapps/README.jpをご覧下さい。これ以外
+にもtodayなどを使うと面白いかも知れません。
+
+
+
+
+
+2. Messages 〜各種メッセージの設定〜
+
+基本的にメッセージはメッセージファイルに書きます。メッセージファイルの
+書式は
+
+MESSAGE_TAG MESSAGE
+
+と、メッセージのタグのあとに空白を1つあけて、メッセージを書きます。タ
+グには以下のものがあります。
+
+newmali           メール着信を知らせるメッセージ。
+nomail            右ボタンでメールボックスを調べて、メールがなかったと
+                  きのメッセージ
+open1             スケジュールメッセージ(1)。
+open2             スケジュールメッセージ(2)。
+open3             スケジュールメッセージ(3)。
+alert1            お知らせメッセージ(4)。
+alert2            お知らせメッセージ(5)。
+schedule          スケジュールエディットメッセージ
+
+無効なエントリは無視されます。また、未定義のものはリソースに従います。
+メッセージはリソースでの設定とメッセージファイルの設定ではメッセージファ
+イルの方が優先されます。
+
+文字列に"\n"を含めると、改行に置き換わります。
+
+
+スケジュールウインド(起動メッセージウインドも含む)はスケジュールがある
+場合、次のように表示されます。
+
+
+  +-----------------------+
+  | メッセージ(1)         |
+  | (スケジュールのリスト)| 
+ /        .....           |
+ \        .....           |
+  | メッセージ(2)         |
+  +-----------------------+
+
+スケジュールの無い場合は次のように表示されます。
+
+  +-----------------------+
+  | メッセージ(1)         |
+ /                        |
+ \                        |
+  | メッセージ(3)         |
+  +-----------------------+
+
+予定の5分前になると、お知らせメッセージのウインドが開きます。これは、
+次のように表示されます。
+
+  +-----------------------+
+  | メッセージ(4)         |
+  |                       |
+ /  (もうすぐの予定)      | 
+ \                        |
+  | メッセージ(5)         |
+  +-----------------------+
+
+
+これを念頭に置いてカスタムしてください。また、メッセージ(1)の中に%sが
+あると、現れた順に起動時の日付の月、日の順に置き換えられます。例えばデ
+フォルトでは
+
+open1 %s月%s日です。\n今日の予定は
+open2 です。
+open3 何もありません。
+
+となっています。もちろん"\n"は改行に置き換えられます。
+
+
+
+リソースで設定するときは、次のものを変更してください。
+
+
+XHisho.MailAlert.mailLabel:            メール着信を知らせるメッセージ。
+
+XHisho.MailAlert.noMailLabel:           右ボタンでメールボックスを調べ
+                                        て、メールがなかったときのメッ
+                                        セージ
+
+XHisho.OpenMessage.openMessageF:        スケジュールメッセージ(1)。
+
+XHisho.OpenMessage.openMessageL:        スケジュールメッセージ(2)。
+
+XHisho.OpenMessage.openMessageN:        スケジュールメッセージ(3)。
+
+XHisho.OpenMessage.alertMessageF:       お知らせメッセージ(4)。
+
+XHisho.OpenMessage.alertMessageL:       お知らせメッセージ(5)。
+
+XHisho.OpenMessage.scheduleEditMessage: スケジュールエディットメッセージ
+
+
+リソースよりもメッセージファイルが優先されるので、リソースにはデフォル
+トの設定を書き、実際のカスタムはメッセージファイルに書くことをお勧めし
+ます。
+
+
+
+
+3. Schedule list format 〜スケジュールの表示方法〜
+
+
+スケジュールのリストの部分のカスタマイズです。次の2つのリソースを変更します。
+
+
+XHisho.OpenMessage.messageFormat: メッセージのフォーマット
+
+XHisho.OpenMessage.messageArg:    メッセージのデータの並べ方
+
+
+メッセージのフォーマットはメッセージファイルのalertformatタグでも設定
+可能です。
+
+
+スケジュールのデータには「始まる時間の『時』(Hour)」、「始まる時間の
+『分』(Minute)」、「イベント」の3つがあります。この3つのデータをどうい
+う順番で並べ、どのようなメッセージの中に埋め込むかをカスタマイズするこ
+とができます。具体的にはリソースmessageFormatが「どのようなメッセージ
+のどこにデータを埋め込むか」を、リソースmessageArgがFormatの中のどの%s
+がどのデータに対応するかを決定します。messageArgは「h(hour)、m(minute)、
+e(event)」のいづれかからなる連続した文字列で、4文字目以降は意味を持ち
+ません。これでは分かりにくいと思いますので、具体的に例を挙げて説明しま
+す。
+
+まず、標準の場合です。
+
+XHisho.OpenMessage.messageFormat: %s時%s分から%s\n
+XHisho.OpenMessage.messageArg: hme
+
+このように設定すると、Format中の%sが左から順に「Hour,Min,Event」に置き
+換えられます。つまり、データファイルに「0720 会議」とあった場合「07時
+20分から会議」となるわけです。
+
+次に、英語の表記でイベントを最初に表示したい場合です。例えば次のように
+してみましょう。
+
+XHisho.OpenMessage.messageFormat: %s , From %s:%s
+XHisho.OpenMessage.messageArg: ehm
+
+すると、先ほどのスケジュールは「会議 , From 07:20」となります。
+
+最後に、Minは必ず0と分かっているのでHourとEventだけ見たい場合は
+
+XHisho.OpenMessage.messageFormat: %s時から%s
+XHisho.OpenMessage.messageArg: he
+
+とすると、「07時から会議」となります。
+
+以上の例でお分かりいただけたでしょうか？Cでのプログラム経験のある方な
+らばすぐ分かると思います。単純にprintfのフォーマット部分と変数の並べ方
+を指定してるわけです。
+
+
+
+
+4. Colors 〜メッセージの表示色〜
+
+スケジュールリストの文字の色を設定します。以下のリソースがあります。
+
+XHisho.OpenMessage.pastSchedColor: LightGrey
+XHisho.OpenMessage.alertSchedColor: red
+XHisho.OpenMessage.normalSchedColor: black
+
+上から順に「既に時間を過ぎたスケジュール」、「もうすぐ時間になる(5分以
+内)スケジュール」、「これからのスケジュール」の色になります。色はデフォ
+ルトカラーマップから割り当てられますので、/usr/X11R6/lib/X11/rgb.txtで
+も参考にしてください。
+
+また、背景色は
+
+XHisho.OpenMessage.background: (スケジュールの背景)
+XHisho.MailAlert.background:   (biffの背景)
+
+で設定できます。もちろん、まとめて
+
+XHisho*background:
+
+で設定することもできます。
+
+
+
+
+
+5. Clock Format 〜時計表示の設定〜
+
+
+時計表示部分もメッセージ同様Formatを指定できます。以下のリソースを設定
+します。
+
+XHisho*clockFormat:
+XHisho*clockArg:
+
+clockFormatには任意の場所に%sを含められ、それが何に置き換わるかを
+clockArgで指定します。これはスケジュールリストの指定と同様です。
+
+clockArg:には次の文字が使用できます
+
+y:年 m:月 d:日 h:時 M:分 s:秒
+
+例えば標準では
+
+XHisho*clockFormat: %s:%s:%s
+XHisho*clockArg: hMs
+
+日本語表示にしたいときは
+
+XHisho*clockFormat: %s時%s分%s秒
+XHisho*clockArg: hMs
+
+などとします。日付も表示したければ
+
+XHisho*clockFormat: %s月%s日%s時%s分%s秒
+XHisho*clockArg: mdhMs
+
+です。
+
+
+
+
+6. Mail display 〜届いたメールの表示〜
+
+
+メールが届くと、届いたことを知らせるのと同時にそのウインドの中に届いた
+メールのFromとSubject(あれば)を表示します。以下のリソースを設定するこ
+とができます。
+
+
+FromとSubjectのリスト表示の最大桁数と最大行数は
+
+XHisho.MailAlert.fromMaxLen: 50
+XHisho.MailAlert.maxLines: 2
+
+で設定します。上記はデフォルトの値です。これだと最大50文字 x 2行表示さ
+れます。
+
+
+また、外部のフィルタを用いてFromやSubject中のMIMEをデコードすることが
+できます。そのためにはconfig.tmpl中で「#define EXT_FILTER」としてmake
+する必要があります。その時のフィルタコマンドは次のリソースで設定します。
+
+XHisho*extFilter: nkf -e -m
+
+上記のように、「nkf -e -m」がデフォルトになっています。EUCでないと文字
+化けするので、必ずEUCに変換する引数を与えてください。
+
+
+そして、Fromの表示にMew(see http://www.mew.org/)のPetnameを使うことが
+できます。Petnameは次のリソースで設定します。
+
+XHisho.MailAlert.petnameFile: 
+
+
+Mewで使っているPetnameファイルをそのまま使えます。ところが、Mewで使う
+ときはだいたいPetnameファイルもJISで書かれていると思います。EUCに変換
+したものを用意してもいいですが、外部フィルタを使えるようにしているのな
+ら、自動的にフィルタを通してくれます。
+
+また、最新のMewで使われているアドレス帳も使えます。アドレス帳のファイ
+ル名は ~/.im/Addrbook 決めうちです。「#define ABOOK」でコンパイルする
+と使えます。
+
+
+
+
+7. sounds 〜wavファイルの設定〜
+
+
+config.tmplで#define USE_SOUNDとしてコンパイルすると、FreeBSDとLinuxで
+はWindows形式のwavファイルを鳴らすことができます。鳴らすことのできる場
+面は、メールが届いたときと予定の5分前(カスタム可)に教えてくれるときで
+す。
+
+メールが届いたときに鳴らすファイルは
+
+XHisho.MailAlert.newMailSound: newmail.wav
+
+で、予定を知らせる時に鳴らすファイルは
+
+XHisho.OpenMessage.scheduleAlertSound: schedule.wav
+
+で設定します。
+
+また、外部の再生コマンドを指定することもできます。再生コマンドは
+
+XHisho*extSoundCommand:
+
+で設定します。この文字列中に「%s」が含まれると、そこが音声ファイルに置
+き換えられます。例えばauファイルであれば
+
+XHisho*extSoundCommand: cat %s >/dev/audio
+
+でしょう。FreeBSDとLinux以外ではこれを指定しないと音は鳴りません。
+
+
+
+
+
+8.Menu 〜メニューの設定〜
+
+
+メニューでは次のリソースをカスタムできます。
+
+XHisho.Menu.menuLabel: メニューのラベル
+XHisho.Menu.itemHead:  メニューアイテムの頭の記号
+XHisho.Menu.menuItem0: 起動時のあいさつウインドを表示するメニューの項目名
+XHisho.Menu.menuItem1: 今日の予定を表示するメニューの項目名
+XHisho.Menu.menuItem2: 予定を編集するメニューの項目名
+XHisho.Menu.menuItem3: 設定を変更するメニューの項目名
+XHisho.Menu.menuItem4: XAkariについてを表示するメニューの項目名
+XHisho.Menu.menuItem5: 終了するメニューの項目名
+
+メッセージファイルのタグ(menul、menu0〜menu5)でも設定可能です。
+
+「メニューアイテムの頭の記号」はデフォルトで「●」になっていますので、
+メニューは
+
+  +-----------------------+
+  | ラベル                |
+  |                       |
+  | ●メニュー0           |
+  | ●メニュー1           |
+ /  ●メニュー2           |
+ \  ●メニュー3           |
+  | ●メニュー4           |
+  | ●メニュー5           |
+  |                       |
+  +-----------------------+
+
+と表示されます。
+
+
+
+
+9. Calendar 〜カレンダーの表示の設定〜
+
+カレンダーの表示では次のリソースをカスタムすることができます。
+
+XHisho.Calendar.calendarLabel: カレンダーのラベル
+XHisho.Calendar.prevButton:    先月のカレンダーに戻るボタンのラベル
+XHisho.Calendar.nextButton:    来月のカレンダーに進むボタンのラベル
+XHisho.Calendar.existColor:    予定のある日の表示色
+
+カレンダーラベルはメッセージファイルのタグcalendarでも設定可能です。
+
+
+
+
+
+10. ResEdit 〜設定変更ウインドウの設定〜
+
+メニューから「設定の変更」を選ぶと、メールウインドウのタイムアウト、メー
+ルチェックのインターバル、From:の表示の文字数、From:の表示の行数の4つ
+の設定を変更できます。この画面表示は、次のリソースをカスタムすることが
+できます。
+
+XHisho.ResEdit.resEditLabel:  ウインドウのラベル
+XHisho.ResEdit.resEditLabel0: タイムアウトのラベル
+XHisho.ResEdit.resEditLabel1: インターバルのラベル
+XHisho.ResEdit.resEditLabel2: メッセージの長さのラベル
+XHisho.ResEdit.resEditLabel3: メッセージの行数のラベル
+
+ウインドウのラベルはメッセージファイルのタグresourceでも設定可能です。
+
+
+
+
+
+11. focusWin 〜focusWinの設定〜
+
+focusWin関係のリソースには以下のものがあります。
+
+!XHisho*focusYoff: 縦方向のずれ。起動オプション '-ypos'でも指定可能。
+!XHisho*justify:   focusWinをウインドウのどの位置に表示するか
+                   (left/center/right)。起動オプション '-justify'でも指
+                   定可能。
+
+座っている人物のCGを使っているが、どうしても座らずに宙に浮いているよう
+に見える(^^;)場合は、focusYoffを調整してみてください。

@@ -1,0 +1,80 @@
+XCOMM 	Configuration file for XHisho
+XCOMM
+
+CC = gcc
+XHISHODIR = $(LIBDIR)/xhisho
+
+CDEBUGFLAGS = -g -Wall
+XCOMM CCOPTIONS = 
+
+
+XCOMM
+XCOMM FreeBSD2.2x or later and use I18N messages ?
+XCOMM
+
+#define FREEBSD22
+
+XCOMM
+XCOMM Solaris ?
+XCOMM
+
+#undef SOLARIS
+
+XCOMM
+XCOMM Install all files your home directory?
+XCOMM
+
+#define PERSONAL
+
+XCOMM
+XCOMM Use external filter program for printing From: and Subject: ?
+XCOMM  (default filter is 'nkf -e -m'
+
+#define EXT_FILTER
+
+XCOMM
+XCOMM Use Petname for printing From: ?
+XCOMM
+
+#define PETNAME
+
+XCOMM
+XCOMM Use Mew's address book for Petname. but,it is not tested enough...
+XCOMM
+
+#undef ABOOK
+
+XCOMM
+XCOMM Play sound file at event?
+XCOMM On FreeBSD & Linux, XHisho can Play Windows wave file.
+XCOMM Other OS, use external sound command.
+XCOMM 
+
+#undef USE_SOUND
+
+XCOMM
+XCOMM Use youbin ?
+XCOMM
+
+#undef USE_YOUBIN
+
+XCOMM
+XCOMM Use POP3 ? Choose APOP or POP.
+XCOMM
+
+#undef USE_APOP
+#undef USE_POP
+
+XCOMM
+XCOMM Use Japanese resource ?
+XCOMM
+
+#define JAPANESE
+
+XCOMM
+XCOMM ? ^^;
+XCOMM
+
+#undef AKARI
+
+YOUR_NAME = ¹ÀÇ·
