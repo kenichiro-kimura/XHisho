@@ -315,7 +315,6 @@ static void Realize(Widget w, XtValueMask * valueMask, XSetWindowAttributes * at
 
   DISPLAY = XtDisplay(w);
   WINDOW = XtWindow(w);
-
   if (!xhw->xhisho.c_draw) {
     xhw->label.label_height = 0;
     clock_height = 0;
@@ -345,8 +344,8 @@ static void Realize(Widget w, XtValueMask * valueMask, XSetWindowAttributes * at
 
   if(xhw->xhisho.i_info->num_of_images > 1)
     xhw->xhisho.cg_sec = ((xhw->xhisho.i_info->image) + CG_NUM)->secs;
-
   SetSize(xhw);
+
   XtResizeWidget(XtParent(xhw), WIDTH, HEIGHT + clock_height, FRAME_WIDTH);
   XtResizeWidget((Widget) xhw, WIDTH, HEIGHT + clock_height
 		 ,FRAME_WIDTH);

@@ -30,6 +30,10 @@
 static int IsSet = 0;		/** 1回目のExposeでだけ子Widgetを作る **/
 static Widget toplevel;
 
+#ifdef USE_UNYUU
+static Widget unyu,form;
+#endif
+
 /**
  * local function
  **/
@@ -89,7 +93,6 @@ static void Wait(Widget w, XEvent * e, String * s, unsigned int *i)
 {
   time_t now;
   struct tm *tm_now;
-
 
   time(&now);
   tm_now = localtime(&now);
@@ -390,9 +393,30 @@ int main(int argc, char **argv)
   /**
    * main windowを生成。class名はxhisho。
    **/
+#ifdef USE_UNYUU
+  form = XtVaCreateManagedWidget("form",formWidgetClass,toplevel
+				 ,XtNresizable,True
+				 ,NULL);
+#endif
 
-  xhisho = XtVaCreateManagedWidget("xhisho",xHishoWidgetClass,toplevel,NULL);
-
+  xhisho = XtVaCreateManagedWidget("xhisho",xHishoWidgetClass
+#ifdef USE_UNYUU
+				   ,form
+#else
+				   ,toplevel
+#endif
+				   ,XtNwidth,150
+				   ,XtNheight,200
+				   ,XtNvertDistance,100
+				   ,XtNhorizDistance,0
+				   ,NULL);
+#ifdef USE_UNYUU
+  unyu = XtVaCreateManagedWidget("xhisho",xHishoWidgetClass,form
+				   ,XtNwidth,150
+				   ,XtNheight,300
+				 ,XtNfromHoriz,xhisho
+				 ,NULL);
+#endif
   /**
    * rcfileとfilter commandとpetname fileをセット
    **/

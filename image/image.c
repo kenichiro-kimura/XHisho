@@ -275,7 +275,7 @@ int LoadImage(ImageInfo* i_info)
   i_info->ImagePalette = (struct palette *) malloc(sizeof(struct palette));
   i_info->image = (AnimImage *) malloc(sizeof(AnimImage));
   if(!i_info->image) return -1;
-    
+
   pal = (struct palette *) malloc(sizeof(struct palette));
   i_info->num_of_images = 1;
   i_info->loaded_images = 0;
@@ -285,6 +285,7 @@ int LoadImage(ImageInfo* i_info)
    * ローダを呼び出す
    **/
   while(i_info->num_of_images > i_info->loaded_images){
+
     if(i_info->anim == 2){
 	i_info->filename 
 	  = malloc(strlen((i_info->image + i_info->loaded_images)->filename) + 1);	
@@ -344,6 +345,7 @@ int LoadImage(ImageInfo* i_info)
     
     (i_info->image + i_info->loaded_images)->pixmap 
       = XCreatePixmap(d, w, width, height, depth);
+
     image = XGetImage(d, (i_info->image + i_info->loaded_images)->pixmap, 0, 0, width, height, AllPlanes, ZPixmap);
     
     if (i_info->is_shape) {
@@ -498,6 +500,7 @@ int LoadImage(ImageInfo* i_info)
   i_info->ImageData = NULL;
   i_info->ImagePalette = NULL;
   pal = NULL;
+  Loaded_files = NULL;
   return 0;
 }
   

@@ -50,3 +50,6 @@
 
 /* Define if you want to use shared library(image,mhc) */
 #undef USE_SHARED
+
+/* Define if you want to use Unyuu module */
+#undef USE_UNYUU
