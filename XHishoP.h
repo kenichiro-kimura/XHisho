@@ -41,6 +41,7 @@ typedef struct _XHishoPart {
   Boolean c_draw;
   Boolean focuswin;
   Boolean is_shape;
+  Boolean adjust;
   int yoff;
   XtJustify just;
   String ext_soundcommand;

@@ -57,6 +57,7 @@ static XrmOptionDescRec options[] = {
   {"-cgfile", "*cgFile", XrmoptionSepArg, NULL},
   {"-noclock", "*drawClock", XrmoptionNoArg, "False"},
   {"-focus", "*focusWin", XrmoptionNoArg, "True"},
+  {"-adjust", "*adjust", XrmoptionNoArg, "True"},
   {"-justify", "*justify", XrmoptionSepArg, NULL},
   {"-ypos", "*focusYoff", XrmoptionSepArg, NULL},
   {"-shape", "*isShape", XrmoptionNoArg, "True"},

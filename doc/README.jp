@@ -265,6 +265,7 @@ xhs.holidayというファイルを置いてください。書式はサンプルを見てくださ
 	 [-noclock]
          [-nosound]
 	 [-focus]
+         [-adjust]
 	 [-justify [left/center/right]]
 	 [-ypos [n]]
 	 [-shape]
@@ -328,6 +329,7 @@ XHishoをyoubinサーバで動かしているのなら、この機能を使用できます。
 ・-chime     … 毎時0分に今日の予定を表示する
 ・-nochime   … 毎時0分に今日の予定を表示しない
 ・-focus     … focusWinモジュールを使う
+・-adjust    … ウインド全体が画面内に納まるように補正する
 ・-ypos      … focusWinを使うときの縦方向のポジションをピクセル単位で指定
 ・-shape     … 画像の背景を透明にする。focusWinと併用するとよいでしょう
 ・-justify   … focusWinを使うときのJustify(表示位置)を指定する。デフォ

@@ -141,6 +141,15 @@ static XtResource resources[] = {
     (XtPointer) False
   },
   {
+    XtNadjust,
+    XtCAdjust,
+    XtRBoolean,
+    sizeof(Boolean),
+    XtOffset(XHishoWidget, xhisho.adjust),
+    XtRImmediate,
+    (XtPointer) False
+  },
+  {
     XtNfocusYoff,
     XtCFocusYoff,
     XtRInt,
@@ -334,7 +343,7 @@ static void Redraw(Widget w, XEvent * event, Region region)
     ClockDraw(xhw);
   }
 
-  if(!xhw->xhisho.focuswin){
+  if(!xhw->xhisho.focuswin && xhw->xhisho.adjust){
     top = (Widget)xhw;
     while(XtParent(top))
       top = XtParent(top);
