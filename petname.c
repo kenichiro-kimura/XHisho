@@ -99,7 +99,7 @@ static void ReadAddrBook()
    **/
 
   FILE *fp;
-  unsigned char *buffer, *pname, *addr;
+  char *buffer, *pname, *addr;
   char fname[128];
   char* ch_ptr;
   char* dst_ptr;
@@ -108,7 +108,6 @@ static void ReadAddrBook()
 #ifdef EXT_FILTER
   char pcommand[128];
 #endif
-
   sprintf(fname, "%s/.im/Addrbook", getenv("HOME"));
   address_list = pname_ptr = NULL;
 
@@ -186,11 +185,6 @@ static void ReadAddrBook()
       while(ch_ptr != NULL && isspace((unsigned char)*ch_ptr))
 	ch_ptr++;
       if (*ch_ptr == '#'){
-	for(ptr = address_list;ptr!= NULL;){
-	  pname_ptr = ptr->next;
-	  Petname_delete(ptr);
-	  ptr = pname_ptr;
-	}
 	goto W_End;
       }
       *dst_ptr++ = *ch_ptr++;
@@ -222,7 +216,7 @@ static void ReadAddrBook()
     while(ch_ptr != NULL && isspace((unsigned char)*ch_ptr))
       ch_ptr++;
 
-    for (j = in_quote = 0; ch_ptr!= NULL && j < BUFSIZ; ch_ptr++) {
+    for (j = in_quote = 0; ch_ptr!= NULL && j < BUFSIZ -1; ch_ptr++) {
       if (*ch_ptr == '"') {
 	if (in_quote == 1)
 	  break;
@@ -257,10 +251,15 @@ static void ReadAddrBook()
       Petname[i] = pname_ptr;
 
       pname_ptr = ptr->next;
+      ptr = pname_ptr;
+    }
+
+  W_End:
+    for(ptr = address_list;ptr!= NULL;){
+      pname_ptr = ptr->next;
       Petname_delete(ptr);
       ptr = pname_ptr;
     }
-  W_End:
   }
 
 
@@ -275,9 +274,9 @@ static void ReadAddrBook()
 #else
   fclose(fp);
 #endif
-  free(buffer);
-  free(pname);
   free(addr);
+  free(pname);
+  free(buffer);
 }
 
 #endif

@@ -150,6 +150,7 @@ void Quit(Widget w, XEvent * event, String * params, unsigned int *num_params)
     kill(youbin_pid[0], SIGTERM);
     kill(youbin_pid[1], SIGTERM);
   }
+
   exit(0);
 }
 
