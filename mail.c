@@ -6,7 +6,9 @@
 #include <ctype.h>
 #include <signal.h>
 
-/** local variable **/
+/**
+ * local variable 
+ **/
 
 static Widget top[2], mail[2], from;
 static int MailCount = 0;
@@ -22,7 +24,8 @@ static int virgine = 1;
 static char Tmp_dir[256];
 
 int isMailChecked = 0;
-/** isMailChecked =
+/**
+ * isMailChecked =
  *                 0 .. checked
  *                 1 .. not yet
  *                 2 .. timeout closed(not checked)
@@ -31,7 +34,9 @@ MailAlertRes mar;
 
 
 
-/** external variable **/
+/**
+ * external variable 
+ **/
 
 extern ResEditRes rer;		/** in ResEdit.c **/
 extern int MailWindowShown;	/** in main.c **/
@@ -39,7 +44,9 @@ extern BiffMethod Biff;
 extern String FilterCommand;
 extern int UseSound;
 
-/** function definition **/
+/**
+ * function definition 
+ **/
 
 static void Destroy(Widget w, caddr_t client_data, caddr_t call_data);
 static int isMail();
@@ -65,7 +72,9 @@ static void GetFromandSubject(char *, char *);
 extern int pop3(AuthMethod, char *, char *);	/** in pop.c **/
 int CheckPOP3(XtPointer, XtIntervalId *);
 
-/** resources **/
+/**
+ * resources 
+ **/
 
 static XtResource resources[] = {
     {
@@ -334,9 +343,10 @@ int CheckPOP3(XtPointer cl, XtIntervalId * id)
 Widget CreateMailAlert(Widget w, int Mode)
 {
 
-    /** Mode = 0 ... 普通の Mail Alert
-       Mode = 1 ... No Mail
-    **/
+    /**
+     * Mode = 0 ... 普通の Mail Alert
+     * Mode = 1 ... No Mail
+     **/
 
     Widget ok, label;
     static XtPopdownIDRec pdrec;
@@ -379,12 +389,16 @@ Widget CreateMailAlert(Widget w, int Mode)
     };
 
     MailWindowShown = 0;
-    /** Popdown処理のための準備 **/
+    /**
+     * Popdown処理のための準備 
+     **/
 
     pdrec.shell_widget = top[Mode];
     pdrec.enable_widget = w;
 
-    /** 全てのWidgetの生成 **/
+    /**
+     * 全てのWidgetの生成 
+     **/
 
     top[Mode] = XtCreatePopupShell("MailAlert", transientShellWidgetClass
 				   ,w, mailargs, XtNumber(mailargs));
@@ -421,7 +435,9 @@ Widget CreateMailAlert(Widget w, int Mode)
     }
 
 
-    /** メールチェック用のファイル名の取得。 **/
+    /**
+     * メールチェック用のファイル名の取得。 
+     **/
 
     sprintf(m_filename, "%s%s", mar.mailbox, getenv("USER"));
 
@@ -439,12 +455,16 @@ Widget CreateMailAlert(Widget w, int Mode)
     mail[Mode] = XtCreateManagedWidget("mail", msgwinWidgetClass, top[Mode],
 				       mailargs, XtNumber(mailargs));
 
-    /** label Widget **/
+    /**
+     * label Widget 
+     **/
 
     label = XtCreateManagedWidget("mailLabel", labelWidgetClass, mail[Mode]
 				  ,labelargs, XtNumber(labelargs));
 
-    /** from Widget **/
+    /**
+     * from Widget 
+     **/
 
     if (Mode) {
 	ok = XtVaCreateManagedWidget("mailOk", commandWidgetClass, mail[Mode]
@@ -456,14 +476,18 @@ Widget CreateMailAlert(Widget w, int Mode)
 				     ,XtNinternalHeight, FONT_OFFSET, NULL);
 	XtAddCallback(ok, XtNcallback, (XtCallbackProc) Destroy, (XtPointer) Mode);
     } else {
-	/** fontの大きさを取得し、fromの大きさを決める **/
+	/**
+	 * fontの大きさを取得し、fromの大きさを決める 
+	 **/
 	XtVaGetValues(label, XtNfontSet, &fset, NULL);
 	XmbTextExtents(fset, "a", 1, &ink, &log);
 
 	fromargs[10].value = log.width * mar.from_maxlen;
 	fromargs[11].value = log.height * (mar.mail_lines) + 20;
 
-	/** +20 = InternalHeight * 2 **/
+	/**
+	 * +20 = InternalHeight * 2 
+	 **/
 
 	fromargs[1].value = (XtArgVal) label;
 
@@ -471,7 +495,9 @@ Widget CreateMailAlert(Widget w, int Mode)
 				     ,fromargs, XtNumber(fromargs));
 
 
-	/** ok Widget **/
+	/**
+	 * ok Widget 
+	 **/
 
 	ok = XtVaCreateManagedWidget("mailOk", commandWidgetClass, mail[Mode], XtNfromVert, from
 			       ,XtNhorizDistance, POINT_WIDTH + LABEL_OFFSET
@@ -486,7 +512,9 @@ Widget CreateMailAlert(Widget w, int Mode)
 
 
     if (!Mode) {
-	/** 起動時のメールチェック と mail checkをtimer eventに追加 **/
+	/**
+	 * 起動時のメールチェック と mail checkをtimer eventに追加 
+	 **/
 
 	switch (Biff) {
 	case YOUBIN:
@@ -549,11 +577,15 @@ static void GetFromandSubject(char *m_file, char *From)
 
     while (fgets(buf, BUFSIZ, fp) != NULL && i < mar.mail_lines) {
 	if (*buf == '\n' && isheader) {
-	    /** 現在いるところがヘッダで、空行が来たらここから先はヘッダではない **/
+	  /**
+	   * 現在いるところがヘッダで、空行が来たらここから先はヘッダではない
+	   **/
 	    isheader = 0;
 	} else {
 	    if (*buf == '\n') {
-		/** 空行だったらこの後はヘッダの可能性あり **/
+		/**
+		 * 空行だったらこの後はヘッダの可能性あり 
+		 **/
 		if (fgets(buf, BUFSIZ, fp) == NULL)
 		    break;
 		sscanf(buf, "%s %s", head1, head2);
@@ -561,7 +593,9 @@ static void GetFromandSubject(char *m_file, char *From)
 		    isheader = 1;
 		}
 	    } else if (filehead) {
-		/** ファイルの先頭なら間違いなくヘッダ **/
+		/**
+		 * ファイルの先頭なら間違いなくヘッダ 
+		 **/
 		isheader = 1;
 		filehead = 0;
 	    }
@@ -794,7 +828,10 @@ static void CheckYoubin(Widget w, int *fid, XtInputId * id)
 	    }
 	}
     }
-End:				/** 共通終了処理 **/
+End:
+    /**
+     * 共通終了処理 
+     **/    
     free(From);
     free(tmp2);
     free(buf);
@@ -809,6 +846,9 @@ End:				/** 共通終了処理 **/
 
 static int Youbin_exit(Display * disp)
 {
-    kill(0, SIGTERM);		/** kill all the children **/
+  /**
+   * kill all the children 
+   **/
+    kill(0, SIGTERM);
     return 0;
 }

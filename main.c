@@ -19,7 +19,9 @@
 #include "globaldefs.h"
 #include "config.h"
 
-/** local variable **/
+/**
+ * local variable 
+ **/
 
 static Widget toplevel;
 static int IsSet = 0;		/** 1回目のExposeでだけ子Widgetを作る **/
@@ -31,11 +33,15 @@ BiffMethod Biff = LOCAL;
 int UseSound = 1;
 String FilterCommand, SoundCommand;
 
-/** external variable **/
+/**
+ * external variable 
+ **/
 
 extern int isMailChecked;	/** in mail.c **/
 
-/** local function **/
+/**
+ * local function 
+ **/
 
 static void Wait(Widget, XEvent *, String *, unsigned int *);
 static void Quit(Widget, XEvent *, String *, unsigned int *);
@@ -47,7 +53,9 @@ static void CheckMailNow(Widget, XEvent *, String *, unsigned int *);
 static void PrintUsage(int, char **);
 void CloseEditWindow();
 
-/** external function **/
+/**
+ * external function 
+ **/
 
 extern Widget CreateMailAlert(Widget, int);	/** in mail.c  **/
 extern int CheckMail(XtPointer, XtIntervalId *);
@@ -67,7 +75,9 @@ extern void WritePrefFile();
 extern int ReadRcfile(char *);
 
 
-/** action table **/
+/**
+ * action table 
+ **/
 
 static XtActionsRec actionTable[] = {
     {"Quit", Quit},
@@ -79,7 +89,9 @@ static XtActionsRec actionTable[] = {
     {"Expose", Wait},
 };
 
-/** command line options **/
+/**
+ * command line options 
+ **/
 
 static XrmOptionDescRec options[] = {
     {"-cgfile", "*cgFile", XrmoptionSepArg, NULL},
@@ -116,12 +128,16 @@ static void Wait(Widget w, XEvent * e, String * s, unsigned int *i)
 
 	about = CreateAboutWindow(toplevel);
 
-	/** Mail Windowの生成 **/
+	/**
+	 * Mail Windowの生成 
+	 **/
 
 	nomail = CreateMailAlert(toplevel, 1);
 	mail = CreateMailAlert(toplevel, 0);
 
-	/** OpenMessage Windowを生成し、Opening messageを表示する **/
+	/**
+	 * OpenMessage Windowを生成し、Opening messageを表示する 
+	 **/
 
 	openwin = CreateEditorWindow(toplevel, 0, *tm_now);
 
@@ -131,12 +147,16 @@ static void Wait(Widget w, XEvent * e, String * s, unsigned int *i)
 
 	menu = CreateMenuWindow(toplevel);
 
-	/** openwin のポップアップ **/
+	/**
+	 * openwin のポップアップ 
+	 **/
 
 	XtPopup(XtParent(openwin), XtGrabNone);
 	OpenWindowShown = 1;
 
-	/** 起動時のスケジュール時間のチェック **/
+	/**
+	 * 起動時のスケジュール時間のチェック 
+	 **/
 
 	CheckTimeForSchedule((XtPointer) toplevel, (XtIntervalId) NULL);
 
@@ -198,7 +218,9 @@ static void OpenWindowPopup(Widget w, XEvent * event, String * params, unsigned 
     XtDestroyWidget(XtParent(openwin));
     openwin = CreateEditorWindow(XtParent(w), 1, *tm_now);
 
-    /** Opening message WindowのPopup **/
+    /**
+     * Opening message WindowのPopup 
+     **/
     OpenWindowShown = 1;
     XtVaSetValues(openwin, XtNwindowMode, 0, NULL);
     XtPopup(XtParent(openwin), XtGrabNone);
@@ -212,7 +234,9 @@ static void AboutWindowPopup(Widget w, XEvent * event, String * params, unsigned
 	AboutWindowShown = 0;
 	return;
     }
-    /** About WindowのPopup **/
+    /**
+     * About WindowのPopup 
+     **/
     XtVaSetValues(about, XtNwindowMode, 0, NULL);
     XtPopup(XtParent(about), XtGrabNone);
     AboutWindowShown = 1;
@@ -226,7 +250,9 @@ static void MenuWindowPopup(Widget w, XEvent * event, String * params, unsigned 
 	XtPopdown(XtParent(menu));
 	return;
     }
-    /** Menu WindowのPopup **/
+    /**
+     * Menu WindowのPopup 
+     **/
     XtVaSetValues(menu, XtNwindowMode, 0, NULL);
     XtPopup(XtParent(menu), XtGrabNone);
     MenuWindowShown = 1;
@@ -242,14 +268,18 @@ static void CalendarWindowPopup(Widget w, XEvent * event, String * params, unsig
 
     XtDestroyWidget(XtParent(calendarwin));
     calendarwin = CreateCalendarWindow(toplevel, tm_now->tm_mon, *tm_now);
-    /** Calendar WindowのPopup **/
+    /**
+     * Calendar WindowのPopup 
+     **/
     XtVaSetValues(calendarwin, XtNwindowMode, 0, NULL);
     XtPopup(XtParent(calendarwin), XtGrabNone);
 }
 
 void CloseEditWindow()
 {
-    /** 予定をeditした直後に変更をleave機能に反映する **/
+    /**
+     * 予定をeditした直後に変更をleave機能に反映する 
+     **/
 
     time_t now;
     struct tm *tm_now;
@@ -265,7 +295,9 @@ void CloseEditWindow()
 int main(int argc, char **argv)
 {
 
-    /**  actionTableとTranslationsの設定。main windowはBtn1Down,Btn3Down。 **/
+    /**
+     * actionTableとTranslationsの設定。main windowはBtn1Down,Btn3Down。 
+     **/
 
     static char defaultTranslations[] = "Shift<Btn2Down> : AboutWindowPopup()\n\
                                             <Btn2Down> : OpenWindowPopup()\n\
@@ -281,12 +313,15 @@ int main(int argc, char **argv)
 
     String rcfile, petname_f;
 
-    /**  Localeをセットする **/
-
+    /**
+     *  Localeをセットする 
+     **/
 
     XtSetLanguageProc(NULL, NULL, NULL);
 
-    /**  toplevel widgetを生成  **/
+    /**
+     * toplevel widgetを生成  
+     **/
 
     toplevel = XtInitialize(argv[0], "XHisho", options, XtNumber(options), &argc, argv);
     XtAddEventHandler(toplevel, 0, True, _XEditResCheckMessages, NULL);
@@ -295,34 +330,46 @@ int main(int argc, char **argv)
 
     XtVaSetValues(toplevel, XtNwidth, 100, XtNheight, 100, NULL);
 
-    /**  main windowを生成。class名はxhisho。actionも追加。 **/
+    /**
+     * main windowを生成。class名はxhisho。actionも追加。 
+     **/
 
     args[0].value = (XtArgVal) XtParseTranslationTable(defaultTranslations);
     xhisho = XtCreateManagedWidget("xhisho", xHishoWidgetClass, toplevel
 				   ,args, XtNumber(args));
 
-    /** rcfileとfilter commandとpetname fileをセット **/
+    /**
+     * rcfileとfilter commandとpetname fileをセット 
+     **/
 
     XtVaGetValues(xhisho, XtNmessageFile, &rcfile, NULL);
     XtVaGetValues(xhisho, XtNextFilter, &FilterCommand, NULL);
     XtVaGetValues(xhisho, XtNextSoundCommand, &SoundCommand, NULL);
     XtVaGetValues(xhisho, XtNpetnameFile, &petname_f, NULL);
 
-    /** rcfileとpetnameを読む **/
+    /**
+     * rcfileとpetnameを読む 
+     **/
     ReadRcfile(rcfile);
 #ifdef PETNAME
     ReadPetname(petname_f);
 #endif
 
 
-    /** Action のセット **/
+    /**
+     * Action のセット 
+     **/
     XtAddActions(actionTable, XtNumber(actionTable));
 
-    /**  WidgetのRealize **/
+    /**
+     *  WidgetのRealize 
+     **/
 
     XtRealizeWidget(toplevel);
 
-    /** Event Loop **/
+    /**
+     * Event Loop 
+     **/
 
     XtMainLoop();
 

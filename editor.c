@@ -3,7 +3,9 @@
 #include "globaldefs.h"
 
 
-/** local variable **/
+/**
+ * local variable 
+ **/
 
 static Widget top, editor, open, list[MAX_SCHED_NUM], editlist[MAX_SCHED_NUM];
 static Widget day[MAX_SCHED_NUM], kara[MAX_SCHED_NUM], leave_t[MAX_SCHED_NUM];
@@ -17,13 +19,17 @@ static const char ResName[][128] = {"open1", "open2", "open3", "alert1", "alert2
 
 OpenMessageRes omr;
 
-/** external variable **/
+/**
+ * external variable 
+ **/
 
 extern Widget openwin;
 extern int OpenWindowShown;
 extern int UseSound;
 
-/** function definition **/
+/**
+ * function definition 
+ **/
 
 static int WriteSchedule(struct tm);
 static void Destroy(Widget w, caddr_t client_data, caddr_t call_data);
@@ -40,7 +46,9 @@ Widget CreateEditorWindow(Widget, int, struct tm);
 unsigned long GetColor(Display *, char *);
 
 
-/** external function **/
+/**
+ * external function 
+ **/
 
 extern void CloseEditWindow();
 extern int CheckSchedule();
@@ -48,7 +56,9 @@ extern int SoundPlay(char *);
 extern int ReadRcdata(const char *, char *, int);
 extern void ReadHoliday();	/** in schedule.c **/
 
-/** resources **/
+/**
+ * resources 
+ **/
 
 static XtResource resources[] = {
     {
@@ -282,12 +292,13 @@ static void Dismiss(Widget w, caddr_t client_data, caddr_t call_data)
 Widget CreateEditorWindow(Widget w, int Mode, struct tm tm_now)
 {
 
-    /** Mode = 0 ... Open Window (あいさつ付)
-       Mode = 1 ... Schedule Window (あいさつ無し)
-       Mode = 2 ... Schedule Alert (メッセージ通知用。必要なスケジュールのみ)
-       Mode = 3 ... Schedule Editor (通常スケジュール)
-       Mode = 4 ... Schedule Editor (曜日スケジュール:未実装)
-    **/
+    /** 
+     *  Mode = 0 ... Open Window (あいさつ付)
+     *  Mode = 1 ... Schedule Window (あいさつ無し)
+     *  Mode = 2 ... Schedule Alert (メッセージ通知用。必要なスケジュールのみ)
+     *  Mode = 3 ... Schedule Editor (通常スケジュール)
+     *  Mode = 4 ... Schedule Editor (曜日スケジュール:未実装)
+     **/
 
     Widget ok, label_f, label_e, cancel, dismiss;
     XFontSet fset;
@@ -344,7 +355,9 @@ Widget CreateEditorWindow(Widget w, int Mode, struct tm tm_now)
 	{XtNbottomMargin, 5},
     };
 
-    /** 変数等の初期化。mainの大きさや位置も取得し、Argにセットする **/
+    /**
+     * 変数等の初期化。mainの大きさや位置も取得し、Argにセットする 
+     **/
 
     labelargs[5].value = (XtArgVal) POINT_WIDTH + LABEL_OFFSET;
     dargs[7].value = (XtArgVal) POINT_WIDTH + LABEL_OFFSET;
@@ -371,12 +384,16 @@ Widget CreateEditorWindow(Widget w, int Mode, struct tm tm_now)
 	memset(since_minutes[i], 0, BUFSIZ);
     }
 
-    /** Popdown処理のための準備 **/
+    /**
+     * Popdown処理のための準備 
+     **/
 
     pdrec.shell_widget = top;
     pdrec.enable_widget = w;
 
-    /** toplevel Widgetの生成 **/
+    /**
+     * toplevel Widgetの生成 
+     **/
 
     top = XtCreatePopupShell("OpenMessage", transientShellWidgetClass
 			     ,w, editargs, XtNumber(editargs));
@@ -404,7 +421,9 @@ Widget CreateEditorWindow(Widget w, int Mode, struct tm tm_now)
 				     ,editargs, XtNumber(editargs));
     }
 
-    /** read Schedule **/
+    /**
+     * read Schedule 
+     **/
 
     *string_f = '\0';
     *string_e = '\0';
@@ -431,7 +450,9 @@ Widget CreateEditorWindow(Widget w, int Mode, struct tm tm_now)
 
     ScheduleSort();
 
-    /** 最初のメッセージを表示するlabelWidgetを作る **/
+    /**
+     * 最初のメッセージを表示するlabelWidgetを作る 
+     **/
 
     switch (Mode) {
     case 0:
@@ -487,10 +508,10 @@ Widget CreateEditorWindow(Widget w, int Mode, struct tm tm_now)
     XtVaGetValues(label_f, XtNfontSet, &fset, NULL);
 
     /**
-       labelWidgetを作ってlistの大きさを決める。Mode = 0,1,2ならここで作った
-       LabelWidgetをそのまま使う。Mode=3,4ならここで決めた大きさを元に
-       asciiTextWidgetを作る。
-    **/
+     * labelWidgetを作ってlistの大きさを決める。Mode = 0,1,2ならここで作った
+     * LabelWidgetをそのまま使う。Mode=3,4ならここで決めた大きさを元に
+     * asciiTextWidgetを作る。
+     **/
 
     i = (Mode == 0 || Mode == 1 || Mode == 2) ? schedules : MAX_SCHED_NUM;
 
@@ -498,7 +519,9 @@ Widget CreateEditorWindow(Widget w, int Mode, struct tm tm_now)
     for (j = 0; j < i; j++) {
 	memset(tmpstring, 0, BUFSIZ * 2);
 	if (j < schedules) {
-	    /** もしスケジュールがあるならそっちの幅優先 **/
+	    /**
+	     * もしスケジュールがあるならそっちの幅優先 
+	     **/
 	    strcpy(tmpstring, schedule[j].ev);
 	} else {
 	    strcpy(tmpstring, "12345678901234567890");
@@ -506,7 +529,9 @@ Widget CreateEditorWindow(Widget w, int Mode, struct tm tm_now)
 
 	labelargs[0].value = (XtArgVal) tmpstring;
 
-	/** Mode =0,1,2ならそのままlabelWidgetを作ってしまう **/
+	/**
+	 * Mode =0,1,2ならそのままlabelWidgetを作ってしまう
+	 **/
 
 	if (messages[7][0] != '\0')
 	    mesarg = messages[7];
@@ -542,16 +567,22 @@ Widget CreateEditorWindow(Widget w, int Mode, struct tm tm_now)
 		sprintf(tmpstring, omr.message_f, argarray[0], argarray[1], argarray[2], argarray[3]);
 	    }
 
-	    /** Mode2(Schedule Alert)のとき、「もうすぐ」なSchedule(5分以内)以外は
-	       表示しない **/
+	    /**
+	     * Mode2(Schedule Alert)のとき、「もうすぐ」なSchedule(5分以内)以外は
+	     * 表示しない
+	     **/
 
 	    if (Mode != 2 || (l >= 0 && l <= schedule[j].leave)) {
 		strcat(sched_list[j], tmpstring);
 
-		/** 「もうすぐ」なスケジュールのうち、添字が最大のものを記録しておく **/
+		/**
+		 * 「もうすぐ」なスケジュールのうち、添字が最大のものを記録しておく 
+		 **/
 		past_index = j;
 
-		/** １分前だったら強制的にチェックをはずす(表示させる) **/
+		/**
+		 * １分前だったら強制的にチェックをはずす(表示させる) 
+		 **/
 		if (l <= 1)
 		    schedule[j].is_checked = 0;
 	    }
@@ -575,14 +606,18 @@ Widget CreateEditorWindow(Widget w, int Mode, struct tm tm_now)
     }
 
     if (Mode == 3 || Mode == 4) {
-	/** Mode = 3,4 のときはasciiTextWidgetを作る **/
+	/**
+	 * Mode = 3,4 のときはasciiTextWidgetを作る 
+	 **/
 
 
 	for (j = 0; j < MAX_SCHED_NUM; j++) {
 
 	    dargs[7].value = (XtArgVal) POINT_WIDTH + LABEL_OFFSET;
 
-	    /** 開始時間表示textWidgetの作成 **/
+	    /**
+	     * 開始時間表示textWidgetの作成 
+	     **/
 
 	    memset(tmpstring, 0, BUFSIZ * 2);
 	    strcpy(tmpstring, "00000");
@@ -590,7 +625,9 @@ Widget CreateEditorWindow(Widget w, int Mode, struct tm tm_now)
 
 	    XmbTextExtents(fset, tmpstring, strlen(tmpstring), &ink, &log);
 
-	    /** 取得した大きさを元にdayなるtextWidgetを作る **/
+	    /**
+	     * 取得した大きさを元にdayなるtextWidgetを作る 
+	     **/
 
 	    if (j < schedules)
 		sprintf(daystring[j], "%s%s", schedule[j].hour, schedule[j].min);
@@ -610,7 +647,9 @@ Widget CreateEditorWindow(Widget w, int Mode, struct tm tm_now)
 	    day[j] = XtCreateManagedWidget("day", asciiTextWidgetClass, editor
 					   ,dargs, XtNumber(dargs));
 
-	    /** 開始時間とスケジュールの間にはいるlabelWidgetを作る **/
+	    /**
+	     * 開始時間とスケジュールの間にはいるlabelWidgetを作る 
+	     **/
 
 	    labelargs[0].value = (XtArgVal) omr.sched_sep;
 
@@ -626,9 +665,13 @@ Widget CreateEditorWindow(Widget w, int Mode, struct tm tm_now)
 	    kara[j] = XtCreateManagedWidget("kara", labelWidgetClass, editor
 					    ,labelargs, XtNumber(labelargs));
 
-	    /** スケジュール用のtextWidgetを作る**/
+	    /**
+	     * スケジュール用のtextWidgetを作る
+	     **/
 
-	    /** 取得した大きさを元にtextWidgetを作る **/
+	    /**
+	     * 取得した大きさを元にtextWidgetを作る
+	     **/
 
 	    if (j < schedules) {
 		dargs[0].value = (XtArgVal) schedule[j].ev;
@@ -638,7 +681,9 @@ Widget CreateEditorWindow(Widget w, int Mode, struct tm tm_now)
 
 	    dargs[7].value = (XtArgVal) 2;
 
-	    /** 1文字分余裕を取るために +8 **/
+	    /**
+	     * 1文字分余裕を取るために +8 
+	     **/
 	    dargs[9].value = (XtArgVal) (Longest_sched + 8);
 
 	    if (j) {
@@ -655,13 +700,17 @@ Widget CreateEditorWindow(Widget w, int Mode, struct tm tm_now)
 	    XtVaSetValues(editlist[j], XtNwrap, XawtextWrapNever, XtNscrollHorizontal
 			  ,XawtextScrollAlways, NULL);
 
-	    /** leave time 入力用 textWidgetの作成 **/
+	    /**
+	     * leave time 入力用 textWidgetの作成 
+	     **/
 
 	    strcpy(tmpstring, "00000");
 
 	    XmbTextExtents(fset, tmpstring, strlen(tmpstring), &ink, &log);
 
-	    /** 取得した大きさを元にdayなるtextWidgetを作る **/
+	    /**
+	     * 取得した大きさを元にdayなるtextWidgetを作る 
+	     **/
 
 	    memset(leavestring[j], 0, 256);
 	    if (j < schedules) {
@@ -687,7 +736,9 @@ Widget CreateEditorWindow(Widget w, int Mode, struct tm tm_now)
 					       ,dargs, XtNumber(dargs));
 	}
     }
-    /** Mode ==0,1,2ならスケジュールのラベル(最後の奴)を作る **/
+    /**
+     * Mode ==0,1,2ならスケジュールのラベル(最後の奴)を作る 
+     **/
 
     if (Mode == 0 || Mode == 1 || Mode == 2) {
 	string_e[0] = '\0';
@@ -774,7 +825,9 @@ Widget CreateEditorWindow(Widget w, int Mode, struct tm tm_now)
 				     ,XtNinternalHeight, FONT_OFFSET, NULL);
 	    XtAddCallback(dismiss, XtNcallback, (XtCallbackProc) Dismiss, NULL);
 	}
-	/** とりあえずスケジュールの時間をチェックし、時間の過ぎたものは色を変える **/
+	/**
+	 * とりあえずスケジュールの時間をチェックし、時間の過ぎたものは色を変える
+	 **/
 
 	ChangeColorPastSched();
 
@@ -794,7 +847,9 @@ Widget CreateEditorWindow(Widget w, int Mode, struct tm tm_now)
 
 static int WriteSchedule(struct tm tm_now)
 {
-    /** return 0 if success to write file ,otherwise return 1 **/
+    /**
+     * return 0 if success to write file ,otherwise return 1 
+     **/
 
     FILE *outputfile;
     String dbuf, ebuf, lbuf;
@@ -804,7 +859,9 @@ static int WriteSchedule(struct tm tm_now)
     time_t tval = 0;
     char filename[128], tday[3], month[4], year[4];
 
-    /** 日付を取得する。7/20ならdate="0720"になる。**/
+    /**
+     * 日付を取得する。7/20ならdate="0720"になる。
+     **/
 
     tval = mktime(&tm_now);
 
@@ -868,7 +925,9 @@ static int WriteSchedule(struct tm tm_now)
 
 static void ChangeReturn(String val, char *ret)
 {
-    /** 不用意に(?)入った改行を除く **/
+    /**
+     * 不用意に(?)入った改行を除く 
+     **/
     char *tmp;
     int i;
 
@@ -899,10 +958,11 @@ unsigned long GetColor(Display * d, char *c)
 
 static int CheckIsSchedPast(int i, Schedule * sc)
 {
-    /** 指定されたスケジュールと現在時刻の差を分単位で返す。
-       既に過ぎていれば負の値が返る。
-       引数にはschedule[i]のiを指定する。0 <= i < MAX_SCHED_NUM でなければ0を返す。
-    **/
+    /**
+     * 指定されたスケジュールと現在時刻の差を分単位で返す。
+     * 既に過ぎていれば負の値が返る。
+     * 引数にはschedule[i]のiを指定する。0 <= i < MAX_SCHED_NUM でなければ0を返す。
+     **/
     time_t now, sched;
     struct tm *tmp;
 
@@ -922,9 +982,10 @@ static int CheckIsSchedPast(int i, Schedule * sc)
 
 static int ChangeColorPastSched()
 {
-    /** 既に時刻を過ぎたスケジュールや「もうすぐ」なスケジュールの色を変える。
-       「もうすぐ」なスケジュールの数を返す。
-    **/
+    /** 
+     * 既に時刻を過ぎたスケジュールや「もうすぐ」なスケジュールの色を変える。
+     * 「もうすぐ」なスケジュールの数を返す。
+     **/
 
     int i, j, k;
 
@@ -947,9 +1008,10 @@ static int ChangeColorPastSched()
 
 static void ParseConfigFile(int now, char *ret_value)
 {
-    /** 起動のあいさつを探す。第2引数ret_valueに第1引数の時刻のあいさつが返る。
-       対応するあいさつがなければNULLが返る。
-    **/
+    /**
+     * 起動のあいさつを探す。第2引数ret_valueに第1引数の時刻のあいさつが返る。
+     * 対応するあいさつがなければNULLが返る。
+     **/
 
     FILE *inputfile;
     char *tmp1, *tmp2, *tmp3;
@@ -977,8 +1039,10 @@ static void ParseConfigFile(int now, char *ret_value)
 
 	while (fgets(tmp1, BUFSIZ, inputfile) != NULL) {
 
-	    /** もし # で始まっていたらコメントとみなし、その後1行を無視する。
-	       空行も同様。**/
+	    /**
+	     * もし # で始まっていたらコメントとみなし、その後1行を無視する。
+	     * 空行も同様。
+	     **/
 
 	    if (tmp1[0] != '#' && tmp1[0] != '\0' && tmp1[0] != '\n') {
 		sscanf(tmp1, "%s %s", tmp2, tmp3);
@@ -1084,25 +1148,31 @@ void CheckTimeForSchedule(XtPointer cl, XtIntervalId * id)
     tmp = localtime(&now);
 
     if (tmp->tm_hour == 0 && tmp->tm_min == 0) {
-	/** 日付が変った(00:00)なら予定を新たに読み直す **/
+	/**
+	 * 日付が変った(00:00)なら予定を新たに読み直す 
+	 **/
 	XtDestroyWidget(XtParent(openwin));
 	openwin = CreateEditorWindow(cl, 0, *tmp);
     }
     if (tmp->tm_min == 0 && omr.chime) {
-	/** 毎時0分のチャイム。OpenWinを開く **/
+	/**
+	 * 毎時0分のチャイム。OpenWinを開く 
+	 **/
 	XtDestroyWidget(XtParent(openwin));
 	openwin = CreateEditorWindow(cl, 0, *tmp);
 	XtPopup(XtParent(openwin), XtGrabNone);
 	OpenWindowShown = 1;
     }
     if (ChangeColorPastSched()) {
-	/** 1つでも「もうすぐ」なスケジュールがあったら通知ウインドをポップアップ **/
+	/**
+	 * 1つでも「もうすぐ」なスケジュールがあったら通知ウインドをポップアップ 
+	 **/
 	XtDestroyWidget(XtParent(openwin));
 	openwin = CreateEditorWindow(cl, 2, *tmp);
 
 	/**
          * 「もうすぐ」なスケジュールのうち,1つでもチェックされていない or
-         *  １分前のものがあるかチェック
+         * １分前のものがあるかチェック
          **/
 
 	for (i = 0; i < past_index + 1; i++)

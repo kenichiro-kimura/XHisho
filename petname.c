@@ -7,7 +7,7 @@
 #include <ctype.h>
 
 /**
- * Petname$B$N%j%9%H$N@hF,$rJ];}$9$k%]%$%s%?$NG[Ns!#4JC1$J(BHash$B$r$+$1$k!#(B
+ * Petname¤Î¥ê¥¹¥È¤ÎÀèÆ¬¤òÊÝ»ý¤¹¤ë¥Ý¥¤¥ó¥¿¤ÎÇÛÎó¡£´ÊÃ±¤ÊHash¤ò¤«¤±¤ë¡£
  **/
 static PetnameList *Petname[HASH_KEY];
 
@@ -26,7 +26,7 @@ void SearchPetname(char *, char *);
 
 
 /**
- * PetnameList $B%*%V%8%'%/%H$N%3%s%9%H%i%/%?$KAjEv$9$k4X?t(B
+ * PetnameList ¥ª¥Ö¥¸¥§¥¯¥È¤Î¥³¥ó¥¹¥È¥é¥¯¥¿¤ËÁêÅö¤¹¤ë´Ø¿ô
  **/
 
 static PetnameList *Petname_new(char *pname, char *addr)
@@ -50,7 +50,7 @@ static PetnameList *Petname_new(char *pname, char *addr)
 
 
 /**
- * PetnameList $B%*%V%8%'%/%H$N%G%9%H%i%/%?$KAjEv$9$k4X?t(B
+ * PetnameList ¥ª¥Ö¥¸¥§¥¯¥È¤Î¥Ç¥¹¥È¥é¥¯¥¿¤ËÁêÅö¤¹¤ë´Ø¿ô
  **/
 
 static void Petname_delete(PetnameList * ptr)
@@ -63,13 +63,13 @@ static void Petname_delete(PetnameList * ptr)
 static int StrHash(char *string)
 {
     /**
-     * $BJ8;zNs$r4JC1$J(BHash$B$K$+$1$k!#(B0 $B!A(B HASH_KEY $B$N4V$N@0?t$rJV$9!#7W;;(B
-     * $B$OE,Ev$J$N$G!"(BHash$B$N;6$j6q9g$$$O4|BT$7$J$$$h$&$K(B($B>P(B)$B!#$=$l$G$b@~(B
-     * $B7A$KA4$F$NMWAG$rD4$Y$k$h$j$O$^$7$@$H;W$&!#(B
-     * $B;n$7$K;d$N(BPetname$B%U%!%$%k(B(248$B%(%s%H%j(B)$B$G(BHASH_KEY=253$B$G$d$C$F$_$?(B
-     * $B$i!":GBg>WFM?t$,(B4$B$G!"(B157$B$N(BHash$BCM$K;6$C$?$N$G$=$l$J$j$KF0$/$s$8$c(B
-     * $B$J$$$+$H;W$$$^$9!#(BPetname$B$N%(%s%H%j$,>/$J$$$H$-$O(B
-     * HASH_KEY(globaldefs.h$B$GDj5A(B)$B$r8:$i$9$H%a%b%j$,@aLs$G$-$^$9!#(B
+     * Ê¸»úÎó¤ò´ÊÃ±¤ÊHash¤Ë¤«¤±¤ë¡£0 ¡Á HASH_KEY ¤Î´Ö¤ÎÀ°¿ô¤òÊÖ¤¹¡£·×»»
+     * ¤ÏÅ¬Åö¤Ê¤Î¤Ç¡¢Hash¤Î»¶¤ê¶ñ¹ç¤¤¤Ï´üÂÔ¤·¤Ê¤¤¤è¤¦¤Ë(¾Ð)¡£¤½¤ì¤Ç¤âÀþ
+     * ·Á¤ËÁ´¤Æ¤ÎÍ×ÁÇ¤òÄ´¤Ù¤ë¤è¤ê¤Ï¤Þ¤·¤À¤È»×¤¦¡£
+     * »î¤·¤Ë»ä¤ÎPetname¥Õ¥¡¥¤¥ë(248¥¨¥ó¥È¥ê)¤ÇHASH_KEY=253¤Ç¤ä¤Ã¤Æ¤ß¤¿
+     * ¤é¡¢ºÇÂç¾×ÆÍ¿ô¤¬4¤Ç¡¢157¤ÎHashÃÍ¤Ë»¶¤Ã¤¿¤Î¤Ç¤½¤ì¤Ê¤ê¤ËÆ°¤¯¤ó¤¸¤ã
+     * ¤Ê¤¤¤«¤È»×¤¤¤Þ¤¹¡£Petname¤Î¥¨¥ó¥È¥ê¤¬¾¯¤Ê¤¤¤È¤­¤Ï
+     * HASH_KEY(globaldefs.h¤ÇÄêµÁ)¤ò¸º¤é¤¹¤È¥á¥â¥ê¤¬ÀáÌó¤Ç¤­¤Þ¤¹¡£
      **/
 
     int ret;
@@ -93,11 +93,11 @@ static void ReadAddrBook()
     /**
      * support for mew's Addrbook :-)
      *
-     * Petname$B$r%"%I%l%9%V%C%/$+$iFI$_!"(BHash$B%j%9%H$GJ];}$9$k!#(Bmail$B%"%I%l%9$r(B
-     * StrHash()$B$K$+$1!"%F!<%V%k$N3:Ev%v=j$K%(%s%H%j$rA^F~$9$k!#(BHash$BCM$,(B
-     * $B$V$D$+$C$?%F!<%V%k$N@h$O%j%9%H$N$U$j$r$7$?%9%?%C%/(B($B$b$7$/$O%-%e!<(B)$B!#(B
-     * $B<h$j=P$5$J$$$+$i$I$A$i$H8@$C$F$b$$$$$,!"MW$9$k$K%j%9%H7?$N@hF,$K(B
-     * $BMWAG$rDI2C$7$F$$$C$F$$$k!#(B
+     * Petname¤ò¥¢¥É¥ì¥¹¥Ö¥Ã¥¯¤«¤éÆÉ¤ß¡¢Hash¥ê¥¹¥È¤ÇÊÝ»ý¤¹¤ë¡£mail¥¢¥É¥ì¥¹¤ò
+     * StrHash()¤Ë¤«¤±¡¢¥Æ¡¼¥Ö¥ë¤Î³ºÅö¥ö½ê¤Ë¥¨¥ó¥È¥ê¤òÁÞÆþ¤¹¤ë¡£HashÃÍ¤¬
+     * ¤Ö¤Ä¤«¤Ã¤¿¥Æ¡¼¥Ö¥ë¤ÎÀè¤Ï¥ê¥¹¥È¤Î¤Õ¤ê¤ò¤·¤¿¥¹¥¿¥Ã¥¯(¤â¤·¤¯¤Ï¥­¥å¡¼)¡£
+     * ¼è¤ê½Ð¤µ¤Ê¤¤¤«¤é¤É¤Á¤é¤È¸À¤Ã¤Æ¤â¤¤¤¤¤¬¡¢Í×¤¹¤ë¤Ë¥ê¥¹¥È·¿¤ÎÀèÆ¬¤Ë
+     * Í×ÁÇ¤òÄÉ²Ã¤·¤Æ¤¤¤Ã¤Æ¤¤¤ë¡£
      **/
 
     FILE *fp;
@@ -139,7 +139,7 @@ static void ReadAddrBook()
 	    goto End;
 
 	/**
-         * short name $B$rFI$_Ht$P$9(B
+         * short name ¤òÆÉ¤ßÈô¤Ð¤¹
          **/
 	for (i = 0; i < strlen(buffer); i++) {
 	    if (isspace(buffer[i]))
@@ -149,20 +149,20 @@ static void ReadAddrBook()
 	}
 
 	/**
-         * $BE83+5,B'$NDj5A$OFI$_Ht$P$9(B
+         * Å¸³«µ¬Â§¤ÎÄêµÁ¤ÏÆÉ¤ßÈô¤Ð¤¹
          **/
 
 	if (buffer[i++] == ':')
 	    goto End;
 
 	/**
-         * $B%"%I%l%9$rFI$`!#J#?t$"$k>l9g$b$"$k$N$G!"%j%9%H$GJ];}$9$k!#(B
+         * ¥¢¥É¥ì¥¹¤òÆÉ¤à¡£Ê£¿ô¤¢¤ë¾ì¹ç¤â¤¢¤ë¤Î¤Ç¡¢¥ê¥¹¥È¤ÇÊÝ»ý¤¹¤ë¡£
          **/
 
 	for (j = 0; i < strlen(buffer); i++) {
 	    if (buffer[i] == ',') {
 		/**
-		 * 1$B$D$N%"%I%l%9$NFI$_9~$_$,=*$o$C$?$N$G!"%j%9%H$KEPO?(B
+		 * 1¤Ä¤Î¥¢¥É¥ì¥¹¤ÎÆÉ¤ß¹þ¤ß¤¬½ª¤ï¤Ã¤¿¤Î¤Ç¡¢¥ê¥¹¥È¤ËÅÐÏ¿
 		 **/
 		addr[j] = '\0';
 
@@ -192,7 +192,7 @@ static void ReadAddrBook()
 	addr[j] = '\0';
 
 	/**
-         * $B:G8e$KFI$_9~$s$@%"%I%l%9$r%j%9%H$KEPO?(B
+         * ºÇ¸å¤ËÆÉ¤ß¹þ¤ó¤À¥¢¥É¥ì¥¹¤ò¥ê¥¹¥È¤ËÅÐÏ¿
          **/
 
 	if (strlen(addr) > 1) {
@@ -204,11 +204,11 @@ static void ReadAddrBook()
 	    address_list = pname_ptr;
 	}
 	/**
-         * Petname $B$NFI$_9~$_!#(B" $B$G0O$^$l$?J8;zNsCf$N6uGrJ8;z$O(BPetname$B$N(B1
-         * $BIt!#(B" $B$G0O$^$l$F$$$J$$6uGrJ8;z$O(BPetname$B$N6h@Z$jJ8;z!#(B
+         * Petname ¤ÎÆÉ¤ß¹þ¤ß¡£" ¤Ç°Ï¤Þ¤ì¤¿Ê¸»úÎóÃæ¤Î¶õÇòÊ¸»ú¤ÏPetname¤Î1
+         * Éô¡£" ¤Ç°Ï¤Þ¤ì¤Æ¤¤¤Ê¤¤¶õÇòÊ¸»ú¤ÏPetname¤Î¶èÀÚ¤êÊ¸»ú¡£
          *
-         * int in_quote = 1 ($B8=:_8F$s$G$$$kJ8;z$O(B " $B$G0O$^$l$?J8;zNs$N0lIt(B
-         *                   $B$G$"$k(B)
+         * int in_quote = 1 (¸½ºß¸Æ¤ó¤Ç¤¤¤ëÊ¸»ú¤Ï " ¤Ç°Ï¤Þ¤ì¤¿Ê¸»úÎó¤Î°ìÉô
+         *                   ¤Ç¤¢¤ë)
          **/
 
 	for (i++, j = in_quote = 0; i < strlen(buffer), j < BUFSIZ; i++) {
@@ -229,7 +229,7 @@ static void ReadAddrBook()
 	}
 
 	/**
-         * Petname $B$NEPO?!#%j%9%H$+$i%"%I%l%9$r=g$K<h$j=P$7!"EPO?$9$k!#(B
+         * Petname ¤ÎÅÐÏ¿¡£¥ê¥¹¥È¤«¤é¥¢¥É¥ì¥¹¤ò½ç¤Ë¼è¤ê½Ð¤·¡¢ÅÐÏ¿¤¹¤ë¡£
          **/
 
 	ptr = address_list;
@@ -251,9 +251,9 @@ static void ReadAddrBook()
 
 End:
     /**
-     * $B=*N;=hM}!#DL>o$N=*N;0J30$K%3%a%s%H9T0J2<$N:n6HCf;_(B($B9TF,$N(B ";",$BES(B
-     * $BCf$N(B "#")$B$,$"$k!#(BPetname$B$NESCf$G(B "#" $B$,=P$?$i!"$=$3$^$G$r(BPetname
-     * $B$H$7$FEPO?$9$k!#(B
+     * ½ªÎ»½èÍý¡£ÄÌ¾ï¤Î½ªÎ»°Ê³°¤Ë¥³¥á¥ó¥È¹Ô°Ê²¼¤Îºî¶ÈÃæ»ß(¹ÔÆ¬¤Î ";",ÅÓ
+     * Ãæ¤Î "#")¤¬¤¢¤ë¡£Petname¤ÎÅÓÃæ¤Ç "#" ¤¬½Ð¤¿¤é¡¢¤½¤³¤Þ¤Ç¤òPetname
+     * ¤È¤·¤ÆÅÐÏ¿¤¹¤ë¡£
      **/
 
 #ifdef EXT_FILTER
@@ -271,11 +271,11 @@ End:
 void ReadPetname(char *petname_f)
 {
     /**
-     * Petname$B$r%U%!%$%k$+$iFI$_!"(BHash$B%j%9%H$GJ];}$9$k!#(Bmail$B%"%I%l%9$r(B
-     * StrHash()$B$K$+$1!"%F!<%V%k$N3:Ev%v=j$K%(%s%H%j$rA^F~$9$k!#(BHash$BCM$,(B
-     * $B$V$D$+$C$?%F!<%V%k$N@h$O%j%9%H$N$U$j$r$7$?%9%?%C%/(B($B$b$7$/$O%-%e!<(B)$B!#(B
-     * $B<h$j=P$5$J$$$+$i$I$A$i$H8@$C$F$b$$$$$,!"MW$9$k$K%j%9%H7?$N@hF,$K(B
-     * $BMWAG$rDI2C$7$F$$$C$F$$$k!#(B
+     * Petname¤ò¥Õ¥¡¥¤¥ë¤«¤éÆÉ¤ß¡¢Hash¥ê¥¹¥È¤ÇÊÝ»ý¤¹¤ë¡£mail¥¢¥É¥ì¥¹¤ò
+     * StrHash()¤Ë¤«¤±¡¢¥Æ¡¼¥Ö¥ë¤Î³ºÅö¥ö½ê¤Ë¥¨¥ó¥È¥ê¤òÁÞÆþ¤¹¤ë¡£HashÃÍ¤¬
+     * ¤Ö¤Ä¤«¤Ã¤¿¥Æ¡¼¥Ö¥ë¤ÎÀè¤Ï¥ê¥¹¥È¤Î¤Õ¤ê¤ò¤·¤¿¥¹¥¿¥Ã¥¯(¤â¤·¤¯¤Ï¥­¥å¡¼)¡£
+     * ¼è¤ê½Ð¤µ¤Ê¤¤¤«¤é¤É¤Á¤é¤È¸À¤Ã¤Æ¤â¤¤¤¤¤¬¡¢Í×¤¹¤ë¤Ë¥ê¥¹¥È·¿¤ÎÀèÆ¬¤Ë
+     * Í×ÁÇ¤òÄÉ²Ã¤·¤Æ¤¤¤Ã¤Æ¤¤¤ë¡£
      **/
 
     unsigned char *who, *tmp, *tmp2, *buffer;
@@ -343,8 +343,8 @@ void ReadPetname(char *petname_f)
 void SearchPetname(char *ret_value, char *pname)
 {
     /**
-     * $B%j%9%H$r8!:w$7$F3:Ev$9$k(BPetname$B$,L5$$$+C5$9!#$b$7$"$C$?$i(Bret_value$B$K(B
-     * $B!V(BFrom:Petname$B!W$N7A$GF~$l$FJV$9!#L5$1$l$P(Bret_value$B$O$=$N$^$^!#(B
+     * ¥ê¥¹¥È¤ò¸¡º÷¤·¤Æ³ºÅö¤¹¤ëPetname¤¬Ìµ¤¤¤«Ãµ¤¹¡£¤â¤·¤¢¤Ã¤¿¤éret_value¤Ë
+     * ¡ÖFrom:Petname¡×¤Î·Á¤ÇÆþ¤ì¤ÆÊÖ¤¹¡£Ìµ¤±¤ì¤Ðret_value¤Ï¤½¤Î¤Þ¤Þ¡£
      **/
 
     PetnameList *plist;

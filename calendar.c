@@ -1,7 +1,9 @@
 #include "Msgwin.h"
 #include "calendar.h"
 
-/** 各種変数の宣言 **/
+/**
+ * 各種変数の宣言 
+ **/
 
 static Widget top, calendar, week[7], day[42], prev, next, ok, cal_label;
 
@@ -13,7 +15,9 @@ static CalendarRes cres;
 
 extern Widget editwin, calendarwin;
 
-/** 関数のプロトタイプ **/
+/**
+ * 関数のプロトタイプ 
+ **/
 
 static void Destroy(Widget w, caddr_t client_data, caddr_t call_data);
 static void EditorWindowPopup(Widget, caddr_t, caddr_t);
@@ -146,7 +150,9 @@ static void NextMonth(Widget w, caddr_t client_data, caddr_t call_data)
 
 Widget CreateCalendarWindow(Widget w, int Month, struct tm tm_now)
 {
-    /** (Month)月のカレンダを作る **/
+    /**
+     * (Month)月のカレンダを作る 
+     **/
 
     static XtPopdownIDRec pdrec;
     static char string_l[256];
@@ -205,7 +211,9 @@ Widget CreateCalendarWindow(Widget w, int Month, struct tm tm_now)
 
     message = malloc(BUFSIZ);
 
-    /** 指定された月の初日の曜日を取得する **/
+    /** 
+     * 指定された月の初日の曜日を取得する
+     **/
 
     *tm_tmp = tm_now;
     tm_tmp->tm_mday = 1;
@@ -214,23 +222,27 @@ Widget CreateCalendarWindow(Widget w, int Month, struct tm tm_now)
     m = tm_tmp->tm_wday;
 
     /**
-       うるう年のチェック。本来の定義は
-  
-       ・4で割りきれる年はうるう
-       ・但し、世紀末(**00)かつ400で割りきれない年はうるうにしない
-  
-       だが、どうせ2100年にこのプログラムが動いてると思えないし、
-       2000年はうるうになるので2つ目のルールは不適用 ^^;
-    **/
+     * うるう年のチェック。本来の定義は
+     *
+     * ・4で割りきれる年はうるう
+     * ・但し、世紀末(**00)かつ400で割りきれない年はうるうにしない
+     *
+     * だが、どうせ2100年にこのプログラムが動いてると思えないし、
+     * 2000年はうるうになるので2つ目のルールは不適用 ^^;
+     **/
 
     uru_adjust = ((tm_now.tm_year % 4) == 0 && Month == 1) ? 1 : 0;
 
-    /** Popdown処理のための準備 **/
+    /**
+     * Popdown処理のための準備 
+     **/
 
     pdrec.shell_widget = top;
     pdrec.enable_widget = w;
 
-    /** toplevel Widgetの生成 **/
+    /**
+     * toplevel Widgetの生成 
+     **/
 
     top = XtCreatePopupShell("Calendar", transientShellWidgetClass
 			     ,w, calargs, XtNumber(calargs));
@@ -350,12 +362,16 @@ Widget CreateCalendarWindow(Widget w, int Month, struct tm tm_now)
 		XtAddCallback(day[k], XtNcallback, (XtCallbackProc) EditorWindowPopup
 			      ,(XtPointer) (l - 1));
 
-		/** 予定のある日の色を変える **/
+		/**
+		 * 予定のある日の色を変える
+		 **/
 
 		if (ExistSchedule(Edited_Month, l - 1))
 		    XtVaSetValues(day[k], XtNbackground, GetColor(XtDisplay(top), cres.color), NULL);
 
-		/** 土曜と日曜の色を変える **/
+		/**
+		 * 土曜と日曜の色を変える 
+		 **/
 
 		if (j == 0) {
 		    XtVaSetValues(week[0], XtNforeground, GetColor(XtDisplay(top), "red"), NULL);
@@ -365,12 +381,16 @@ Widget CreateCalendarWindow(Widget w, int Month, struct tm tm_now)
 		    XtVaSetValues(week[6], XtNforeground, GetColor(XtDisplay(top), "blue"), NULL);
 		    XtVaSetValues(day[k], XtNforeground, GetColor(XtDisplay(top), "blue"), NULL);
 		}
-		/** 祝日の色を変える **/
+		/**
+		 *祝日の色を変える
+		 **/
 
 		if (ExistHoliday(Edited_Year + 1900, Edited_Month, l - 1))
 		    XtVaSetValues(day[k], XtNforeground, GetColor(XtDisplay(top), "red"), NULL);
 
-		/** 振り替え休日のチェック **/
+		/**
+		 * 振り替え休日のチェック 
+		 **/
 
 		if (j == 1) {
 		    int bm, bd;
@@ -385,7 +405,9 @@ Widget CreateCalendarWindow(Widget w, int Month, struct tm tm_now)
 		    if (ExistHoliday(Edited_Year + 1900, bm, bd))
 			XtVaSetValues(day[k], XtNforeground, GetColor(XtDisplay(top), "red"), NULL);
 		}
-		/** 今日の色を変える  **/
+		/**
+		 * 今日の色を変える
+		 **/
 
 		if (Edited_Year == NowYear && Edited_Month == NowMonth && l - 1 == NowDay)
 		    XtVaSetValues(day[k], XtNforeground, GetColor(XtDisplay(top), "navy"), NULL);

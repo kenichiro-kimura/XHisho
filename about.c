@@ -1,21 +1,29 @@
 #include "about.h"
 #include "Msgwin.h"
 
-/** local variable **/
+/**
+ * local variable 
+ **/
 
 static Widget top, about, label, ok;
 static AboutRes abr;
 
-/** extern variable **/
+/** 
+ *extern variable 
+ **/
 
 extern int AboutWindowShown;
 
-/** function definition **/
+/**
+ * function definition 
+ **/
 
 static void Destroy(Widget, caddr_t, caddr_t);
 Widget CreateAboutWindow(Widget);
 
-/** resources **/
+/** 
+ *resources 
+ **/
 
 static XtResource resources[] = {
     {
@@ -59,12 +67,16 @@ Widget CreateAboutWindow(Widget w)
 	{XtNresize, FALSE},
     };
 
-    /** Popdown処理のための準備 **/
+    /**
+     * Popdown処理のための準備 
+     **/
 
     pdrec.shell_widget = top;
     pdrec.enable_widget = w;
 
-    /** toplevel Widgetの生成 **/
+    /**
+     * toplevel Widgetの生成 
+     **/
 
     top = XtCreatePopupShell("About", transientShellWidgetClass
 			     ,w, openargs, XtNumber(openargs));

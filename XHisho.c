@@ -170,7 +170,9 @@ static XtResource resources[] = {
 
 
 XHishoClassRec xHishoClassRec = {
-    /** Core Class **/
+    /**
+     * Core Class 
+     **/
     {
 	(WidgetClass) (&labelClassRec),	/** superclass **/
 	"XHisho",		/** class_name **/
@@ -205,15 +207,21 @@ XHishoClassRec xHishoClassRec = {
 	NULL,			/** display_accelerator **/
 	NULL,			/** extension **/
     },
-    /** SimplePart **/
+    /**
+     * SimplePart 
+     **/
     {
 	XtInheritChangeSensitive,
     },
-    /** LabelPart **/
+    /**
+     * LabelPart 
+     **/
     {
 	(int) NULL,
     },
-    /** XHishoPart **/
+    /**
+     * XHishoPart 
+     **/
     {
 	(int) NULL,
     },
@@ -340,7 +348,10 @@ static void ClockDraw(XHishoWidget xhw)
 	 ,x, PIXATT.height + xhw->label.label_height, clock, strlen(clock));
     }
     if (xhw->xhisho.focuswin) {
-	/** move to focus window .. **/
+	/** 
+	 * move to focus window .. 
+	 **/
+
 	Window focus, root, child, work;
 	Widget tmp, tmp2;
 	int dummy;

@@ -34,7 +34,9 @@
 
 extern String SoundCommand;
 
-/**  プロトタイプ **/
+/**
+ *  プロトタイプ 
+ **/
 int SoundPlay(const char *filename);
 int ExtSoundCommand(const char *filename);
 
@@ -116,11 +118,15 @@ static int readWaveFile(int fd, PWAVEFORMAT pwavefmt, u_int * datasize)
 		return 4;
 	    }
 	} else if (header == H_DATA) {
-	    /** ファイルポインタがdataチャンクに到達したら関数を終了 **/
+	    /**
+	     * ファイルポインタがdataチャンクに到達したら関数を終了 
+	     **/
 	    *datasize = (u_int) size;
 	    return 0;
 	} else {
-	    /** 余計なチャンクは読み飛ばす **/
+	    /**
+	     * 余計なチャンクは読み飛ばす 
+	     **/
 	    lseek(fd, size, SEEK_CUR);
 	}
 
@@ -139,14 +145,18 @@ static int openDSP(const char *devname, PWAVEFORMAT pwf)
     if ((fd = open(devname, O_WRONLY)) == -1)
 	return fd;
 
-    /** チャンネル(STEREO or MONAURAL)を設定 **/
+    /**
+     * チャンネル(STEREO or MONAURAL)を設定 
+     **/
     arg = (int) (pwf->nChannels);
     status = ioctl(fd, SOUND_PCM_WRITE_CHANNELS, (char *) &arg);
     if (status == -1 || arg != (int) (pwf->nChannels)) {
 	close(fd);
 	return -1;
     }
-    /** サンプリングレートを設定 **/
+    /**
+     * サンプリングレートを設定 
+     **/
     arg = (int) (pwf->nSamplesPerSec);
     status = ioctl(fd, SOUND_PCM_WRITE_RATE, (char *) &arg);
     if (status == -1) {
@@ -157,7 +167,9 @@ static int openDSP(const char *devname, PWAVEFORMAT pwf)
     printf("DSP - Sampling rate: %d\n", arg);
 #endif
 
-    /** 量子化ビット数(8 or 16Bit)を設定 **/
+    /**
+     * 量子化ビット数(8 or 16Bit)を設定 
+     **/
     arg = (int) (pwf->wBitsPerSample);
     status = ioctl(fd, SOUND_PCM_WRITE_BITS, (char *) &arg);
     if (status == -1 || arg != (int) (pwf->wBitsPerSample)) {

@@ -90,7 +90,9 @@ static XtResource resources[] = {
 
 
 MsgwinClassRec msgwinClassRec = {
-    /** Core Class **/
+    /**
+     * Core Class
+     **/
     {
 	(WidgetClass) (&formClassRec),	/** superclass **/
 	"Msgwin",		/** class_name **/
@@ -125,7 +127,9 @@ MsgwinClassRec msgwinClassRec = {
 	NULL,			/** display_accelerator **/
 	NULL,			/** extension **/
     },
-    /** CompositePart **/
+    /**
+     * CompositePart
+     **/
     {
 	GeometryManager,	/** geometry_manager   **/
 	ChangeManaged,		/** change_managed     **/
@@ -133,7 +137,9 @@ MsgwinClassRec msgwinClassRec = {
 	XtInheritDeleteChild,	/** delete_child   **/
 	NULL,			/** extension      **/
     },
-    /** ConstraintPart **/
+    /**
+     * ConstraintPart
+     **/
     {
 	NULL,
 	0,
@@ -143,11 +149,15 @@ MsgwinClassRec msgwinClassRec = {
 	SetConstValues,
 	NULL,
     },
-    /** FormPart **/
+    /**
+     * FormPart
+     **/
     {
 	XtInheritLayout,
     },
-    /** MsgwinPart **/
+    /**
+     * MsgwinPart 
+     **/
     {
 	(int) NULL,
     },
@@ -183,36 +193,35 @@ static void Realize(Widget w, XtValueMask * valueMask, XSetWindowAttributes * at
 
 static void ShapeWindow(MsgwinWidget msw)
 {
-    /**	    arc[],rect[]の引数と実際の位置の対応
-  
-	      0----------------3  <- ここの円の幅がARC_WIDTH
-	      |                |
-              |                |
-              1----------------2
-  
-	      point[]の引数と実際の位置の対応
-  
-                 0
-	        /|
-               / |
-	      1  |
-	       \ |
-	        \|
-	         2
-             |<->| この幅がPOINT_WIDTH
-  
-	     ARC,POINTいずれもMsgwin.hで定義した定数
-  
-	     WindowMode は
-  
-	     0   |   1
-            -----+------
-             2   |   3
-  
-                と画面を4分割する
-  
-	      **/
-
+    /**
+     * arc[],rect[]の引数と実際の位置の対応
+     *
+     * 0----------------3  <- ここの円の幅がARC_WIDTH
+     * |                |
+     * |                |
+     * 1----------------2
+     *
+     * point[]の引数と実際の位置の対応
+     * 
+     *     0
+     *    /|
+     *   / |
+     *  1  |
+     *   \ |
+     *    \|
+     *     2
+     * |<->| この幅がPOINT_WIDTH
+     *
+     *     ARC,POINTいずれもMsgwin.hで定義した定数
+     *
+     *     WindowMode は
+     *
+     *     0   |   1
+     *      -----+------
+     *       2   |   3
+     *
+     *          と画面を4分割する
+     **/
 
     int i;
     Dimension mask_width, mask_height;
@@ -230,12 +239,16 @@ static void ShapeWindow(MsgwinWidget msw)
     WindowMode = msw->msgwin.WindowMode;
     FrameMode = msw->msgwin.FrameMode;
 
-    /** maskを作るためにウインドウの大きさを取得**/
+    /**
+     * maskを作るためにウインドウの大きさを取得
+     **/
 
     mask_width = msw->core.width;
     mask_height = msw->core.height;
 
-    /** maskの生成 **/
+    /** 
+     * maskの生成
+     **/
 
     for (i = 0; i < 2; i++) {
 	mask_rect[i].x = (!i) * (int) (ARC_WIDTH / 2) + POINT_WIDTH;
@@ -286,14 +299,18 @@ static void ShapeWindow(MsgwinWidget msw)
 
     XSetGraphicsExposures(d, mask_gc, FALSE);
 
-    /** とりあえずマスクする領域をクリアするために黒で塗り潰す **/
+    /**
+     *とりあえずマスクする領域をクリアするために黒で塗り潰す
+     **/
 
     XSetForeground(d, mask_gc, 0);
 
     XFillRectangle(d, window_mask, mask_gc, 0, 0, mask_width + POINT_WIDTH * 2
 		   ,mask_height);
 
-    /** FrameMode によって マスクの形を変える **/
+    /**
+     * FrameMode によって マスクの形を変える
+     **/
 
     switch (FrameMode) {
     case 1:
@@ -305,7 +322,9 @@ static void ShapeWindow(MsgwinWidget msw)
     default:
     }
 
-    /** マスクを白で描画する **/
+    /**
+     * マスクを白で描画する
+     **/
 
     XSetForeground(d, mask_gc, 1);
 
@@ -324,7 +343,9 @@ static void ShapeWindow(MsgwinWidget msw)
 
     msw->msgwin.is_shaped = TRUE;
 
-    /** DrawFrameでこのマスクの形を使うので、mswに格納しておく **/
+    /** 
+     * DrawFrameでこのマスクの形を使うので、mswに格納しておく
+     **/
 
     for (i = 0; i < 4; i++) {
 	msw->msgwin.mask_arc[i] = mask_arc[i];
@@ -339,10 +360,16 @@ static void Redraw(Widget w, XEvent * event, Region region)
 
     msw = (MsgwinWidget) w;
 
-    /** Redraw 毎にWindowModeをチェック **/
+    /**
+     * Redraw 毎にWindowModeをチェック
+     **/
+
     SetWindowLocate(msw);
 
-    /** WindowModeが変っていたりすればShapeしなおす **/
+    /** 
+     * WindowModeが変っていたりすればShapeしなおす 
+     **/
+
     if (msw->msgwin.is_shaped == FALSE)
 	ShapeWindow(msw);
 
@@ -364,9 +391,9 @@ static void DrawFrame(MsgwinWidget msw)
     gc = XCreateGC(d, w, 0, 0);
 
     /**
-       mswに待避しておいたマスクを取り出す。直接使ってもいいが、ここで値を
-       いじる可能性もあるので、とりあえずlocal valueとして取り出してそれを使う
-       **/
+     * mswに待避しておいたマスクを取り出す。直接使ってもいいが、ここで値を
+     * いじる可能性もあるので、とりあえずlocal valueとして取り出してそれを使う
+     **/
 
     for (i = 0; i < 4; i++) {
 	mask_arc[i] = msw->msgwin.mask_arc[i];
@@ -375,7 +402,9 @@ static void DrawFrame(MsgwinWidget msw)
     }
 
 
-    /** 枠を描写 **/
+    /**
+     * 枠を描写 
+     **/
 
     XSetForeground(d, gc, BlackPixel(d, 0));
     XSetLineAttributes(d, gc, 2, LineSolid, CapButt, JoinMiter);
@@ -429,9 +458,9 @@ static Boolean SetValues(Widget current, Widget request, Widget new, ArgList arg
     MsgwinWidget mswnew = (MsgwinWidget) new;
 
     /**
-       もしWindowModeが変わっていたら枠の形が変わるので、再描写するために
-       is_shapedをFALSEにする
-       **/
+     * もしWindowModeが変わっていたら枠の形が変わるので、再描写するために
+     * is_shapedをFALSEにする
+     **/
 
     SetWindowLocate(mswnew);
 
@@ -497,7 +526,9 @@ static void SetWindowLocate(MsgwinWidget msw)
     main_x = get_x;
     main_y = get_y;
 
-    /** 左上隅が画面外にあるときの対処 **/
+    /**
+     * 左上隅が画面外にあるときの対処 
+     **/
 
     if (main_x > DisplayWidth(XtDisplay(top), 0))
 	main_x -= (Dimension) (-1);

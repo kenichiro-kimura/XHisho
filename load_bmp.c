@@ -60,7 +60,9 @@ static int ReadHeader(FILE * fp, int *biWidth, int *biHeight)
 {
     int i, c, bPad;
 
-    /** read the file type (first two bytes) **/
+    /**
+     * read the file type (first two bytes) 
+     **/
 
     if (getc(fp) != 'B' || getc(fp) != 'M')
 	return -1;
@@ -83,7 +85,9 @@ static int ReadHeader(FILE * fp, int *biWidth, int *biHeight)
 	biClrUsed = GetLong(fp);
 	biClrImportant = GetLong(fp);
     } else {
-	/** old bitmap **/
+	/**
+	 * old bitmap 
+	 **/
 	*biWidth = GetShort(fp);
 	*biHeight = GetShort(fp);
 	biPlanes = GetShort(fp);
@@ -93,7 +97,9 @@ static int ReadHeader(FILE * fp, int *biWidth, int *biHeight)
 	biXPelsPerMeter = biYPelsPerMeter = 0;
 	biClrUsed = biClrImportant = 0;
     }
-    /** error checking **/
+    /** 
+     * error checking 
+     **/
     if ((biBitCount != 1 && biBitCount != 4 && biBitCount != 8 && biBitCount != 24)
 	|| biPlanes != 1 || biCompression > BI_RLE4) {
 	fprintf(stderr, "Bogus BMP File! "
@@ -110,8 +116,10 @@ static int ReadHeader(FILE * fp, int *biWidth, int *biHeight)
     }
     bPad = 0;
     if (biSize != WIN_OS2_OLD) {
-	/** skip ahead to colormap, using biSize **/
-	/** 40 bytes read from biSize to biClrImportant **/
+	/**
+	 * skip ahead to colormap, using biSize
+	 * 40 bytes read from biSize to biClrImportant
+	 **/
 
 	c = biSize - 40;
 	for (i = 0; i < c; i++)
@@ -152,7 +160,7 @@ static int ReadHeader(FILE * fp, int *biWidth, int *biHeight)
 }
 
 /**
- * --------------- BMPファイル読み込みサブルーチン
+ * BMPファイル読み込みサブルーチン
  **/
 
 static int Load1(FILE * fp, int biWidth, int biHeight)
@@ -160,7 +168,9 @@ static int Load1(FILE * fp, int biWidth, int biHeight)
     int i, j, c, ct, padw;
     char *pic8;
 
-    /** 'padw', padded to be a multiple of 32 **/
+    /**
+     * 'padw', padded to be a multiple of 32 
+     **/
     c = 0;
     padw = (((biWidth + 31) / 32) * 32 - biWidth) / 8;
 
@@ -186,7 +196,9 @@ static int Load4RGB(FILE * fp, int biWidth, int biHeight)
     int i, j, c, padw;
     char *pic8;
 
-    /** 'padw' padded to a multiple of 8pix (32 bits) **/
+    /**
+     * 'padw' padded to a multiple of 8pix (32 bits) 
+     **/
     c = 0;
     padw = (((biWidth + 7) / 8) * 8 - biWidth) / 2;
 
@@ -215,10 +227,14 @@ static int Load4(FILE * fp, int biWidth, int biHeight)
 
     switch (biCompression) {
     case BI_RGB:
-	/** read uncompressed data **/
+	/**
+	 * read uncompressed data 
+	 **/
 	return Load4RGB(fp, biWidth, biHeight);
     case BI_RLE4:
-	/** read RLE4 compressed data **/
+	/**
+	 * read RLE4 compressed data 
+	 **/
 	break;
     default:
 	fprintf(stderr, "unknown BMP compression type 0x%0lx\n",
@@ -232,28 +248,46 @@ static int Load4(FILE * fp, int biWidth, int biHeight)
     while (y < biHeight) {
 	if ((c = getc(fp)) == EOF)
 	    return -1;
-	if (c) {		/** encoded mode **/
+	if (c) {
+	  /**
+	   * encoded mode
+	   **/
 	    c1 = getc(fp);
 	    for (i = 0; i < c; i++, x++)
 		*pic8++ = (i & 1) ? (c1 & 0x0f) : ((c1 >> 4) & 0x0f
 		    );
-	} else {		/** c==0x00  :  escape codes **/
+	} else {
+	  /**
+	   * c==0x00  :  escape codes
+	   **/
 	    if ((c = getc(fp)) == EOF)
 		return -1;
 
-	    if (c == 0x00) {	/** end of line **/
+	    if (c == 0x00) {
+	      /**
+	       * end of line
+	       **/
 		x = 0;
 		y++;
 		pic8 = (char *) ImageData + x + (biHeight - y - 1) * biWidth;
 	    } else if (c == 0x01)
-		break;		/** end of pic8 **/
-	    else if (c == 0x02) {	/** delta **/
+	      /**
+	       * end of pic8
+	       **/
+		break;
+	    else if (c == 0x02) {
+	      /**
+	       * delta
+	       **/
 		c = getc(fp);
 		x += c;
 		c = getc(fp);
 		y += c;
 		pic8 = (char *) ImageData + x + (biHeight - y - 1) * biWidth;
-	    } else {		/** absolute mode **/
+	    } else {
+	      /**
+	       * absolute mode 
+	       **/
 		for (i = 0; i < c; i++, x++) {
 		    if ((i & 1) == 1)
 			*pic8++ = (c1 & 0x0f);
@@ -262,7 +296,9 @@ static int Load4(FILE * fp, int biWidth, int biHeight)
 			*pic8++ = (c1 & 0xf0) >> 4;
 		    }
 		}
-		/** read pad byte **/
+		/**
+		 * read pad byte 
+		 **/
 		if (((c & 3) == 1) || ((c & 3) == 2))
 		    getc(fp);
 	    }
@@ -276,7 +312,9 @@ static int Load8RGB(FILE * fp, int biWidth, int biHeight)
     int i, j, c, padw;
     char *pic8;
 
-    /** 'padw' padded to a multiple of 4pix (32 bits) **/
+    /**
+     * 'padw' padded to a multiple of 4pix (32 bits) 
+     **/
     padw = ((biWidth + 3) / 4) * 4 - biWidth;
 
     for (i = 0; i < biHeight; i++) {
@@ -299,10 +337,14 @@ static int Load8(FILE * fp, int biWidth, int biHeight)
 
     switch (biCompression) {
     case BI_RGB:
-	/** read uncompressed data **/
+	/**
+	 * read uncompressed data 
+	 **/
 	return Load8RGB(fp, biWidth, biHeight);
     case BI_RLE8:
-	/** read RLE8 compressed data **/
+	/**
+	 * read RLE8 compressed data 
+	 **/
 	break;
     default:
 	fprintf(stderr, "unknown BMP compression type 0x%0lx\n"
@@ -315,26 +357,44 @@ static int Load8(FILE * fp, int biWidth, int biHeight)
     while (y < biHeight) {
 	if ((c = getc(fp)) == EOF)
 	    return -1;
-	if (c) {		/** encoded mode **/
+	if (c) {
+	  /**
+	   * encoded mode 
+	   **/
 	    c1 = getc(fp);
 	    for (i = 0; i < c; i++, x++)
 		*pic8++ = c1;
-	} else {		/** c==0x00  :  escape codes **/
+	} else {
+	  /**
+	   * c==0x00  :  escape codes 
+	   **/
 	    if ((c = getc(fp)) == EOF)
 		return -1;
-	    if (c == 0x00) {	/** end of line **/
+	    if (c == 0x00) {
+	      /**
+	       * end of line 
+	       **/
 		x = 0;
 		y++;
 		pic8 = (char *) ImageData + x + (biHeight - y - 1) * biWidth;
 	    } else if (c == 0x01)
-		break;		/** end of pic8 **/
-	    else if (c == 0x02) {	/** delta **/
+	      /**
+	       * end of pic8 
+	       **/
+		break;
+	    else if (c == 0x02) {
+	      /**
+	       * delta 
+	       **/
 		c = getc(fp);
 		x += c;
 		c = getc(fp);
 		y += c;
 		pic8 = (char *) ImageData + x + (biHeight - y - 1) * biWidth;
-	    } else {		/** absolute mode **/
+	    } else {
+	      /**
+	       * absolute mode 
+	       **/
 		for (i = 0; i < c; i++, x++)
 		    *pic8++ = getc(fp);
 		if (c & 1) {
@@ -357,7 +417,9 @@ static int Load24(FILE * fp, int biWidth, int biHeight)
     int i, j, pad;
     char *pic24;
 
-    /** # of pad bytes to read at EOscanline **/
+    /**
+     * # of pad bytes to read at EOscanline 
+     **/
     pad = (4 - ((biWidth * 3) % 4)) & 0x03;
 
     for (i = 0; i < biHeight; i++) {
@@ -419,7 +481,7 @@ static void GetPseudoPixelFromRGB(Display * d, Colormap cm, struct palette * pal
 
 
     /**
-     *とりあえず、共有セルに気合いで取れるだけ取ってみる
+     * とりあえず、共有セルに気合いで取れるだけ取ってみる
      **/
 
     for (i = 0; i < colorsuu; i++) {
@@ -487,7 +549,9 @@ static void GetPseudoPixelFromRGB(Display * d, Colormap cm, struct palette * pal
 	}
     }
 
-    /** だめだったらAllocateされた中から近いのを探す **/
+    /**
+     * だめだったらAllocateされた中から近いのを探す 
+     **/
     for (i = 0; i < colorsuu; i++) {
 	int min, close, ri, gi, bi;
 
@@ -567,7 +631,9 @@ int LoadBmp(Widget xhw, GC * gc, Pixmap * pmap, char *fname, int *width, int *he
 			 lwidth * 2);
 
 
-    /**もしもファイルが開けなかったら終了**/
+    /**
+     * もしもファイルが開けなかったら終了
+     **/
     if (NULL == (fp = fopen(fname, "r"))) {
 	return -1;
     }
@@ -671,7 +737,9 @@ int LoadBmp(Widget xhw, GC * gc, Pixmap * pmap, char *fname, int *width, int *he
 
 	    GetPseudoPixelFromRGB(d, cm, ImagePalette, pixel_value, colorsuu, cells);
 
-	    /** change pixels to matched color index **/
+	    /**
+	     * change pixels to matched color index 
+	     **/
 
 	    for (i = 0; i < *height; i++)
 		for (j = 0; j < lwidth; j++) {

@@ -47,7 +47,8 @@ static HolidayList *HolidayList_new(int day, char *name)
 
 int CheckSchedule(OpenMessageRes * l_omr, Schedule * schedule, int WeeklyCheck, struct tm tm_now)
 {
-    /** return number of schedule readed from the file xhs* and/or xhs.weekly
+    /**
+     * return number of schedule readed from the file xhs* and/or xhs.weekly
      *
      *  WeeklyCheck = 0: read from xhs*
      *              = 1: read from both

@@ -21,7 +21,7 @@ static char *RcData[NUM_OF_ARRAY(RcName)];
     static int RcHash(const char *name)
 {
     /**
-     * $BM?$($i$l$?J8;zNs$,(BRcName$B$N2?HVL\$+$rJV$9!#L5$1$l$P(B-1$B!#(B
+     * Õø§®§È§Ï§ø ∏ª˙ŒÛ§¨RcName§Œ≤ø»÷Ã‹§´§Ú ÷§π°£Ãµ§±§Ï§–-1°£
      **/
     int i = 0;
 
@@ -37,7 +37,7 @@ static char *RcData[NUM_OF_ARRAY(RcName)];
 int ReadRcfile(char *filename)
 {
     /**
-     * Message$B%U%!%$%k$rFI$_!"(BRcData$B$KEPO?!#@.8y$G(B0,$B<:GT$G(B-$B#1!#(B
+     * Message•’•°•§•Î§Ú∆…§ﬂ°¢RcData§À≈–œø°£¿Æ∏˘§«0,º∫«‘§«-£±°£
      **/
 
     FILE *infile;
@@ -99,8 +99,8 @@ int ReadRcfile(char *filename)
 void ReadRcdata(const char *rc_name, char *ret_value, int size)
 {
     /**
-     * RcData$B$+$i(Brc_name$B$GM?$($i$l$?%(%s%H%j$rC5$7!"(Bret_value$B$KJV$9!#(B
-     * ret_value$B$N:GBgD9$r(Bsize$B$K;XDj!#(B
+     * RcData§´§Èrc_name§«Õø§®§È§Ï§ø•®•Û•»•Í§Ú√µ§∑°¢ret_value§À ÷§π°£
+     * ret_value§Œ∫«¬Áƒπ§Úsize§ÀªÿƒÍ°£
      **/
     int i;
 
@@ -116,7 +116,7 @@ void ReadRcdata(const char *rc_name, char *ret_value, int size)
 void Escape2Return(char *ret_value)
 {
     /**
-     * "\n"$B$r(B'\n'$B$KJQ$($k!#(B
+     * "\n"§Ú'\n'§À —§®§Î°£
      **/
     char *tmp;
     int i;

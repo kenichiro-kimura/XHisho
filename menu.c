@@ -188,7 +188,9 @@ Widget CreateMenuWindow(Widget w)
 	{XtNx, 100},
     };
 
-    /** Popdown処理のための準備 **/
+    /**
+     * Popdown処理のための準備 
+     **/
 
     pdrec.shell_widget = top;
     pdrec.enable_widget = w;
@@ -198,7 +200,9 @@ Widget CreateMenuWindow(Widget w)
 	ReadRcdata(ResName[i], messages[i], BUFSIZ);
     }
 
-    /** toplevel Widgetの生成 **/
+    /**
+     * toplevel Widgetの生成 
+     **/
 
     top = XtCreatePopupShell("Menu", transientShellWidgetClass
 			     ,w, menuargs, XtNumber(menuargs));

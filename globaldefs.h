@@ -4,7 +4,7 @@
 /*
  * global macro and type defines
  *
- * HASH_KEY $B$N(B $BCM$OE,Ev(B ^^; 
+ * HASH_KEY §Œ √Õ§œ≈¨≈ˆ ^^; 
  */
 
 #define XHISHO_VERSION "1.10"

@@ -237,12 +237,16 @@ Widget CreateResEditWindow(Widget w)
     message = malloc(BUFSIZ);
     ReadRcdata("resource", message, BUFSIZ);
 
-    /** Popdown処理のための準備 **/
+    /**
+     * Popdown処理のための準備 
+     **/
 
     pdrec.shell_widget = top;
     pdrec.enable_widget = w;
 
-    /** toplevel Widgetの生成 **/
+    /**
+     * toplevel Widgetの生成 
+     **/
 
     top = XtCreatePopupShell("ResEdit", transientShellWidgetClass
 			     ,w, resargs, XtNumber(resargs));

@@ -13,7 +13,7 @@ enum {
 
 struct palette {
   /* 
-   *$B2hA|%Q%l%C%H%F!<%V%k(B 
+   *²èÁü¥Ñ¥ì¥Ã¥È¥Æ¡¼¥Ö¥ë 
    */
   unsigned char r,g,b,pad;
 };
