@@ -22,7 +22,7 @@ static void CheckOption(Widget, int *, XtInputId *);
 static int Option_exit(Display *);
 static char* or2string(char*);
 static void SakuraParser(char*);
-static char * nstrncpy(char*,const char*,size_t);
+static char* nstrncpy(char*,const char*,size_t);
 static messageStack* messageStack_new(char*);
 static messageStack* messageStack_pop(messageStack**);
 static void messageStack_push(messageStack**,char*);
