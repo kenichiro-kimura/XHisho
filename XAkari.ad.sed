@@ -1,4 +1,4 @@
-'XHisho*international: TRUE
+XHisho*international: TRUE
 XHisho*thickness: 5
 XHisho*frameMode: 0
 XHisho*messageFile: IXHISHODIR/Messages

@@ -74,13 +74,20 @@ int ReadRcfile(char *filename)
 
   while (fgets(tmp, BUFSIZ, infile) != NULL) {
     sscanf(tmp, "%s %s", tmp2, tmp3);
-    index = strstr(tmp, tmp3);
+    for(i = 0; i < strlen(tmp2);i++)
+      if(isspace(tmp[i]))
+	break;
+
+    strcpy(tmp3,tmp + i + 1);
+    if(tmp3[strlen(tmp3) - 1] == '\n')
+      tmp3[strlen(tmp3) - 1] = '\0';
+
     i = RcHash(tmp2);
-    if (index != NULL && i != -1) {
-      Escape2Return(index);
-      RcData[i] = realloc(RcData[i], strlen(index) + 1);
-      memset(RcData[i], 0, strlen(index) + 1);
-      strcpy(RcData[i], index);
+    if (strlen(tmp3) != 0 && i != -1) {
+      Escape2Return(tmp3);
+      RcData[i] = realloc(RcData[i], strlen(tmp3) + 1);
+      memset(RcData[i], 0, strlen(tmp3) + 1);
+      strcpy(RcData[i], tmp3);
     }
     memset(tmp,0,BUFSIZ);
     memset(tmp2,0,BUFSIZ);
