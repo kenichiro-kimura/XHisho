@@ -141,11 +141,11 @@ static mhcent* ReadEntry(FILE* fp){
        */
       for(chr_ptr++;chr_ptr;chr_ptr++)
 	if(!isspace((unsigned char)*chr_ptr)) break;
-      /*
       mhcent_ptr->Entry[tag] = strdup(chr_ptr);
+      /*
+	mhcent_ptr->Entry[tag] = (char*)malloc(strlen(chr_ptr) + 1);
+	strcpy(mhcent_ptr->Entry[tag],chr_ptr);
       */
-      mhcent_ptr->Entry[tag] = (char*)malloc(strlen(chr_ptr) + 1);
-      strcpy(mhcent_ptr->Entry[tag],chr_ptr);
     }
   }
 
@@ -163,7 +163,7 @@ static MHC* MHCNew(){
 
   *mhc_ptr = (_MHC*)malloc(sizeof(_MHC));
   if(!(*mhc_ptr)) return NULL;
-  for(i = 0 ; i < 31;i++)
+  for(i = 0 ; i < 32;i++)
     (*mhc_ptr)->table[i] = NULL;
 
   (*mhc_ptr)->ptr = NULL;
@@ -175,13 +175,32 @@ static MHC* MHCNew(){
 
 static entrylist* EntrylistNew(mhcent* item){
   entrylist* newlist;
+  int i;
 
   newlist = (entrylist*)malloc(sizeof(entrylist));
   if(!newlist) return NULL;
 
   newlist->prev = NULL;
   newlist->next = NULL;
-  newlist->item = item;
+  newlist->item = EntryNew();
+  if(newlist->item != NULL){
+    for(i = 0; i < NUM_OF_ARRAY(item->Entry);i++){
+      if(item->Entry[i] != NULL){
+	newlist->item->Entry[i] = strdup(item->Entry[i]);
+	/*
+	  newlist->item->Entry[i] = (char*)malloc(strlen(item->Entry[i]) + 1);
+	  strcpy(newlist->item->Entry[i],item->Entry[i]);
+	*/
+      }
+    }
+    if(item->filename != NULL){
+      newlist->item->filename = strdup(item->filename);
+      /*
+	newlist->item->filename = (char*)malloc(strlen(item->filename) + 1);
+	strcpy(newlist->item->filename, item->filename);
+      */
+    }
+  }
 
   return newlist;
 }
@@ -215,7 +234,8 @@ static void EntrylistDelete(entrylist* list_ptr){
 
   if(list_ptr->next != NULL)
     EntrylistDelete(list_ptr->next);
-
+  if(list_ptr->item != NULL)
+    EntryDelete(list_ptr->item);
   free(list_ptr);
 }
 
@@ -726,9 +746,11 @@ MHCD* openmhc(const char* home_dir, const char* year_month){
     if(fp){
       entry = ReadEntry(fp);
       if(entry){
-	//	entry->filename = strdup(filename);
-	entry->filename = (char*)malloc(strlen(filename) + 1);
-	strcpy(entry->filename,filename);
+	entry->filename = strdup(filename);
+	/*
+	  entry->filename = (char*)malloc(strlen(filename) + 1);
+	  strcpy(entry->filename,filename);
+	*/
 	  
 	if(!mhc_ptr){
 	  mhc_ptr = MHCDNew(entry);

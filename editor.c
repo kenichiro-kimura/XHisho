@@ -834,11 +834,13 @@ Widget CreateEditorWindow(Widget w, int Mode, struct tm tm_now)
     XtAddCallback(ok, XtNcallback, (XtCallbackProc) DestroyEdit, NULL);
     XtAddCallback(cancel, XtNcallback, (XtCallbackProc) Destroy, NULL);
 
-    for (i = 0; i < 7; i++)
+    for (i = 0; i < NUM_OF_ARRAY(ResName); i++)
       free(messages[i]);
 
-    for (i = 0; i < 10; i++)
+    for (i = 0; i < MAX_SCHED_NUM; i++){
       free(sched_list[i]);
+      free(since_minutes[i]);
+    }
 
     free(string_f);
     free(string_e);
@@ -872,11 +874,13 @@ Widget CreateEditorWindow(Widget w, int Mode, struct tm tm_now)
 
     ChangeColorPastSched();
 
-    for (i = 0; i < 7; i++)
+    for (i = 0; i < NUM_OF_ARRAY(ResName); i++)
       free(messages[i]);
 
-    for (i = 0; i < 10; i++)
+    for (i = 0; i < MAX_SCHED_NUM; i++){
+      free(since_minutes[i]);
       free(sched_list[i]);
+    }
 
     free(string_f);
     free(string_e);
