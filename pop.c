@@ -430,7 +430,12 @@ static char* MD5Digest(unsigned char *s){
 
 static void GetFromandSubject(int sock,char* buffer){
   char *buf,*tmp,*tmp2;
+<<<<<<< pop.c
+  int i = 0;
+  int length;
+=======
   int i = 0,length;
+>>>>>>> 1.2
 
 #ifdef PETNAME
   char *from,*who,*pname;

@@ -56,13 +56,8 @@
 #define Y_SERVER "localhost"
 #define Y_COMMAND "/usr/local/bin/youbin"
 
-#ifdef JP
-#define MAILLABEL "新しいメールが届いています。"
-#define NOLABEL "新しいメールはありません。"
-#else
 #define MAILLABEL "You have new mail."
 #define NOLABEL "You have no new mail."
-#endif
 
 typedef struct {
   int m_timeout;

@@ -1,5 +1,5 @@
 ******************************************************************
- XHisho Ver. 1.00 [Lime Release 0]
+ XHisho Ver. 1.10 [Lime Release 1]
  Copyright(c) 1998,1999 Ken'ichirou Kimura (kimura@db.is.kyushu-u.ac.jp)
     ******************************************************************
 
@@ -135,37 +135,47 @@ From$B$K$O(BMew$B$HF1$87A<0$N(BPetname$B$rMQ$$$F!V(Bhogeyama@dokka.com$B!
 $B$^$:!"(Bxpm$B%i%$%V%i%j$OI,?\$G$9$N$GA0;}$C$FF~$l$F$*$$$F$/$@$5$$!#(BFreeBSD
 $B$J$i(Bport$B$d(Bpackage$B$K$"$j$^$9!#(B
 
-$B<!$K!"(Bconfig.tmpl$B$r=$@5$7$^$9!#(BFreeBSD2.2$B0J9_$J$i!V(B#define FREEBSD22$B!W!#(B
-solaris$B$J$i!V(B#undef FREEBSD22$B!W$+$D!V(B#define SOLARIS$B!W$KJQ$($F$/$@$5$$!#(B
-Linux$B$J$i$PN>J}$H$b(Bundef$B$G$9!#(B
+$B<!$K!"(Bconfigure$B%9%/%j%W%H$rF0$+$7$^$9!#(Bconfigure$B$K$O<!$N%*%W%7%g%s$,$"(B
+$B$j$^$9!#(B
 
-$B30It%U%#%k%?$r;H$&>l9g$O!V(B#define EXT_FILTER$B!W$H$7$^$9!#%G%U%)%k%H$G$O(B
-$B30It%U%#%k%?%3%^%s%I$O!V(Bnkf -e -m$B!W$G$9!#(B
+$B!&(B--enable-personal    : $BA4$F$N%U%!%$%k$r(B$HOME$B0J2<$K%$%s%9%H!<%k$7$^$9(B
+$B!&(B--enable-sound       : $B2;$rLD$i$7$^$9(B
+$B!&(B--enable-youbin      : biff$B$K(BYoubin$B$r;H$$$^$9(B
+$B!&(B--enable-pop         : biff$B$K(BPOP$B$r;H$$$^$9(B
+$B!&(B--enable-apop        : biff$B$K(BAPOP$B$r;H$$$^$9(B
+$B!&(B--enable-abook       : Mew$B$N%"%I%l%9D"$r;H$$$^$9(B
+$B!&(B--disable-i18n       : $B9q:]2=%a%C%;!<%8(B($BF|K\8l$@$1$I(B ^^)$B$r%$%s%9%H!<(B
+                         $B%k$7$^$;$s(B
+$B!&(B--disable-ext_filter : $B30It%U%#%k%?$r;H$$$^$;$s(B
+$B!&(B--disable-petname    : Petname$B$r;H$$$^$;$s(B
 
-Petname$B$r;H$&>l9g$O!V(B#define PETNAME$B!W$H$7$^$9!#!V(B#define ABOOK$B!W$H$9(B
-$B$k$H!"(BMew$B$N%"%I%l%9D"$r;H$&$3$H$b$G$-$^$9!#$?$@$7!"%"%I%l%9D"$r;H$&5!(B
-$BG=$O$^$@%F%9%H$,==J,$G$O$J$$$N$G5$$r$D$1$F$/$@$5$$!#(B
+
+$B!V(B--disable-ext_filter$B!W$r;XDj$7$J$1$l$P!"%a%C%;!<%8$NI=<($K30It%U%#%k(B
+$B%?$r;H$$$^$9!#%G%U%)%k%H$G$O30It%U%#%k%?%3%^%s%I$O!V(Bnkf -e -m$B!W$G$9!#(B
+
+$B!V(B--enable-abook$B!W$H$9$k$H(BMew$B$N%"%I%l%9D"$r;H$&$3$H$b$G$-$^$9!#$?$@$7!"(B
+$B%"%I%l%9D"$r;H$&5!G=$O$^$@%F%9%H$,==J,$G$O$J$$$N$G5$$r$D$1$F$/$@$5$$!#(B
+
+$B!V(B--enable-sound$B!W$H$9$k$3$H$G!"%a!<%k$NE~Ce$d%9%1%8%e!<%k$NDLCN;~$K2;(B
+$B$rLD$i$9$3$H$,$G$-$^$9!#(BFreeBSD$B$H(BLinux$B$J$i$P%G%U%)%k%H$N$^$^$G(BWindows
+$B7A<0$N(Bwav$B%U%!%$%k$rLD$i$;$^$9$7!"2;$r:F@8$9$k30It$N%3%^%s%I$r;XDj$9$k(B
+$B$3$H$b$G$-$^$9(B(FreeBSD$B$H(BLinux$B0J30$N(BOS$B$G$O;XDj$7$J$$$H2;$OLD$j$^$;$s(B)$B!#(B
+$BNc$($P!V(Bcat %s > /dev/audio$B!W$J$I$,;H$($^$9!#(B
+$B$/$o$7$/$O(BCustom.jp$B$r$4Mw2<$5$$!#(B
 
 
-$B!V(B#define USE_SOUND$B!W$H$9$k$3$H$G!"%a!<%k$NE~Ce$d%9%1%8%e!<%k$NDLCN;~(B
-$B$K2;$rLD$i$9$3$H$,$G$-$^$9!#(BFreeBSD$B$H(BLinux$B$J$i$P%G%U%)%k%H$N$^$^$G(B
-Windows$B7A<0$N(Bwav$B%U%!%$%k$rLD$i$;$^$9$7!"2;$r:F@8$9$k30It$N%3%^%s%I$r;X(B
-$BDj$9$k$3$H$b$G$-$^$9(B(FreeBSD$B$H(BLinux$B0J30$N(BOS$B$G$O;XDj$7$J$$$H2;$OLD$j$^(B
-$B$;$s(B)$B!#Nc$($P!V(Bcat %s > /dev/audio$B!W$J$I$,;H$($^$9!#$/$o$7$/$O(B
-Custom.jp$B$r$4Mw2<$5$$!#(B
-
-youbin$B$r;H$&>l9g$O!V(B#define USE_YOUBIN$B!W$G$9!#$3$l$r;XDj$9$k$H%a!<%k$N(B
+youbin$B$r;H$&>l9g$O!V(B--enable-youbin$B!W$G$9!#$3$l$r;XDj$9$k$H%a!<%k$N(B
 $BDLCN$O(Byoubin$B$r8+D%$k$h$&$K$J$j$^$9!#(B
 
-POP3$B$r;H$&>l9g$O!"G'>ZJ}<0$K1~$8$F!V(B#define USE_{POP,APOP}$B!W$rA*(B
-$B$s$G$/$@$5$$!#(B($BCm(B:POP3$B$r;H$&$h$&$K$9$k$H!"(Byoubin$B$O;H$($^$;$s(B)
+POP3$B$r;H$&>l9g$O!"G'>ZJ}<0$K1~$8$F!V(B-enable-{pop,apop}$B!W$rA*$s$G$/$@$5(B
+$B$$!#(B($BCm(B:POP3$B$r;H$&$h$&$K$9$k$H!"(Byoubin$B$O;H$($^$;$s(B)
 
 youbin$B5Z$S(BPOP3$B$r;H$o$J$$$H$-$O%m!<%+%k%^%7%s$N%a!<%k%9%W!<%k$r%]!<%j%s(B
 $B%0$7$F!"%a!<%k$,Mh$F$$$J$$$+D4$Y$^$9!#(B
 
 $B$^$?!"(Broot$B$K$J$k8"8B$r;}$C$F$$$J$$?M$,<+J,$N4D6-$K%$%s%9%H!<%k$7$?$$>l(B
-$B9g$O!V(B#define PERSONAL$B!W$H$7$^$9!#$9$k$H!"(B$HOME/bin$B$H(B$HOME/xhisho/$B$K3F(B
-$B<o%U%!%$%k$r%$%s%9%H!<%k$7$^$9!#(B
+$B9g$O!V(B--enable-personal$B!W$H$7$^$9!#$9$k$H!"(B$HOME/bin$B$H(B$HOME/xhisho/$B$K(B
+$B3F<o%U%!%$%k$r%$%s%9%H!<%k$7$^$9!#(B
 
 
 $B$"$H$O$$$D$bDL$j(B(?)
@@ -177,7 +187,7 @@ youbin$B5Z$S(BPOP3$B$r;H$o$J$$$H$-$O%m!<%+%k%^%7%s$N%a!<%k%9%W!<%k$r%]!<%j%s
 
 (#define PERSONAL$B$J$i(Bsu$B$OITMW(B)
 
-$B$G=*$j$G$9!#(B
+$B$G=*$j$G$9!#(Bconfigure$B$N$"$H$K(Bxmkmf$B$rF0$+$9$N$rK:$l$J$$$G$/$@$5$$!#(B
 
 $B$^$?!"GX7J$KD%$jIU$1$k3($N%G!<%?$OI,?\$G$9!#L5$$$H5/F0$7$^$;$s!#%5%]!<(B
 $B%H$7$F$$$k2hA|7A<0$O8=:_$N$H$3$m(Bxpm$B$H(BBMP$B$@$1$G$9$N$G!"(Bxv$BEy$r;H$C$F2hA|(B
@@ -456,7 +466,8 @@ special thanks to...
 
 $B!&(Bjpg$B$d(Bgif$B$r;H$($k$h$&$K$9$k(B($B;~4V$,$"$l$P$9$0$K$G$b$G$-$k$O$:(B)
 $B!&1Q8l$,E,Ev$9$.(B ^^;
-$B!&(Bmail$B$^$o$j$N%=!<%9$N8+D>$7(B
+$B!&(Bmail$B$^$o$j$N%=!<%9$N8+D>$7!#(BPOP$B!"(BYoubin$B$r5/F0%*%W%7%g%s$G@Z$jBX$($?(B
+  $BJ}$,$$$$$O$:!#(B
 $B!&(Bimpwagent$B$KBP1~$7$F!"(B~/.pop_password$B$r=q$+$J$$$G$b$$$$$h$&$K$9$k(B
 $B!&3F<o5!G=$N%b%8%e!<%k2=!#(BXHisho$B$O>r7o$K9g$o$;$F$U$-$@$7$r=P$9$@$1$K$7(B
   $B$F$7$^$&(B

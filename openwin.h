@@ -70,28 +70,15 @@
 #define SOUND_F "schedule.wav"
 #define SCHED_DIR "/.Schedule/"
 
-#ifdef JP
-#define OPENF "%s月%s日です。\n今日の予定は\n\n"
-#define OPENL "です。"
-#define OPENN "何もありません。"
-#define FORMAT "%s時%s分から%s,\n"
-#define ALERTF "もうすぐ"
-#define ALERTL "の時間です。"
-#define EDIT_M "%s月%s日の予定はいかがなさいますか？"
-#define SCHED_SEP "から"
-#define ARG "hme"
-#else
-
 #define OPENF "Today is %s/%s. Your schedule is"
 #define OPENL "."
 #define OPENN "no schedule."
 #define FORMAT "%s,from %s:%s"
 #define ALERTF "Master,now the time for"
 #define ALERTL "."
-#define EDIT_M "%s月%s日の予定はいかがなさいますか？"
-#define SCHED_SEP "から"
+#define EDIT_M "What's your schedule at %s/%s ?"
+#define SCHED_SEP ",from "
 #define ARG "ehm"
-#endif
 
 
 typedef struct{

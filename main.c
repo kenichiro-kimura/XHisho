@@ -361,9 +361,6 @@ static void PrintUsage(int argc,char** argv){
     "    Use POP3\n"
 #endif
 #endif
-#ifdef JP
-    "    Use Japanese\n"
-#endif
     "\n\n";
     
   int i,print_usage,j,print_coption;

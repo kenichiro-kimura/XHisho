@@ -25,18 +25,7 @@
 #define XtNitemHead "itemHead"
 #define XtCItemHead "ItemHead"
 
-#ifdef JP
-#define MENU_LABEL "何か御用でしょうか"
-#define MENU0 "起動のあいさつが見たい"
-#define MENU1 "今日の予定が見たい"
-#define MENU2 "予定を編集したい"
-#define MENU3 "設定を変更したい"
-#define MENU4 "XHishoについて知りたい"
-#define MENU5 "終わる"
-#define HEAD "●"
-#else
 #define MENU_LABEL "What's happen?"
-
 #define MENU0 "Show me opening message."
 #define MENU1 "Show me today's schedules."
 #define MENU2 "Edit schedules."
@@ -44,7 +33,7 @@
 #define MENU4 "about XHisho."
 #define MENU5 "Quit."
 #define HEAD "* "
-#endif
+
 typedef struct {
   String label;
   String menu0;

@@ -21,15 +21,10 @@
 
 #define EX_COLOR "Blue"
 
-#ifdef JP
-#define CAL_LABEL "%d月のカレンダーです"
-#define PREV_BUTTON "先月"
-#define NEXT_BUTTON "来月"
-#else
 #define CAL_LABEL "Calendar for %d th month."
 #define PREV_BUTTON "Prev"
 #define NEXT_BUTTON "Next"
-#endif
+
 typedef struct {
   String label;
   String prev;

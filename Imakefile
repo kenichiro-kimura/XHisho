@@ -1,15 +1,15 @@
-#include "config.tmpl"
 #include "config.h"
+
+CC = gcc
+XCOMM CDEBUGFLAGS = -g -Wall
+XCOMM CCOPTIONS = 
 
 XCOMM
 XCOMM	do not touch below
 XCOMM
 
-#ifdef XAW3D
-DEF_XAW3D = -DXaw3D
-DEPXAWLIB = $(USRLIBDIR)/libXaw3d.a
-XAWLIB = -lXaw3d
-#endif
+XHISHODIR = $(LIBDIR)/xhisho
+LOCALEDIR = $(LIBDIR)/$(LANG)/app-defaults
 
 #ifdef HAVE_LIBXPG4
 LIB_XPG4 = -lxpg4
@@ -27,8 +27,9 @@ LIB_SOCKET = -lsocket
 LIB_SOLARIS = $(LIB_SOCKET) $(LIB_NSL)
 
 #ifdef PERSONAL
-BINDIR	= $(HOME)/bin
-XHISHODIR = $(HOME)/xhisho
+BINDIR	= $(HOME)/bin/
+XHISHODIR = $(HOME)/xhisho/
+LOCALEDIR = $(HOME)/$(LANG)/app-defaults
 #endif
 
 #ifdef EXT_FILTER
@@ -59,15 +60,12 @@ YOUBIN =
 POP = -DAPOP -DPOP
 #endif
 
-#ifdef JAPANESE
-LNG = -DJP
-#endif
-
 #ifdef ABOOK
 ADD = -DADDRESSBOOK -DPETNAME
 #endif
 
-DEFINES = $(DEF_XAW3D) $(FILTER) $(PET) $(SOUND) $(YOUBIN) $(POP) $(LNG) $(ADD)
+
+DEFINES = $(FILTER) $(PET) $(SOUND) $(YOUBIN) $(POP) $(ADD)
 
 EXTRA_LIBRARIES = -lXpm $(LIB_XPG4) $(LIB_SOLARIS)
 
@@ -102,7 +100,7 @@ ComplexProgramTarget(xhisho)
 #endif
 
 
-#ifdef JAPANESE
+#ifdef I18N
 all:: XHisho.ad XHisho.jp
 #else
 all:: XHisho.ad
@@ -116,7 +114,7 @@ XHisho.ad:: XHisho.ad.sed
 	sed 's!XHISHODIR!$(XHISHODIR)!' XHisho.ad.sed >$@
 #endif
 
-#ifdef JAPANESE
+#ifdef I18N
 XHisho.jp:: XHisho.jp.sed
 	sed 's!XHISHODIR!$(XHISHODIR)!' XHisho.jp.sed >$@
 #endif
@@ -136,20 +134,21 @@ clean::
 
 MakeDirectories(install,$(XHISHODIR))
 
-#ifdef PERSONAL
-#ifdef JAPANESE
-InstallNonExec(XHisho.jp,$(HOME)/XHisho)
-#else
-InstallNonExec(XHisho.ad,$(HOME)/XHisho)
+#ifdef I18N
+MakeDirectories(install,$(LOCALEDIR))
 #endif
+
+#ifdef PERSONAL
+InstallNonExec(XHisho.ad,$(HOME)/XHisho)
 #else
 InstallAppDefaults(XHisho)
 #endif
 
-#ifdef JAPANESE
-LOCALEDIR = $(LIBDIR)/$(LANG)/app-defaults
-MakeDirectories(install,$(LOCALEDIR))
+#ifdef I18N
 InstallNonExec(XHisho.jp,$(LOCALEDIR)/XHisho)
+#endif
+
+#ifdef I18N
 InstallNonExec(sample/aisatu.cfg,$(XHISHODIR))
 InstallNonExec(sample/xhs.weekly.jp,$(XHISHODIR)/xhs.weekly)
 InstallNonExec(sample/Messages.jp,$(XHISHODIR)/Messages)

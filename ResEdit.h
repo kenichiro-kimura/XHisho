@@ -77,19 +77,11 @@ typedef struct _Preference{
 #define LINES_MAX "8"
 #define LINES_OFFSET "1"
 
-#ifdef JP
-#define TOP_LABEL "設定を変更してください"
-#define TIMEOUT_LABEL "タイムアウト(秒)"
-#define INTERVAL_LABEL "チェックインターバル(秒)"
-#define LENGTH_LABEL "メッセージ長"
-#define LINES_LABEL "メッセージ行数"
-#else
 #define TOP_LABEL "Please change preferences."
 #define TIMEOUT_LABEL "mail window timeout(sec.)"
 #define INTERVAL_LABEL "mail check interval(sec.)"
 #define LENGTH_LABEL "message columns"
 #define LINES_LABEL "message lines"
-#endif
 
 #define MAX_PREF_NUM 4
 

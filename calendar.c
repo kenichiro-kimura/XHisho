@@ -5,11 +5,7 @@
 
 static Widget top,calendar,week[7],day[42],prev,next,ok,cal_label;
 
-#ifdef JP
-static const char wname[][4] = {"日","月","火","水","木","金","土"};
-#else
 static const char wname[][4] = {"SUN","MON","TUE","WED","THU","FRI","SAT"};
-#endif 
 
 static const int wdays[] = {31,28,31,30,31,30,31,31,30,31,30,31};
 static int Edited_Month,Edited_Year;
