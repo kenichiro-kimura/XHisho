@@ -63,7 +63,6 @@ static void MHCDDelete(MHCD* mhc_ptr)
     EntryDelete((*mhc_ptr)->item);
 
   free(*mhc_ptr);
-  //  free(mhc_ptr);
 }
 
 static mhcent* EntryNew()
