@@ -430,8 +430,8 @@ static void CheckOption(Widget w, int *fid, XtInputId * id)
 #endif
   InsertMessage(label,message_buffer);
 
-  if(sakura && cg_num != -1)
-    XtVaSetValues(xhisho,XtNforceCG,True,XtNcgNumber,cg_num,NULL);
+  XtVaSetValues(xhisho,XtNforceCG,True,XtNcgNumber,cg_num
+		,XtNucgNumber,u_cg_num,NULL);
 
   if(is_end && opr.timeout > 0){
     if(OptionTimeoutId){

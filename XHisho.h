@@ -57,8 +57,8 @@ typedef struct _XHishoRec *XHishoWidget;
 #define XtCForceCG "ForceCG"
 #define XtNuseUnyuu "useUnyuu"
 #define XtCUseUnyuu "UseUnyuu"
-
-
+#define XtNuCGoff "uCGoff"
+#define XtCUCGoff "UCGoff"
 
 
 #define CGFILE "hisho.xpm"

@@ -85,11 +85,12 @@ static XrmOptionDescRec options[] = {
   {"-optiontimeout", "*optionTimeout", XrmoptionSepArg, "5"},
 #endif
 #ifdef USE_UNYUU
+  {"-unyuu", "*UseUnyuu", XrmoptionNoArg, "True"},
   {"-uxoff", "*uXOffset", XrmoptionSepArg, "300"},
   {"-uyoff", "*uYOffset", XrmoptionSepArg, "0"},
   {"-uwidth", "*UOptionWindow*optionWidth", XrmoptionSepArg, "300"},
   {"-uheight", "*UOptionWindow*optionHeight", XrmoptionSepArg, "200"},
-  {"-unyuu", "*UseUnyuu", XrmoptionNoArg, "True"},
+  {"-ucgoff", "*uCGoff", XrmoptionSepArg, "0"},
 #endif
 };
 
@@ -495,11 +496,12 @@ static void PrintUsage(int argc, char **argv)
   "     -optiontimeout              : Option window timeout\n"
 #endif
 #ifdef USE_UNYUU
+  "     -unyuu                      : use UNYUU Window \n"
   "     -uxoff                      : UNYUU Window X-offset\n"
   "     -uyoff                      : UNYUU Window Y-offset\n"
   "     -uwidth                     : UNYUU Window Width\n"
   "     -uheight                    : UNYUU Window Height\n"
-  "     -unyuu                      : use UNYUU Window \n"
+  "     -ucgoff                     : UNYUU CG X-offset\n"
 #endif
   "\n";
 

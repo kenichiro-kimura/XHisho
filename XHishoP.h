@@ -49,6 +49,7 @@ typedef struct _XHishoPart {
   String ext_editcommand;
   int f_cg_number;
   int uf_cg_number;
+  int ucg_off;
   Boolean force_cg;
   Boolean use_unyuu;
 
