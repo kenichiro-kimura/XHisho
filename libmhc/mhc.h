@@ -33,7 +33,7 @@
  *
  * MHC* OpenMHC(const char* home_dir, int year, int month);
  *   home_dir/year/month に加えてintersectも読み込む。
- *   さらに、dayでハッシュして保持する。
+ *   さらに、dayごとに保持する。
  *
  * mhcent* ReadMHC(MHC*);
  *   エントリを順次読む。
@@ -61,7 +61,7 @@
  * $HOME/Mail/schedule/ にある、2000/10/1のエントリを取り出すには
  *
  *   MHC* mhc_ptr;
- *   mhc_ent* ent_ptr;
+ *   mhcent* ent_ptr;
  *
  *   mhc_ptr = OpenMHC("$HOME/Mail/schedule/",2000,10);
  *   SetMHC(mhc_ptr,1);
