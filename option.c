@@ -359,9 +359,17 @@ static void CheckOption(Widget w, int *fid, XtInputId * id)
   }
 
 #ifdef USE_KAWARI
-    message_ptr = RandomMessage(opr.kawari_dir);
-    strcpy(_buffer,message_ptr);
-    free(message_ptr);
+  if(KAWARITimeoutId){
+    XtRemoveTimeOut(KAWARITimeoutId);
+    KAWARITimeoutId = 0;
+  }
+  ClearMessage(label);
+#ifdef USE_UNYUU
+  ClearMessage(ulabel);
+#endif
+  message_ptr = RandomMessage(opr.kawari_dir);
+  strcpy(_buffer,message_ptr);
+  free(message_ptr);
 #endif
 
 #ifdef EXT_FILTER
@@ -539,10 +547,7 @@ static void CheckOption(Widget w, int *fid, XtInputId * id)
 #ifdef USE_KAWARI
   if(opr.k_wait == 0)
     opr.k_wait = 60;
-  if(KAWARITimeoutId){
-    XtRemoveTimeOut(KAWARITimeoutId);
-    KAWARITimeoutId = 0;
-  }
+
   KAWARITimeoutId = XtAppAddTimeOut(XtWidgetToApplicationContext(local_option)
 				    , opr.k_wait * 1000
 				    , (XtTimerCallbackProc) CheckOption
@@ -858,11 +863,16 @@ static void _InsertMessage(XtPointer cl,XtIntervalId* id)
     case '\\':
       switch(*(chr_ptr + 1)){
       case 'e':
-	if(opr.timeout > 0)
+	if(opr.timeout > 0){
+	  if(OptionTimeoutId){
+	    XtRemoveTimeOut(OptionTimeoutId);
+	    OptionTimeoutId = 0;
+	  }
 	  OptionTimeoutId = XtAppAddTimeOut(XtWidgetToApplicationContext(local_option)
 					    , opr.timeout * 1000
 					    , (XtTimerCallbackProc) Destroy
 					    , NULL);
+	}
 	break;
       case 'w':
 	cg_num = atoi(chr_ptr + 2);
