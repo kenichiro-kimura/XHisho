@@ -235,15 +235,13 @@ static int CheckSC_Day(char* sc_day,int year,int month,int day){
       }else{
 	isDay = 0;
       }
-      chr_ptr += strlen("00") + 1;
+      chr_ptr += strlen("00");
     } else {
-      chr_ptr += strlen("00") + strlen(yearmonth) + 1;
+      isDay = 0;
+      chr_ptr += strlen("00") + strlen(yearmonth);
     }
-
+    
     switch(isDay){
-    case -1:
-      isDay = -1;
-      break;
     case 0:
       if(sig)
 	isDay = 1;
@@ -254,7 +252,8 @@ static int CheckSC_Day(char* sc_day,int year,int month,int day){
       break;
     }
 
-    if(chr_ptr >= sc_day + strlen(sc_day) || isDay == 1) break;
+    if(chr_ptr >= sc_day + strlen(sc_day)) break;
+    if((isDay == 1 && sig == 0) || (isDay == 0 && sig == 1)) break;
     while(isspace(*chr_ptr))
       chr_ptr++;
   }

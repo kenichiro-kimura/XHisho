@@ -203,7 +203,7 @@ int CheckSchedule(OpenMessageRes * l_omr, Schedule * schedule, int WeeklyCheck, 
 
       if(ent_ptr->Entry[X_SC_Time] && strlen(ent_ptr->Entry[X_SC_Time]) >= 4){
 	strncpy(schedule[i].hour, ent_ptr->Entry[X_SC_Time], sizeof(char) * 2);
-	strncpy(schedule[i].min, ent_ptr->Entry[X_SC_Time] + 2, sizeof(char) * 2);
+	strncpy(schedule[i].min, ent_ptr->Entry[X_SC_Time] + 3, sizeof(char) * 2);
       } else {
 	strcpy(schedule[i].hour, "*");
       }
