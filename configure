@@ -28,7 +28,7 @@ ac_help="$ac_help
 ac_help="$ac_help
   --enable-apop     use apop"
 ac_help="$ac_help
-  --disable-japanese     don't use japanese"
+  --disable-i18n     don't use I18N messages"
 ac_help="$ac_help
   --enable-abook     use address book"
 ac_help="$ac_help
@@ -777,16 +777,16 @@ test "$with_apop" = "yes" && cat >> confdefs.h <<\EOF
 EOF
 
 
-# Check whether --enable-japanese or --disable-japanese was given.
-if test "${enable_japanese+set}" = set; then
-  enableval="$enable_japanese"
-  with_japanese=$enableval
+# Check whether --enable-i18n or --disable-i18n was given.
+if test "${enable_i18n+set}" = set; then
+  enableval="$enable_i18n"
+  with_i18n=$enableval
 else
-  with_japanese=yes
+  with_i18n=yes
 fi
 
-test "$with_japanese" = "yes" && cat >> confdefs.h <<\EOF
-#define JAPANESE 1
+test "$with_i18n" = "yes" && cat >> confdefs.h <<\EOF
+#define I18N 1
 EOF
 
 

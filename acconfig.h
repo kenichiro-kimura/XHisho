@@ -23,7 +23,7 @@
 #undef USE_APOP
 
 /* Define if you use japasese */
-#undef JAPANESE
+#undef I18N
 
 /* Define if you use address book */
 #undef ABOOK

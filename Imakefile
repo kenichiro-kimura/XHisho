@@ -144,13 +144,16 @@ MakeDirectories(install,$(LOCALEDIR))
 
 #ifdef PERSONAL
 InstallNonExec(XHisho.ad,$(HOME)/XHisho)
-#else
-InstallAppDefaults(XHisho)
-#endif
-
 #ifdef I18N
 InstallNonExec(XHisho.jp,$(LOCALEDIR)/XHisho)
 #endif
+#else
+InstallAppDefaults(XHisho)
+#ifdef I18N
+InstallNonExec(XHisho.jp,$(LOCALEDIR)/XHisho)
+#endif
+#endif
+
 
 #ifdef I18N
 InstallNonExec(sample/aisatu.cfg,$(XHISHODIR))
