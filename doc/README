@@ -26,6 +26,7 @@ You can customize every message, CG, etc.
  (1) run "./configure" script. If you have some graphic
      libraries(you can use XPM(*1),JPEG(*2),and PNG(*3)
      library),XHisho uses these libraries.
+     If you want to use MHC's data, run "./configure --enable-libmhc".
  (2) run "make".
  (3) run "make install"
 
