@@ -152,6 +152,20 @@ static void Destroy(Widget w, XEvent * event, String * params, unsigned int *num
   }
   XtPopdown(top);
   XtPopdown(utop);
+
+#ifdef USE_KAWARI
+  if(KAWARITimeoutId){
+    XtRemoveTimeOut(KAWARITimeoutId);
+    KAWARITimeoutId = 0;
+  }
+
+  if(opr.k_wait > 0)
+    KAWARITimeoutId = XtAppAddTimeOut(XtWidgetToApplicationContext(local_option)
+				      , opr.k_wait * 1000
+				      , (XtTimerCallbackProc) GetMessageFromKawari
+				      , NULL
+				      );
+#endif
   /*
   ClearMessage(label);
   ClearMessage(ulabel);
