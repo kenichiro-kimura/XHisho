@@ -411,7 +411,7 @@ static char* MD5Digest(unsigned char *s){
     MD5ダイジェストを計算する。RFC1321のAppendixそのまま。本体はmd5c.c。
   */
 
-  int i,length;
+  int i;
   MD5_CTX context;
   unsigned char digest[16];
   static char ascii_digest [33];
@@ -430,7 +430,7 @@ static char* MD5Digest(unsigned char *s){
 
 static void GetFromandSubject(int sock,char* buffer){
   char *buf,*tmp,*tmp2;
-  int i = 0;
+  int i = 0,length;
 
 #ifdef PETNAME
   char *from,*who,*pname;
