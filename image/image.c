@@ -320,9 +320,8 @@ int LoadImage(ImageInfo* i_info)
     }
 
     if(i_info->anim == 1){
-      realloc(i_info->filename
-	      ,strlen((i_info->image + i_info->loaded_images)->filename));
-      strcpy(i_info->filename,(i_info->image + i_info->loaded_images)->filename);
+      i_info->filename 
+	= strdup((i_info->image + i_info->loaded_images)->filename);
       i_info->anim = 2;
       continue;
     }

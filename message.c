@@ -79,15 +79,11 @@ int ReadRcfile(char *filename)
 	break;
 
     strcpy(tmp3,tmp + i + 1);
-    if(tmp3[strlen(tmp3) - 1] == '\n')
-      tmp3[strlen(tmp3) - 1] = '\0';
 
     i = RcHash(tmp2);
     if (strlen(tmp3) != 0 && i != -1) {
       Escape2Return(tmp3);
-      RcData[i] = realloc(RcData[i], strlen(tmp3) + 1);
-      memset(RcData[i], 0, strlen(tmp3) + 1);
-      strcpy(RcData[i], tmp3);
+      RcData[i] = strdup(tmp3);
     }
     memset(tmp,0,BUFSIZ);
     memset(tmp2,0,BUFSIZ);

@@ -927,10 +927,8 @@ static int WriteSchedule(struct tm tm_now)
     XtGetValues(day[i], darg, n);
     XtGetValues(leave_t[i], larg, n);
 
-    if (strlen(dbuf) > BUFSIZ)
-      dtmp = realloc(dtmp, strlen(dbuf) + 1);
-    if (strlen(ebuf) > BUFSIZ)
-      etmp = realloc(etmp, strlen(dbuf) + 1);
+    dtmp = strdup(dbuf);
+    etmp = strdup(dbuf);
     ChangeReturn(dbuf, dtmp);
     ChangeReturn(ebuf, etmp);
 
