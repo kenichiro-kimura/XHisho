@@ -67,6 +67,7 @@ ComplexProgramTarget(xakari)
 ComplexProgramTarget(xhisho)
 #endif
 
+ComplexProgramTarget(xadl/xadl)
 
 #ifdef I18N
 all:: XHisho.ad XHisho.jp

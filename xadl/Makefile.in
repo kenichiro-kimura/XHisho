@@ -16,4 +16,4 @@ y.tab.h y.tab.c: xadl.y
 	@YACC@ -d xadl.y
 
 clean: 
-	rm *.o y.tab.[ch] lex.yy.[ch] xadl
+	rm -f *.o y.tab.[ch] lex.yy.[ch] xadl

@@ -1,9 +1,13 @@
-all: Makefile
+all: Makefile xadl/Makefile
 	make -f Makefile
+	cd xadl;make -f Makefile
 
 Makefile: makefile Imakefile config.h image/Imakefile
 	xmkmf
 	cd image;xmkmf
+
+xadl/Makefile: xadl/Makefile.in
+	./configure
 
 makefile: makefile.in
 	./configure
@@ -19,6 +23,7 @@ image/Imakefile: image/Imakefile.in
 
 clean: Makefile
 	make -f Makefile clean
+	cd xadl;make clean
 
 install: Makefile
 	make -f Makefile install
