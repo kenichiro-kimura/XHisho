@@ -97,7 +97,7 @@
  **/
 
 #define XHISHO_PACKAGE "XHisho"
-#define XHISHO_VERSION "1.50[Lime release 5]"
+#define XHISHO_VERSION "1.60[Lime release 6]"
 #define MIN(a,b) ((a) > (b) ? (b) :(a))
 #define MAX(a,b) ((a) > (b) ? (a) :(b))
 #define NUM_OF_ARRAY(a) (sizeof(a) / sizeof(a[0]))
