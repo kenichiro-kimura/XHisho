@@ -12,7 +12,7 @@
 int LoadPng(ImageInfo * i_info)
 {
   FILE* fp;
-  char buf[8];
+  unsigned char buf[8];
   png_structp png_ptr;
   png_infop info_ptr,end_info;
   png_bytep row_pointer;
@@ -34,8 +34,10 @@ int LoadPng(ImageInfo * i_info)
       buf [4] != 0x0d ||
       buf [5] != 0x0a ||
       buf [6] != 0x1a ||
-      buf [7] != 0x0a)
+      buf [7] != 0x0a){
+    printf("not PNG file:%s\n",i_info->filename);
     return -1;
+  }
 
   /**
    * read PNG data
@@ -43,17 +45,22 @@ int LoadPng(ImageInfo * i_info)
 
   png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING,(png_voidp)NULL
 				   ,NULL,NULL);
-  if(!png_ptr) return -1;
+  if(!png_ptr){
+    fclose(fp);
+    return -1;
+  }
 
   info_ptr = png_create_info_struct(png_ptr);
   if(!info_ptr){
     png_destroy_read_struct(&png_ptr,NULL,NULL);
+    fclose(fp);
     return -1;
   }
 
   end_info = png_create_info_struct(png_ptr);
   if(!end_info){
     png_destroy_read_struct(&png_ptr,NULL,NULL);
+    fclose(fp);
     return -1;
   }
 
@@ -74,9 +81,38 @@ int LoadPng(ImageInfo * i_info)
 
   i_info->ImageData = malloc(i_info->width * i_info->height * 3);
 
+  if((color_type & PNG_COLOR_MASK_COLOR)){
+    png_color* palette;
+    int num_palette;
 
-  if (color_type == PNG_COLOR_TYPE_PALETTE)
-    png_set_expand(png_ptr);
+    png_get_PLTE(png_ptr, info_ptr, &palette, &num_palette);
+    i_info->colorsuu = num_palette;
+
+    if(num_palette > 256){
+      if (color_type == PNG_COLOR_TYPE_PALETTE)
+	png_set_expand(png_ptr);
+      i_info->BitCount = 24;
+    } else {
+      i_info->BitCount = 8;
+      i_info->ImagePalette = i_info->ImagePalette ?
+	realloc(i_info->ImagePalette, sizeof(i_info->ImagePalette[0]) * i_info->colorsuu)
+	: malloc(sizeof(i_info->ImagePalette[0]) * i_info->colorsuu);
+
+      if(!i_info->ImagePalette){
+	printf("Can't alloc palette:%d\n",i_info->colorsuu);
+	png_destroy_read_struct(&png_ptr, &info_ptr,&end_info);
+	fclose(fp);
+	return -1;
+      }
+
+      for(i = 0; i < i_info->colorsuu;i++){
+	i_info->ImagePalette[i].r = palette[i].red;
+	i_info->ImagePalette[i].g = palette[i].green;
+	i_info->ImagePalette[i].b = palette[i].blue;
+      }
+    }
+  }
+
   png_set_strip_16(png_ptr);
   png_set_packing(png_ptr);
 
@@ -89,17 +125,25 @@ int LoadPng(ImageInfo * i_info)
     png_set_swap(png_ptr);
 
   for(i = 0; i < height;i++){
-    char* ptr;
+    unsigned char* ptr;
 
     row_pointer = malloc(width * 4);
     png_read_rows(png_ptr, &row_pointer, NULL, 1);
     ptr = row_pointer;
-    for(j = 0; j < width * 3 ;j+= 3){
-      int r,g,b;
-      r = i_info->ImageData[i * width * 3 + j ] = *ptr++;
-      g = i_info->ImageData[i * width * 3 + j + 1] = *ptr++;
-      b = i_info->ImageData[i * width * 3 + j + 2] = *ptr++;
-      ptr++;
+    switch(i_info->BitCount){
+    case 8:
+      for(j = 0 ; j < width;j++){
+	i_info->ImageData[i * width + j ] = *ptr++;
+      }
+      break;
+    case 24:
+      for(j = 0; j < width * 3 ;j += 3){
+	i_info->ImageData[i * width * 3 + j ] = *ptr++;
+	i_info->ImageData[i * width * 3 + j + 1] = *ptr++;
+	i_info->ImageData[i * width * 3 + j + 2] = *ptr++;
+	ptr++;
+      }
+      break;
     }
     free(row_pointer);
   }
