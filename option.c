@@ -8208,7 +8208,7 @@ static void sstp(int port)
   struct sockaddr_in fromadd;
   unsigned char* buffer;
   unsigned char* chr_ptr;
-  int is_script,i;
+  int is_script,is_command,i;
   int status;
   messageBuffer kbuf;
   FILE* stream;
@@ -8243,8 +8243,8 @@ static void sstp(int port)
     accept_desc = accept(sockdesc, (struct sockaddr*)&fromadd, &fromlen);
     status = 0;
     if(accept_desc != -1){
-      /*      write(accept_desc,"200 OK\r\n",strlen("200 OK\r\n"));*/
-      is_script = 0;
+      write(accept_desc,"200 OK\r\n",strlen("200 OK\r\n"));
+      is_script = is_command = 0;
       stream = fdopen(accept_desc,"rw");
       while(1){
 	if(fgets(buffer,BUFSIZ * 10,stream) == NULL) break;
@@ -8299,6 +8299,23 @@ static void sstp(int port)
 	    /* oh, it's not good! */
 	    conv = SJIS2EUC;
 	  }
+	} else if(!strncmp(buffer,"EXECUTE SSTP/1.0",strlen("EXECUTE SSTP/1.0"))){
+	  /*
+	   *  not supported
+	   */
+	  is_command = 1;
+	  status = 1;
+	} else if(!strncmp(buffer,"Command:",strlen("Command:"))
+		  && is_command){
+	  for(chr_ptr = buffer + strlen("Command:");
+	      isspace(*chr_ptr);chr_ptr++);
+
+	  if(!strncmp(chr_ptr,"GetName",strlen("GetName"))){
+	    status++;
+	  } else {
+	    status = -1;
+	    break;
+	  }
 	} else if(!strncmp(buffer,"EXECUTE",strlen("EXECUTE"))){
 	  /*
 	   *  not supported
@@ -8312,6 +8329,19 @@ static void sstp(int port)
 	  status = -1;
 	  break;
 	} else if(!strncmp(buffer,"SEND",strlen("SEND"))){
+	  /*
+	   *  this is SEND/ 1.2 , 1.3 , 1.4
+	   *  not supported
+	   */
+	  status = -1;
+	  break;
+	} else if(!strncmp(buffer,"COMMUNICATE",strlen("COMMUNICATE"))){
+	  /*
+	   *  not supported
+	   */
+	  status = -1;
+	  break;
+	} else if(!strncmp(buffer,"NOTIFY",strlen("NOTIFY"))){
 	  /*
 	   *  this is SEND/ 1.2 , 1.3 , 1.4
 	   *  not supported
@@ -8335,16 +8365,22 @@ static void sstp(int port)
 	fprintf(stream,"400 Bad Request\r\n");
 	break;
       case 3:
-	fprintf(stream,"200 OK\r\n");
+	if(is_script)
+	  fprintf(stream,"204 No Connect\r\n");
+	else if (is_command)
+	  fprintf(stream,"XHisho with option\r\n");
+	else
+	  fprintf(stream,"204 No Connect\r\n");
 	break;
       default:
 	fprintf(stream,"501 Not Implemented\r\n");
 	break;
       }
 
+      fflush(stream);
       fclose(stream);
 
-      if(status == 3){
+      if(status == 3 && is_script){
 	/*
 	 * SSTPParser(kbuf.buffer);
 	 */
