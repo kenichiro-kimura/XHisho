@@ -851,13 +851,16 @@ static void YoubinInit()
 static void CheckYoubin(Widget w, int *fid, XtInputId * id)
 {
   int len;
-  char *buf, *tmp1 ,*tmp, *message;
+  char *buf,*tmp, *message;
+  char *tmp1;
+
   char *cp, *q, *From, *tmp2,*ch_ptr;
   int mail_size;
   static int old_mail_size = 0;
   long date;
   int i = 0, j;
   int isFrom = 0, isSubject = 0;
+  int isHeader;
   int broken_from;
 
 #ifdef PETNAME
@@ -867,7 +870,6 @@ static void CheckYoubin(Widget w, int *fid, XtInputId * id)
   FILE *in, *t_file;
   char command[256], t_filename[128];
 #endif
-
 
   From = (char*)malloc(BUFSIZ * 5);
   *From = '\0';
@@ -895,6 +897,7 @@ static void CheckYoubin(Widget w, int *fid, XtInputId * id)
     fprintf(stderr, "Invalid message from youbin\n");
     goto End;
   }
+
   if (mail_size == old_mail_size)
     goto End;
 
@@ -905,7 +908,12 @@ static void CheckYoubin(Widget w, int *fid, XtInputId * id)
   if (tmp1 == NULL)
     goto End;
 
-  while (tmp1 != NULL && i < mar.mail_lines && !(isFrom && isSubject)) {
+  isHeader = 1;
+  while (tmp1 != NULL && i < mar.mail_lines && isHeader) {
+    if(*tmp1 == '\n'){
+      isHeader = 0;
+      continue;
+    }
     broken_from = 0;
     ch_ptr = tmp1;
     while(*ch_ptr != '\0' && 
@@ -929,7 +937,7 @@ static void CheckYoubin(Widget w, int *fid, XtInputId * id)
 	if (strchr(who, '@') != NULL && strchr(who,'<') == NULL){
 	  strcpy(pname, who);
 	} else {
-	  if ((next_ptr = strchr(ch_ptr, '<')) == NULL)
+	  if (strchr(ch_ptr, '<') == NULL)
 	    next_ptr = strtok(NULL, "\n");
 	  if(next_ptr != NULL){
 	    left_ptr = strchr(next_ptr, '<');
