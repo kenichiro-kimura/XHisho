@@ -1,5 +1,5 @@
 #!/bin/sh
-CONFIG_DIR
+@X_CONFIG_DIR@
 topdir=
 curdir=.
 

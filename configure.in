@@ -120,10 +120,9 @@ AC_ARG_ENABLE(libmhc,
         [with_libmhc=no])
 test "$with_libmhc" = "yes" && AC_DEFINE(LIBMHC)
 
-sed "/^config/!d" $XMKMF|sed 's/"/\\"/g' | sed 's/\//\\\//g' > _xmkmf
-X_CONFIG_DIR=`sed "/^config/!d" _xmkmf`
-sed "s/CONFIG_DIR/$X_CONFIG_DIR/" my_xmkmf.in > my_xmkmf
-chmod +x my_xmkmf
-rm -f _xmkmf
+X_CONFIG_DIR=`sed "/^config/!d" $XMKMF`
+AC_SUBST(X_CONFIG_DIR)
 
-AC_OUTPUT(Makefile apps/Makefile Imakefile image/Imakefile xadl/Imakefile libmhc/Imakefile)
+AC_OUTPUT(Makefile my_xmkmf apps/Makefile Imakefile image/Imakefile xadl/Imakefile libmhc/Imakefile)
+
+chmod +x my_xmkmf
