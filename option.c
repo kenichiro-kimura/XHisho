@@ -253,7 +253,8 @@ Widget CreateOptionWindow(Widget w){
     CommandInit();
 
 #ifdef USE_KAWARI
-  GetMessageFromKawari(local_option,NULL,NULL);
+  if(opr.k_wait > 0)
+    GetMessageFromKawari(local_option,NULL,NULL);
 #endif
 
   MessageWaitId = XtAppAddTimeOut(XtWidgetToApplicationContext(local_option)
@@ -378,9 +379,6 @@ static void GetMessageFromKawari(Widget w, int * i, XtInputId * id){
   ORParser(_buffer);
 
   AddBuffer(&mbuf,_buffer);
-
-  if(opr.k_wait == 0)
-    opr.k_wait = 60;
 
 }
 #endif
@@ -716,6 +714,7 @@ static void InsertMessage(XtPointer cl,XtIntervalId* id)
 	  KAWARITimeoutId = 0;
 	}
 
+  if(opr.k_wait > 0)
 	KAWARITimeoutId = XtAppAddTimeOut(XtWidgetToApplicationContext(local_option)
 					  , opr.k_wait * 1000
 					  , (XtTimerCallbackProc) GetMessageFromKawari

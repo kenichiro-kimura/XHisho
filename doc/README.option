@@ -148,7 +148,8 @@ http://meister-d-i.hoops.ne.jp/
 
 ・-nogreeting       : 起動時に挨拶を出さない
   (対応するリソースなし)
-・kwait             : 「華和梨」のメッセージ頻度(秒単位)
+・kwait             : 「華和梨」のメッセージ頻度(秒単位)。0で「華和梨」の
+                      AIメッセージを表示しません。
   (リソース: XHisho*kawariWait (整数値)) 
 
 ・kawaridir         : 「華和梨」の辞書のあるディレクトリ
