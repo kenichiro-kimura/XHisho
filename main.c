@@ -183,6 +183,9 @@ void Quit(Widget w, XEvent * event, String * params, unsigned int *num_params)
     /*while(wait(&i) != youbin_pid[0]);*/
   }
 
+#ifdef OPTION
+  kill(0,SIGTERM);
+#endif
   exit(0);
 }
 

@@ -1,7 +1,10 @@
 SRC      = countdown.c
-PROGS    = countdown
+PROGS    = countdown sstp
 
 all: $(PROGS)
 
-$(PROGS): $(SRC)
-	@CC@ @CFLAGS@ $(SRC) -o $@
+countdown: countdown.c
+	gcc -g -O2 countdown.c -o $@
+
+sstp: sstp.c
+	gcc -g -O2 sstp.c -o $@

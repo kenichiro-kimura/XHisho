@@ -4,6 +4,11 @@
 #include "option.h"
 #include <ctype.h>
 #include <signal.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <netdb.h>
 
 #ifndef ENABLE_EUC_HANKAKU_KANA
 #define ENABLE_EUC_HANKAKU_KANA 0
@@ -263,6 +268,7 @@ Widget CreateOptionWindow(Widget w){
 				  , opr.m_wait * 10
 				  , (XtTimerCallbackProc) InsertMessage
 				  , NULL);
+
   return(local_option);
 }
 
@@ -743,7 +749,7 @@ static void InsertMessage(XtPointer cl,XtIntervalId* id)
 
     if(is_display){
       w = (dest_win == SAKURA)? label:ulabel;
-      if(is_end && *chr_ptr != '\n'){
+      if(is_end && *chr_ptr != '\n' && strncmp(chr_ptr,"\r\n",2) != 0){
 	ClearMessage(label);
 	ClearMessage(ulabel);
 	is_end = 0;
@@ -8052,4 +8058,3 @@ static unsigned int UNICODE2EUC(unsigned int ucode)
 
   return 0;
 }
-
