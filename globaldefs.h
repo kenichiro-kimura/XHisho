@@ -148,8 +148,8 @@ EDITOR_GLOBAL Widget CreateEditorWindow(Widget, int, struct tm);
 EDITOR_GLOBAL unsigned long GetColor(Display *, char *);
 
 MAIL_GLOBAL Widget CreateMailAlert(Widget, int);
-MAIL_GLOBAL int CheckMail(XtPointer, XtIntervalId *);
-MAIL_GLOBAL int CheckPOP3(XtPointer, XtIntervalId *);
+MAIL_GLOBAL int CheckMail(int);
+MAIL_GLOBAL int CheckPOP3(int);
 MAIL_GLOBAL int CheckYoubinNow(int);
 MAIL_GLOBAL int IsMailChecked(int);
 MAIL_GLOBAL void MailPopup(int,int);

@@ -159,7 +159,7 @@ static void CheckMailNow(Widget w, XEvent * event, String * params, unsigned int
   int i = 0;
 
   if ((i = IsPopped(mail)) || IsPopped(nomail)) {
-    IsMailChecked(0);
+    IsMailChecked(-1);
     if(i)
       XtPopdown(XtParent(mail));
     else
@@ -171,13 +171,13 @@ static void CheckMailNow(Widget w, XEvent * event, String * params, unsigned int
   switch(Biff){
   case POP:
   case APOP:
-    ret_value = CheckPOP3((XtPointer) (mail), (XtIntervalId) NULL);
+    ret_value = CheckPOP3(2);
     break;
   case YOUBIN:
     ret_value = CheckYoubinNow(2);
     break;
   default:
-    ret_value = CheckMail((XtPointer) (mail), (XtIntervalId) NULL);
+    ret_value = CheckMail(2);
     break;
   }
 

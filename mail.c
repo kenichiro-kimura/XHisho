@@ -168,6 +168,7 @@ static void Destroy(Widget w, caddr_t client_data, caddr_t call_data)
   if (!Mode) {
     isMailChecked = 0;
     MailCount = 0;
+    MailTimeout = mar.m_timeout;
   }
   XtPopdown(top[Mode]);
 }
@@ -217,6 +218,10 @@ static int isMail(int* OldSize,int NewSize)
 int IsMailChecked(int x)
 {
   switch(x){
+  case -1:
+    MailTimeout = mar.m_timeout;
+    isMailChecked = -1;
+    break;
   case 0:
   case 1:
   case 2:
@@ -230,7 +235,33 @@ int IsMailChecked(int x)
   return isMailChecked;
 }
 
-int CheckMail(XtPointer cl, XtIntervalId * id)
+static int CheckMailTimer(XtPointer cl, XtIntervalId * id)
+{
+  int num_of_mail;
+
+  num_of_mail = CheckMail(1);
+
+  if(MailCheckId){
+    XtRemoveTimeOut(MailCheckId);
+    MailCheckId = 0;
+  }
+    
+  MailCheckId = XtAppAddTimeOut(XtWidgetToApplicationContext(local_mail[0])
+				,MailCheckInterval
+				, (XtTimerCallbackProc) CheckMailTimer
+				, (XtPointer) local_mail[0]);
+  if(num_of_mail == 0){
+    if(HaveSchedule){
+      XtVaSetValues(xhisho, XtNanimType, SCHEDULE, NULL);
+    } else {
+      XtVaSetValues(xhisho, XtNanimType, USUAL, NULL);
+    }
+  }
+
+  return (ExistMailNum = num_of_mail);
+}
+
+int CheckMail(int mode)
 {
   int i;
   char *buf;
@@ -241,9 +272,6 @@ int CheckMail(XtPointer cl, XtIntervalId * id)
   FILE* fp;
   char* tmp;
   char* message;
-  int mode;
-
-  mode = (int)cl;
 
   NewSize = (stat(m_filename, &MailStat) == 0) ? MailStat.st_size : 0;
 
@@ -267,20 +295,20 @@ int CheckMail(XtPointer cl, XtIntervalId * id)
   case 0:
     break;
   case 1:
-    if (!IsPopped(mail)) {
+    if (!IsPopped(mail) && mode) {
       isMailChecked = 1;
       GetFromandSubject(m_filename, buf);
       XtVaSetValues(from, XtNlabel, buf, NULL);
       XtVaSetValues(label, XtNlabel, message, NULL);
-      MailPopup(0,1);
+      MailPopup(0,mode);
     }
     break;
   case 2:
     switch (isMailChecked) {
     case 1:
-      if (!IsPopped(mail)) {
+      if (!IsPopped(mail) && mode) {
 	XtVaSetValues(label, XtNlabel, message, NULL);
-	MailPopup(0,1);
+	MailPopup(0,mode);
       }
       break;
     case 2:
@@ -291,15 +319,6 @@ int CheckMail(XtPointer cl, XtIntervalId * id)
     break;
   }
 
-  if(MailCheckId){
-    XtRemoveTimeOut(MailCheckId);
-    MailCheckId = 0;
-  }
-    
-  MailCheckId = XtAppAddTimeOut(XtWidgetToApplicationContext(local_mail[0])
-				,MailCheckInterval
-				, (XtTimerCallbackProc) CheckMail
-				, (XtPointer) local_mail[0]);
   free(buf);
   free(tmp);
   free(message);
@@ -312,10 +331,42 @@ int CheckMail(XtPointer cl, XtIntervalId * id)
     }
   }
 
+  if(mode == 2)
+    MailTimeout = -1;
+
   return (ExistMailNum = num_of_mail);
 }
 
-int CheckPOP3(XtPointer cl, XtIntervalId * id)
+static int CheckPOP3Timer(XtPointer cl, XtIntervalId * id)
+{
+  int num_of_mail;
+
+  num_of_mail = CheckPOP3(2);
+
+  if (MailCheckInterval < 60 * 1000)
+    MailCheckInterval = 60 * 1000;
+
+  if(MailCheckId){
+    XtRemoveTimeOut(MailCheckId);
+    MailCheckId = 0;
+  }
+
+  MailCheckId = XtAppAddTimeOut(XtWidgetToApplicationContext(local_mail[0])
+				,MailCheckInterval
+				, (XtTimerCallbackProc) CheckPOP3Timer
+				, (XtPointer) local_mail[0]);
+  if(num_of_mail == 0){
+    if(HaveSchedule){
+      XtVaSetValues(xhisho, XtNanimType, SCHEDULE, NULL);
+    } else {
+      XtVaSetValues(xhisho, XtNanimType, USUAL, NULL);
+    }
+  }
+
+  return (ExistMailNum = num_of_mail);
+}
+
+int CheckPOP3(int mode)
 {
   int ret_value = 0;
   char *buf;
@@ -342,26 +393,13 @@ int CheckPOP3(XtPointer cl, XtIntervalId * id)
   else
     sprintf(message,tmp,ret_value);
 
-  if (ret_value > 0) {
+  if (ret_value > 0 && mode) {
     XtVaSetValues(from, XtNlabel, buf, NULL);
     XtVaSetValues(label, XtNlabel, message, NULL);
-    MailPopup(0,1);
-  }
-  /*
-  if (MailCheckInterval < 60 * 1000)
-    MailCheckInterval = 60 * 1000;
-  */
-  if(MailCheckId){
-    XtRemoveTimeOut(MailCheckId);
-    MailCheckId = 0;
+    MailPopup(0,mode);
   }
 
-  MailCheckId = XtAppAddTimeOut(XtWidgetToApplicationContext(local_mail[0])
-				,MailCheckInterval
-				, (XtTimerCallbackProc) CheckPOP3
-				, (XtPointer) local_mail[0]);
   free(buf);
-
   free(message);
   free(tmp);
 
@@ -372,6 +410,9 @@ int CheckPOP3(XtPointer cl, XtIntervalId * id)
       XtVaSetValues(xhisho, XtNanimType, USUAL, NULL);
     }
   }
+
+  if(mode == 2)
+    MailTimeout = -1;
 
   return (ExistMailNum = ret_value);
 }
@@ -449,6 +490,9 @@ int CheckYoubinNow(int mode){
 
   free(tmp);
   free(message);
+
+  if(mode == 2)
+    MailTimeout = -1;
 
   return num_of_mail;
 }
@@ -637,10 +681,10 @@ Widget CreateMailAlert(Widget w, int Mode)
       break;
     case POP:
     case APOP:
-      CheckPOP3((XtPointer) (w), (XtIntervalId) NULL);
+      CheckPOP3Timer((XtPointer) (w), (XtIntervalId) NULL);
       break;
     default:
-      CheckMail((XtPointer) (w), (XtIntervalId) NULL);
+      CheckMailTimer((XtPointer) (w), (XtIntervalId) NULL);
     }
   }
   for (i = 0; i < 2; i++)
