@@ -1210,8 +1210,6 @@ void CheckTimeForSchedule(XtPointer cl, XtIntervalId * id)
     for (i = 0; i < past_index + 1; i++)
       check &= (int) schedule[i].is_checked;
 
-    printf("mail:%d,schedule:%d\n",ExistMailNum,check);
-
     if (check == 0) {
       HaveSchedule = 1;
       OpenPopup();

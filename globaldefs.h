@@ -151,7 +151,7 @@ MAIL_GLOBAL int CheckMail(XtPointer, XtIntervalId *);
 MAIL_GLOBAL int CheckPOP3(XtPointer, XtIntervalId *);
 MAIL_GLOBAL int CheckYoubinNow(int);
 MAIL_GLOBAL int IsMailChecked(int);
-MAIL_GLOBAL void MailPopup(int);
+MAIL_GLOBAL void MailPopup(int,int);
 
 MAIN_GLOBAL void CloseEditWindow();
 MAIN_GLOBAL void Quit(Widget, XEvent *, String *, unsigned int *);

@@ -12,7 +12,6 @@
  **/
 
 static Widget top[2], local_mail[2], from, label;
-static int MailCount = 0;
 static char m_filename[256];
 static int TimeoutInterval = 1 * 1000;
 static int MailTimeout;
@@ -24,6 +23,7 @@ static XtInputId YoubinId;
 static int virgine = 1;
 static int isMailChecked;
 static char YoubinFile[256];
+static int MailCount = 0;
 
 /**
  * isMailChecked =
@@ -273,7 +273,7 @@ int CheckMail(XtPointer cl, XtIntervalId * id)
       GetFromandSubject(m_filename, buf);
       XtVaSetValues(from, XtNlabel, buf, NULL);
       XtVaSetValues(label, XtNlabel, message, NULL);
-      MailPopup(0);
+      MailPopup(0,1);
     }
     break;
   case 2:
@@ -281,7 +281,7 @@ int CheckMail(XtPointer cl, XtIntervalId * id)
     case 1:
       if (!IsPopped(mail)) {
 	XtVaSetValues(label, XtNlabel, message, NULL);
-	MailPopup(0);
+	MailPopup(0,1);
       }
       break;
     case 2:
@@ -346,7 +346,7 @@ int CheckPOP3(XtPointer cl, XtIntervalId * id)
   if (ret_value > 0) {
     XtVaSetValues(from, XtNlabel, buf, NULL);
     XtVaSetValues(label, XtNlabel, message, NULL);
-    MailPopup(0);
+    MailPopup(0,1);
   }
   /*
   if (MailCheckInterval < 60 * 1000)
@@ -392,18 +392,33 @@ static int CheckYoubinNowTimer(XtPointer cl, XtIntervalId * id){
 				,MailCheckInterval
 				, (XtTimerCallbackProc) CheckYoubinNowTimer
 				, (XtPointer) local_mail[0]);
+
+  /*  printf("r:%d,S:%d,E:%d\n",ret_value,HaveSchedule,ExistMailNum);*/
+
   if(ret_value == 0){
     if(HaveSchedule){
       XtVaSetValues(xhisho, XtNanimType, SCHEDULE, NULL);
     } else {
       XtVaSetValues(xhisho, XtNanimType, USUAL, NULL);
     }
+  } else {
+    if(HaveSchedule && ExistMailNum == ret_value){
+      XtVaSetValues(xhisho, XtNanimType, SCHEDULE, NULL);
+    } else {
+      XtVaSetValues(xhisho, XtNanimType, MAIL, NULL);
+    }
   }
+
 
   return (ExistMailNum = ret_value);
 }
   
 int CheckYoubinNow(int mode){
+  /*
+   * mode = 0: no popup(for timer check)
+   *      = 1: popup with sound(for youbin check)
+   *      = 2: popup with no sound(for right click checker)
+   */
   static int OldSize = 0;
   int num_of_mail = 0;
   int i;
@@ -433,17 +448,13 @@ int CheckYoubinNow(int mode){
 
   if(num_of_mail > 0 && mode){
     XtVaSetValues(label, XtNlabel, message, NULL);
-    MailPopup(0);
+    MailPopup(0,mode);
   }
 
   free(tmp);
   free(message);
 
-  if(num_of_mail > 0){
-    XtVaSetValues(xhisho, XtNanimType, MAIL, NULL);
-  }
-
-  return (ExistMailNum = num_of_mail);
+  return num_of_mail;
 }
 
 Widget CreateMailAlert(Widget w, int Mode)
@@ -874,25 +885,28 @@ static void CheckYoubin(Widget w, int *fid, XtInputId * id)
       if (!strncmp(ch_ptr, "From:", 5) && !isFrom) {
 	isFrom = 1;
 	next_ptr = ch_ptr;
-	sscanf(ch_ptr, "%s %s", from_who, who);
-
-	for (j = 0; j < strlen(from_who); j++)
-	  if (isspace((unsigned char)tmp1[j]))
+	ch_ptr += strlen("From:");
+	for (j = 0; j < strlen(ch_ptr) - 1; j++)
+	  if (isspace((unsigned char)*ch_ptr))
 	    break;
 
-	strcpy(who, ch_ptr + j);
+	strcpy(who, ch_ptr + j + 1);
 	
 	if (strchr(who, '@') != NULL && strchr(who,'<') == NULL){
 	  strcpy(pname, who);
 	} else {
 	  if (strchr(tmp1, '<') == NULL)
 	    next_ptr = strtok(NULL, "\n");
-	  left_ptr = strchr(next_ptr, '<');
-	  right_ptr = strchr(next_ptr, '>');
-	  if (left_ptr != NULL && right_ptr != NULL){
-	    strncpy(pname, strchr(next_ptr, '<') + 1,
-		    MIN(right_ptr - left_ptr - 1,BUFSIZ- 1));
-	    pname[MIN(right_ptr - left_ptr - 1,BUFSIZ- 1)] = '\0';
+	  if(next_ptr != NULL){
+	    left_ptr = strchr(next_ptr, '<');
+	    right_ptr = strchr(next_ptr, '>');
+	    if (left_ptr != NULL && right_ptr != NULL){
+	      strncpy(pname, strchr(next_ptr, '<') + 1,
+		      MIN(right_ptr - left_ptr - 1,BUFSIZ- 1));
+	      pname[MIN(right_ptr - left_ptr - 1,BUFSIZ- 1)] = '\0';
+	    } else {
+	    *pname = '\0';
+	    }
 	  } else {
 	    *pname = '\0';
 	  }
@@ -936,6 +950,8 @@ static void CheckYoubin(Widget w, int *fid, XtInputId * id)
   i = CheckYoubinNow(1);
   if(i < 1) i = 1;
 
+  ExistMailNum = i;
+
   ReadRcdata("newmail",tmp,BUFSIZ);
   if(*tmp == '\0')
     sprintf(message,mar.mail_l,i);
@@ -943,8 +959,9 @@ static void CheckYoubin(Widget w, int *fid, XtInputId * id)
     sprintf(message,tmp,i);
   
   if(!IsPopped(mail) && *From != '\0'){
+    XtVaSetValues(xhisho, XtNanimType, MAIL, NULL);
     XtVaSetValues(label, XtNlabel, message, NULL);
-    MailPopup(0);
+    MailPopup(0,1);
   }
 
 End:
@@ -976,7 +993,7 @@ static int Youbin_exit(Display * disp)
   return rmdir(Tmp_dir);
 }
 
-void MailPopup(int mode){
+void MailPopup(int mode,int sound){
   if(mode != 0 && mode != 1) return;
 
   XtVaSetValues(local_mail[mode], XtNwindowMode, 0, NULL);
@@ -989,7 +1006,7 @@ void MailPopup(int mode){
   MailCount = 0;
 
   XtPopup(XtParent(local_mail[mode]), XtGrabNone);
-  if (mar.sound_f  && UseSound && mode == 0) {
+  if (mar.sound_f  && UseSound && mode == 0 && sound == 1) {
     SoundPlay(mar.sound_f);
   }
 }

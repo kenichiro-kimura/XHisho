@@ -163,7 +163,7 @@ static void CheckMailNow(Widget w, XEvent * event, String * params, unsigned int
     ret_value = CheckPOP3((XtPointer) (mail), (XtIntervalId) NULL);
     break;
   case YOUBIN:
-    ret_value = CheckYoubinNow(1);
+    ret_value = CheckYoubinNow(2);
     break;
   default:
     ret_value = CheckMail((XtPointer) (mail), (XtIntervalId) NULL);
@@ -171,7 +171,7 @@ static void CheckMailNow(Widget w, XEvent * event, String * params, unsigned int
   }
 
   if(ret_value == 0)
-    MailPopup(1);
+    MailPopup(1,0);
 }
 
 
