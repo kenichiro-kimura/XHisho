@@ -122,7 +122,10 @@ AC_ARG_ENABLE(libmhc,
         [with_libmhc=no])
 test "$with_libmhc" = "yes" && AC_DEFINE(LIBMHC)
 
-
-
+AC_ARG_WITH(xadl,
+        [  --without-xadl          compile without XADL ],
+        [with_xadl=$withval],
+        [with_xadl=yes])
+test "$with_xadl" = "yes" && AC_DEFINE(XADL)
 
 AC_OUTPUT(Makefile apps/Makefile Imakefile image/Imakefile xadl/Imakefile libmhc/Imakefile)

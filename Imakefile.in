@@ -57,6 +57,10 @@ MHCLIBDIR = libmhc
 MHCLIB = $(MHCLIBDIR)/libmhc.a
 #endif
 
+#ifdef XADL
+XADLDIR = xadl
+#endif
+
 IMAGELIBDIR = image
 IMAGELIB = $(IMAGELIBDIR)/libimage.a
 STD_INCLUDES = -I$(IMAGELIBDIR) -I/usr/local/include -I$(MHCLIBDIR)
@@ -64,7 +68,9 @@ EXTRA_LDOPTIONS = -L/usr/local/lib
 
 
 #define IHaveSubdirs
-SUBDIRS = $(IMAGELIBDIR) $(MHCLIBDIR) xadl
+
+SUBDIRS = $(IMAGELIBDIR) $(MHCLIBDIR) $(XADLDIR)
+
 #define PassCDebugFlags
 
 MakeSubdirs($(SUBDIRS))

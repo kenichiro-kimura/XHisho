@@ -148,6 +148,8 @@ youbinサーバに通知しないといつまでも「新着メールあり」と言われます。こ
 ・--without-xpm        : 画像形式としてxpmを使いません
 ・--without-jpeg       : 画像形式としてjpegを使いません
 ・--without-png        : 画像形式としてpngを使いません
+・--without-xadl       : XADL(XHisho Animation Definition Language)の
+                         コンパイラをインストールしません。
 
 
 XPMライブラリ(*1)及びJPEGライブラリ(*2)、PNGライブラリ(*3)がインストー

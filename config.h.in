@@ -41,3 +41,6 @@
 
 /* Define if you have the xpg4 library (-lxpg4).  */
 #undef HAVE_LIBXPG4
+
+/* Define if you want to use XADL.  */
+#undef XADL
