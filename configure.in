@@ -17,6 +17,11 @@ AC_CHECK_LIB(xpg4, setlocale)
 AC_CHECK_LIB(nsl, gethostbyname)
 AC_CHECK_LIB(socket, socket)
 
+dns check time.h or/and sys/time.h
+
+AC_CHECK_HEADERS(sys/time.h)
+AC_HEADER_TIME
+
 dnl Check compile options
 
 if test "$prefix" != "NONE" 

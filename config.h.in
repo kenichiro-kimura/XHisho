@@ -1,5 +1,8 @@
 /* config.h.in.  Generated automatically from configure.in by autoheader.  */
 
+#undef TIME_WITH_SYS_TIME
+#undef HAVE_SYS_TIME_H
+
 /* Define if you use for personal */
 #undef PERSONAL
 

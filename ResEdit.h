@@ -14,13 +14,14 @@
 #include <stdlib.h>
 #include <sys/stat.h>
 #include <sys/types.h>
-#include <sys/time.h>
 #include <unistd.h>
 #include <X11/Xmu/Editres.h>
 
 #include <X11/Xaw/Label.h>
 #include <X11/Xaw/Command.h>
 #include <X11/Xaw/Scrollbar.h>
+#include "config.h"
+#include "globaldefs.h"
 #include "Msgwin.h"
 
 typedef struct _Preference {

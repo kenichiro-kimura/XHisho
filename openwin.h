@@ -14,7 +14,8 @@
 #include <stdlib.h>
 #include <sys/stat.h>
 #include <sys/types.h>
-#include <sys/time.h>
+#include "config.h"
+#include "globaldefs.h"
 
 #include <X11/Xaw/Label.h>
 #include <X11/Xaw/Command.h>

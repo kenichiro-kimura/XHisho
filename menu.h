@@ -10,7 +10,8 @@
 #include <stdlib.h>
 #include <sys/stat.h>
 #include <sys/types.h>
-#include <sys/time.h>
+#include "config.h"
+#include "globaldefs.h"
 
 #define MENU_NUM 6
 #define XtNmenuLabel "menuLabel"
