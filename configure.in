@@ -153,4 +153,15 @@ AC_ARG_WITH(kawari,
         [with_kawari=no])
 test "$with_kawari" = "yes" && AC_DEFINE(USE_KAWARI)
 
+AC_ARG_ENABLE(mayura,
+        [  --enable-mayura          for Mayura :-) (is equal to --with-option --with-unyuu --with-kawari)],
+        [with_mayura=$enableval],
+        [with_mayura=no])
+if test "$with_mayura" = "yes";
+then
+	AC_DEFINE(USE_UNYUU)
+	AC_DEFINE(OPTION)
+	AC_DEFINE(USE_KAWARI)
+fi
+
 AC_OUTPUT(Makefile apps/Makefile Imakefile image/Imakefile xadl/Imakefile libmhc/Imakefile kawari/Makefile)

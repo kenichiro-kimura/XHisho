@@ -31,7 +31,11 @@ configureのオプションで、
 
 %./configure --with-option --with-unyuu --with-kawari
 
-としてください。
+としてください。もしくは、
+
+%./configure --enable-mayura
+
+でも一緒です :-)
 
 
 

@@ -155,6 +155,7 @@ MHC$B$N%G!<%?$r;H$&$3$H$b$G$-$^$9!#$3$N>l9g!"(BXHisho$B$+$i%(%G%#%C%H$O=PMh(
 $B!&(B--with-unyuu         : $B$&$K$e$&BP1~(B
 $B!&(B--with-kawari        : $B!V$"$l0J30$N2?$+(Bwith$BG$0U!W$N%b%8%e!<%k$H$7$F(B
                          $B!V2ZOBM|!W$r;H$$$^$9(B
+$B!&(B--enable-mayura      : --with-option --with-unyuu --with-kawari$B$HF1Ey(B
 $B!&(B--without-xpm        : $B2hA|7A<0$H$7$F(Bxpm$B$r;H$$$^$;$s(B
 $B!&(B--without-jpeg       : $B2hA|7A<0$H$7$F(Bjpeg$B$r;H$$$^$;$s(B
 $B!&(B--without-png        : $B2hA|7A<0$H$7$F(Bpng$B$r;H$$$^$;$s(B
