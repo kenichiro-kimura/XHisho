@@ -23,7 +23,7 @@ typedef struct _entrylist{
 } entrylist;
 
 typedef struct _MHC{
-  entrylist* table[31];
+  entrylist* table[32];
   entrylist* ptr;
   MHCD* mhcd_ptr;
   MHCD* intersect_ptr;

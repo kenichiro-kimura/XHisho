@@ -24,18 +24,26 @@ static int CheckWeek(char*,int,int,int);
 static int CheckDay(char* ,int);
 static int datecmp(char*,char*);
 
+static _MHCD* _MHCDNew(mhcent* item){
+  _MHCD* mhc_ptr;
+
+  mhc_ptr = (_MHCD*)malloc(sizeof(_MHCD));
+  if(!mhc_ptr) return NULL;
+  mhc_ptr->prev = NULL;
+  mhc_ptr->next = NULL;
+  mhc_ptr->item = item;
+
+  return mhc_ptr;
+}
+
 static MHCD* MHCDNew(mhcent* item){
   MHCD* mhc_ptr;
 
   mhc_ptr = (MHCD*)malloc(sizeof(MHCD));
   if(!mhc_ptr) return NULL;
 
-  *mhc_ptr = (_MHCD*)malloc(sizeof(_MHCD));
+  *mhc_ptr = _MHCDNew(item);
   if(!(*mhc_ptr)) return NULL;
-
-  (*mhc_ptr)->prev = NULL;
-  (*mhc_ptr)->next = NULL;
-  (*mhc_ptr)->item = item;
 
   return mhc_ptr;
 }
@@ -44,14 +52,14 @@ static void MHCDDelete(MHCD* mhc_ptr){
   if(!mhc_ptr) return;
   if(!*mhc_ptr) return;
 
-  if(!((*mhc_ptr)->next))
+  if((*mhc_ptr)->next != NULL)
     MHCDDelete(&((*mhc_ptr)->next));
 
   if((*mhc_ptr)->item != NULL)
     EntryDelete((*mhc_ptr)->item);
 
-  memset(*mhc_ptr,0,sizeof(MHC));
   free(*mhc_ptr);
+  //  free(mhc_ptr);
 }
 
 static mhcent* EntryNew(){
@@ -72,12 +80,15 @@ static mhcent* EntryNew(){
 static void EntryDelete(mhcent* item){
   int i;
 
+  if(item == NULL)
+    return;
   for(i = 0; i < NUM_OF_ARRAY(item->Entry);i++){
-    if(!item->Entry[i])
+    if(item->Entry[i] != NULL)
       free(item->Entry[i]);
-    if(!item->filename)
-      free(item->filename);
   }
+  if(item->filename != NULL)
+    free(item->filename);
+  free(item);
 }
 
 static mhcent* ReadEntry(FILE* fp){
@@ -95,7 +106,7 @@ static mhcent* ReadEntry(FILE* fp){
     return NULL;
   }
 
-  while(fgets(buffer,BUFSIZ,fp) != NULL){
+  while(fgets(buffer,BUFSIZ - 1,fp) != NULL){
     tag = -1;
 
     if(buffer[strlen(buffer) - 1] == '\n')
@@ -130,8 +141,11 @@ static mhcent* ReadEntry(FILE* fp){
        */
       for(chr_ptr++;chr_ptr;chr_ptr++)
 	if(!isspace((unsigned char)*chr_ptr)) break;
-    
+      /*
       mhcent_ptr->Entry[tag] = strdup(chr_ptr);
+      */
+      mhcent_ptr->Entry[tag] = (char*)malloc(strlen(chr_ptr) + 1);
+      strcpy(mhcent_ptr->Entry[tag],chr_ptr);
     }
   }
 
@@ -180,13 +194,13 @@ static int AddEntry(MHC* mhc_ptr,mhcent* ent_ptr,int day){
 
   newlist = EntrylistNew(ent_ptr);
   if(!newlist) return 1;
-  
+
   if(!(*mhc_ptr)->table[day]){
     (*mhc_ptr)->table[day]= newlist;
   } else {
     list_ptr = (*mhc_ptr)->table[day];
 
-    while(list_ptr->next)
+    while(list_ptr->next != NULL)
       list_ptr = list_ptr->next;
 
     list_ptr->next = newlist;
@@ -199,10 +213,9 @@ static int AddEntry(MHC* mhc_ptr,mhcent* ent_ptr,int day){
 static void EntrylistDelete(entrylist* list_ptr){
   if(!list_ptr) return;
 
-  if(!list_ptr->next)
+  if(list_ptr->next != NULL)
     EntrylistDelete(list_ptr->next);
 
-  memset(list_ptr,0,sizeof(MHC));
   free(list_ptr);
 }
 
@@ -332,6 +345,10 @@ static int CheckSC_Duration(char* sc_duration,int year,int month,int day){
     }
   }
 
+  free(yearmonthday);
+  free(duration_end);
+  free(duration_begin);
+
   return isDuration;
 
 }
@@ -369,8 +386,7 @@ static int CheckMonth(char* sc_cond,int month){
       chr_ptr++;
   }
 
-  if(!pivot_ptr)
-    free(pivot_ptr);
+  free(pivot_ptr);
 
   if(ret_value != -1) return tag;
 
@@ -431,8 +447,7 @@ static int CheckOrdinal(char* sc_cond,int year,int month,int day){
       chr_ptr++;
   }
 
-  if(!pivot_ptr)
-    free(pivot_ptr);
+  free(pivot_ptr);
 
   if(ret_value != -1) return tag;
 
@@ -482,8 +497,7 @@ static int CheckWeek(char* sc_cond,int year,int month,int day){
       chr_ptr++;
   }
 
-  if(!pivot_ptr)
-    free(pivot_ptr);
+  free(pivot_ptr);
 
   if(ret_value != -1) return tag;
 
@@ -520,8 +534,7 @@ static int CheckDay(char* sc_cond,int day){
       chr_ptr++;
   }
 
-  if(!pivot_ptr)
-    free(pivot_ptr);
+  free(pivot_ptr);
 
   if(ret_value != -1) return tag;
 
@@ -677,8 +690,9 @@ MHCD* openmhc(const char* home_dir, const char* year_month){
   char* filename;
   mhcent* entry = NULL;
   MHCD* mhc_ptr = NULL;
-  MHCD* tmp_ptr;
+  _MHCD* tmp_ptr;
 
+  /*  GC_find_leak = 1;*/
   filename = NULL;
   i = (home_dir[strlen(home_dir) - 1] == '/')? 1:2;
   i = (year_month[strlen(year_month) - 1] == '/')? i:i+1;
@@ -692,6 +706,11 @@ MHCD* openmhc(const char* home_dir, const char* year_month){
   if(year_month[strlen(year_month) - 1] != '/')
     strcat(dirname,"/");
 
+  filename = (char*)malloc(BUFSIZ);
+  if(!filename){
+    free(dirname);
+    return NULL;
+  }
   dirp = opendir(dirname);
   if(dirp == NULL){
     free(dirname);
@@ -701,15 +720,6 @@ MHCD* openmhc(const char* home_dir, const char* year_month){
   while ((dp = readdir(dirp)) != NULL){
     if(!strncmp(dp->d_name,".",1)) continue;
 
-    filename = filename?
-      (char*)malloc(strlen(dirname) + strlen(dp->d_name) + 1):
-      (char*)realloc(filename,strlen(dirname) + strlen(dp->d_name) + 1);
-
-    if(!filename){
-      free(dirname);
-      return NULL;
-    }
-
     strcpy(filename,dirname);
     strcat(filename,dp->d_name);
     fp = fopen(filename,"r");
@@ -717,17 +727,19 @@ MHCD* openmhc(const char* home_dir, const char* year_month){
     if(fp){
       entry = ReadEntry(fp);
       if(entry){
-	entry->filename = strdup(filename);
-
+	//	entry->filename = strdup(filename);
+	entry->filename = (char*)malloc(strlen(filename) + 1);
+	strcpy(entry->filename,filename);
+	  
 	if(!mhc_ptr){
-	  mhc_ptr = (MHCD*)malloc(sizeof(MHCD));
-	  tmp_ptr = (MHCD*)malloc(sizeof(MHCD));
-	  *mhc_ptr = *tmp_ptr = *MHCDNew(entry);
+	  mhc_ptr = MHCDNew(entry);
+	  tmp_ptr = *mhc_ptr;
 	} else {
-	  (*tmp_ptr)->next = *MHCDNew(entry);
-	  (*tmp_ptr)->next->prev = *tmp_ptr;
-	  *tmp_ptr = (*tmp_ptr)->next;
+	  tmp_ptr->next = _MHCDNew(entry);
+	  tmp_ptr->next->prev = tmp_ptr;
+	  tmp_ptr = tmp_ptr->next;
 	}
+	
       }
       fclose(fp);
     }
@@ -746,8 +758,7 @@ mhcent* readmhc(MHCD* mhc_ptr){
 
   if(*mhc_ptr){
     ent_ptr = (*mhc_ptr)->item;
-    if(ent_ptr)
-      *mhc_ptr = (*mhc_ptr)->next;
+    *mhc_ptr = (*mhc_ptr)->next;
 
     return ent_ptr;
   } else {
@@ -757,11 +768,11 @@ mhcent* readmhc(MHCD* mhc_ptr){
 
 int closemhc(MHCD* mhc_ptr){
   if(!mhc_ptr) return 1;
+  if(!*mhc_ptr) return 1;
   rewindmhc(mhc_ptr);
   MHCDDelete(mhc_ptr);
 
-  free(*mhc_ptr);
-  (*mhc_ptr) = NULL;
+  free(mhc_ptr);
   return 0;
 }
 
@@ -853,15 +864,18 @@ MHC* OpenMHC(const char* home_dir, int year,int month){
 
   for(i = 0; i < 2;i++){
     mhcd_ptr = i ? (*mhc_ptr)->mhcd_ptr:(*mhc_ptr)->intersect_ptr;
-
     while((ent_ptr = readmhc(mhcd_ptr)) != NULL){
       for(day = 1; day <= 31;day++){
 	if(isschedule(ent_ptr,year,month,day))
 	  AddEntry(mhc_ptr,ent_ptr,day);
       }
+      EntryDelete(ent_ptr);
     }
-
+    closemhc(mhcd_ptr);
   }
+
+  /*  CHECK_LEAKS();*/
+  free(year_month);
 
   return mhc_ptr;
 }
@@ -920,14 +934,13 @@ int CloseMHC(MHC* mhc_ptr){
   if(!mhc_ptr) return 1;
   if(!(*mhc_ptr)) return 1;
 
-  for(i = 0; i < NUM_OF_ARRAY((*mhc_ptr)->table);i++){
+  for(i = 0; i < NUM_OF_ARRAY((*mhc_ptr)->table);i++)
     EntrylistDelete((*mhc_ptr)->table[i]);
-    (*mhc_ptr)->table[i] = NULL;
-  }
 
   rv = closemhc((*mhc_ptr)->mhcd_ptr);
+  rv = closemhc((*mhc_ptr)->intersect_ptr);
   free(*mhc_ptr);
-  (*mhc_ptr) = NULL;
+  free(mhc_ptr);
 
   return rv;
 }
