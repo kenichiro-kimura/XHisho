@@ -84,6 +84,10 @@ static XrmOptionDescRec options[] = {
   {"-optionheight", "*optionHeight", XrmoptionSepArg, "200"},
   {"-optiontimeout", "*optionTimeout", XrmoptionSepArg, "5"},
 #endif
+#ifdef USE_UNYUU
+  {"-uxoff", "*uXOffset", XrmoptionSepArg, "300"},
+  {"-uyoff", "*uYOffset", XrmoptionSepArg, "0"},
+#endif
 };
 
 static void Wait(Widget w, XEvent * e, String * s, unsigned int *i)
@@ -487,6 +491,10 @@ static void PrintUsage(int argc, char **argv)
   "     -optionheight               : height of Option window\n"
   "     -optiontimeout              : Option window timeout\n"
 #endif
+#ifdef USE_UNYUU
+  "-uxoff                           : UNYUU Window X-offset\n"
+  "-uyoff                           : UNYUU Window Y-offset\n"
+#endif
   "\n";
 
   static char *compile_option =
@@ -511,6 +519,9 @@ static void PrintUsage(int argc, char **argv)
 #endif
 #ifdef OPTION
   "    Use 'Something except that with option'\n"
+#endif
+#ifdef USE_UNYUU
+  "    Use UNYUU module for 'Something except that with option'\n"
 #endif
 #ifdef LIBMHC
   "    Use MHC's data\n"

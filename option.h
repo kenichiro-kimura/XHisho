@@ -25,11 +25,17 @@
 #define XtCOptionHeight "OptionHeight"
 #define XtNoptionTimeout "optionTimeout"
 #define XtCOptionTimeout "OptionTimeout"
+#define XtNuXOffset "uXOffset"
+#define XtCUXOffset "UXOffset"
+#define XtNuYOffset "uYOffset"
+#define XtCUYOffset "UYOffset"
 
 typedef struct {
   String o_command;
   Dimension width;
   Dimension height;
+  int uxoff;
+  int uyoff;
   int timeout;
 } OptionRes;
 

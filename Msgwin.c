@@ -544,6 +544,7 @@ static void SetWindowLocate(MsgwinWidget msw)
   while (XtParent(top))
     top = XtParent(top);
 
+
   XtVaGetValues(top, XtNx, &get_x, XtNy, &get_y, XtNwidth, &main_width, XtNheight, &main_height, NULL);
 
 
