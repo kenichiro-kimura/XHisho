@@ -5,7 +5,7 @@
 
 static Widget top,calendar,week[7],day[42],prev,next,ok,cal_label;
 
-static const char wname[][4] = {"SUN","MON","TUE","WED","THU","FRI","SAT"};
+static const char wname[][3] = {"SU","MO","TU","WE","TH","FR","SA"};
 
 static const int wdays[] = {31,28,31,30,31,30,31,31,30,31,30,31};
 static int Edited_Month,Edited_Year;
@@ -169,6 +169,18 @@ Widget CreateCalendarWindow(Widget w,int Month,struct tm tm_now){
     {XtNinternalHeight,FONT_OFFSET},     /* 9 */
   };
 
+  Arg weekargs[] = {
+    {XtNborderWidth,0},                  /* 0 */
+    {XtNinternational,TRUE},             /* 1 */
+    {XtNleft,XtChainLeft},               /* 2 */
+    {XtNright,XtChainLeft},              /* 3 */
+    {XtNhorizDistance,0},                /* 4 */
+    {XtNfromVert,(XtArgVal)NULL},        /* 5 */
+    {XtNfromHoriz,(XtArgVal)NULL},       /* 6 */
+    {XtNvertDistance,2},                 /* 7 */
+    {XtNinternalHeight,FONT_OFFSET},     /* 8 */
+  };
+
 
   time(&now);
   tm_tmp = localtime(&now);
@@ -265,19 +277,18 @@ Widget CreateCalendarWindow(Widget w,int Month,struct tm tm_now){
   labelargs[8].value = (XtArgVal)10;
 
   for(i = 0; i < 7;i++){
-    labelargs[0].value = (XtArgVal)(strncpy(tmpstring,wname[i],2));
     if(!i){
-      labelargs[5].value = (XtArgVal)POINT_WIDTH + LABEL_OFFSET;
-      labelargs[7].value = (XtArgVal)NULL;
+      weekargs[4].value = (XtArgVal)POINT_WIDTH + LABEL_OFFSET;
+      weekargs[6].value = (XtArgVal)NULL;
     } else {
-      labelargs[5].value = (XtArgVal)2;
-      labelargs[7].value = (XtArgVal)week[i - 1];
+      weekargs[4].value = (XtArgVal)2;
+      weekargs[6].value = (XtArgVal)week[i - 1];
     }
 
-    labelargs[6].value = (XtArgVal)cal_label;
+    weekargs[5].value = (XtArgVal)cal_label;
 
     week[i] = XtCreateManagedWidget(wname[i],labelWidgetClass,calendar
-				    ,labelargs,XtNumber(labelargs));
+				    ,weekargs,XtNumber(weekargs));
     XtVaGetValues(week[i],XtNwidth,&Label_width,NULL);
     tmp_width += Label_width;
 

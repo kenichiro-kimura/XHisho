@@ -61,6 +61,13 @@ XHisho.Menu.itemHead: ○
 XHisho.Calendar.prevButton: 先月
 XHisho.Calendar.nextButton: 来月
 XHisho.Calendar.existColor: Grey
+XHisho.Calendar*SU.label: 日
+XHisho.Calendar*MO.label: 月
+XHisho.Calendar*TU.label: 火
+XHisho.Calendar*WE.label: 水
+XHisho.Calendar*TH.label: 木
+XHisho.Calendar*FR.label: 金
+XHisho.Calendar*SA.label: 土
 
 !!
 !!パラメータ変更のリソース
