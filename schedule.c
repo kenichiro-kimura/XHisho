@@ -19,7 +19,30 @@ int ExistSchedule(int,int);
 int ExistHoliday(int,int,int);
 void ReadHoliday();
 static void ReadHolidayFile(char*);
+static HolidayList* HolidayList_new(int,char*);
 extern void Escape2Return(char*);
+
+
+static HolidayList* HolidayList_new(int day,char *name){
+  /*
+   * HolidayListのコンストラクタ。memsetによる0クリアは念のため。たぶんいらん。
+   * day,nameに引数で与えたものをセットし、nextをNULLにする。
+   */
+
+  HolidayList* h_ptr;
+
+  h_ptr = (HolidayList*)malloc(sizeof(HolidayList));
+  memset(h_ptr,0,sizeof(HolidayList));
+
+  h_ptr->day = day;
+  h_ptr->next = NULL;
+  h_ptr->name = malloc(strlen(name) + 1);
+  memset(h_ptr->name,0,strlen(name) + 1);
+  strcpy(h_ptr->name,name);
+  
+  return h_ptr;
+}
+
 
 int CheckSchedule(OpenMessageRes* l_omr,Schedule* schedule,int WeeklyCheck,struct tm tm_now){
   /* return number of schedule readed from the file xhs* and/or xhs.weekly
@@ -50,7 +73,9 @@ int CheckSchedule(OpenMessageRes* l_omr,Schedule* schedule,int WeeklyCheck,struc
 
   tval = mktime(&tm_now);
 
-  /* 今日の日付を取得する。7/20ならdate="0720"になる。*/
+  /*
+   * 今日の日付を取得する。7/20ならdate="0720"になる。
+   */
 
   strftime(day,sizeof(day),"%d",localtime(&tval));
   strftime(month,sizeof(month),"%m",localtime(&tval));
@@ -82,8 +107,10 @@ int CheckSchedule(OpenMessageRes* l_omr,Schedule* schedule,int WeeklyCheck,struc
       
       while(fgets(tmp1,BUFSIZ-1,inputfile) != NULL && (i<MAX_SCHED_NUM)){
 	
-	/* もし # で始まっていたらコメントとみなし、その後1行を無視する。
-	   空行も同様。*/
+	/* 
+	 * もし # で始まっていたらコメントとみなし、その後1行を無視する。
+	 * 空行も同様。
+	 */
 
 	*tmp2 = *tmp3 = *leave = '\0';
 
@@ -142,7 +169,9 @@ int CheckSchedule(OpenMessageRes* l_omr,Schedule* schedule,int WeeklyCheck,struc
     }
   }
 
-    /* Weekly data の取得 */
+    /* 
+     * Weekly data の取得
+     */
 
   filename[0]='\0';
   sprintf(filename,"%s/%sxhs.weekly",getenv("HOME"),l_omr->sched_dir);
@@ -163,8 +192,10 @@ int CheckSchedule(OpenMessageRes* l_omr,Schedule* schedule,int WeeklyCheck,struc
 
   while(fgets(tmp1,BUFSIZ,inputfile) != NULL && (i<MAX_SCHED_NUM)){
 
-/* もし # で始まっていたらコメントとみなし、その後1行を無視する。
-   空行も同様。*/
+    /* 
+     * もし # で始まっていたらコメントとみなし、その後1行を無視する。
+     * 空行も同様。
+     */
 
       if (tmp1[0] != '#' && tmp1[0] != '\0' && tmp1[0] != '\n'){
 	  sscanf(tmp1,"%s %s %s %s",tmp4,tmp2,leave,tmp3);
@@ -223,7 +254,9 @@ int CheckSchedule(OpenMessageRes* l_omr,Schedule* schedule,int WeeklyCheck,struc
 
 
 static int SafeTimeFormat(Schedule schedule){
-  /* return 1 if schedule.[hour,min] is safe time format,else return 0 */
+  /* 
+   * return 1 if schedule.[hour,min] is safe time format,else return 0
+   */
 
   if(isdigit(schedule.hour[0]) &&
      isdigit(schedule.min[0])  &&
@@ -249,7 +282,9 @@ int ExistSchedule(int Month,int Day){
 
   i = 0;
 
-  /* 今日の日付を取得する。７／２０ならdate="0720"になる。*/
+  /*
+   * 今日の日付を取得する。７／２０ならdate="0720"になる。
+   */
   time(&tval );
   tm_now = localtime(&tval);
 
@@ -302,8 +337,8 @@ static void ReadHolidayFile(char* filename){
    */
 
   FILE *inputfile;
-  char *tmp1,*tmp2,*tmp3,*tmp4;
-  char tdate[5],includefile[256];
+  char *tmp1,*tmp2,*tmp3,*tmp4,*includefile;
+  char tdate[5];
   HolidayList *tlist;
   int m,d;
 
@@ -311,12 +346,15 @@ static void ReadHolidayFile(char* filename){
   tmp2 = malloc(BUFSIZ);
   tmp3 = malloc(BUFSIZ);
   tmp4 = malloc(BUFSIZ);
+  includefile = malloc(BUFSIZ);
 
   if ((inputfile=fopen(filename,"r")) != NULL){
     while(fgets(tmp1,BUFSIZ-1,inputfile) != NULL){
 
-      /* もし # で始まっていたらコメントとみなし、その後1行を無視する。
-	 空行も同様。*/
+      /*
+       * もし # で始まっていたらコメントとみなし、その後1行を無視する。
+       * 空行も同様。
+       */
       *tmp2 = *tmp3 = *tmp4 = '\0';
       
       if (tmp1[0] != '#' && tmp1[0] != '\0' && tmp1[0] != '\n' && tmp1[0] != ' '){
@@ -343,17 +381,10 @@ static void ReadHolidayFile(char* filename){
 	if(m < 0 || m > 11) continue;
 
 	if(Hlist[m] == NULL){
-	  Hlist[m] = (HolidayList*)malloc(sizeof(HolidayList));
-	  Hlist[m]->next = NULL;
-	  Hlist[m]->day = d;
-	  Hlist[m]->name = malloc(strlen(tmp3) + 1);
-	  strcpy(Hlist[m]->name,tmp3);
+	  Hlist[m] = HolidayList_new(d,tmp3);
 	} else {
-	  tlist = (HolidayList*)malloc(sizeof(HolidayList));
+	  tlist = HolidayList_new(d,tmp3);
 	  tlist->next = Hlist[m];
-	  tlist->day = d;
-	  tlist->name = malloc(strlen(tmp3) + 1);
-	  strcpy(tlist->name,tmp3);
 	  Hlist[m] = tlist;
 	}
       }
@@ -364,6 +395,7 @@ static void ReadHolidayFile(char* filename){
   free(tmp2);
   free(tmp3);
   free(tmp4);
+  free(includefile);
 }
 
 int ExistHoliday(int Year,int Month,int Day){
@@ -383,7 +415,9 @@ int ExistHoliday(int Year,int Month,int Day){
   for(tlist = Hlist[Month];tlist != NULL;tlist = tlist->next)
     if(tlist->day == Day) return 1;
 
-  /* 春分の日、秋分の日の計算 */
+  /*
+   * 春分の日、秋分の日の計算
+   */
 
   switch(Month){
   case 2:
