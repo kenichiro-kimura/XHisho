@@ -848,10 +848,8 @@ MHC* OpenMHC(const char* home_dir, int year,int month){
 
     while((ent_ptr = readmhc(mhcd_ptr)) != NULL){
       for(day = 1; day <= 31;day++){
-
 	if(isschedule(ent_ptr,year,month,day))
 	  AddEntry(mhc_ptr,ent_ptr,day);
-
       }
     }
 

@@ -84,7 +84,7 @@ int CheckSchedule(OpenMessageRes * l_omr, Schedule * schedule, int WeeklyCheck, 
   strftime(day, sizeof(day), "%d", localtime(&tval));
   strftime(month, sizeof(month), "%m", localtime(&tval));
   strftime(week, sizeof(week), "%u", localtime(&tval));
-  strftime(year, sizeof(year), "%G", localtime(&tval));
+  strftime(year, sizeof(year), "%Y", localtime(&tval));
 
   strncpy(l_omr->month, month, 2);
   strncpy(l_omr->day, day, 2);
@@ -247,7 +247,6 @@ int CheckSchedule(OpenMessageRes * l_omr, Schedule * schedule, int WeeklyCheck, 
 
   filename[0] = '\0';
   sprintf(filename, "%s/%sxhs.weekly", getenv("HOME"), l_omr->sched_dir);
-
   if ((inputfile = fopen(filename, "r")) == NULL || i >= MAX_SCHED_NUM) {
     free(tmp1);
     free(tmp2);
