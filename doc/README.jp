@@ -81,7 +81,7 @@ Subject$B$,I=<($5$l$^$9!#30It%U%#%k%?$rMQ$$$k$3$H$G(BMIME$B$r%G%3!<%I$7!"F|(
 
 $B%a!<%kCe?.;~$K(BWindows$B$N(Bwav$B%U%!%$%k$rLD$i$9$3$H$,$G$-$^$9!#(B
 
-youbin$B5Z$S(BPOP$B$KBP1~$7$F$$$^$9!#(BPOP$B$NG'>Z$ODL>o$N(BPOP$B$H(BAPOP$B$,;H$($^$9!#(B
+youbin$B!"(BPOP$B!"(BIMAP4$B$KBP1~$7$F$$$^$9!#(BPOP$B$NG'>Z$ODL>o$N(BPOP$B$H(BAPOP$B$,;H$($^$9!#(B
 RPOP$B$O%5%]!<%H$9$kM=Dj$O$"$j$^$;$s!#(B
 
 From$B$K$O(BMew$B$HF1$87A<0$N(BPetname$B$rMQ$$$F!V(Bhogeyama@dokka.com$B!W$r!V$[$2$5(B
@@ -278,15 +278,16 @@ xhs.holiday$B$H$$$&%U%!%$%k$rCV$$$F$/$@$5$$!#=q<0$O%5%s%W%k$r8+$F$/$@$5(B
 	 [-nochime]
 	 [-filter [filter command]]
 	 [-yserver [youbin server]]
-	 [-pserver [POP3 server]]
+	 [-pserver [POP3 server or IMAP4 server]]
          [-youbin]
          [-pop]
          [-apop]
+         [-imap]
          [-version]
          [-coption]
 
-$B5/F0$9$k$H!"Dj4|E*$K%a!<%k%\%C%/%9(B($B$b$7$/$O(BYOUBIN$B$d(BPOP3)$B$r%A%'%C%/$7!"(B
-$B%a!<%k$,Mh$F$$$k$H?a$-=P$7$,=P$FDLCN$7$F$/$l$^$9!#(B
+$B5/F0$9$k$H!"Dj4|E*$K%a!<%k%\%C%/%9(B($B$b$7$/$O(BYOUBIN$B$d(BPOP3$B$d(BIMAP4)$B$r%A%'%C(B
+$B%/$7!"%a!<%k$,Mh$F$$$k$H?a$-=P$7$,=P$FDLCN$7$F$/$l$^$9!#(B
 
 $B%^%&%9$G$NA`:n$O<!$N$h$&$K$J$C$F$$$^$9!#(B
 
@@ -335,17 +336,18 @@ xhs.holiday$B$H$$$&%U%!%$%k$rCV$$$F$/$@$5$$!#=q<0$O%5%s%W%k$r8+$F$/$@$5(B
 $B!&(B-filter    $B!D(B $B30It%U%#%k%?!<%3%^%s%I$r;XDj(B
 $B!&(B-soundcmd  $B!D(B $B30It%5%&%s%I%3%^%s%I$r;XDj(B
 $B!&(B-yserver   $B!D(B Youbin$B%5!<%P$r;XDj(B
-$B!&(B-pserver   $B!D(B POP3$B%5!<%P$r;XDj(B
+$B!&(B-pserver   $B!D(B POP3$B%5!<%P(B(-imap$B;~$K$O(BIMAP4$B%5!<%P(B)$B$r;XDj(B
 $B!&(B-youbin    $B!D(B biff$B$K(BYoubin$B$r;H$&(B
 $B!&(B-pop       $B!D(B biff$B$K(BPOP$B$r;H$&(B
 $B!&(B-apop      $B!D(B biff$B$K(BAPOP$B$r;H$&(B
+$B!&(B-imap      $B!D(B biff$B$K(BIMAP4$B$r;H$&(B
 $B!&(B-version   $B!D(B $B%P!<%8%g%s$rI=<($9$k(B
 $B!&(B-coption   $B!D(B $B%3%s%Q%$%k%*%W%7%g%s$rI=<($9$k(B
 
 
-$B%*%W%7%g%s(B [-youbin] $B$H(B [-pop] $B$H(B [-apop] $B$O!"F1;~$K$O;H$($^$;$s!#:G8e(B
-$B$K;XDj$7$?J*$,M-8z$K$J$j$^$9!#$$$:$l$+$,;XDj$5$l$k$H!"%m!<%+%k$N%9%W!<(B
-$B%k$O8+D%$i$J$/$J$j$^$9!#(B
+$B%*%W%7%g%s(B [-youbin] $B$H(B [-pop] $B$H(B [-apop] $B$H(B [-imap]$B$O!"F1;~$K$O;H$($^(B
+$B$;$s!#:G8e$K;XDj$7$?J*$,M-8z$K$J$j$^$9!#$$$:$l$+$,;XDj$5$l$k$H!"%m!<%+(B
+$B%k$N%9%W!<%k$O8+D%$i$J$/$J$j$^$9!#(B
 
 
 
@@ -438,14 +440,15 @@ XHisho*extEditCommand: xcalendar
 
 
 
-9.Authorization with POP3 $B!A(BPOP3$B$G$NG'>Z$K$D$$$F!A(B
+9.Authorization with POP3 and IMAP4 $B!A(BPOP3$B$H(BIMAP4$B$G$NG'>Z$K$D$$$F!A(B
 
-$B5/F0%*%W%7%g%s$G!V(B-pop$B!W$b$7$/$O!V(B-apop$B!W$r;XDj$9$k$H%a!<%k$N%A%'%C%/(B
-$B$K(BPOP3$B$r;H$&$3$H$,$G$-$^$9!#$3$N;~(BPOP3$B%5!<%P$O%3%^%s%I%i%$%s%*%W%7%g(B
-$B%s!V(B-pserver$B!W$+!"%j%=!<%9!V(BXHisho.MailAlert.popServer$B!W$G;XDj$7$^$9!#(B
+$B5/F0%*%W%7%g%s$G!V(B-pop$B!W!"!V(B-apop$B!W!"!V(B-imap$B!W$r;XDj$9$k$H%a!<%k$N%A%'%C(B
+$B%/$K(BPOP3$B$d(BIMAP4$B$r;H$&$3$H$,$G$-$^$9!#$3$N;~(BPOP3(IMAP4)$B%5!<%P$O%3%^%s%I(B
+$B%i%$%s%*%W%7%g%s!V(B-pserver$B!W$+!"%j%=!<%9!V(BXHisho.MailAlert.popServer$B!W(B
+$B$G;XDj$7$^$9!#(B
 
-POP3$B$G$NG'>Z$K$b$A$$$k%f!<%6L>5Z$S%Q%9%o!<%I$O(B ~/.pop_password $B$H$$$&(B
-$B%U%!%$%k$K=q$$$F$*$-$^$9!#=q<0$O(B
+POP3(IMAP4)$B$G$NG'>Z$K$b$A$$$k%f!<%6L>5Z$S%Q%9%o!<%I$O(B ~/.pop_password
+$B$H$$$&%U%!%$%k$K=q$$$F$*$-$^$9!#=q<0$O(B
 
 USER:$B$"$J$?$N%f!<%6L>(B
 PASS:$B%Q%9%o!<%I(B
@@ -454,8 +457,8 @@ PASS:$B%Q%9%o!<%I(B
 
 %chmod 700 ~/.pop_password
 
-$B$H$7$F$*$-$^$7$g$&!#$b$7$3$l$rK:$l$F$$$k$H!"(BPOP$B$G$N%a!<%k%A%'%C%/$O5!(B
-$BG=$7$^$;$s!#(B
+$B$H$7$F$*$-$^$7$g$&!#$b$7$3$l$rK:$l$F$$$k$H!"(BPOP(IMAP)$B$G$N%a!<%k%A%'%C(B
+$B%/$O5!G=$7$^$;$s!#(B
 
 $B$^$?!"%Q%9%o!<%I$,4V0c$C$F$$$?$j!"%5!<%P$,(BAPOP$B$KBP1~$7$F$$$J$$$N$K(BAPOP
 $B$G@\B3$7$h$&$H$7$?(B($B$b$7$/$O$=$N5U(B)$B>l9g$O!"%a!<%k%A%'%C%/;~$K%(%i!<$,I=(B

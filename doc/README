@@ -54,10 +54,11 @@ You can customize every message, CG, etc.
 	 [-filter [filter command]]
          [-soundcmd [sound command]]
 	 [-yserver [youbin server]]
-	 [-pserver [POP3 server]]
+	 [-pserver [POP3 server or IMAP4 server]]
          [-youbin]
          [-pop]
          [-apop]
+         [-imap]
          [-version]
          [-coption]
 
@@ -65,7 +66,7 @@ You can customize every message, CG, etc.
   * Click 2 button,open/close today's schedule.
   * Click 3 button,check your mail box/close mail window.
 
-Create ~/.pop_password if you want to use POP(or APOP).
+Create ~/.pop_password if you want to use POP(or APOP, IMAP4).
 ~/.pop_password has following lines.
 
 USER:your name
