@@ -395,6 +395,7 @@ Widget CreateEditorWindow(Widget w, int Mode, struct tm tm_now)
    * toplevel Widget¤ÎÀ¸À®
    **/
 
+
   top = XtCreatePopupShell("OpenMessage", transientShellWidgetClass
 			   ,w, editargs, XtNumber(editargs));
 
@@ -441,7 +442,7 @@ Widget CreateEditorWindow(Widget w, int Mode, struct tm tm_now)
     schedules = CheckSchedule(&omr, schedule, 1, tm_now);
     break;
   case 3:
-    schedules = CheckSchedule(&omr, schedule, 3, tm_now);
+    schedules = CheckSchedule(&omr, schedule, 0, tm_now);
     break;
   case 4:
     schedules = CheckSchedule(&omr, schedule, 2, tm_now);
@@ -996,6 +997,7 @@ static int CheckIsSchedPast(int i, Schedule * sc)
    **/
   time_t now, sched;
   struct tm *tmp;
+  int diff;
 
   if (i >= MAX_SCHED_NUM || i < 0)
     return 0;
@@ -1011,7 +1013,9 @@ static int CheckIsSchedPast(int i, Schedule * sc)
   sched = mktime(tmp);
   time(&now);
 
-  return ((int) (difftime(sched, now) / 60));
+  diff = (int)difftime(sched, now);
+  diff /= 60;
+  return diff;
 }
 
 static int ChangeColorPastSched()
