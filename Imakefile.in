@@ -198,6 +198,9 @@ InstallNonExec(sample/schedule.wav,$(XHISHODIR))
 InstallNonExec(sample/xbiff.anim,$(XHISHODIR))
 InstallNonExec(sample/biffempty.bmp,$(XHISHODIR))
 InstallNonExec(sample/bifffull.bmp,$(XHISHODIR))
+#ifdef OPTION
+InstallNonExec(sample/mayura.anim,$(XHISHODIR))
+#endif
 
 #ifdef AKARI
 InstallNonExec(sample/akari.bmp,$(XHISHODIR))
