@@ -500,22 +500,54 @@ void SetSize(XHishoWidget xhw)
 
 void Animation(XHishoWidget xhw)
 {
-  unsigned int old;
+  unsigned int change;
   int clock_height;
-
-  old = CG_NUM;
-
+  
+  change = 0;
   if(--xhw->xhisho.cg_sec <= 0){
+    /**
+     * 規定の時間が過ぎたらCG変更
+     **/
     CG_NUM = CG_NUM + 1;
     if(CG_NUM >= xhw->xhisho.i_info->num_of_images) CG_NUM = 0;
+    change = 1;
   }
 
   while(!strcmp(((xhw->xhisho.i_info->image) + CG_NUM)->filename,"GOTO")){
-    CG_NUM = ((xhw->xhisho.i_info->image) + CG_NUM)->secs;
-    if(CG_NUM >= xhw->xhisho.i_info->num_of_images - 1) CG_NUM = 0;
+    /**
+     * GOTO の処理。GOTOの先がGOTOの時をまとめて処理するためにwhileにする
+     **/
+
+    if(((xhw->xhisho.i_info->image) + CG_NUM)->loop_b == -1){
+
+      /**
+       * loop_bが -1 なら永久に飛び続ける
+       **/
+      CG_NUM = ((xhw->xhisho.i_info->image) + CG_NUM)->secs;
+      ((xhw->xhisho.i_info->image) + CG_NUM)->loop_c = 0;
+      change = 1;
+    } else {
+      if(++((xhw->xhisho.i_info->image) + CG_NUM)->loop_c
+	 >= ((xhw->xhisho.i_info->image) + CG_NUM)->loop_b){
+	/**
+	 * ループカウンタが既定値を越えたらGOTOを無視して次の行へ
+	 **/
+	((xhw->xhisho.i_info->image) + CG_NUM)->loop_c = 0;
+	CG_NUM = CG_NUM + 1;
+	change = 1;
+      } else {
+	/**
+	 * 通常のGOTOジャンプ
+	 **/
+	CG_NUM = ((xhw->xhisho.i_info->image) + CG_NUM)->secs - 1;
+	change = 1;
+      }
+    }
+    if(CG_NUM >= xhw->xhisho.i_info->num_of_images - 1 ||
+       CG_NUM < 0) CG_NUM = 0;
   }
 
-  if(old != CG_NUM){
+  if(change){
     if (!xhw->xhisho.c_draw) {
       xhw->label.label_height = 0;
       clock_height = 0;

@@ -69,7 +69,8 @@ typedef struct _AnimImage {
   char *filename;
   Pixmap pixmap,mask;
   unsigned int secs;
-  unsigned int width, height;  
+  unsigned int width, height;
+  int loop_b,loop_c; /* GOTO用ループカウンタ及びループ初期値 */
 } AnimImage;
 
 typedef struct _ImageInfo {

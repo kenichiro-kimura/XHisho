@@ -295,7 +295,7 @@ int LoadImage(ImageInfo* i_info)
     }
 
     if (ExecLoader(i_info) == -1){
-      printf("no supported format\n");
+      printf("no supported format:%s\n",i_info->filename);
       return -1;
     }
     width = i_info->width;

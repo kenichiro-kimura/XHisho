@@ -8,7 +8,7 @@
 
 int LoadAnim(ImageInfo *i_info)
 {
-  int num_of_images,i;
+  int num_of_images,i,loop;
   unsigned int secs;
   char buffer[BUFSIZ],t_filename[BUFSIZ],filename[BUFSIZ],path[BUFSIZ],*p_ptr;
   FILE *fp;
@@ -17,6 +17,8 @@ int LoadAnim(ImageInfo *i_info)
   if(NULL == (fp = fopen(i_info->filename,"r"))){
     return -1;
   }
+
+  num_of_images = 0;
 
   /**
    * ファイルのpathを取得する
@@ -29,10 +31,26 @@ int LoadAnim(ImageInfo *i_info)
     strcpy(path,"./");
   }
 
-  if(fgets(buffer,BUFSIZ,fp) == NULL ) return -1;
-  if(strncmp(buffer,"XHisho Animation File",21)) return -1;
-  if(fgets(buffer,BUFSIZ,fp) == NULL ) return -1;
-  sscanf(buffer,"%d",&num_of_images);
+  if(fgets(buffer,BUFSIZ,fp) == NULL ){
+    fclose(fp);
+    return -1;
+  }
+  if(strncmp(buffer,"XHisho Animation File",21)){
+    fclose(fp);
+    return -1;
+  }
+
+  /**
+   * コマンドの個数の取得
+   **/
+  while(fgets(buffer,BUFSIZ,fp) != NULL){
+    if(buffer[0] == '#') continue;
+    num_of_images++;
+  }
+  rewind(fp);
+  fgets(buffer,BUFSIZ,fp);
+
+
   free(i_info->image);
   i_info->image = (AnimImage*)malloc(sizeof(AnimImage) * num_of_images);
 
@@ -42,7 +60,9 @@ int LoadAnim(ImageInfo *i_info)
   while(fgets(buffer,BUFSIZ,fp) != NULL && i < num_of_images){
     if(buffer[0] == '#') continue;
 
-    sscanf(buffer,"%s %d",t_filename,&secs);
+    loop = -1;
+    secs = 1;
+    sscanf(buffer,"%s %d %d",t_filename,&secs,&loop);
 
     if(!strcmp(t_filename,"GOTO")){
       strcpy(filename,t_filename);
@@ -58,6 +78,10 @@ int LoadAnim(ImageInfo *i_info)
     if(!(i_info->image[i].filename)) return -1;
     strcpy(i_info->image[i].filename,filename);
     i_info->image[i].secs = secs;
+    if(!strcmp(filename,"GOTO")){
+      i_info->image[i].loop_b = loop;
+      i_info->image[i].loop_c = 0;
+    }
     i++;
   }
 

@@ -51,7 +51,7 @@ typedef struct _XHishoPart {
   Window focus;
   int old_x, old_y;
   int cg_number;
-  unsigned int cg_sec;
+  int cg_sec;
 }   XHishoPart;
 
 typedef struct _XHishoRec {
