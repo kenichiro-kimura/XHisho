@@ -877,41 +877,6 @@ static void DrawNewCG(XHishoWidget xhw)
   XtResizeWidget(XtParent(xhw), WIDTH, HEIGHT + clock_height, FRAME_WIDTH);
   XtResizeWidget((Widget) xhw, WIDTH, HEIGHT + clock_height
 		 ,FRAME_WIDTH);
-#ifdef USE_UNYUU
-  if(xhw->xhisho.use_unyuu){
-    p = XCreatePixmap(DISPLAY, WINDOW, WIDTH, HEIGHT, DefaultDepth(DISPLAY, 0));
-    XCopyArea(DISPLAY, PIXMAP(CG_NUM), p, XH_GC
-	      , 0
-	      , 0
-	      , (((xhw->xhisho.i_info->image) + CG_NUM)->width)
-	      , (((xhw->xhisho.i_info->image) + CG_NUM)->height)
-	      , (((xhw->xhisho.i_info->image) + UCG_NUM)->width)
-	      + xhw->xhisho.ucg_off
-	      , 0
-	      );
-    XSetClipMask(DISPLAY,XH_GC,((xhw->xhisho.i_info->image) + UCG_NUM)->mask);
-    XSetClipOrigin(DISPLAY,XH_GC
-		   , 0/* + xhw->xhisho.ucg_off*/
-		   , HEIGHT - (((xhw->xhisho.i_info->image)
-				+ UCG_NUM)->height));
-    XSetClipMask(DISPLAY,XH_GC,((xhw->xhisho.i_info->image) + UCG_NUM)->mask);
-    XCopyArea(DISPLAY, PIXMAP(UCG_NUM), p, XH_GC
-	      , 0
-	      , 0
-	      , (((xhw->xhisho.i_info->image) + UCG_NUM)->width)
-	      , (((xhw->xhisho.i_info->image) + UCG_NUM)->height)
-	      , 0/* + xhw->xhisho.ucg_off*/
-	      , HEIGHT - (((xhw->xhisho.i_info->image) + UCG_NUM)->height)
-	      );
-    XSetClipMask(DISPLAY,XH_GC,NULL);
-    XCopyArea(DISPLAY, p, WINDOW, XH_GC, 0, 0, WIDTH, HEIGHT, 0, 0);
-    XFreePixmap(DISPLAY,p);
-  } else {
-    XCopyArea(DISPLAY, PIXMAP(CG_NUM), WINDOW, XH_GC, 0, 0, WIDTH, HEIGHT, 0, 0);
-  }
-#else
-  XCopyArea(DISPLAY, PIXMAP(CG_NUM), WINDOW, XH_GC, 0, 0, WIDTH, HEIGHT, 0, 0);
-#endif
 
   if (xhw->xhisho.i_info->is_shape){
 #ifdef USE_UNYUU
@@ -971,6 +936,43 @@ static void DrawNewCG(XHishoWidget xhw)
 		      ,((xhw->xhisho.i_info->image) + CG_NUM)->mask, ShapeSet);
 #endif
   }
+  XFlush(DISPLAY);
+
+#ifdef USE_UNYUU
+  if(xhw->xhisho.use_unyuu){
+    p = XCreatePixmap(DISPLAY, WINDOW, WIDTH, HEIGHT, DefaultDepth(DISPLAY, 0));
+    XCopyArea(DISPLAY, PIXMAP(CG_NUM), p, XH_GC
+	      , 0
+	      , 0
+	      , (((xhw->xhisho.i_info->image) + CG_NUM)->width)
+	      , (((xhw->xhisho.i_info->image) + CG_NUM)->height)
+	      , (((xhw->xhisho.i_info->image) + UCG_NUM)->width)
+	      + xhw->xhisho.ucg_off
+	      , 0
+	      );
+    XSetClipMask(DISPLAY,XH_GC,((xhw->xhisho.i_info->image) + UCG_NUM)->mask);
+    XSetClipOrigin(DISPLAY,XH_GC
+		   , 0/* + xhw->xhisho.ucg_off*/
+		   , HEIGHT - (((xhw->xhisho.i_info->image)
+				+ UCG_NUM)->height));
+    XSetClipMask(DISPLAY,XH_GC,((xhw->xhisho.i_info->image) + UCG_NUM)->mask);
+    XCopyArea(DISPLAY, PIXMAP(UCG_NUM), p, XH_GC
+	      , 0
+	      , 0
+	      , (((xhw->xhisho.i_info->image) + UCG_NUM)->width)
+	      , (((xhw->xhisho.i_info->image) + UCG_NUM)->height)
+	      , 0/* + xhw->xhisho.ucg_off*/
+	      , HEIGHT - (((xhw->xhisho.i_info->image) + UCG_NUM)->height)
+	      );
+    XSetClipMask(DISPLAY,XH_GC,NULL);
+    XCopyArea(DISPLAY, p, WINDOW, XH_GC, 0, 0, WIDTH, HEIGHT, 0, 0);
+    XFreePixmap(DISPLAY,p);
+  } else {
+    XCopyArea(DISPLAY, PIXMAP(CG_NUM), WINDOW, XH_GC, 0, 0, WIDTH, HEIGHT, 0, 0);
+  }
+#else
+  XCopyArea(DISPLAY, PIXMAP(CG_NUM), WINDOW, XH_GC, 0, 0, WIDTH, HEIGHT, 0, 0);
+#endif
   XFlush(DISPLAY);
 }
 

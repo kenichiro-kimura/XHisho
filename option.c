@@ -91,6 +91,15 @@ static XtResource resources[] = {
     XtRImmediate,
     (XtPointer)200
   },    
+  {
+    XtNmessageWait,
+    XtCMessageWait,
+    XtRInt,
+    sizeof(int),
+    XtOffsetOf(OptionRes, m_wait),
+    XtRImmediate,
+    (XtPointer)0
+  },    
 };
 
 static void Destroy(Widget w, XEvent * event, String * params, unsigned int *num_params)
@@ -411,13 +420,12 @@ static void CheckOption(Widget w, int *fid, XtInputId * id)
     insert message into window
   */
 
+  XtVaSetValues(xhisho,XtNforceCG,True,XtNcgNumber,cg_num,NULL);
+  InsertMessage(label,message_buffer);
 #ifdef USE_UNYUU
+  XtVaSetValues(xhisho,XtNforceCG,True,XtNucgNumber,u_cg_num,NULL);
   InsertMessage(ulabel,umessage_buffer);
 #endif
-  InsertMessage(label,message_buffer);
-
-  XtVaSetValues(xhisho,XtNforceCG,True,XtNcgNumber,cg_num
-		,XtNucgNumber,u_cg_num,NULL);
 
   if(is_end && opr.timeout > 0){
     if(OptionTimeoutId){
@@ -675,26 +683,37 @@ static void InsertMessage(Widget w,char* message_buffer)
   XawTextPosition current,last;
   XawTextBlock textblock;
   int true_length;
-  char* chr_ptr;
-
-  current = XawTextGetInsertionPoint(w);
-  last = XawTextSourceScan (XawTextGetSource (w),(XawTextPosition) 0,
-			    XawstAll, XawsdRight, 1, TRUE);
-
-  textblock.firstPos = 0;
-  textblock.length = strlen(message_buffer);
-  textblock.ptr = message_buffer;
-  textblock.format = FMT8BIT;
-  XtVaSetValues(w,XtNeditType,XawtextEdit,NULL);
-  XawTextReplace(w,last,last,&textblock);
-  XtVaSetValues(w,XtNeditType,XawtextRead,NULL);
-  if (current == last)
-    XawTextSetInsertionPoint(w
-			     , last + textblock.length);
-  chr_ptr = message_buffer;
+  unsigned char* chr_ptr;
 
   if(strlen(message_buffer) > 0)
      XtPopup(XtParent(XtParent(w)), XtGrabNone);
+  else
+    return;
+
+  XtVaSetValues(XtParent(w),XtNwindowMode,0,NULL);
+
+  current = XawTextGetInsertionPoint(w);
+  for(chr_ptr = message_buffer;*chr_ptr;chr_ptr++){
+    last = XawTextSourceScan (XawTextGetSource (w),(XawTextPosition) 0,
+			      XawstAll, XawsdRight, 1, TRUE);
+    textblock.firstPos = 0;
+    if ((*chr_ptr >= 0xa1 && *chr_ptr <= 0xfe) ||
+	(*chr_ptr == 0x8e) || (*chr_ptr == 0x8f))
+      textblock.length = 2;
+    else 
+      textblock.length = 1;
+    textblock.ptr = chr_ptr;
+    textblock.format = FMT8BIT;
+    XtVaSetValues(w,XtNeditType,XawtextEdit,NULL);
+    XawTextReplace(w,last,last,&textblock);
+    XtVaSetValues(w,XtNeditType,XawtextRead,NULL);
+    if ((*chr_ptr >= 0xa1 && *chr_ptr <= 0xfe) ||
+	(*chr_ptr == 0x8e) || (*chr_ptr == 0x8f))
+      chr_ptr++;
+    usleep(100 * opr.m_wait);
+    /*  if (current == last)*/
+    XawTextSetInsertionPoint(w , last + textblock.length);
+  }
 }
 
 static void InsertReturn(char* message_buffer,char* chr_ptr,int max_len,int message_buffer_size)

@@ -126,6 +126,9 @@ http://meister-d-i.hoops.ne.jp/
 ・-optiontimeout    : "任意"のふきだしの自動Popdownまでの時間
   (リソース: XHisho*optionTimeout)
 
+・-wait             : "任意"のメッセージのウエイト
+  (リソース: XHisho*messageWait)
+
 ・-nogreeting       : 起動時に挨拶を出さない
 
 
@@ -142,6 +145,8 @@ http://meister-d-i.hoops.ne.jp/
 ・さくらのCG変更メッセージは「sakura:(Surface:n)」で、うにゅうのCG変更
   メッセージは「unyuu:(Surface:n)」のみです。
 ・選択肢を選ぶことはできません。
+・waitを指定すると、たまにCGの描画が遅れたり、うにゅうとのかけあいが
+  微妙にタイミングがおかしい時もあるかもしれません。
 ・まゆらのおしゃべりにはSJISの機種依存文字が含まれてます。これらは、
   「＃」に置き換えられます。たまに失敗して表示が崩れるかも知れません。
 ・たまに表示が変でも笑って許してください。

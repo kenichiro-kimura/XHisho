@@ -29,6 +29,8 @@
 #define XtCUXOffset "UXOffset"
 #define XtNuYOffset "uYOffset"
 #define XtCUYOffset "UYOffset"
+#define XtNmessageWait "messageWait"
+#define XtCMessageWait "MessageWait"
 
 typedef struct {
   String o_command;
@@ -37,6 +39,7 @@ typedef struct {
   int uxoff;
   int uyoff;
   int timeout;
+  int m_wait;
 } OptionRes;
 
 typedef struct _messagestack{

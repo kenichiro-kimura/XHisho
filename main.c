@@ -83,6 +83,7 @@ static XrmOptionDescRec options[] = {
   {"-optionwidth", "*optionWidth", XrmoptionSepArg, "300"},
   {"-optionheight", "*optionHeight", XrmoptionSepArg, "200"},
   {"-optiontimeout", "*optionTimeout", XrmoptionSepArg, "5"},
+  {"-wait", "*messageWait", XrmoptionSepArg, "0"},
 #endif
 #ifdef USE_UNYUU
   {"-unyuu", "*UseUnyuu", XrmoptionNoArg, "True"},
