@@ -1247,7 +1247,7 @@ static inline int _iscategory(const mhcent* ent_ptr,const char* category){
     *first_ptr++ = *chr_ptr;
     if(isspace((unsigned char)*chr_ptr)){
       *first_ptr = '\0';
-      if(!strcmp(e_category,category)){
+      if(!strcasecmp(e_category,category)){
 	free(e_category);
 	return 1;
       }
@@ -1259,8 +1259,7 @@ static inline int _iscategory(const mhcent* ent_ptr,const char* category){
   }
 
   *first_ptr = '\0';
-  printf("##%s##\n",first_ptr);
-  if(!strcmp(e_category,category)){
+  if(!strcasecmp(e_category,category)){
     free(e_category);
     return 1;
   }
@@ -1270,7 +1269,7 @@ static inline int _iscategory(const mhcent* ent_ptr,const char* category){
 }
 
 int iscategory(const mhcent* ent_ptr,const char* category){
-  char* chr_ptr;
+  const char* chr_ptr;
   char* first_ptr;
   char* _category;
   int ret_value = 0;
