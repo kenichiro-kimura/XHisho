@@ -1,0 +1,62 @@
+#
+# mhcのデータを取得するライブラリ libmhc 開発構想
+#
+
+1. 目的
+    mhcのエントリを取得し、XHishoをmhcにnative対応させる。これがあれば
+  mhcのデータを使った他のアプリケーションの作成も容易になる(といいなぁ)
+
+
+2. インターフェース
+
+    mhcのデータ形式から考え、「yyyy年mm月のエントリを取得」という関数
+  があれば良いと思われる。あとは、ここからエントリを順次取得する
+  iterationの機能があれば何でもできるはず。
+
+  C++のiteratorを使うと楽だが、XHisho(Xt + Athena Widget)とC++は相性が
+  悪いのでCで記述。となれば、readdir()のようなstream型の関数に合わせる
+  と見通しが良くなるだろう。
+
+
+  MHC * 
+  openmhc(const char *year-month);
+
+  struct mhcent *
+  readmhc(MHC *mhcp);
+
+  void
+  seekdir(MHC *mhcp, int loc)
+
+  void
+  rewindmhc(MHC *mhcp)
+
+  int
+  closedir(MHC *mhcp)
+
+  くらいで足りる?
+
+
+3. データ構造
+
+    (1)MHC
+       ある年月のmhcの全てのエントリを保持する。中身はstruct mhcentの
+       list。もしくは日付でhashしても良いかもしれない。
+
+    (2)struct mhcent
+       mhcの1エントリを保持。中身はmhcの形式に沿って。
+
+
+4. ユーティリティ関数
+
+    struct mhcentの中身を自分で解析するのがだるいので、よく使いそうな
+  機能はライブラリに突っ込んでしまう。
+
+  int
+  isschedule(struct mhcent mhc,const char *year-month-day);
+
+    そのスケジュールがある日(yyyy/mm/dd)のスケジュールであるかどうか判
+    断する。Day、Duration、Condのデータを使う。
+    (alarmの"x日前"をどう扱うか?)
+
+
+
