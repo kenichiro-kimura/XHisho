@@ -1,13 +1,13 @@
+#define _EDITOR_GLOBAL
+#include "globaldefs.h"
 #include "openwin.h"
 #include "Msgwin.h"
-#include "globaldefs.h"
-#include "config.h"
 
 /**
  * local variable
  **/
 
-static Widget top, editor, open, list[MAX_SCHED_NUM], editlist[MAX_SCHED_NUM];
+static Widget top, editor, local_open, list[MAX_SCHED_NUM], editlist[MAX_SCHED_NUM];
 static Widget day[MAX_SCHED_NUM], kara[MAX_SCHED_NUM], leave_t[MAX_SCHED_NUM];
 static int Schedule_num, past_index;
 static int virgine = 1;
@@ -16,16 +16,6 @@ static int Edited_Month, Edited_Day;
 static XtIntervalId LeaveWindowID = 0;
 static const char ResName[][128] = {"open1", "open2", "open3", "alert1", "alert2"
 ,"alertformat", "schedule", "messagearg"};
-
-OpenMessageRes omr;
-
-/**
- * external variable
- **/
-
-extern Widget openwin;
-extern int OpenWindowShown;
-extern int UseSound;
 
 /**
  * function definition
@@ -40,21 +30,6 @@ static int CheckIsSchedPast(int, Schedule *);
 static void ChangeReturn(String, char *);
 static void ScheduleSort();
 static int ChangeColorPastSched();
-
-void CheckTimeForSchedule();
-Widget CreateEditorWindow(Widget, int, struct tm);
-unsigned long GetColor(Display *, char *);
-
-
-/**
- * external function
- **/
-
-extern void CloseEditWindow();
-extern int CheckSchedule();
-extern int SoundPlay(char *);
-extern int ReadRcdata(const char *, char *, int);
-extern void ReadHoliday();	/** in schedule.c **/
 
 /**
  * resources
@@ -185,7 +160,7 @@ static XtResource resources[] = {
     sizeof(String),
     XtOffsetOf(OpenMessageRes, sound_f),
     XtRImmediate,
-    (XtPointer) SOUND_F
+    (XtPointer) OPEN_SOUND_F
   },
   {
     XtNscheduleEditMessage,
@@ -417,7 +392,7 @@ Widget CreateEditorWindow(Widget w, int Mode, struct tm tm_now)
 				   ,editargs, XtNumber(editargs));
 
   } else {
-    open = XtCreateManagedWidget("open", msgwinWidgetClass, top
+    local_open = XtCreateManagedWidget("open", msgwinWidgetClass, top
 				 ,editargs, XtNumber(editargs));
   }
 
@@ -501,7 +476,7 @@ Widget CreateEditorWindow(Widget w, int Mode, struct tm tm_now)
     label_f = XtCreateManagedWidget("editorLabel", labelWidgetClass, editor
 				    ,labelargs, XtNumber(labelargs));
   } else {
-    label_f = XtCreateManagedWidget("editorLabel", labelWidgetClass, open
+    label_f = XtCreateManagedWidget("editorLabel", labelWidgetClass, local_open
 				    ,labelargs, XtNumber(labelargs));
   }
 
@@ -595,7 +570,7 @@ Widget CreateEditorWindow(Widget w, int Mode, struct tm tm_now)
 	labelargs[8].value = (XtArgVal) 20;
       }
 
-      list[j] = XtCreateManagedWidget("schedList", labelWidgetClass, open
+      list[j] = XtCreateManagedWidget("schedList", labelWidgetClass, local_open
 				      ,labelargs, XtNumber(labelargs));
 
       log.width = 0;
@@ -770,7 +745,7 @@ Widget CreateEditorWindow(Widget w, int Mode, struct tm tm_now)
     labelargs[0].value = (XtArgVal) string_e;
     labelargs[8].value = (XtArgVal) 30;
 
-    label_e = XtCreateManagedWidget("scheduleLabel", labelWidgetClass, open
+    label_e = XtCreateManagedWidget("scheduleLabel", labelWidgetClass, local_open
 				    ,labelargs, XtNumber(labelargs));
     XtVaGetValues(label_e, XtNwidth, &Label_width, NULL);
   }
@@ -805,7 +780,7 @@ Widget CreateEditorWindow(Widget w, int Mode, struct tm tm_now)
 
     return (editor);
   } else {
-    ok = XtVaCreateManagedWidget("openOk", commandWidgetClass, open, XtNfromVert
+    ok = XtVaCreateManagedWidget("openOk", commandWidgetClass, local_open, XtNfromVert
 				 ,label_e
 			       ,XtNhorizDistance, POINT_WIDTH + LABEL_OFFSET
 				 ,XtNlabel, "OK"
@@ -815,7 +790,7 @@ Widget CreateEditorWindow(Widget w, int Mode, struct tm tm_now)
     XtAddCallback(ok, XtNcallback, (XtCallbackProc) Destroy, NULL);
 
     if (Mode == 2) {
-      dismiss = XtVaCreateManagedWidget("openDismiss", commandWidgetClass, open
+      dismiss = XtVaCreateManagedWidget("openDismiss", commandWidgetClass, local_open
 					,XtNfromVert, label_e
 					,XtNfromHoriz, ok
 					,XtNhorizDistance, 5
@@ -841,7 +816,7 @@ Widget CreateEditorWindow(Widget w, int Mode, struct tm tm_now)
     free(string_e);
     free(tmpstring);
 
-    return (open);
+    return (local_open);
   }
 }
 

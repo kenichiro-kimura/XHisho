@@ -1,15 +1,13 @@
+#define _MENU_GLOBAL
+#include "globaldefs.h"
 #include "Msgwin.h"
 #include "menu.h"
-#include "globaldefs.h"
 
 static Widget top, menu, item[MENU_NUM + 1], head[MENU_NUM + 1], ok;
 static char Menu[MENU_NUM][256];
 static MenuRes mres;
 static const char ResName[][128] = {"menul", "menu0", "menu1", "menu2"
 ,"menu3", "menu4", "menu5"};
-
-extern int WindowMode, MenuWindowShown, OpenWindowShown, AboutWindowShown, CalendarWindowShown;
-extern Widget openwin, calendarwin, about, resedit;
 
 static void Destroy(Widget, caddr_t, caddr_t);
 static void Quit(Widget, caddr_t, caddr_t);
@@ -18,10 +16,6 @@ static void OpeningWindowPopup(Widget, caddr_t, caddr_t);
 static void TodayScheduleWindowPopup(Widget, caddr_t, caddr_t);
 static void AboutWindowPopup(Widget, caddr_t, caddr_t);
 static void ResEditWindowPopup(Widget, caddr_t, caddr_t);
-Widget CreateMenuWindow(Widget);
-extern Widget CreateEditorWindow(Widget, int, struct tm);
-extern Widget CreateCalendarWindow(Widget, int, struct tm);
-extern void ReadRcdata(const char *, char *, int);
 
 static XtResource resources[] = {
   {

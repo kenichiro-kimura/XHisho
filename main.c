@@ -1,4 +1,5 @@
-#include "config.h"
+#define _MAIN_GLOBAL
+#include "globaldefs.h"
 #include <X11/Intrinsic.h>
 #include <X11/StringDefs.h>
 #include <X11/Xmu/Atoms.h>
@@ -16,7 +17,6 @@
 
 #include "XHisho.h"
 #include "Msgwin.h"
-#include "globaldefs.h"
 
 /**
  * local variable
@@ -24,19 +24,6 @@
 
 static Widget toplevel;
 static int IsSet = 0;		/** 1回目のExposeでだけ子Widgetを作る **/
-
-Widget mail, openwin, xhisho, about, editwin, calendarwin, menu, nomail,
-    resedit;
-int MailWindowShown, OpenWindowShown, MenuWindowShown, AboutWindowShown, CalendarWindowShown;
-BiffMethod Biff = LOCAL;
-int UseSound = 1;
-String FilterCommand, SoundCommand;
-
-/**
- * external variable
- **/
-
-extern int isMailChecked;	/** in mail.c **/
 
 /**
  * local function
@@ -50,29 +37,6 @@ static void MenuWindowPopup(Widget, XEvent *, String *, unsigned int *);
 static void CalendarWindowPopup(Widget, XEvent *, String *, unsigned int *);
 static void CheckMailNow(Widget, XEvent *, String *, unsigned int *);
 static void PrintUsage(int, char **);
-void CloseEditWindow();
-
-/**
- * external function
- **/
-
-extern Widget CreateMailAlert(Widget, int);	/** in mail.c  **/
-extern int CheckMail(XtPointer, XtIntervalId *);
-extern int CheckPOP3(XtPointer, XtIntervalId *);
-
-#ifdef PETNAME
-extern void ReadPetname(char *);/** in petname.c **/
-#endif
-extern Widget CreateAboutWindow(Widget);	/** in about.c  **/
-extern Widget CreateEditorWindow(Widget, int, struct tm);	/** in editor.c  **/
-extern int ChangeColorPastSched();
-extern void CheckTimeForSchedule();
-extern Widget CreateCalendarWindow(Widget, int, struct tm);	/** in calendar.c  **/
-extern Widget CreateMenuWindow(Widget);	/** in menu.c  **/
-extern Widget CreateResEditWindow(Widget);	/** in ResEdit.c  **/
-extern void WritePrefFile();
-extern int ReadRcfile(char *);
-
 
 /**
  * action table
@@ -312,6 +276,10 @@ int main(int argc, char **argv)
 
   String rcfile, petname_f;
   XtTranslations trans_table;
+
+  Biff = LOCAL;
+  isMailChecked = 0;
+  UseSound = 1;
 
   /**
    *  Localeをセットする

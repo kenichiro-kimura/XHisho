@@ -1,7 +1,33 @@
 #ifndef _IMAGE_H
 #define _IMAGE_H
 
+#ifdef _IMAGE_GLOBAL
+#define IMAGE_GLOBAL
+#else
+#define IMAGE_GLOBAL extern
+#endif
+
+#ifdef _JPEG_GLOBAL
+#define JPEG_GLOBAL
+#else
+#define JPEG_GLOBAL extern
+#endif
+
+#ifdef _BMP_GLOBAL
+#define BMP_GLOBAL
+#else
+#define BMP_GLOBAL extern
+#endif
+
+#ifdef _XPM_GLOBAL
+#define XPM_GLOBAL
+#else
+#define XPM_GLOBAL extern
+#endif
+
 #include <X11/Xlib.h>
+#include "../config.h"
+
 enum {
   /**
    * BMP用の定数定義
@@ -44,5 +70,22 @@ typedef struct _ImageInfo {
   char* filename;
 } ImageInfo;
 
+/**
+ * 関数定義。関数本体を定義するところ以外ではexternになるように細工し
+ * ているので、imageまわりの関数を使うプログラムは、このファイルを
+ * includeするだけでよい。
+ */
+
+IMAGE_GLOBAL int LoadImage(ImageInfo *);
+
+BMP_GLOBAL int LoadBmp(ImageInfo *);
+
+#ifdef HAVE_LIBJPEG
+JPEG_GLOBAL int LoadJpeg(ImageInfo *);
+#endif
+
+#ifdef HAVE_LIBXPM
+XPM_GLOBAL int LoadXpm(ImageInfo *);
+#endif
 
 #endif

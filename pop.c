@@ -1,3 +1,4 @@
+#define _POP_GLOBAL
 #include "globaldefs.h"
 #include "mail.h"
 #include "pop.h"
@@ -8,10 +9,6 @@
 
 static char *MD5Digest(unsigned char *);
 
-#ifdef PETNAME
-extern void SearchPetname(char *, char *);
-#endif
-
 static int ReadPOPMessage(int, char *, int);
 static int WritePOPCommand(int, char *);
 static int ReadUserFile(UserData *);
@@ -19,11 +16,6 @@ static int Auth(int, UserData);
 static int ApopAuth(int, UserData);
 static int RpopAuth(int, UserData);
 static void GetFromandSubject(int, char *);
-
-int pop3(AuthMethod, char *, char *);
-
-extern String FilterCommand;
-extern MailAlertRes mar;
 
 static int ReadPOPMessage(int sock, char *buffer, int size)
 {

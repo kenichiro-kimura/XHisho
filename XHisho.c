@@ -44,8 +44,6 @@ static Boolean SetValues(Widget, Widget, Widget, ArgList, Cardinal *);
 static void NewInterval(XHishoWidget);
 static void FocusInterval(XHishoWidget);
 
-extern int LoadImage(ImageInfo *);
-
 static XtResource resources[] = {
   {
     XtNcgFile,

@@ -1,9 +1,9 @@
+#define _MAIL_GLOBAL
+#include "globaldefs.h"
 #include "mail.h"
 #include "petname.h"
 #include "Msgwin.h"
-#include "globaldefs.h"
 #include "ResEdit.h"
-#include "config.h"
 #include <ctype.h>
 #include <signal.h>
 
@@ -11,7 +11,7 @@
  * local variable
  **/
 
-static Widget top[2], mail[2], from;
+static Widget top[2], local_mail[2], from;
 static int MailCount = 0;
 static char m_filename[256];
 static int TimeoutInterval = 1 * 1000;
@@ -24,27 +24,6 @@ static XtInputId YoubinId;
 static int virgine = 1;
 static char Tmp_dir[256];
 
-int isMailChecked = 0;
-/**
- * isMailChecked =
- *                 0 .. checked
- *                 1 .. not yet
- *                 2 .. timeout closed(not checked)
- **/
-MailAlertRes mar;
-
-
-
-/**
- * external variable
- **/
-
-extern ResEditRes rer;		/** in ResEdit.c **/
-extern int MailWindowShown;	/** in main.c **/
-extern BiffMethod Biff;
-extern String FilterCommand;
-extern int UseSound;
-
 /**
  * function definition
  **/
@@ -53,25 +32,10 @@ static void Destroy(Widget w, caddr_t client_data, caddr_t call_data);
 static int isMail();
 static void SetPrefVal(int, float);
 static int Youbin_exit(Display *);
-Widget CreateMailAlert(Widget, int);
-int CheckMail(XtPointer, XtIntervalId *);
-
-extern void ChangeBar(Widget, caddr_t, int);	/** in ResEdit.c **/
-extern void MoveBar(int, float);
-extern void ReadRcdata(const char *, char *, int);
-
-#ifdef PETNAME
-extern void SearchPetname(char *, char *);	/** in petname.c **/
-#endif
-
-extern int SoundPlay(char *);	/** in sound.c **/
 
 static void CheckYoubin(Widget, int *, XtInputId *);
 static void YoubinInit();
 static void GetFromandSubject(char *, char *);
-
-extern int pop3(AuthMethod, char *, char *);	/** in pop.c **/
-int CheckPOP3(XtPointer, XtIntervalId *);
 
 /**
  * resources
@@ -148,7 +112,7 @@ static XtResource resources[] = {
     sizeof(String),
     XtOffsetOf(MailAlertRes, sound_f),
     XtRImmediate,
-    (XtPointer) SOUND_F
+    (XtPointer) MAIL_SOUND_F
   },
   {
     XtNyoubinServer,
@@ -262,8 +226,8 @@ int CheckMail(XtPointer cl, XtIntervalId * id)
       XtVaSetValues(from, XtNlabel, buf, NULL);
 #endif
       MailWindowShown = 1;
-      XtVaSetValues(mail[0], XtNwindowMode, 0, NULL);
-      XtPopup(XtParent(mail[0]), XtGrabNone);
+      XtVaSetValues(local_mail[0], XtNwindowMode, 0, NULL);
+      XtPopup(XtParent(local_mail[0]), XtGrabNone);
 
       if (mar.sound_f  && UseSound) {
 	SoundPlay(mar.sound_f);
@@ -276,8 +240,8 @@ int CheckMail(XtPointer cl, XtIntervalId * id)
     case 1:
       if (!MailWindowShown) {
 	MailWindowShown = 1;
-	XtVaSetValues(mail[0], XtNwindowMode, 0, NULL);
-	XtPopup(XtParent(mail[0]), XtGrabNone);
+	XtVaSetValues(local_mail[0], XtNwindowMode, 0, NULL);
+	XtPopup(XtParent(local_mail[0]), XtGrabNone);
       }
       break;
     case 2:
@@ -287,8 +251,8 @@ int CheckMail(XtPointer cl, XtIntervalId * id)
 
     break;
   }
-  XtAppAddTimeOut(XtWidgetToApplicationContext(mail[0])
-  ,MailCheckInterval, (XtTimerCallbackProc) CheckMail, (XtPointer) mail[0]);
+  XtAppAddTimeOut(XtWidgetToApplicationContext(local_mail[0])
+  ,MailCheckInterval, (XtTimerCallbackProc) CheckMail, (XtPointer) local_mail[0]);
 
 #ifndef YOUBIN
   free(buf);
@@ -321,16 +285,16 @@ int CheckPOP3(XtPointer cl, XtIntervalId * id)
     }
     MailWindowShown = 1;
     XtVaSetValues(from, XtNlabel, buf, NULL);
-    XtVaSetValues(mail[0], XtNwindowMode, 0, NULL);
-    XtPopup(XtParent(mail[0]), XtGrabNone);
+    XtVaSetValues(local_mail[0], XtNwindowMode, 0, NULL);
+    XtPopup(XtParent(local_mail[0]), XtGrabNone);
   }
   free(buf);
 
   if (MailCheckInterval < 60 * 1000)
     MailCheckInterval = 60 * 1000;
 
-  XtAppAddTimeOut(XtWidgetToApplicationContext(mail[0])
-  ,MailCheckInterval, (XtTimerCallbackProc) CheckPOP3, (XtPointer) mail[0]);
+  XtAppAddTimeOut(XtWidgetToApplicationContext(local_mail[0])
+  ,MailCheckInterval, (XtTimerCallbackProc) CheckPOP3, (XtPointer) local_mail[0]);
   return ret_value;
 }
 
@@ -447,14 +411,14 @@ Widget CreateMailAlert(Widget w, int Mode)
 
   MailTimeout = mar.m_timeout;
 
-  mail[Mode] = XtCreateManagedWidget("mail", msgwinWidgetClass, top[Mode],
+  local_mail[Mode] = XtCreateManagedWidget("mail", msgwinWidgetClass, top[Mode],
 				     mailargs, XtNumber(mailargs));
 
   /**
    * label Widget
    **/
 
-  label = XtCreateManagedWidget("mailLabel", labelWidgetClass, mail[Mode]
+  label = XtCreateManagedWidget("mailLabel", labelWidgetClass, local_mail[Mode]
 				,labelargs, XtNumber(labelargs));
 
   /**
@@ -462,7 +426,7 @@ Widget CreateMailAlert(Widget w, int Mode)
    **/
 
   if (Mode) {
-    ok = XtVaCreateManagedWidget("mailOk", commandWidgetClass, mail[Mode]
+    ok = XtVaCreateManagedWidget("mailOk", commandWidgetClass, local_mail[Mode]
 				 ,XtNfromVert, label
 			       ,XtNhorizDistance, POINT_WIDTH + LABEL_OFFSET
 				 ,XtNlabel, "OK"
@@ -486,7 +450,7 @@ Widget CreateMailAlert(Widget w, int Mode)
 
     fromargs[1].value = (XtArgVal) label;
 
-    from = XtCreateManagedWidget("mailFrom", labelWidgetClass, mail[Mode]
+    from = XtCreateManagedWidget("mailFrom", labelWidgetClass, local_mail[Mode]
 				 ,fromargs, XtNumber(fromargs));
 
 
@@ -494,7 +458,7 @@ Widget CreateMailAlert(Widget w, int Mode)
      * ok Widget
      **/
 
-    ok = XtVaCreateManagedWidget("mailOk", commandWidgetClass, mail[Mode], XtNfromVert, from
+    ok = XtVaCreateManagedWidget("mailOk", commandWidgetClass, local_mail[Mode], XtNfromVert, from
 			       ,XtNhorizDistance, POINT_WIDTH + LABEL_OFFSET
 				 ,XtNlabel, "OK"
 				 ,XtNvertDistance, 20
@@ -526,7 +490,7 @@ Widget CreateMailAlert(Widget w, int Mode)
   for (i = 0; i < 2; i++)
     free(messages[i]);
 
-  return (mail[Mode]);
+  return (local_mail[Mode]);
 }
 
 static void GetFromandSubject(char *m_file, char *From)
@@ -818,8 +782,8 @@ static void CheckYoubin(Widget w, int *fid, XtInputId * id)
     isMailChecked = 1;
     MailWindowShown = 1;
 
-    XtVaSetValues(mail[0], XtNwindowMode, 0, NULL);
-    XtPopup(XtParent(mail[0]), XtGrabNone);
+    XtVaSetValues(local_mail[0], XtNwindowMode, 0, NULL);
+    XtPopup(XtParent(local_mail[0]), XtGrabNone);
 
     if (mar.sound_f && UseSound) {
       SoundPlay(mar.sound_f);

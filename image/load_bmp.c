@@ -1,3 +1,4 @@
+#define _BMP_GLOBAL
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -20,8 +21,6 @@ static int Load8(FILE *, ImageInfo *);
 static int Load24(FILE *, ImageInfo *);
 static int Load4RGB(FILE *, ImageInfo *);
 static int Load8RGB(FILE *, ImageInfo *);
-
-int LoadBmp(ImageInfo *);
 
 static inline unsigned GetShort(FILE * fp)
 {

@@ -1,26 +1,15 @@
-#include "openwin.h"
+#define _SCHEDULE_GLOBAL
 #include "globaldefs.h"
+#include "openwin.h"
 #include <ctype.h>
 #include <sys/stat.h>
 #include <X11/Xlocale.h>
 
-typedef struct _hlist {
-  int day;
-  char *name;
-  struct _hlist *next;
-}   HolidayList;
-
 static HolidayList *Hlist[12];
-extern OpenMessageRes omr;
 
 static int SafeTimeFormat(Schedule);
-int CheckSchedule(OpenMessageRes *, Schedule *, int, struct tm);
-int ExistSchedule(int, int);
-int ExistHoliday(int, int, int);
-void ReadHoliday();
 static void ReadHolidayFile(char *);
 static HolidayList *HolidayList_new(int, char *);
-extern void Escape2Return(char *);
 
 
 static HolidayList *HolidayList_new(int day, char *name)

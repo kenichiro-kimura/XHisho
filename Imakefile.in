@@ -1,8 +1,9 @@
 #include "config.h"
 
 CC = @CC@
-CCOPTIONS = @CFLAGS@
+CCOPTIONS = @CFLAGS@ @LDFLAGS@
 XCOMM CDEBUGFLAGS = -g -Wall
+YOUR_NAME = 浩之
 
 XCOMM
 XCOMM	do not touch below

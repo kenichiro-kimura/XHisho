@@ -1,3 +1,5 @@
+#define _CALENDAR_GLOBAL
+#include "globaldefs.h"
 #include "Msgwin.h"
 #include "calendar.h"
 
@@ -13,9 +15,6 @@ static const int wdays[] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
 static int Edited_Month, Edited_Year;
 static CalendarRes cres;
 
-extern Widget editwin, calendarwin;
-extern CalendarWindowShown;
-
 /**
  * 関数のプロトタイプ
  **/
@@ -24,14 +23,6 @@ static void Destroy(Widget w, caddr_t client_data, caddr_t call_data);
 static void EditorWindowPopup(Widget, caddr_t, caddr_t);
 static void PrevMonth(Widget, caddr_t, caddr_t);
 static void NextMonth(Widget, caddr_t, caddr_t);
-
-Widget CreateCalendarWindow(Widget, int, struct tm);
-
-extern Widget CreateEditorWindow(Widget, int, struct tm);	/** in edit.c  **/
-extern int ExistSchedule(int, int);
-extern int ExistHoliday(int, int, int);
-extern unsigned long GetColor(Display *, char *);
-extern void ReadRcdata(char *, char *, int);
 
 static XtResource resources[] = {
   {

@@ -1,6 +1,6 @@
 #include "../config.h"
 CC = @CC@
-CCOPTIONS = @CFLAGS@
+CCOPTIONS = @CFLAGS@ @LDFLAGS@
 STD_INCLUDES = -I../ -I/usr/local/include
 
 BASE_OBJS = image.o load_bmp.o

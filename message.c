@@ -1,3 +1,4 @@
+#define _MESSAGE_GLOBAL
 #include "globaldefs.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -5,9 +6,6 @@
 #include <X11/Intrinsic.h>
 
 static int RcHash(const char *);
-void Escape2Return(char *);
-int ReadRcfile(char *);
-void ReadRcdata(const char *, char *, int size);
 
 static const char RcName[][256] = {"newmail", "nomail", "open1", "open2", "open3", "alert1"
   ,"alert2", "alertformat", "schedule", "menul", "menu0"
@@ -16,9 +14,7 @@ static const char RcName[][256] = {"newmail", "nomail", "open1", "open2", "open3
 
 static char *RcData[NUM_OF_ARRAY(RcName)];
 
-  extern String FilterCommand;
-
-  static int RcHash(const char *name)
+static int RcHash(const char *name)
 {
   /**
    * 与えられた文字列がRcNameの何番目かを返す。無ければ-1。

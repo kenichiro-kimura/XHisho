@@ -1,19 +1,13 @@
+#define _RESEDIT_GLOBAL 
+
+#include "globaldefs.h"
 #include "ResEdit.h"
 #include "mail.h"
 
 static Widget top, resedit, ok, scrollbar[5], label[5], parameter[5], toplabel,
     cancel;
-ResEditRes rer;
-extern MailAlertRes mar;
 
 static int PrefHash(char *);
-Widget CreateResEditWindow(Widget);
-void ReadPrefFile();
-void WritePrefFile();
-void ChangeBar(Widget, caddr_t, int);
-void MoveBar(int i, float p);
-
-extern void ReadRcdata(char *, char *, int);
 
 static XtResource resources[] = {
   {

@@ -1,5 +1,6 @@
-#include "petname.h"
+#define _PETNAME_GLOBAL
 #include "globaldefs.h"
+#include "petname.h"
 #include "mail.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -11,19 +12,12 @@
  **/
 static PetnameList *Petname[HASH_KEY];
 
-extern String FilterCommand;
-
-
 static int StrHash(char *);
 static PetnameList *Petname_new(char *, char *);
 static void Petname_delete(PetnameList *);
 #ifdef ADDRESSBOOK
 static void ReadAddrBook();
 #endif
-
-void ReadPetname(char *);
-void SearchPetname(char *, char *);
-
 
 /**
  * PetnameList オブジェクトのコンストラクタに相当する関数

@@ -43,7 +43,7 @@
 #define CFGFILE "aisatu.cfg"
 #define MAIL_LINES 2
 #define FROM_MAXLEN 50
-#define SOUND_F "newmail.wav"
+#define MAIL_SOUND_F "newmail.wav"
 #define Y_SERVER "localhost"
 #define Y_COMMAND "/usr/local/bin/youbin"
 

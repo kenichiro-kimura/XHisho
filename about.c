@@ -1,3 +1,5 @@
+#define _ABOUT_GLOBAL
+#include "globaldefs.h"
 #include "about.h"
 #include "Msgwin.h"
 
@@ -9,17 +11,10 @@ static Widget top, about, label, ok;
 static AboutRes abr;
 
 /**
- *extern variable
- **/
-
-extern int AboutWindowShown;
-
-/**
  * function definition
  **/
 
 static void Destroy(Widget, caddr_t, caddr_t);
-Widget CreateAboutWindow(Widget);
 
 /**
  *resources

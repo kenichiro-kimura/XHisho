@@ -66,7 +66,7 @@
 #define CFGFILE "aisatu.cfg"
 #define LEAVE_TIME 5
 #define FILTER "nkf -e -m"
-#define SOUND_F "schedule.wav"
+#define OPEN_SOUND_F "schedule.wav"
 #define SCHED_DIR "/.Schedule/"
 
 #define OPENF "Today is %s/%s. Your schedule is"

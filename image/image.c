@@ -1,3 +1,4 @@
+#define _IMAGE_GLOBAL
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -5,18 +6,7 @@
 #include <X11/Xutil.h>
 #include <X11/extensions/shape.h>
 #include "image.h"
-#include "config.h"
 #include "globaldefs.h"
-
-extern int LoadBmp(ImageInfo *);
-
-#ifdef HAVE_LIBJPEG
-extern int LoadJpeg(ImageInfo *);
-#endif
-
-#ifdef HAVE_LIBXPM
-extern int LoadXpm(ImageInfo *);
-#endif
 
 static struct {
 /**

@@ -1,3 +1,4 @@
+#define _JPEG_GLOBAL
 #include <stdio.h>
 #include <stdlib.h>
 #include <jpeglib.h>
@@ -10,7 +11,6 @@
  **/
 
 static int JpegDecode(ImageInfo *, FILE *);
-int LoadJpeg(ImageInfo *);
 
 /**
  * local variable

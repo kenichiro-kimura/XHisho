@@ -2,6 +2,8 @@
  * waveplay - Programmed by Y.Sonoda (Mar. 1998),modified for XHisho by K.Kimura
  **/
 
+#define _SOUND_GLOBAL
+#include "globaldefs.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -11,7 +13,6 @@
 #include <sys/types.h>
 #include <sys/ioctl.h>
 #include <sys/stat.h>
-#include "globaldefs.h"
 #include <X11/Intrinsic.h>
 
 #if defined (__FreeBSD__)
@@ -32,14 +33,9 @@
 #define DEFAULT_BUFFERSIZE 2048
 #endif
 
-extern String SoundCommand;
-
 /**
  *  プロトタイプ
  **/
-int SoundPlay(const char *filename);
-int ExtSoundCommand(const char *filename);
-
 static int _SoundPlay(const char *filename);
 
 #ifdef NORMAL_SOUND_PLAY
