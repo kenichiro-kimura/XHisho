@@ -7,24 +7,6 @@ Makefile: makefile Imakefile config.h image/Imakefile xadl/Imakefile libmhc/Imak
 	cd xadl;xmkmf
 	cd libmhc;xmkmf
 
-makefile: makefile.in
-	./configure
-
-config.h: config.h.in
-	./configure
-
-Imakefile: Imakefile.in
-	./configure
-
-image/Imakefile: image/Imakefile.in
-	./configure
-
-xadl/Imakefile: xadl/Imakefile.in
-	./configure
-
-libmhc/Imakefile: libmhc/Imakefile.in
-	./configure
-
 clean: Makefile
 	make -f Makefile clean
 	cd xadl;make clean
