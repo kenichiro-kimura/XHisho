@@ -10,7 +10,7 @@
 
 static Widget top,label,local_option;
 #ifdef USE_UNYUU
-static Widget utop,,ulabel,ulocal_option;
+static Widget utop,ulabel,ulocal_option;
 #endif
 static XtInputId OptionId;
 static int virgine = 1;
