@@ -6,7 +6,7 @@ using namespace std;
 #include "kawari.h"
 //#include "nisesakura_sakura.h"	// sakuraスクリプト
 
-extern "C" char* RandomMessage(char* kawari_dir)
+extern "C" char* RandomMessage(const char* kawari_dir,const char* s_name,const char* k_name)
 {
 	static string sakuraname="sakura";
 	static string keroname="unyuu";
@@ -36,7 +36,7 @@ extern "C" char* RandomMessage(char* kawari_dir)
 	  virgine = 0;
 
 
-	  NS_Shiori.SetUpNameTable(sakuraname,keroname,friendname);
+	  NS_Shiori.SetUpNameTable(*new string(s_name),*new string(k_name),friendname);
 
 	}
 
@@ -49,7 +49,7 @@ extern "C" char* RandomMessage(char* kawari_dir)
 	return r_str;
 }
 
-extern "C" char* DecodeMetaString(const char* kawari_dir, const char* word){
+extern "C" char* DecodeMetaString(const char* kawari_dir, const char* word,const char* s_name,const char* k_name){
   static string sakuraname="sakura";
   static string keroname="unyuu";
   static string friendname="sirone";
@@ -79,7 +79,7 @@ extern "C" char* DecodeMetaString(const char* kawari_dir, const char* word){
     }
     virgine = 0;
 
-    NS_Shiori.SetUpNameTable(sakuraname,keroname,friendname);
+    NS_Shiori.SetUpNameTable(*new string(s_name),*new string(k_name),friendname);
 
   }
 

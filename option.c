@@ -63,8 +63,8 @@ static unsigned char* Meta2Message(const unsigned char*);
 
 #ifdef USE_KAWARI
 static void GetMessageFromKawari(Widget, int *, XtInputId *);
-extern char* RandomMessage(char*);
-extern char* DecodeMetaString(const char*,const char*);
+extern char* RandomMessage(const char*,const char*,const char*);
+extern char* DecodeMetaString(const char*,const char*,const char*,const char*);
 #endif
 
 static void SakuraParser(char*); /* only for reference */
@@ -465,6 +465,8 @@ static void GetMessageFromKawari(Widget w, int * i, XtInputId * id){
   int message_buffer_size = BUFSIZ * 20;
   unsigned char* message_ptr;
   static messageBuffer kbuf;
+  unsigned char* sakuraname;
+  unsigned char* keroname;
 
   if(OptionTimeoutId){
     XtRemoveTimeOut(OptionTimeoutId);
@@ -484,7 +486,12 @@ static void GetMessageFromKawari(Widget w, int * i, XtInputId * id){
   x = 1;
   *kbuf.buffer = '\0';
 
-  message_ptr = RandomMessage(opr.kawari_dir);
+  sakuraname = EUC2SJIS(opr.s_name);
+  keroname = EUC2SJIS(opr.k_name);
+  message_ptr = RandomMessage(opr.kawari_dir,sakuraname,keroname);
+  free(keroname);
+  free(sakuraname);
+
   AddBuffer(&kbuf,message_ptr,0);
   free(message_ptr);
 
@@ -1082,7 +1089,9 @@ static void _GetBuffer(messageBuffer* buffer,char* ret,int mode)
 		  ,is_wbyte - 1);
 	  str_num[is_wbyte - 1] = '\0';
 	  sprintf(ret + 3,"%d",atoi(str_num));
+#ifdef DEBUG
 	  printf("%s\n",ret);
+#endif
 	  break;
 	}
       default:
@@ -8751,6 +8760,10 @@ static unsigned char* Meta2Message(const unsigned char* in){
   unsigned char* _r;
   struct tm *tm_now;
   time_t tval;
+#ifdef USE_KAWARI
+  unsigned char* sakuraname;
+  unsigned char* keroname;
+#endif;
 
   /*
    * decode  SSTP Meta message
@@ -8790,7 +8803,12 @@ static unsigned char* Meta2Message(const unsigned char* in){
   }
 
 #ifdef USE_KAWARI
-  r = DecodeMetaString(opr.kawari_dir,in);
+  sakuraname = EUC2SJIS(opr.s_name);
+  keroname = EUC2SJIS(opr.k_name);
+  r = DecodeMetaString(opr.kawari_dir,in,sakuraname,keroname);
+  free(keroname);
+  free(sakuraname);
+
   _r = SJIS2EUC(r);
   free(r);
 #else

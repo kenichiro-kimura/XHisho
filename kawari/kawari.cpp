@@ -353,6 +353,8 @@ bool TNS_KawariANI::SetUpNameTable(string& _sakuraname,string& _keroname,string&
 
 	WordDictionary["myname"].push_back(new string(_sakuraname));
 	WordDictionary["unyuname"].push_back(new string(_keroname));
+	WordDictionary["sakuraname"].push_back(new string(_sakuraname));
+	WordDictionary["keroname"].push_back(new string(_keroname));
 	WordDictionary["friendname"].push_back(new string(_friendname));
 
 	return(true);
