@@ -5,6 +5,10 @@
 #include <ctype.h>
 #include <signal.h>
 
+#ifndef ENABLE_EUC_HANKAKU_KANA
+#define ENABLE_EUC_HANKAKU_KANA 0
+#endif
+
 static Widget top,label,local_option;
 static Widget utop,ulabel,ulocal_option;
 static XtInputId OptionId;
@@ -27,14 +31,14 @@ static char* nstrncpy(char*,const char*,size_t);
 static messageStack* messageStack_new(char*);
 static messageStack* messageStack_pop(messageStack**);
 static void messageStack_push(messageStack**,char*);
-static void ChangeBadKanjiCode(char *);
+static char* ChangeBadKanjiCode(char *);
 static void ClearMessage(Widget);
 static void InsertMessage(XtPointer,XtIntervalId*);
 static void AddBuffer(messageBuffer*,char*);
 static void GetBuffer(messageBuffer*,char*);
 static void HeadOfBuffer(messageBuffer*,char*);
 static void _GetBuffer(messageBuffer*,char*,int);
-static void SJIS2EUC(char*);
+static char* SJIS2EUC(char*);
 
 #ifdef USE_KAWARI
 static void GetMessageFromKawari(Widget, int *, XtInputId *);
@@ -312,13 +316,17 @@ static void CheckOption(Widget w, int *fid, XtInputId * id)
   //  ClearMessage(label);
   //  ClearMessage(ulabel);
 
-  SJIS2EUC(_buffer);
+  message_ptr = SJIS2EUC(_buffer);
+  strncpy(_buffer,message_ptr,MIN(message_buffer_size -1,strlen(message_ptr)));
+  free(message_ptr);
+  message_ptr = ChangeBadKanjiCode(_buffer);
+  strncpy(_buffer,message_ptr,MIN(message_buffer_size -1,strlen(message_ptr)));
+  free(message_ptr);
 
 #ifdef DEBUG
-  printf("#%s\n",buffer);
+  printf("#%s\n",_buffer);
 #endif
 
-  ChangeBadKanjiCode(_buffer);
   ORParser(_buffer);
 
   AddBuffer(&mbuf,_buffer);
@@ -351,16 +359,21 @@ static void GetMessageFromKawari(Widget w, int * i, XtInputId * id){
   memset(_buffer,'\0',message_buffer_size);
 
   message_ptr = RandomMessage(opr.kawari_dir);
-  strcpy(_buffer,message_ptr);
+  strncpy(_buffer,message_ptr,MIN(message_buffer_size -1,strlen(message_ptr)));
   free(message_ptr);
 
-  SJIS2EUC(_buffer);
+  message_ptr = SJIS2EUC(_buffer);
+  strncpy(_buffer,message_ptr,MIN(message_buffer_size -1,strlen(message_ptr)));
+  free(message_ptr);
+
+  message_ptr = ChangeBadKanjiCode(_buffer);
+  strncpy(_buffer,message_ptr,MIN(message_buffer_size -1,strlen(message_ptr)));
+  free(message_ptr);
 
 #ifdef DEBUG
   printf("#%s\n",buffer);
 #endif
 
-  ChangeBadKanjiCode(_buffer);
   ORParser(_buffer);
 
   AddBuffer(&mbuf,_buffer);
@@ -547,7 +560,7 @@ static void messageStack_push(messageStack** t,char* s)
   *t = n;
 }
 
-static void ChangeBadKanjiCode(char *source)
+static char* ChangeBadKanjiCode(char *source)
 {
   /*
    * change some bad EUC kanji code to '#'
@@ -555,61 +568,75 @@ static void ChangeBadKanjiCode(char *source)
    * some of them include bad kanji codes... sigh.)
    */
 
-    int i,chnum = 0;
-    unsigned char tmp[4];
-    unsigned char first_byte, second_byte;
-    char *result;
-
-    result = (char*)malloc(strlen(source) * 2);
-    if(result == NULL) return;
-    memset(result,'\0',strlen(source) * 2);
-
-    for (i = 0; i < strlen(source); i++) {
-	/* first byte */
-	first_byte = *(source + i);
-
-	if ((first_byte >= 0xa1 && first_byte <= 0xfe) ||
-	    (first_byte == 0x8e) ||
-	    (first_byte == 0x8f)) {
-
-	    /* this is EUC kanji code.... */
-
-	    if (++i > strlen(source)) {
-		/* lack EUC kanji code's 2nd byte ? */
-		perror("broken kanji code exist");
-		break;
-	    }
-	    second_byte = *(source + i);
-
-	    /* change undefined kanji code and X0201 Kana to '#' */
-
-	    if ((first_byte >= 0xa9 && first_byte <= 0xaf) ||
-		(first_byte >= 0xf5) ||
-		(first_byte == 0x8e)) {
-	      first_byte = 0xa1;
-	      second_byte = 0xf4;
-	      chnum++;
-	    }
-	    sprintf(tmp, "%c%c", first_byte, second_byte);
-
-	    if (first_byte == 0x8f) {
-		/* this is hojo-kanji */
-		if (++i > strlen(source)) {
-		    /* lack EUC kanji code's 3rd byte ? */
-		  break;
-		}
-		sprintf(tmp, "%c%c%c", first_byte, second_byte, *(source + i));
-	    }
+  int i;
+  unsigned char tmp[4];
+  unsigned char first_byte, second_byte;
+  char *result;
+  
+  result = (char*)malloc(strlen(source) * 2);
+  if(result == NULL) return;
+  memset(result,'\0',strlen(source) * 2);
+  
+  for (i = 0; i < strlen(source); i++) {
+    /* first byte */
+    first_byte = *(source + i);
+    
+    if ((first_byte >= 0xa1 && first_byte <= 0xfe) ||
+	(first_byte == 0x8e) ||
+	(first_byte == 0x8f)) {
+      
+      /* this is EUC kanji code.... */
+      
+      if (++i > strlen(source)) {
+	/* lack EUC kanji code's 2nd byte ? */
+	perror("broken kanji code exist");
+	break;
+      }
+      second_byte = *(source + i);
+      
+      /* change undefined kanji code and X0201 Kana to 2-byte '#' */
+      
+      
+      if ((first_byte >= 0xa9 && first_byte <= 0xaf) ||
+	  (first_byte >= 0xf5)){
+	/* this is undefined kanji code */
+	first_byte = 0xa1;
+	second_byte = 0xf4;
+      }
+      
+      if(first_byte == 0x8e){
+	if(second_byte >= 0xa1 && second_byte <= 0xdf){
+	  /* this is hankaku-kana */
+	  if(!ENABLE_EUC_HANKAKU_KANA){
+	    first_byte = 0xa1;
+	    second_byte = 0xf4;
+	  }
 	} else {
-	    /* this is perhaps ASCII code... */
-	    sprintf(tmp, "%c", first_byte);
+	/* this is undefined kanji code */
+	  first_byte = 0xa1;
+	  second_byte = 0xf4;
 	}
-	strcat(result, tmp);
+      }
+      
+      sprintf(tmp, "%c%c", first_byte, second_byte);
+      
+      if (first_byte == 0x8f) {
+	/* this is hojo-kanji */
+	if (++i > strlen(source)) {
+	  /* lack EUC kanji code's 3rd byte ? */
+	  perror("broken kanji code exist");
+	  break;
+	}
+	sprintf(tmp, "%c%c%c", first_byte, second_byte, *(source + i));
+      }
+    } else {
+      /* this is perhaps ASCII code... */
+      sprintf(tmp, "%c", first_byte);
     }
-
-    strcpy(source,result);
-    free(result);
-    return;
+    strcat(result, tmp);
+  }
+  
+  return result;
 }
 
 static void ClearMessage(Widget w)
@@ -619,7 +646,7 @@ static void ClearMessage(Widget w)
    */
   static XawTextPosition current,last;
   static XawTextBlock textblock;
-
+  
   last = XawTextSourceScan (XawTextGetSource (w),(XawTextPosition) 0,
 			    XawstAll, XawsdRight, 1, TRUE);
   textblock.ptr = "";
@@ -978,7 +1005,7 @@ static void SakuraParser(char* in_ptr)
   return ;
 }
 
-static void SJIS2EUC(char* in) {
+static char* SJIS2EUC(char* in) {
   /*
    * change SJIS to EUC. original is in xakane by NAO.
    */
@@ -987,15 +1014,23 @@ static void SJIS2EUC(char* in) {
   unsigned char c2;
   unsigned char* in_ptr;
   unsigned char first_byte;
+  unsigned char* out_ptr;
+  unsigned char* ret;
 
+  ret = (unsigned char*)malloc(strlen(in) * 2);
   in_ptr = in;
+  out_ptr = ret;
 
   while(*in_ptr != '\0'){
     first_byte = *in_ptr;
     if(first_byte < 0x80){
-      in_ptr++;
-    } else if(first_byte == 0xa5){
-      *in_ptr++ = '.';
+      *out_ptr++ = *in_ptr++;
+    } else if(first_byte >= 0xa1 && first_byte <= 0xdf){
+      /*
+       * this is hankaku-kana. map to EUC hanaku-kana
+       */
+      *out_ptr++ = 0x8e;
+      *out_ptr++ = *in_ptr++;
     } else {
       c1 = first_byte;
       in_ptr++;
@@ -1026,8 +1061,12 @@ static void SJIS2EUC(char* in) {
 	}
 	c2 += 2;
       }
-      *(in_ptr -1) = c1;
-      *in_ptr++ = c2;
+      *out_ptr++ = c1;
+      *out_ptr++ = c2;
+      in_ptr++;
     }
   }
+  *out_ptr = '\0';
+
+  return ret;
 }

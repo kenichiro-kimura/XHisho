@@ -157,4 +157,10 @@ AC_ARG_WITH(shared,
         [with_shared=no])
 test "$with_shared" = "yes" && AC_DEFINE(USE_SHARED)
 
+AC_ARG_ENABLE(euchankaku,
+        [  --disable-euchankaku    compile without EUC hankaku-kana],
+        [with_euc=$enableval],
+        [with_euc=yes])
+test "$with_euc" = "yes" && AC_DEFINE(ENABLE_EUC_HANKAKU_KANA)
+
 AC_OUTPUT(Makefile apps/Makefile Imakefile image/Imakefile xadl/Imakefile libmhc/Imakefile kawari/Makefile)

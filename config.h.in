@@ -53,3 +53,7 @@
 
 /* Define if you want to use KAWARI module */
 #undef USE_KAWARI
+
+/* Define if you can use EUC hankaku-kana */
+
+#undef ENABLE_EUC_HANKAKU_KANA
