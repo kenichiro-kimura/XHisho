@@ -201,25 +201,13 @@ Widget CreateOptionWindow(Widget w){
 
 static void CommandInit()
 {
-  char *command;
-  struct stat Ystat;
-
-  command = (char*)malloc(strlen(opr.o_command) + 1);
-  if(strchr(opr.o_command,' ') != NULL){
-    strncpy(command,opr.o_command
-	    ,strlen(opr.o_command) - strlen(strchr(opr.o_command,' ')));
-    command[strlen(opr.o_command) - strlen(strchr(opr.o_command,' '))] = '\0';
-  } else {
-    strcpy(command,opr.o_command);
-  }
   if(strlen(opr.o_command) < 1) return;
-  if (stat(command, &Ystat) == -1) {
-    fprintf(stderr, "no such option command, \"%s\"\n", command);
-    exit(1);
-  }
 
   if (virgine) {
-    option_fd = popen(opr.o_command,"r");
+    if ((option_fd = popen(opr.o_command,"r")) == NULL){
+      fprintf(stderr, "no such option command, \"%s\"\n", opr.o_command);
+      exit(1);
+    }
     virgine = 0;
   }
 
@@ -227,7 +215,6 @@ static void CommandInit()
 			   fileno(option_fd), (XtPointer) XtInputReadMask,
 			   (XtInputCallbackProc) CheckOption, NULL);
   XSetIOErrorHandler(Option_exit);	/** child process ¤Î youbin ¤ò»¦¤¹ **/
-  free(command);
 }
 
 static void CheckOption(Widget w, int *fid, XtInputId * id)
