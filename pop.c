@@ -541,14 +541,14 @@ static void GetFromandSubject(int sock, char *buffer,int method)
   *buffer = '\0';
   if(method == IMAP_AUTH){
     WritePOPCommand(sock, "xhisho fetch 1 RFC822.HEADER\n");
-    if (ERR == ReadIMAPMessage(sock, buf, BUFSIZ)) {
+    if (ERR == ReadIMAPMessage(sock, buf, BUFSIZ * 5)) {
       fprintf(stderr, "fail IMAP command: fetch\n");
       goto End;
     }
 
   } else {
     WritePOPCommand(sock, "TOP 1 0\n");
-    if (ERR == ReadPOPMessage(sock, buf, BUFSIZ)) {
+    if (ERR == ReadPOPMessage(sock, buf, BUFSIZ * 5)) {
       fprintf(stderr, "fail pop command: TOP\n");
       goto End;
     }
