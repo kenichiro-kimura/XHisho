@@ -3,6 +3,8 @@
 1.50[lime Release 5]
 
 ・Translationに"OpeningWindowPopup"を追加
+・CG全体が画面に収まらない位置にウインドが来た場合、CGが画面に収まるよ
+  うに位置を補正するようにした(-focus時は補正しない)
 
 
 

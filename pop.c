@@ -41,10 +41,7 @@ static int ReadPOPMessage(int sock, char *buffer, int size)
     strcat(buffer, comm_buffer);
   } while (!strstr(comm_buffer, "\n"));
 
-  if (strncmp(buffer, "+OK", strlen("+ok")) == 0 ||
-      strncmp(buffer, "+ok", strlen("+ok")) == 0 ||
-      strncmp(buffer, "+Ok", strlen("+ok")) == 0 ||
-      strncmp(buffer, "+oK", strlen("+ok")) == 0 ) {
+  if (strncasecmp(buffer, "+OK", strlen("+ok")) == 0 ) {
     ret_value = OK;
   } else {
     ret_value = ERR;
@@ -92,9 +89,9 @@ static int ReadUserFile(UserData * user)
   buffer = malloc(BUFSIZ);
 
   while (fgets(buffer, BUFSIZ, fp) != NULL) {
-    if (!strncmp(buffer, "USER:", 5)) {
+    if (!strncasecmp(buffer, "USER:", 5)) {
       strcpy(user->name, buffer + 5);
-    } else if (!strncmp(buffer, "PASS:", 5)) {
+    } else if (!strncasecmp(buffer, "PASS:", 5)) {
       strcpy(user->pass, buffer + 5);
     }
   }

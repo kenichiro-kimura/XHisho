@@ -320,6 +320,8 @@ static void Realize(Widget w, XtValueMask * valueMask, XSetWindowAttributes * at
 
 static void Redraw(Widget w, XEvent * event, Region region)
 {
+  Dimension x,y;
+  Widget top;
   XHishoWidget xhw = (XHishoWidget) w;
 
   XCopyArea(DISPLAY, PIXMAP(CG_NUM), WINDOW, XH_GC, 0, 0, WIDTH, HEIGHT, 0, 0);
@@ -330,6 +332,22 @@ static void Redraw(Widget w, XEvent * event, Region region)
 
   if (xhw->xhisho.c_draw){
     ClockDraw(xhw);
+  }
+
+  if(!xhw->xhisho.focuswin){
+    top = (Widget)xhw;
+    while(XtParent(top))
+      top = XtParent(top);
+
+    XtVaGetValues(top,XtNx,&x,XtNy,&y,NULL);
+
+
+    x = MIN(x,DisplayWidth(XtDisplay(xhw),0) - WIDTH);
+    x = MAX(x,0);
+    y = MIN(y,DisplayHeight(XtDisplay(xhw),0) - HEIGHT - xhw->xhisho.i_info->ext_height);
+    y = MAX(y,0);
+
+    XtVaSetValues(top,XtNx,x,XtNy,y,NULL);
   }
 }
 
@@ -519,6 +537,7 @@ void SetSize(XHishoWidget xhw)
     WIDTH = (((xhw->xhisho.i_info->image) + CG_NUM)->width);
     HEIGHT = (((xhw->xhisho.i_info->image) + CG_NUM)->height);
   }
+
 }
 
 void Animation(XHishoWidget xhw,int force)

@@ -41,9 +41,9 @@ int LoadXpm(ImageInfo * i_info)
 
 
   for (i = 0; i < i_info->colorsuu; i++) {
-    int l = (strlen((image.colorTable + i)->c_color) - 1) / 3;
     char *cptr = (image.colorTable + i)->c_color;
     struct palette *pal_ptr = i_info->ImagePalette + i;
+    int l = (strlen(cptr) - 1) / 3;
 
     /**
      * パレット情報の変換。XPMでのパレット情報は char** image.colorTableに
@@ -56,12 +56,16 @@ int LoadXpm(ImageInfo * i_info)
       i_info->trans_pix = i;
       pal_ptr->r = pal_ptr->g = pal_ptr->b = 0;
     } else {
+      unsigned int r,g,b;
       strncpy(col, cptr + 1, l);
-      pal_ptr->r = (int) strtol(col, (char **) NULL, 16);
+      r = (int) strtol(col, (char **) NULL, 16);
       strncpy(col, cptr + 1 + l, l);
-      pal_ptr->g = (int) strtol(col, (char **) NULL, 16);
+      g = (int) strtol(col, (char **) NULL, 16);
       strncpy(col, cptr + 1 + l * 2, l);
-      pal_ptr->b = (int) strtol(col, (char **) NULL, 16);
+      b = (int) strtol(col, (char **) NULL, 16);
+      pal_ptr->r = r >> (l - 2);
+      pal_ptr->g = g >> (l - 2);
+      pal_ptr->b = b >> (l - 2);
     }
   }
 
