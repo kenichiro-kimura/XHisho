@@ -51,6 +51,7 @@ then
     LDFLAGS="$LDFLAGS -L${XDIR}lib"
   fi
 
+  AC_CHECK_LIB(X11, XOpenDisplay)
   AC_CHECK_LIB(Xpm, XpmReadFileToXpmImage)
 fi
 
@@ -62,7 +63,7 @@ test "$with_jpeg" = "yes"
 
 if test "$with_jpeg" = "yes";
 then
-AC_CHECK_LIB(jpeg, jpeg_start_decompress)
+AC_CHECK_LIB(jpeg,jpeg_destroy_decompress)
 fi
 
 AC_ARG_WITH(png,

@@ -1149,8 +1149,55 @@ then
     LDFLAGS="$LDFLAGS -L${XDIR}lib"
   fi
 
+  echo $ac_n "checking for XOpenDisplay in -lX11""... $ac_c" 1>&6
+echo "configure:1154: checking for XOpenDisplay in -lX11" >&5
+ac_lib_var=`echo X11'_'XOpenDisplay | sed 'y%./+-%__p_%'`
+if eval "test \"`echo '$''{'ac_cv_lib_$ac_lib_var'+set}'`\" = set"; then
+  echo $ac_n "(cached) $ac_c" 1>&6
+else
+  ac_save_LIBS="$LIBS"
+LIBS="-lX11  $LIBS"
+cat > conftest.$ac_ext <<EOF
+#line 1162 "configure"
+#include "confdefs.h"
+/* Override any gcc2 internal prototype to avoid an error.  */
+/* We use char because int might match the return type of a gcc2
+    builtin and then its argument prototype would still apply.  */
+char XOpenDisplay();
+
+int main() {
+XOpenDisplay()
+; return 0; }
+EOF
+if { (eval echo configure:1173: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
+  rm -rf conftest*
+  eval "ac_cv_lib_$ac_lib_var=yes"
+else
+  echo "configure: failed program was:" >&5
+  cat conftest.$ac_ext >&5
+  rm -rf conftest*
+  eval "ac_cv_lib_$ac_lib_var=no"
+fi
+rm -f conftest*
+LIBS="$ac_save_LIBS"
+
+fi
+if eval "test \"`echo '$ac_cv_lib_'$ac_lib_var`\" = yes"; then
+  echo "$ac_t""yes" 1>&6
+    ac_tr_lib=HAVE_LIB`echo X11 | sed -e 's/[^a-zA-Z0-9_]/_/g' \
+    -e 'y/abcdefghijklmnopqrstuvwxyz/ABCDEFGHIJKLMNOPQRSTUVWXYZ/'`
+  cat >> confdefs.h <<EOF
+#define $ac_tr_lib 1
+EOF
+
+  LIBS="-lX11 $LIBS"
+
+else
+  echo "$ac_t""no" 1>&6
+fi
+
   echo $ac_n "checking for XpmReadFileToXpmImage in -lXpm""... $ac_c" 1>&6
-echo "configure:1154: checking for XpmReadFileToXpmImage in -lXpm" >&5
+echo "configure:1201: checking for XpmReadFileToXpmImage in -lXpm" >&5
 ac_lib_var=`echo Xpm'_'XpmReadFileToXpmImage | sed 'y%./+-%__p_%'`
 if eval "test \"`echo '$''{'ac_cv_lib_$ac_lib_var'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
@@ -1158,7 +1205,7 @@ else
   ac_save_LIBS="$LIBS"
 LIBS="-lXpm  $LIBS"
 cat > conftest.$ac_ext <<EOF
-#line 1162 "configure"
+#line 1209 "configure"
 #include "confdefs.h"
 /* Override any gcc2 internal prototype to avoid an error.  */
 /* We use char because int might match the return type of a gcc2
@@ -1169,7 +1216,7 @@ int main() {
 XpmReadFileToXpmImage()
 ; return 0; }
 EOF
-if { (eval echo configure:1173: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
+if { (eval echo configure:1220: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
   rm -rf conftest*
   eval "ac_cv_lib_$ac_lib_var=yes"
 else
@@ -1210,27 +1257,27 @@ test "$with_jpeg" = "yes"
 
 if test "$with_jpeg" = "yes";
 then
-echo $ac_n "checking for jpeg_start_decompress in -ljpeg""... $ac_c" 1>&6
-echo "configure:1215: checking for jpeg_start_decompress in -ljpeg" >&5
-ac_lib_var=`echo jpeg'_'jpeg_start_decompress | sed 'y%./+-%__p_%'`
+echo $ac_n "checking for jpeg_destroy_decompress in -ljpeg""... $ac_c" 1>&6
+echo "configure:1262: checking for jpeg_destroy_decompress in -ljpeg" >&5
+ac_lib_var=`echo jpeg'_'jpeg_destroy_decompress | sed 'y%./+-%__p_%'`
 if eval "test \"`echo '$''{'ac_cv_lib_$ac_lib_var'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
   ac_save_LIBS="$LIBS"
 LIBS="-ljpeg  $LIBS"
 cat > conftest.$ac_ext <<EOF
-#line 1223 "configure"
+#line 1270 "configure"
 #include "confdefs.h"
 /* Override any gcc2 internal prototype to avoid an error.  */
 /* We use char because int might match the return type of a gcc2
     builtin and then its argument prototype would still apply.  */
-char jpeg_start_decompress();
+char jpeg_destroy_decompress();
 
 int main() {
-jpeg_start_decompress()
+jpeg_destroy_decompress()
 ; return 0; }
 EOF
-if { (eval echo configure:1234: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
+if { (eval echo configure:1281: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
   rm -rf conftest*
   eval "ac_cv_lib_$ac_lib_var=yes"
 else
@@ -1272,7 +1319,7 @@ test "$with_png" = "yes"
 if test "$with_png" = "yes";
 then
 echo $ac_n "checking for png_create_read_struct in -lpng""... $ac_c" 1>&6
-echo "configure:1276: checking for png_create_read_struct in -lpng" >&5
+echo "configure:1323: checking for png_create_read_struct in -lpng" >&5
 ac_lib_var=`echo png'_'png_create_read_struct | sed 'y%./+-%__p_%'`
 if eval "test \"`echo '$''{'ac_cv_lib_$ac_lib_var'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
@@ -1280,7 +1327,7 @@ else
   ac_save_LIBS="$LIBS"
 LIBS="-lpng  $LIBS"
 cat > conftest.$ac_ext <<EOF
-#line 1284 "configure"
+#line 1331 "configure"
 #include "confdefs.h"
 /* Override any gcc2 internal prototype to avoid an error.  */
 /* We use char because int might match the return type of a gcc2
@@ -1291,7 +1338,7 @@ int main() {
 png_create_read_struct()
 ; return 0; }
 EOF
-if { (eval echo configure:1295: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
+if { (eval echo configure:1342: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
   rm -rf conftest*
   eval "ac_cv_lib_$ac_lib_var=yes"
 else
