@@ -947,29 +947,12 @@ static void AddBuffer(messageBuffer* buffer,const char* message,int use_file)
 
   if(newsize > buffer->size){
     if(use_file){
-      char* file;
-      /*
-      file = (char*)malloc(strlen("/tmp/") + strlen(BufferFileName) + 10);
-
-      sprintf(file,"/tmp/%s.%d",BufferFileName,getpid());
-      sstp_fd = open(file,O_RDWR|O_CREAT,0666);
-      if(sstp_fd <= 0){
-	printf("error open sstp file\n");
-	exit(1);
-      }
-      */
       _b_ptr = (unsigned char*)mmap(NULL,newsize + sizeof(pid_t)
 				    ,PROT_WRITE|PROT_READ
 				    ,MAP_SHARED,sstp_fd,(off_t)0);
       lseek(sstp_fd, newsize + sizeof(pid_t),  0L);
       write(sstp_fd,&_i,sizeof(int));
-
       buffer->buffer = _b_ptr + sizeof(pid_t);
-      /*
-      close(sstp_fd);
-      unlink(file);
-      */
-      free(file);
     } else {
       b = strdup(buffer->buffer);
       buffer->buffer = (unsigned char*)realloc(buffer->buffer,newsize);
@@ -8495,7 +8478,6 @@ static void sstp(int port)
 
       if(status == 3 && is_script){
 	chr_ptr = conv(kbuf.buffer);
-
 	*kbuf.buffer = '\0';
 	AddBuffer(&kbuf,chr_ptr,0);
 	free(chr_ptr);
@@ -8503,10 +8485,6 @@ static void sstp(int port)
 	chr_ptr = SSTPParser(kbuf.buffer);
 
 	AddBuffer(&mbuf,chr_ptr,UseSSTP);
-	/*
-	if(strstr(chr_ptr,"\\e") == NULL)
-	  AddBuffer(&mbuf,"\\e",UseSSTP);
-	*/
 	free(chr_ptr);
 	*kbuf.buffer = '\0';
       }
@@ -8572,8 +8550,8 @@ static void ReplaceSSTPEscape(messageBuffer* kbuf,const unsigned char* tag){
 
   message = Escape2Message(tag);
   tmp = (unsigned char*)malloc(strlen(kbuf->buffer) + 1);
-  tbuf.buffer = (unsigned char*)malloc(strlen(kbuf->buffer) * 2);
-  tbuf.size = strlen(kbuf->buffer) * 2;
+  tbuf.buffer = (unsigned char*)malloc(strlen(kbuf->buffer) + 1);
+  tbuf.size = strlen(kbuf->buffer) + 1;
   *tbuf.buffer = '\0';
   
   while((pivot = strstr(kbuf->buffer,tag)) != NULL){
@@ -8581,9 +8559,9 @@ static void ReplaceSSTPEscape(messageBuffer* kbuf,const unsigned char* tag){
     tmp[strlen(kbuf->buffer) - strlen(pivot)] = '\0';
     AddBuffer(&tbuf,tmp,0);
     AddBuffer(&tbuf,message,0);
-    AddBuffer(&tbuf,pivot + strlen(tag),0);
     strcpy(kbuf->buffer,pivot + strlen(tag));
   }
+  AddBuffer(&tbuf,kbuf->buffer,0);
   *(kbuf->buffer) = '\0';
   AddBuffer(kbuf,tbuf.buffer,0);
   free(tmp);
