@@ -134,6 +134,8 @@ XHisho.ad:: XHisho.ad.sed
 #ifdef AKARI
 XHisho.jp:: XAkari.ad.sed
 	sed 's!IXHISHODIR!$(IXHISHODIR)!' XAkari.ad.sed | sed 's!XHISHODIR!$(XHISHODIR)!' >$@
+xakari.man:: man1/xhisho.ja
+	cp man1/xhisho.ja xakari.man
 #else
 XHisho.jp:: XHisho.jp.sed
 	sed 's!IXHISHODIR!$(IXHISHODIR)!' XHisho.jp.sed | sed 's!XHISHODIR!$(XHISHODIR)!' >$@
