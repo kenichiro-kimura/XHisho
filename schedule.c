@@ -83,7 +83,7 @@ int CheckSchedule(OpenMessageRes * l_omr, Schedule * schedule, int WeeklyCheck, 
 
   strftime(day, sizeof(day), "%d", localtime(&tval));
   strftime(month, sizeof(month), "%m", localtime(&tval));
-  strftime(week, sizeof(week), "%u", localtime(&tval));
+  strftime(week, sizeof(week), "%w", localtime(&tval));
   strftime(year, sizeof(year), "%Y", localtime(&tval));
 
   strncpy(l_omr->month, month, 2);

@@ -1,6 +1,6 @@
 # weekly data for XHisho. see also sample file 'xhs0720'.
 # 
-# first number express weekly. 1 is Monday,...,7 is Sunday.
+# first number express weekly. 0 is Sunday, ... , 6 is Saturday.
 # '4th Monday' is 41, 'last Sunday' is 67. 'every Tuesday' is 02 or 2.
 #
 
