@@ -30,10 +30,6 @@
 static int IsSet = 0;		/** 1回目のExposeでだけ子Widgetを作る **/
 static Widget toplevel;
 
-#ifdef USE_UNYUU
-static Widget unyuu,form;
-#endif
-
 /**
  * local function
  **/
@@ -93,29 +89,9 @@ static void Wait(Widget w, XEvent * e, String * s, unsigned int *i)
 {
   time_t now;
   struct tm *tm_now;
-  Dimension x,y,width,height;
-  Pixmap window_mask;
-  GC mask_gc;
-  Display *d;
-  Window w;
 
   time(&now);
   tm_now = localtime(&now);
-  /*
-  d = XtDisplay(toplevel);
-  w = XtWindow(toplevel);
-  window_mask = XCreatePixmap(d, w ,300,500, 1);
-  mask_gc = XCreateGC(d, window_mask, 0, NULL);
-  XSetGraphicsExposures(d, mask_gc, FALSE);
-  XSetForeground(d, mask_gc, 0);
-  XFillRectangle(d, window_mask, mask_gc, 0, 0, 300,500);
-  XSetForeground(d, mask_gc, 1);
-  XFillRectangle(d,window_mask,mask_gc,150,0,300,500);
-  XShapeCombineMask(d, XtWindow(form), ShapeBounding
-		    ,0, 0, window_mask, ShapeSet);
-  XShapeCombineMask(d, w, ShapeBounding
-		    ,0, 0, window_mask, ShapeSet);
-  */
 
   if (!IsSet) {
     resedit = CreateResEditWindow(toplevel);
@@ -414,31 +390,8 @@ int main(int argc, char **argv)
   /**
    * main windowを生成。class名はxhisho。
    **/
-#ifdef USE_UNYUU
-  form = XtVaCreateManagedWidget("form",formWidgetClass,toplevel
-				 ,XtNresizable,True
-				 ,NULL);
-#endif
-
-#ifdef USE_UNYUU
-  unyuu = XtVaCreateManagedWidget("unyuu",xHishoWidgetClass
-				   ,form
-				   ,XtNwidth,150
-				   ,XtNheight,200
-				   ,XtNvertDistance,100
-				   ,XtNhorizDistance,0
-				   ,NULL);
-#endif
-
   xhisho = XtVaCreateManagedWidget("xhisho",xHishoWidgetClass
-#ifdef USE_UNYUU
-				   ,form
-				   ,XtNwidth,150
-				   ,XtNheight,300
-				   ,XtNfromHoriz,unyuu
-#else
 				   ,toplevel
-#endif
 				   ,NULL);
   /**
    * rcfileとfilter commandとpetname fileをセット

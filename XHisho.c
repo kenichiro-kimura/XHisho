@@ -340,11 +340,7 @@ static void Realize(Widget w, XtValueMask * valueMask, XSetWindowAttributes * at
 
   if (xhw->xhisho.i_info->is_shape){
     XShapeCombineMask(DISPLAY
-#ifdef USE_UNYUU
-		      , WINDOW
-#else
 		      , XtWindow(XtParent(xhw))
-#endif
 		      , ShapeBounding, 0, 0
 		      ,((xhw->xhisho.i_info->image) + CG_NUM)->mask, ShapeSet);
   }
