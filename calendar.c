@@ -61,6 +61,15 @@ static XtResource resources[] = {
     XtRImmediate,
     (XtPointer) EX_COLOR
   },
+  {
+    XtNviewOnly,
+    XtCViewOnly,
+    XtRBoolean,
+    sizeof(Boolean),
+    XtOffsetOf(CalendarRes, view),
+    XtRImmediate,
+    (XtPointer) False
+  },
 };
 
 
@@ -81,8 +90,14 @@ static void EditorWindowPopup(Widget w, caddr_t client_data, caddr_t call_data)
   tval = mktime(tm_now);
   tm_now = localtime(&tval);
 
-  XtDestroyWidget(XtParent(editwin));
-  editwin = CreateEditorWindow(XtParent(top), 3, *tm_now);
+  if(editwin)
+    XtDestroyWidget(XtParent(editwin));
+
+  if(cres.view)
+    editwin = CreateEditorWindow(XtParent(top), 1, *tm_now);
+  else
+    editwin = CreateEditorWindow(XtParent(top), 3, *tm_now);
+
   XtPopdown(XtParent(XtParent(w)));
   XtPopup(XtParent(editwin), XtGrabNone);
 }

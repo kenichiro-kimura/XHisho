@@ -102,7 +102,8 @@ static void Wait(Widget w, XEvent * e, String * s, unsigned int *i)
      * OpenMessage Windowを生成し、Opening messageを表示する
      **/
 
-    editwin = CreateEditorWindow(toplevel, 3, *tm_now);
+    /*    editwin = CreateEditorWindow(toplevel, 3, *tm_now);*/
+    editwin = NULL;
     tm_now = localtime(&now);
     openwin = CreateEditorWindow(toplevel, 0, *tm_now);
     tm_now = localtime(&now);

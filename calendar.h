@@ -18,6 +18,8 @@
 #define XtCButton "Button"
 #define XtNexistColor "existColor"
 #define XtCExistColor "ExistColor"
+#define XtNviewOnly "viewOnly"
+#define XtCViewOnly "ViewOnly"
 
 #define EX_COLOR "Blue"
 
@@ -30,6 +32,7 @@ typedef struct {
   String prev;
   String next;
   String color;
+  Boolean view;
 }   CalendarRes;
 
 #endif
