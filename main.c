@@ -144,9 +144,14 @@ static void Wait(Widget w,XEvent* e,String* s,unsigned int* i){
 }
 
 static void Quit(Widget w,XEvent *event,String *params,unsigned int *num_params){
+  Widget top;
+
+  top = w;
+  while(XtParent(top) != NULL)
+    top = XtParent(top);
 
   WritePrefFile();
-  XCloseDisplay(XtDisplay(w)); /* child process の youbin を殺すため */
+  XCloseDisplay(XtDisplay(top)); /* child process の youbin を殺すため */
   exit(0);
 }
 

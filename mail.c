@@ -834,5 +834,6 @@ static void CheckYoubin(Widget w,int *fid,XtInputId *id){
 }
 
 static int Youbin_exit(Display* disp){
-    return kill(0, SIGTERM);           /* kill all the children */
+    kill(0, SIGTERM);           /* kill all the children */
+    return 0;
 }
