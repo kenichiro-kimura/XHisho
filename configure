@@ -1675,9 +1675,9 @@ EOF
 
 fi
 
-# Check whether --with-shared or --without-shared was given.
-if test "${with_shared+set}" = set; then
-  withval="$with_shared"
+# Check whether --enable-shared or --disable-shared was given.
+if test "${enable_shared+set}" = set; then
+  enableval="$enable_shared"
   with_shared=$enableval
 else
   with_shared=no
