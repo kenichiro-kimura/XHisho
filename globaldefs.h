@@ -149,8 +149,9 @@ EDITOR_GLOBAL unsigned long GetColor(Display *, char *);
 MAIL_GLOBAL Widget CreateMailAlert(Widget, int);
 MAIL_GLOBAL int CheckMail(XtPointer, XtIntervalId *);
 MAIL_GLOBAL int CheckPOP3(XtPointer, XtIntervalId *);
-MAIL_GLOBAL int CheckYoubinNow(XtPointer, XtIntervalId *);
+MAIL_GLOBAL int CheckYoubinNow(int);
 MAIL_GLOBAL int IsMailChecked(int);
+MAIL_GLOBAL void MailPopup(int);
 
 MAIN_GLOBAL void CloseEditWindow();
 MAIN_GLOBAL void Quit(Widget, XEvent *, String *, unsigned int *);
@@ -191,6 +192,7 @@ SOUND_GLOBAL int SoundPlay(const char *filename);
 MAIN_GLOBAL MailAlertRes mar;
 MAIN_GLOBAL BiffMethod Biff;
 MAIN_GLOBAL int UseSound;
+MAIN_GLOBAL int BeforeAnimatonMode;
 MAIN_GLOBAL String FilterCommand, SoundCommand, EditCommand;
 MAIN_GLOBAL Widget mail, openwin, xhisho, about, editwin, calendarwin, menu
                   ,nomail, resedit;

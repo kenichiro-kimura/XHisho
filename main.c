@@ -93,13 +93,6 @@ static void Wait(Widget w, XEvent * e, String * s, unsigned int *i)
     about = CreateAboutWindow(toplevel);
 
     /**
-     * Mail Windowの生成
-     **/
-
-    nomail = CreateMailAlert(toplevel, 1);
-    mail = CreateMailAlert(toplevel, 0);
-
-    /**
      * OpenMessage Windowを生成し、Opening messageを表示する
      **/
 
@@ -109,7 +102,6 @@ static void Wait(Widget w, XEvent * e, String * s, unsigned int *i)
     openwin = CreateEditorWindow(toplevel, 0, *tm_now);
     tm_now = localtime(&now);
     calendarwin = CreateCalendarWindow(toplevel, tm_now->tm_mon, *tm_now);
-
     menu = CreateMenuWindow(toplevel);
 
     /**
@@ -125,6 +117,13 @@ static void Wait(Widget w, XEvent * e, String * s, unsigned int *i)
 
     CheckTimeForSchedule((XtPointer) toplevel, (XtIntervalId) NULL);
 
+    /**
+     * Mail Windowの生成
+     **/
+
+    nomail = CreateMailAlert(toplevel, 1);
+    mail = CreateMailAlert(toplevel, 0);
+
     IsSet = 1;
   }
 }
@@ -138,19 +137,22 @@ void Quit(Widget w, XEvent * event, String * params, unsigned int *num_params)
     top = XtParent(top);
 
   WritePrefFile();
-  XCloseDisplay(XtDisplay(top));/** child process の youbin を殺すため **/
+  XCloseDisplay(XtDisplay(top));
+
   exit(0);
 }
 
 static void CheckMailNow(Widget w, XEvent * event, String * params, unsigned int *num_params)
 {
   int ret_value = 0;
+  int i = 0;
 
-  if (IsPopped(mail) || IsPopped(nomail)) {
+  if ((i = IsPopped(mail)) || IsPopped(nomail)) {
     IsMailChecked(0);
-    XtPopdown(XtParent(mail));
-    XtPopdown(XtParent(nomail));
-    XtVaSetValues(xhisho, XtNanimType, USUAL, NULL);
+    if(i)
+      XtPopdown(XtParent(mail));
+    else
+      XtPopdown(XtParent(nomail));
     return;
   }
   IsMailChecked(1);
@@ -161,17 +163,15 @@ static void CheckMailNow(Widget w, XEvent * event, String * params, unsigned int
     ret_value = CheckPOP3((XtPointer) (mail), (XtIntervalId) NULL);
     break;
   case YOUBIN:
-    ret_value = CheckYoubinNow((XtPointer) 1, (XtIntervalId) NULL);
+    ret_value = CheckYoubinNow(1);
     break;
   default:
     ret_value = CheckMail((XtPointer) (mail), (XtIntervalId) NULL);
     break;
   }
 
-  if (ret_value == 0) {
-    XtVaSetValues(nomail, XtNwindowMode, 0, NULL);
-    XtPopup(XtParent(nomail), XtGrabNone);
-  }
+  if(ret_value == 0)
+    MailPopup(1);
 }
 
 
@@ -182,7 +182,7 @@ void ScheduleWindowPopup(Widget w, XEvent * event, String * params, unsigned int
 
   if (IsPopped(openwin)) {
     XtPopdown(XtParent(openwin));
-    XtVaSetValues(xhisho, XtNanimType, USUAL, NULL);
+    XtVaSetValues(xhisho, XtNanimType, BeforeAnimatonMode, NULL);
     return;
   }
   time(&now);
@@ -205,7 +205,7 @@ void OpeningWindowPopup(Widget w, XEvent * event, String * params, unsigned int 
 
   if (IsPopped(openwin)) {
     XtPopdown(XtParent(openwin));
-    XtVaSetValues(xhisho, XtNanimType, USUAL, NULL);
+    XtVaSetValues(xhisho, XtNanimType, BeforeAnimatonMode, NULL);
     return;
   }
   time(&now);
@@ -344,6 +344,8 @@ int main(int argc, char **argv)
   Biff = LOCAL;
   IsMailChecked(0);
   UseSound = 1;
+  if(!IsSet)
+    BeforeAnimatonMode = USUAL;
 
   /**
    *  Localeをセットする

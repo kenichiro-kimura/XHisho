@@ -40,12 +40,11 @@ static char YoubinFile[256];
 static void Destroy(Widget, caddr_t, caddr_t);
 static int isMail(int*,int);
 static void SetPrefVal(int, float);
-static int Youbin_exit(Display *);
 
 static void CheckYoubin(Widget, int *, XtInputId *);
 static void YoubinInit();
 static void GetFromandSubject(char *, char *);
-static void MailPopup();
+static int Youbin_exit(Display *);
 
 /**
  * resources
@@ -172,19 +171,24 @@ static void Destroy(Widget w, caddr_t client_data, caddr_t call_data)
     MailCount = 0;
   }
   XtPopdown(top[Mode]);
-  XtVaSetValues(xhisho, XtNanimType, USUAL, NULL);
 }
 
 static void TimerCheck(XtPointer cl, XtIntervalId * id)
 {
-  if (IsPopped(mail)) {
+  int i = 0;
+
+  if ((i = IsPopped(mail)) || IsPopped(nomail)) {
     MailCount++;
     if (MailCount == MailTimeout) {
       MailCount = 0;
       isMailChecked = 2;
-      XtPopdown(top[0]);
-      XtVaSetValues(xhisho, XtNanimType, USUAL, NULL);
+      if (i)
+	XtPopdown(top[0]);
+      else
+	XtPopdown(top[1]);
     }
+  } else {
+    MailCount = 0;
   }
   if(MailTimeoutId){
     XtRemoveTimeOut(MailTimeoutId);
@@ -238,6 +242,9 @@ int CheckMail(XtPointer cl, XtIntervalId * id)
   FILE* fp;
   char* tmp;
   char* message;
+  int mode;
+
+  mode = (int)cl;
 
   NewSize = (stat(m_filename, &MailStat) == 0) ? MailStat.st_size : 0;
 
@@ -266,7 +273,7 @@ int CheckMail(XtPointer cl, XtIntervalId * id)
       GetFromandSubject(m_filename, buf);
       XtVaSetValues(from, XtNlabel, buf, NULL);
       XtVaSetValues(label, XtNlabel, message, NULL);
-      MailPopup();
+      MailPopup(0);
     }
     break;
   case 2:
@@ -274,7 +281,7 @@ int CheckMail(XtPointer cl, XtIntervalId * id)
     case 1:
       if (!IsPopped(mail)) {
 	XtVaSetValues(label, XtNlabel, message, NULL);
-	MailPopup();
+	MailPopup(0);
       }
       break;
     case 2:
@@ -287,17 +294,20 @@ int CheckMail(XtPointer cl, XtIntervalId * id)
 
   if(MailCheckId){
     XtRemoveTimeOut(MailCheckId);
-    MailTimeoutId = 0;
+    MailCheckId = 0;
   }
     
   MailCheckId = XtAppAddTimeOut(XtWidgetToApplicationContext(local_mail[0])
 				,MailCheckInterval
 				, (XtTimerCallbackProc) CheckMail
 				, (XtPointer) local_mail[0]);
-
   free(buf);
   free(tmp);
   free(message);
+
+  if(num_of_mail == 0)
+    XtVaSetValues(xhisho, XtNanimType, USUAL, NULL);
+
   return num_of_mail;
 }
 
@@ -331,17 +341,17 @@ int CheckPOP3(XtPointer cl, XtIntervalId * id)
   if (ret_value > 0) {
     XtVaSetValues(from, XtNlabel, buf, NULL);
     XtVaSetValues(label, XtNlabel, message, NULL);
-    MailPopup();
+    MailPopup(0);
   }
-
+  /*
   if (MailCheckInterval < 60 * 1000)
     MailCheckInterval = 60 * 1000;
-
+  */
   if(MailCheckId){
     XtRemoveTimeOut(MailCheckId);
-    MailTimeoutId = 0;
+    MailCheckId = 0;
   }
-    
+
   MailCheckId = XtAppAddTimeOut(XtWidgetToApplicationContext(local_mail[0])
 				,MailCheckInterval
 				, (XtTimerCallbackProc) CheckPOP3
@@ -351,10 +361,35 @@ int CheckPOP3(XtPointer cl, XtIntervalId * id)
   free(message);
   free(tmp);
 
+  if(ret_value == 0)
+    XtVaSetValues(xhisho, XtNanimType, USUAL, NULL);
+
   return ret_value;
 }
 
-int CheckYoubinNow(XtPointer cl, XtIntervalId * id){
+static int CheckYoubinNowTimer(XtPointer cl, XtIntervalId * id){
+  int ret_value;
+
+  while(CheckYoubinNow(0) < 0);
+
+  if(MailCheckId){
+    XtRemoveTimeOut(MailCheckId);
+    MailCheckId = 0;
+  }
+    
+  MailCheckId = XtAppAddTimeOut(XtWidgetToApplicationContext(local_mail[0])
+				,MailCheckInterval
+				, (XtTimerCallbackProc) CheckYoubinNowTimer
+				, (XtPointer) local_mail[0]);
+  if(ret_value == 0)
+    XtVaSetValues(xhisho, XtNanimType, USUAL, NULL);
+
+  return ret_value;
+}
+  
+
+
+int CheckYoubinNow(int mode){
   static int OldSize = 0;
   int num_of_mail = 0;
   int i;
@@ -362,9 +397,6 @@ int CheckYoubinNow(XtPointer cl, XtIntervalId * id){
   char* tmp;
   char* message;
   struct stat MailStat;
-  int mode;
-
-  mode = (int)cl;
 
   tmp = (char*)malloc(BUFSIZ);
   message = (char*)malloc(BUFSIZ);
@@ -374,6 +406,8 @@ int CheckYoubinNow(XtPointer cl, XtIntervalId * id){
       num_of_mail++;
 
     fclose(fp);
+  } else {
+    return -1;
   }
 
   ReadRcdata("newmail",tmp,BUFSIZ);
@@ -382,43 +416,20 @@ int CheckYoubinNow(XtPointer cl, XtIntervalId * id){
   else
     sprintf(message,tmp,num_of_mail);
 
-  /*
-  i = isMail(&OldSize,num_of_mail);
-
-  switch (i) {
-  case 0:
-    break;
-  case 1:
-    if (!IsPopped(mail)) {
-      isMailChecked = 1;
-      XtVaSetValues(label, XtNlabel, message, NULL);
-      MailPopup();
-    }
-    break;
-  case 2:
-    switch (isMailChecked) {
-    case 1:
-      if (!IsPopped(mail)) {
-	XtVaSetValues(label, XtNlabel, message, NULL);
-	MailPopup();
-      }
-      break;
-    case 2:
-      isMailChecked = 1;
-      break;
-    }
-
-    break;
-  }
-  */
-
   if(num_of_mail > 0 && mode){
     XtVaSetValues(label, XtNlabel, message, NULL);
-    MailPopup();
+    MailPopup(0);
   }
 
   free(tmp);
   free(message);
+  if(num_of_mail > 0){
+    XtVaSetValues(xhisho, XtNanimType, MAIL, NULL);
+    BeforeAnimatonMode = MAIL;
+  } else {
+    XtVaSetValues(xhisho, XtNanimType, USUAL, NULL);
+    BeforeAnimatonMode = USUAL;
+  }
   return num_of_mail;
 }
 
@@ -593,7 +604,7 @@ Widget CreateMailAlert(Widget w, int Mode)
   }
 
 
-  if (!Mode) {
+  if (Mode == 0) {
     /**
      * 起動時のメールチェック と mail checkをtimer eventに追加
      **/
@@ -601,11 +612,13 @@ Widget CreateMailAlert(Widget w, int Mode)
     switch (Biff) {
     case YOUBIN:
       YoubinInit();
+      CheckYoubinNowTimer((XtPointer) (w), (XtIntervalId) NULL);
       XSetIOErrorHandler(Youbin_exit);	/** child process の youbin を殺す **/
       break;
     case POP:
     case APOP:
       CheckPOP3((XtPointer) (w), (XtIntervalId) NULL);
+      break;
     default:
       CheckMail((XtPointer) (w), (XtIntervalId) NULL);
     }
@@ -906,22 +919,8 @@ static void CheckYoubin(Widget w, int *fid, XtInputId * id)
     tmp1 = strtok(NULL, "\n");
   }
 
-  if(*From != '\0') {
-    i = 1;
-    ReadRcdata("newmail",tmp,BUFSIZ);
-    if(*tmp == '\0')
-      sprintf(message,mar.mail_l,i);
-    else{
-      sprintf(message,tmp,i);
-    }
-
-    XtVaSetValues(label, XtNlabel, message, NULL);
-    XtVaSetValues(from, XtNlabel, From, NULL);
-    if (!IsPopped(mail)) {
-      isMailChecked = 1;
-      MailPopup();
-    }
-  }
+  XtVaSetValues(from, XtNlabel, From, NULL);
+  while(CheckYoubinNow(1)<= 0);
 End:
   /**
    * 共通終了処理
@@ -942,19 +941,29 @@ End:
 
 static int Youbin_exit(Display * disp)
 {
+  int i;
   /**
    * kill all the children
    **/
   kill(0, SIGTERM);
-  return 0;
-  rmdir(Tmp_dir);
+  unlink(YoubinFile);
+  return rmdir(Tmp_dir);
 }
 
-static void MailPopup(){
-  XtVaSetValues(local_mail[0], XtNwindowMode, 0, NULL);
-  XtVaSetValues(xhisho, XtNanimType, MAIL, NULL);
+void MailPopup(int mode){
+  if(mode != 0 && mode != 1) return;
 
-  XtPopup(XtParent(local_mail[0]), XtGrabNone);
+  XtVaSetValues(local_mail[mode], XtNwindowMode, 0, NULL);
+  if(mode){
+    XtVaSetValues(xhisho, XtNanimType, USUAL, NULL);
+    BeforeAnimatonMode = USUAL;
+  } else {
+    XtVaSetValues(xhisho, XtNanimType, MAIL, NULL);
+    BeforeAnimatonMode = MAIL;
+  }
+  MailCount = 0;
+
+  XtPopup(XtParent(local_mail[mode]), XtGrabNone);
   if (mar.sound_f  && UseSound) {
     SoundPlay(mar.sound_f);
   }

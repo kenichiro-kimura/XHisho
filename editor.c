@@ -239,12 +239,14 @@ static void DestroyEdit(Widget w, caddr_t client_data, caddr_t call_data)
   for (i = 0; i < MAX_SCHED_NUM; i++)
     (int) schedule[i].is_checked = 0;
 
+  XtVaSetValues(xhisho,XtNanimType,BeforeAnimatonMode,NULL);
   XtPopdown(XtParent(XtParent(w)));
   CloseEditWindow();
 }
 
 static void Destroy(Widget w, caddr_t client_data, caddr_t call_data)
 {
+  XtVaSetValues(xhisho,XtNanimType,BeforeAnimatonMode,NULL);
   XtPopdown(XtParent(XtParent(w)));
 }
 
@@ -252,6 +254,7 @@ static void Dismiss(Widget w, caddr_t client_data, caddr_t call_data)
 {
   int i;
 
+  XtVaSetValues(xhisho,XtNanimType,BeforeAnimatonMode,NULL);
   XtPopdown(XtParent(XtParent(w)));
 
   for (i = 0; i < past_index + 1; i++) {
@@ -1220,6 +1223,7 @@ void CheckTimeForSchedule(XtPointer cl, XtIntervalId * id)
 }
 
 static void OpenPopup(){
+  XtVaGetValues(xhisho,XtNanimType,&BeforeAnimatonMode,NULL);
   XtVaSetValues(xhisho, XtNanimType, SCHEDULE, NULL);
   XtVaSetValues(openwin, XtNwindowMode, 0, NULL);
   XtPopup(XtParent(openwin), XtGrabNone);
