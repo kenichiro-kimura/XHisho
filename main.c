@@ -519,6 +519,7 @@ static void PrintUsage(int argc, char **argv)
   "     -xoff [n]                   : Popup Window X-offset\n"
   "     -yoff [n]                   : Popup Window Y-offset\n"
 #ifdef OPTION
+  "     -nooption                   : don't use Option window\n"
   "     -optioncmd                  : Option Command\n"
   "     -optionwidth                : width of Option window\n"
   "     -optionheight               : height of Option window\n"
@@ -533,6 +534,7 @@ static void PrintUsage(int argc, char **argv)
   "     -sstp                       : use SSTP module\n"
 #endif
 #ifdef USE_KAWARI
+  "     -kawaridir                  : KAWARI's data directory\n"
   "     -kwait                      : KAWARI wait\n"
 #endif
   "\n";
