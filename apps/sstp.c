@@ -52,6 +52,9 @@ int main(int argc, char** argv)
       while((chr_ptr = strstr(buffer,"\r")) != NULL){
 	strcpy(chr_ptr,chr_ptr + 1);
       }
+      if(strstr(buffer,"\\e"))
+	strcpy(strstr(buffer,"\\e"),"\\e");
+
       if(strstr(buffer,"Script:")){
 	printf("%s\n",strstr(buffer,"Script:") + strlen("Script:"));
       }
