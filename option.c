@@ -1104,10 +1104,12 @@ static void SakuraParser(char* in_ptr)
 	if(*chr_ptr  == '\0') goto END;
 	c_ptr = chr_ptr;
 	while(isdigit(*c_ptr)) c_ptr++;
-	strncpy(str_num,chr_ptr
-		,c_ptr - chr_ptr);
-	sprintf(buffer,"\\w%d",atoi(str_num));
-	AddBuffer(&kbuf,buffer);
+	if(opr.m_wait){
+	  strncpy(str_num,chr_ptr
+		  ,c_ptr - chr_ptr);
+	  sprintf(buffer,"\\w%d",atoi(str_num));
+	  AddBuffer(&kbuf,buffer);
+	}
 	chr_ptr = c_ptr - 1;
 	break;
       case 's':
