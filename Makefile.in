@@ -1,14 +1,16 @@
 all: makefile
-	make -f makefile
+	make -f _makefile
 
 makefile: Imakefile config.h image/Imakefile xadl/Imakefile libmhc/Imakefile
 	./my_xmkmf
 	cd image;../my_xmkmf
 	cd xadl;../my_xmkmf
 	cd libmhc;../my_xmkmf
+	mv makefile _makefile
 
 clean:
 	make -f makefile clean
+	rm -f makefile */makefile
 
 install:
 	make -f makefile install
