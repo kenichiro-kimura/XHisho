@@ -62,4 +62,11 @@ typedef struct _messagebuffer{
   unsigned char* buffer;
   size_t size;
 } messageBuffer;
+
+typedef struct _ct
+{
+  unsigned int jis;
+  unsigned int ucode;
+} CodeTable;
+
 #endif
