@@ -8340,6 +8340,7 @@ static void sstp(int port)
   struct sockaddr_in fromadd;
   unsigned char* buffer;
   unsigned char* chr_ptr;
+  unsigned char* sstp_version;
   int is_script,is_command,i;
   int status;
   messageBuffer kbuf;
@@ -8352,6 +8353,7 @@ static void sstp(int port)
     exit(1);
   }
 
+  sstp_version = (unsigned char*)malloc(strlen("1.0") + 1);
   sockadd.sin_addr.s_addr = htonl(INADDR_ANY);
   sockadd.sin_family = AF_INET;
   sockadd.sin_port = htons(port);
@@ -8401,9 +8403,11 @@ static void sstp(int port)
 	  AddBuffer(&kbuf,buffer + strlen("Script:"),0);
 	} else if(!strncmp(buffer,"SEND SSTP/1.0",strlen("SEND SSTP/1.0"))){
 	  status = 1;
+	  strcpy(sstp_version,"1.0");
 	  /* NULL */
 	} else if(!strncmp(buffer,"SEND SSTP/1.1",strlen("SEND SSTP/1.1"))){
 	  status = 1;
+	  strcpy(sstp_version,"1.1");
 	  /* NULL */
 	} else if(!strncmp(buffer,"Sender:",strlen("Sender:"))){
 	  status++;
@@ -8441,9 +8445,11 @@ static void sstp(int port)
 	} else if(!strncmp(buffer,"EXECUTE SSTP/1.0",strlen("EXECUTE SSTP/1.0"))){
 	  is_command = 1;
 	  status = 1;
+	  strcpy(sstp_version,"1.0");
 	} else if(!strncmp(buffer,"EXECUTE SSTP/1.2",strlen("EXECUTE SSTP/1.2"))){
 	  is_command = 2;
 	  status = 1;
+	  strcpy(sstp_version,"1.2");
 	} else if(!strncmp(buffer,"Command:",strlen("Command:"))
 		  && is_command){
 	  for(chr_ptr = buffer + strlen("Command:");
@@ -8463,12 +8469,26 @@ static void sstp(int port)
 	   *  not supported
 	   */
 	  status = -1;
+	  chr_ptr = strstr(buffer,"SSTP/");
+	  if(chr_ptr){
+	    chr_ptr += strlen("SSTP/");
+	    strncpy(sstp_version,chr_ptr,MIN(strlen("1.2"),strlen(chr_ptr)));
+	  } else {
+	    strcpy(sstp_version,"1.0");
+	  }
 	  break;
 	} else if(!strncmp(buffer,"GIVE",strlen("GIVE"))){
 	  /*
 	   *  not supported
 	   */
 	  status = -1;
+	  chr_ptr = strstr(buffer,"SSTP/");
+	  if(chr_ptr){
+	    chr_ptr += strlen("SSTP/");
+	    strncpy(sstp_version,chr_ptr,MIN(strlen("1.2"),strlen(chr_ptr)));
+	  } else {
+	    strcpy(sstp_version,"1.0");
+	  }
 	  break;
 	} else if(!strncmp(buffer,"SEND",strlen("SEND"))){
 	  /*
@@ -8476,12 +8496,26 @@ static void sstp(int port)
 	   *  not supported
 	   */
 	  status = -1;
+	  chr_ptr = strstr(buffer,"SSTP/");
+	  if(chr_ptr){
+	    chr_ptr += strlen("SSTP/");
+	    strncpy(sstp_version,chr_ptr,MIN(strlen("1.2"),strlen(chr_ptr)));
+	  } else {
+	    strcpy(sstp_version,"1.0");
+	  }
 	  break;
 	} else if(!strncmp(buffer,"COMMUNICATE",strlen("COMMUNICATE"))){
 	  /*
 	   *  not supported
 	   */
 	  status = -1;
+	  chr_ptr = strstr(buffer,"SSTP/");
+	  if(chr_ptr){
+	    chr_ptr += strlen("SSTP/");
+	    strncpy(sstp_version,chr_ptr,MIN(strlen("1.2"),strlen(chr_ptr)));
+	  } else {
+	    strcpy(sstp_version,"1.0");
+	  }
 	  break;
 	} else if(!strncmp(buffer,"NOTIFY",strlen("NOTIFY"))){
 	  /*
@@ -8489,6 +8523,13 @@ static void sstp(int port)
 	   *  not supported
 	   */
 	  status = -1;
+	  chr_ptr = strstr(buffer,"SSTP/");
+	  if(chr_ptr){
+	    chr_ptr += strlen("SSTP/");
+	    strncpy(sstp_version,chr_ptr,MIN(strlen("1.2"),strlen(chr_ptr)));
+	  } else {
+	    strcpy(sstp_version,"1.0");
+	  }
 	  break;
 	} else if(is_script){
 	  AddBuffer(&kbuf,buffer,0);
@@ -8499,6 +8540,8 @@ static void sstp(int port)
       /*
 	printf("status:%d,command:%d,script:%d\n",status,is_command,is_script);
       */
+
+      fprintf(stream,"SSTP/%s ",sstp_version);
       switch(status){
       case -1:
 	fprintf(stream,"501 Not Implemented\r\n");
