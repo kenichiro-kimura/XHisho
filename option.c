@@ -374,7 +374,6 @@ static void CheckOption(Widget w, int *fid, XtInputId * id)
   XtVaGetValues(label, XtNfontSet, &fset, XtNwidth,&width,NULL);
   XmbTextExtents(fset, "a", 1, &ink, &log);
   max_len = width / log.width - 2;
-  chr_length = strlen(chr_ptr);
 
   SakuraParser(buffer);
 
