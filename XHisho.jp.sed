@@ -97,6 +97,8 @@ XHisho*optionHeight:200
 XHisho*option*cursor: left_ptr
 !XHisho*option*scrollVertical: whenNeeded
 XHisho*kawariDir: XHISHODIR
+!XHisho*option*FontSet: -*-fixed-medium-r-normal--12-*  
+
 
 !!
 !!About XHisho
