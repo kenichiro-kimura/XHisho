@@ -1,9 +1,6 @@
 #define _OPTION_GLOBAL
 #include "globaldefs.h"
-#include "mail.h"
-#include "petname.h"
 #include "Msgwin.h"
-#include "ResEdit.h"
 #include "option.h"
 #include <ctype.h>
 #include <signal.h>
@@ -11,20 +8,18 @@
 static Widget top,label,local_option;
 static Widget utop,ulabel,ulocal_option;
 static XtInputId OptionId;
-static int virgine = 1;
 static XtIntervalId OptionTimeoutId = 0;
 static XtIntervalId MessageWaitId = 0;
+static messageBuffer mbuf;
+
 #ifdef USE_KAWARI
 static XtIntervalId KAWARITimeoutId = 0;
 #endif
-static messageBuffer mbuf;
+
 
 static void Destroy(Widget,XEvent *, String *, unsigned int *);
 static void CommandInit();
 static void CheckOption(Widget, int *, XtInputId *);
-#ifdef USE_KAWARI
-static void GetMessageFromKawari(Widget, int *, XtInputId *);
-#endif
 static int Option_exit(Display *);
 static char* or2string(char*);
 static void ORParser(char*);
@@ -39,8 +34,12 @@ static void AddBuffer(messageBuffer*,char*);
 static void GetBuffer(messageBuffer*,char*);
 static void HeadOfBuffer(messageBuffer*,char*);
 static void _GetBuffer(messageBuffer*,char*,int);
-extern char* RandomMessage(char*);
 static void SJIS2EUC(char*);
+
+#ifdef USE_KAWARI
+static void GetMessageFromKawari(Widget, int *, XtInputId *);
+extern char* RandomMessage(char*);
+#endif
 
 static void SakuraParser(char*); /* only for reference */
 
@@ -140,9 +139,11 @@ static void Destroy(Widget w, XEvent * event, String * params, unsigned int *num
     OptionTimeoutId = 0;
   }
   XtPopdown(top);
-  ClearMessage(label);
   XtPopdown(utop);
+  /*
+  ClearMessage(label);
   ClearMessage(ulabel);
+  */
 }
 
 
@@ -259,10 +260,12 @@ Widget CreateOptionWindow(Widget w){
 
 static void CommandInit()
 {
+  static int virgine = 1;
+
   if (virgine) {
     if ((option_fd = popen(opr.o_command,"r")) == NULL){
       fprintf(stderr, "no such option command, \"%s\"\n", opr.o_command);
-      exit(1);
+      return ;
     }
     virgine = 0;
   }
@@ -297,11 +300,10 @@ static void CheckOption(Widget w, int *fid, XtInputId * id)
     XtRemoveInput(OptionId);
     OptionId = 0;
     fprintf(stderr, "option command died!\n");
-    XtDestroyWidget(optionwin);
-    optionwin = CreateOptionWindow(XtParent(xhisho));
     return;
   } else if (len == -1) {
     fprintf(stderr, "Can't read from option command!\n");
+    return;
   }
 
   if(len == 0) return;
@@ -323,6 +325,7 @@ static void CheckOption(Widget w, int *fid, XtInputId * id)
 
 }
 
+#ifdef USE_KAWARI
 static void GetMessageFromKawari(Widget w, int * i, XtInputId * id){
   static unsigned char *_buffer;
   static int x = 0;
@@ -346,9 +349,6 @@ static void GetMessageFromKawari(Widget w, int * i, XtInputId * id){
   x = 1;
 
   memset(_buffer,'\0',message_buffer_size);
-
-  //  ClearMessage(label);
-  //  ClearMessage(ulabel);
 
   message_ptr = RandomMessage(opr.kawari_dir);
   strcpy(_buffer,message_ptr);
@@ -374,7 +374,7 @@ static void GetMessageFromKawari(Widget w, int * i, XtInputId * id){
 				    , NULL
 				    );
 }
-
+#endif
 
 static int Option_exit(Display * disp)
 {
@@ -388,8 +388,8 @@ static int Option_exit(Display * disp)
 void ORParser(char* in)
 {
   /*
-    parse random scripts
-  */
+   *  parse random scripts
+   */
 
   char* in_buffer;
   char* tmp_buffer;
@@ -436,9 +436,9 @@ void ORParser(char* in)
 static char* or2string(char* in)
 {
   /*
-    translate OR-string to string
-    '(aa|bb)' -> 'aa' in 50%, 'bb' in 50%
-  */
+   *  translate OR-string to string
+   *  '(aa|bb)' -> 'aa' in 50%, 'bb' in 50%
+   */
 
   char* out;
   char* buffer;
@@ -550,10 +550,11 @@ static void messageStack_push(messageStack** t,char* s)
 static void ChangeBadKanjiCode(char *source)
 {
   /*
-    change some bad EUC kanji code to '#'
-    (because of outputs of Sakura is SJIS kanji code,
-     some of them include bad kanji codes... sigh.)
-  */
+   * change some bad EUC kanji code to '#'
+   * (because of outputs of Sakura is SJIS kanji code,
+   * some of them include bad kanji codes... sigh.)
+   */
+
     int i,chnum = 0;
     unsigned char tmp[4];
     unsigned char first_byte, second_byte;
@@ -787,9 +788,9 @@ static void AddBuffer(messageBuffer* buffer,char* message)
 static void _GetBuffer(messageBuffer* buffer,char* ret,int mode)
 {
   /*
-    do not invoke this function. this function should be
-     invoked by GetBuffer() or HeadOfBuffer().
-  */
+   * do not invoke this function. this function should be
+   * invoked by GetBuffer() or HeadOfBuffer().
+   */
   unsigned char first_byte;
   int is_wbyte = 0;
   unsigned char str_num[128];
