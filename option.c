@@ -921,9 +921,9 @@ static void AddBuffer(messageBuffer* buffer,char* message)
   size_t newsize;
   char* b;
 
-  newsize = buffer->size + strlen(message);
+  newsize = strlen(buffer->buffer) + strlen(message) + 1;
 
-  if(newsize > strlen(buffer->buffer) + strlen(message) + 1){
+  if(newsize > buffer->size){
     b = strdup(buffer->buffer);
     buffer->buffer = (char*)realloc(buffer->buffer,newsize);
     strcpy(buffer->buffer,b);
