@@ -11,7 +11,7 @@ XHisho*extFilter: nkf -e -m
 !!biff関係のリソース
 !!
 
-XHisho*petnameFile: IXHISHODIR/Petname
+XHisho*petnameFile: IXHISHODIR/Petname.jp
 XHisho*youbinServer: localhost
 XHisho*youbinCommand: /usr/local/bin/youbin
 XHisho*popServer: localhost
