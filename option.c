@@ -152,6 +152,7 @@ static void CheckOption(Widget w, int *fid, XtInputId * id)
   XRectangle ink, log;
   int max_len;
   Dimension width;
+  int sakura;
   int chr_length,dword,pos,mpos;
 #ifdef EXT_FILTER
   char command[128];
@@ -164,6 +165,8 @@ static void CheckOption(Widget w, int *fid, XtInputId * id)
 
   if ((len = read(*fid,_buffer,BUFSIZ * 5)) == 0) {
     fprintf(stderr, "option command died!\n");
+    CommandInit();
+    return;
   } else if (len == -1) {
     fprintf(stderr, "Can't read from option command!\n");
   }
@@ -203,6 +206,11 @@ static void CheckOption(Widget w, int *fid, XtInputId * id)
 
   /* here is script decoder .. */
 
+  if(strstr(buffer,"sakura"))
+    sakura = 1;
+  else 
+    sakura = 0;
+
   if((chr_ptr = strchr(buffer,'(')) != NULL){
     if(!strncasecmp(chr_ptr + 1,"Surface:",strlen("Surface:"))){
       int cg_num;
@@ -214,7 +222,8 @@ static void CheckOption(Widget w, int *fid, XtInputId * id)
       strncpy(str_num,chr_ptr,next_ptr - chr_ptr);
 
       cg_num = atoi(str_num);
-      XtVaSetValues(xhisho,XtNforceCG,True,XtNcgNumber,cg_num,NULL);
+      if(sakura)
+	XtVaSetValues(xhisho,XtNforceCG,True,XtNcgNumber,cg_num,NULL);
       chr_ptr = strchr(buffer,')') + 1;
       strcpy(_buffer,chr_ptr);
       strcpy(strchr(buffer,'('),_buffer);
@@ -222,7 +231,7 @@ static void CheckOption(Widget w, int *fid, XtInputId * id)
   }
   
   chr_ptr = buffer;
-
+  /*
   if(len >= strlen("Surface:0")){
     if(!strncasecmp(buffer,"Surface:",strlen("Surface:"))){
       int cg_num;
@@ -237,6 +246,7 @@ static void CheckOption(Widget w, int *fid, XtInputId * id)
       chr_ptr = next_ptr;
     }
   }
+  */
 
   if(next_ptr = strstr(chr_ptr,"\\e")){
     is_end = 1;
@@ -255,22 +265,23 @@ static void CheckOption(Widget w, int *fid, XtInputId * id)
   height += 20;
   */
 
-  max_len = width / log.width - 4;
+  max_len = width / log.width - 1;
   chr_length = strlen(chr_ptr);
 
   for(dword = pos = 0;pos < chr_length;pos++){
     if(((signed char)chr_ptr[pos]) < 0) dword ++;
-    if(pos > max_len && dword % 2 == 0){
-      strncat(message_buffer,chr_ptr, pos + 1);
+    if(pos >= max_len && dword % 2 == 0){
+      strncat(message_buffer,chr_ptr, pos - 1);
       strcat(message_buffer,"\n");
-      chr_ptr += pos + 1;
+      chr_ptr += pos;
+      chr_ptr--;
       chr_length = strlen(chr_ptr);
-      pos = dword = 0;
+      pos = -1;
+      dword = 0;
     }
   }
 
   strcat(message_buffer,chr_ptr);
-  printf("%s\n",message_buffer);
 
   /*
   chr_ptr = strtok(message_buffer,"\n");
