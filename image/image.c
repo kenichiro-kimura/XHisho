@@ -8,23 +8,23 @@
 #include "config.h"
 #include "globaldefs.h"
 
-extern int LoadBmp(ImageInfo *, char *);
+extern int LoadBmp(ImageInfo *);
 
 #ifdef HAVE_LIBJPEG
-extern int LoadJpeg(ImageInfo *, char *);
+extern int LoadJpeg(ImageInfo *);
 #endif
 
 #ifdef HAVE_LIBXPM
-extern int LoadXpm(ImageInfo *, char *);
+extern int LoadXpm(ImageInfo *);
 #endif
 
 static struct {
 /**
  * グラフィックローダ。関数ポインタの配列で表現。
- * 新しいローダは(*int)(ImageInfo*,char*)の形で作ってここに登録するだけ。
+ * 新しいローダは(*int)(ImageInfo*)の形で作ってここに登録するだけ。
  **/
 
-  int (*loader) (ImageInfo * i_info, char *filename);
+  int (*loader) (ImageInfo * i_info);
 }   loaders[] = {
 
   {
@@ -215,12 +215,12 @@ static void GetPseudoPixelFromRGB(Display * d, Colormap cm, struct palette * pal
 
 }
 
-int ExecLoader(ImageInfo * i_info, char *filename)
+int ExecLoader(ImageInfo * i_info)
 {
   int i;
 
   for (i = 0; i < NUM_OF_ARRAY(loaders); i++) {
-    if (!loaders[i].loader(i_info, filename))
+    if (!loaders[i].loader(i_info))
       return 0;
   }
   return -1;
@@ -281,7 +281,7 @@ int LoadImage(ImageInfo* i_info)
    * ローダを呼び出す
    **/
 
-  if (ExecLoader(i_info, i_info->filename) == -1)
+  if (ExecLoader(i_info) == -1)
     return -1;
 
   width = i_info->width;

@@ -5,14 +5,14 @@
 
 #include "image.h"
 
-int LoadXpm(ImageInfo * i_info, char *filename)
+int LoadXpm(ImageInfo * i_info)
 {
   int i, j;
   XpmImage image;
   XpmInfo info;
   char col[3];
 
-  if (XpmReadFileToXpmImage(filename, &image, &info) != XpmSuccess)
+  if (XpmReadFileToXpmImage(i_info->filename, &image, &info) != XpmSuccess)
     return -1;
 
   i_info->width = image.width;

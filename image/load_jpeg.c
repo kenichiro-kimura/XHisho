@@ -10,7 +10,7 @@
  **/
 
 static int JpegDecode(ImageInfo *, FILE *);
-int LoadJpeg(ImageInfo *, char *);
+int LoadJpeg(ImageInfo *);
 
 /**
  * local variable
@@ -143,12 +143,12 @@ static int JpegDecode(ImageInfo * i_info, FILE * infile)
   return 0;
 }
 
-int LoadJpeg(ImageInfo * i_info, char *fname)
+int LoadJpeg(ImageInfo * i_info)
 {
   FILE *fp;
   int r;
 
-  if (NULL == (fp = fopen(fname, "r"))) {
+  if (NULL == (fp = fopen(i_info->filename, "r"))) {
     return -1;
   }
   r = JpegDecode(i_info, fp);

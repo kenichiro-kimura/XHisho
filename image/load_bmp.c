@@ -21,7 +21,7 @@ static int Load24(FILE *, ImageInfo *);
 static int Load4RGB(FILE *, ImageInfo *);
 static int Load8RGB(FILE *, ImageInfo *);
 
-int LoadBmp(ImageInfo *, char *);
+int LoadBmp(ImageInfo *);
 
 static inline unsigned GetShort(FILE * fp)
 {
@@ -424,11 +424,11 @@ static int Load24(FILE * fp, ImageInfo * i_info)
   return 0;
 }
 
-int LoadBmp(ImageInfo * i_info, char *fname)
+int LoadBmp(ImageInfo * i_info)
 {
   FILE *fp;
 
-  if (NULL == (fp = fopen(fname, "r"))) {
+  if (NULL == (fp = fopen(i_info->filename, "r"))) {
     return -1;
   }
   if (ReadHeader(fp, i_info) < 0)
