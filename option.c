@@ -115,8 +115,10 @@ static void Destroy(Widget w, XEvent * event, String * params, unsigned int *num
     OptionTimeoutId = 0;
   }
   XtPopdown(top);
+  ClearMessage(label);
 #ifdef USE_UNYUU
   XtPopdown(utop);
+  ClearMessage(ulabel);
 #endif
 }
 
@@ -321,7 +323,7 @@ static void CheckOption(Widget w, int *fid, XtInputId * id)
   _buffer[len] = '\0';
 
 
-  if(is_end){
+  if(is_end && opr.m_wait == 0){
     ClearMessage(label);
 #ifdef USE_UNYUU
     ClearMessage(ulabel);
@@ -453,8 +455,12 @@ static void CheckOption(Widget w, int *fid, XtInputId * id)
 
     if(c_ptr = strstr(message_ptr,"\\e")){
       is_end = 1;
-      *c_ptr = '\n';
-      *(c_ptr + 1) = '\0';
+      if(opr.m_wait == 0){
+	*c_ptr = '\n';
+	*(c_ptr + 1) = '\0';
+      } else {
+	*(c_ptr + 2) = '\0';
+      }
     }
 
     SakuraParser(message_ptr);
@@ -487,7 +493,7 @@ static void CheckOption(Widget w, int *fid, XtInputId * id)
     XFlush(XtDisplay(label));
   }
 
-  if(is_end && opr.timeout > 0){
+  if(is_end && opr.timeout > 0 && opr.m_wait == 0){
     OptionTimeoutId = XtAppAddTimeOut(XtWidgetToApplicationContext(local_option)
 				      , opr.timeout * 1000
 				      , (XtTimerCallbackProc) Destroy
@@ -796,12 +802,22 @@ static void _InsertMessage(XtPointer cl,XtIntervalId* id)
       free(chr_ptr);
       break;
     case '\\':
-      cg_num = atoi(chr_ptr + 1);
-      if (*dest == 'u') cg_num += 10;
-      XtVaSetValues(xhisho,XtNforceCG,True
-		    ,(*dest == 's')? XtNcgNumber:XtNucgNumber
-		    ,cg_num
-		    ,NULL);
+      switch(*(chr_ptr + 1)){
+      case 'e':
+	if(opr.timeout > 0)
+	  OptionTimeoutId = XtAppAddTimeOut(XtWidgetToApplicationContext(local_option)
+					    , opr.timeout * 1000
+					    , (XtTimerCallbackProc) Destroy
+					    , NULL);
+	break;
+      default:
+	cg_num = atoi(chr_ptr + 1);
+	if (*dest == 'u') cg_num += 10;
+	XtVaSetValues(xhisho,XtNforceCG,True
+		      ,(*dest == 's')? XtNcgNumber:XtNucgNumber
+		      ,cg_num
+		      ,NULL);
+      }
       free(dest);
       free(chr_ptr);
       break;
