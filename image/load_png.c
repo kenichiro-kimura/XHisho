@@ -82,7 +82,7 @@ int LoadPng(ImageInfo * i_info)
 
   if((color_type & PNG_COLOR_MASK_COLOR)){
     png_color* palette;
-    int num_palette;
+    int num_palette = -1;
 
     png_get_PLTE(png_ptr, info_ptr, &palette, &num_palette);
     i_info->colorsuu = num_palette;
