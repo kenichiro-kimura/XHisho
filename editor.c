@@ -30,6 +30,7 @@ static int CheckIsSchedPast(int, Schedule *);
 static void ChangeReturn(String, char *);
 static void ScheduleSort();
 static int ChangeColorPastSched();
+static void OpenPopup();
 
 /**
  * resources
@@ -1141,8 +1142,7 @@ void CheckTimeForSchedule(XtPointer cl, XtIntervalId * id)
      **/
     XtDestroyWidget(XtParent(openwin));
     openwin = CreateEditorWindow(cl, 0, *tmp);
-    XtPopup(XtParent(openwin), XtGrabNone);
-    OpenWindowShown = 1;
+    OpenPopup();
   }
   if (ChangeColorPastSched()) {
     /**
@@ -1160,15 +1160,21 @@ void CheckTimeForSchedule(XtPointer cl, XtIntervalId * id)
       check &= (int) schedule[i].is_checked;
 
     if (check == 0) {
-      XtPopup(XtParent(openwin), XtGrabNone);
-      OpenWindowShown = 1;
-
-      if (omr.sound_f && UseSound) {
-	SoundPlay(omr.sound_f);
-      }
+      OpenPopup();
     }
   }
   LeaveWindowID = XtAppAddTimeOut(XtWidgetToApplicationContext(XtParent(top))
 			    ,(60 - tmp->tm_sec) * 1000, CheckTimeForSchedule
 				  ,cl);
+}
+
+static void OpenPopup(){
+  XtVaSetValues(xhisho, XtNanimType, MAIL, NULL);
+  XtVaSetValues(openwin, XtNwindowMode, 0, NULL);
+  XtPopup(XtParent(openwin), XtGrabNone);
+  OpenWindowShown = 1;
+
+  if (omr.sound_f && UseSound) {
+    SoundPlay(omr.sound_f);
+  }
 }

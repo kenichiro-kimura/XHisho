@@ -16,7 +16,9 @@ static struct {
 
   int (*loader) (ImageInfo * i_info);
 }   loaders[] = {
-
+  {
+    LoadAnim
+  },
   {
     LoadBmp
   },
@@ -37,9 +39,6 @@ static struct {
     LoadXpm
   },
 #endif
-  {
-    LoadAnim
-  },
 };
 
 static inline int highbit(unsigned long mask)
@@ -289,7 +288,9 @@ int LoadImage(ImageInfo* i_info)
       strcpy(i_info->filename,(i_info->image + i_info->loaded_images)->filename);
     }
 
-    if(!strcmp(i_info->filename,"GOTO")){
+    if(!strcmp(i_info->filename,"GOTO") ||
+       !strcmp(i_info->filename,"MAIL") ||
+       !strcmp(i_info->filename,"SCHEDULE")){
       i_info->loaded_images++;
       continue;
     }

@@ -104,6 +104,15 @@
 #define HASH_KEY 253
 #define MAX_SCHED_NUM 10
 
+enum {
+  /**
+   * define Animation TYPE number
+   **/
+  USUAL = 0,
+  MAIL = 1,
+  SCHEDULE = 2
+};
+
 typedef enum _Method {
   POP_AUTH, APOP_AUTH, RPOP_AUTH
 }   AuthMethod;

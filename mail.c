@@ -45,6 +45,7 @@ static int Youbin_exit(Display *);
 static void CheckYoubin(Widget, int *, XtInputId *);
 static void YoubinInit();
 static void GetFromandSubject(char *, char *);
+static void MailPopup();
 
 /**
  * resources
@@ -172,6 +173,7 @@ static void Destroy(Widget w, caddr_t client_data, caddr_t call_data)
     MailCount = 0;
   }
   XtPopdown(top[Mode]);
+  XtVaSetValues(xhisho, XtNanimType, USUAL, NULL);
 }
 
 static void TimerCheck(XtPointer cl, XtIntervalId * id)
@@ -183,6 +185,7 @@ static void TimerCheck(XtPointer cl, XtIntervalId * id)
       MailWindowShown = 0;
       isMailChecked = 2;
       XtPopdown(top[0]);
+      XtVaSetValues(xhisho, XtNanimType, USUAL, NULL);
     }
   }
   if(MailTimeoutId){
@@ -249,23 +252,14 @@ int CheckMail(XtPointer cl, XtIntervalId * id)
       MailWindowShown = 1;
       GetFromandSubject(m_filename, buf);
       XtVaSetValues(from, XtNlabel, buf, NULL);
-      MailWindowShown = 1;
-      XtVaSetValues(local_mail[0], XtNwindowMode, 0, NULL);
-      XtPopup(XtParent(local_mail[0]), XtGrabNone);
-
-      if (mar.sound_f  && UseSound) {
-	SoundPlay(mar.sound_f);
-      }
-      MailWindowShown = 1;
+      MailPopup();
     }
     break;
   case 2:
     switch (isMailChecked) {
     case 1:
       if (!MailWindowShown) {
-	MailWindowShown = 1;
-	XtVaSetValues(local_mail[0], XtNwindowMode, 0, NULL);
-	XtPopup(XtParent(local_mail[0]), XtGrabNone);
+	MailPopup();
       }
       break;
     case 2:
@@ -310,13 +304,7 @@ int CheckPOP3(XtPointer cl, XtIntervalId * id)
   }
 
   if (ret_value > 0) {
-    if (mar.sound_f && UseSound) {
-      SoundPlay(mar.sound_f);
-    }
-    MailWindowShown = 1;
-    XtVaSetValues(from, XtNlabel, buf, NULL);
-    XtVaSetValues(local_mail[0], XtNwindowMode, 0, NULL);
-    XtPopup(XtParent(local_mail[0]), XtGrabNone);
+    MailPopup();
   }
   free(buf);
 
@@ -817,14 +805,7 @@ static void CheckYoubin(Widget w, int *fid, XtInputId * id)
   XtVaSetValues(from, XtNlabel, From, NULL);
   if (!MailWindowShown) {
     isMailChecked = 1;
-    MailWindowShown = 1;
-
-    XtVaSetValues(local_mail[0], XtNwindowMode, 0, NULL);
-    XtPopup(XtParent(local_mail[0]), XtGrabNone);
-
-    if (mar.sound_f && UseSound) {
-      SoundPlay(mar.sound_f);
-    }
+    MailPopup();
   }
 End:
   /**
@@ -849,4 +830,15 @@ static int Youbin_exit(Display * disp)
    **/
   kill(0, SIGTERM);
   return 0;
+}
+
+static void MailPopup(){
+  MailWindowShown = 1;
+  XtVaSetValues(local_mail[0], XtNwindowMode, 0, NULL);
+  XtVaSetValues(xhisho, XtNanimType, MAIL, NULL);
+
+  XtPopup(XtParent(local_mail[0]), XtGrabNone);
+  if (mar.sound_f  && UseSound) {
+    SoundPlay(mar.sound_f);
+  }
 }

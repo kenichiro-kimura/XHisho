@@ -46,6 +46,7 @@ static void NewInterval(XHishoWidget);
 static void FocusInterval(XHishoWidget);
 static void SetSize(XHishoWidget);
 static void Animation(XHishoWidget);
+static void ChangeAnimType(XHishoWidget);
 
 static XtResource resources[] = {
   {
@@ -174,6 +175,15 @@ static XtResource resources[] = {
     XtRImmediate,
     (XtPointer) 1
   },
+  {
+    XtNanimType,
+    XtCAnimType,
+    XtRInt,
+    sizeof(int),
+    XtOffset(XHishoWidget, xhisho.anim_type),
+    XtRImmediate,
+    (XtPointer) 0
+  },
 };
 
 
@@ -240,6 +250,7 @@ WidgetClass xHishoWidgetClass = (WidgetClass) & xHishoClassRec;
 
 static void Initialize(Widget request, Widget new, ArgList args, Cardinal * num_args)
 {
+  int i;
   XHishoWidget xhw = (XHishoWidget) new;
 
   xhw->xhisho.i_info = (ImageInfo*)malloc(sizeof(ImageInfo));
@@ -293,6 +304,7 @@ static void Realize(Widget w, XtValueMask * valueMask, XSetWindowAttributes * at
 
   if(xhw->xhisho.i_info->num_of_images > 1)
     xhw->xhisho.cg_sec = ((xhw->xhisho.i_info->image) + CG_NUM)->secs;
+
   SetSize(xhw);
   XtResizeWidget(XtParent(xhw), WIDTH, HEIGHT + clock_height, FRAME_WIDTH);
   XtResizeWidget((Widget) xhw, WIDTH, HEIGHT + clock_height
@@ -400,6 +412,11 @@ static Boolean SetValues(Widget current, Widget request, Widget new, ArgList arg
   if (!strcmp(iold->xhisho.clock_text, inew->xhisho.clock_text)) {
     ClockDraw(inew);
   }
+
+  if (iold->xhisho.anim_type != inew->xhisho.anim_type){
+    ChangeAnimType(inew);
+  }
+
   ret = (labelClassRec.core_class.set_values) (current, request, new, args, num_args);
   return ret;
 }
@@ -513,6 +530,13 @@ void Animation(XHishoWidget xhw)
     change = 1;
   }
 
+  if(!strcmp(((xhw->xhisho.i_info->image) + CG_NUM)->filename,"SCHEDULE")||
+     !strcmp(((xhw->xhisho.i_info->image) + CG_NUM)->filename,"MAIL")){
+    CG_NUM = CG_NUM + 1;
+    if(CG_NUM >= xhw->xhisho.i_info->num_of_images) CG_NUM = 0;
+    change = 1;
+  }
+    
   while(!strcmp(((xhw->xhisho.i_info->image) + CG_NUM)->filename,"GOTO")){
     /**
      * GOTO の処理。GOTOの先がGOTOの時をまとめて処理するためにwhileにする
@@ -523,7 +547,7 @@ void Animation(XHishoWidget xhw)
       /**
        * loop_bが -1 なら永久に飛び続ける
        **/
-      CG_NUM = ((xhw->xhisho.i_info->image) + CG_NUM)->secs;
+      CG_NUM = ((xhw->xhisho.i_info->image) + CG_NUM)->secs -1;
       ((xhw->xhisho.i_info->image) + CG_NUM)->loop_c = 0;
       change = 1;
     } else {
@@ -567,4 +591,19 @@ void Animation(XHishoWidget xhw)
     }
     XFlush(DISPLAY);
   }
+}
+
+static void ChangeAnimType(XHishoWidget xhw){
+  if(xhw->xhisho.anim_type > 3 || xhw->xhisho.anim_type < 0) return;
+  
+  if(xhw->xhisho.i_info->anim_number[xhw->xhisho.anim_type] == -1)
+    return;
+
+  if(xhw->xhisho.anim_type){
+    xhw->xhisho.i_info->anim_number[0] = CG_NUM;
+  }
+  
+  CG_NUM = xhw->xhisho.i_info->anim_number[xhw->xhisho.anim_type];
+  xhw->xhisho.cg_sec = 0;
+  Animation(xhw);
 }

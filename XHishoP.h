@@ -52,6 +52,7 @@ typedef struct _XHishoPart {
   int old_x, old_y;
   int cg_number;
   int cg_sec;
+  int anim_type;
 }   XHishoPart;
 
 typedef struct _XHishoRec {
