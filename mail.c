@@ -668,6 +668,7 @@ Widget CreateMailAlert(Widget w, int Mode)
       break;
     case POP:
     case APOP:
+    case IMAP:
       CheckPOP3Timer((XtPointer) (w), (XtIntervalId) NULL);
       break;
     default:
