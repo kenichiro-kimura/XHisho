@@ -145,13 +145,18 @@ From$B$K$O(BMew$B$HF1$87A<0$N(BPetname$B$rMQ$$$F!V(Bhogeyama@dokka.com$B!
 $B!&(B--without-jpeg       : $B2hA|7A<0$H$7$F(Bjpeg$B$r;H$$$^$;$s(B
 
 
-$B!V(B--without-xpm($B$b$7$/$O(B--with-xpm=no)$B!W$r;XDj$7$J$$>l9g$O(Bxpm$B%i%$%V%i(B
-$B%j$,I,MW$G$9$N$GA0;}$C$FF~$l$F$*$$$F$/$@$5$$!#(BFreeBSD$B$J$i(Bport$B$d(Bpackage
-$B$K$"$j$^$9!#(B
+$B!V(B--without-xpm($B$b$7$/$O(B--with-xpm=no)$B!W$r;XDj$7$J$$>l9g$O(BXPM$B%i%$%V%i(B
+$B%j(B(*1)$B$,I,MW$G$9$N$GA0;}$C$FF~$l$F$*$$$F$/$@$5$$!#(BFreeBSD$B$J$i(Bport$B$d(B
+package$B$K$"$j$^$9!#(B
 
-$B!V(B--without-jpeg($B$b$7$/$O(B--with-jpeg=no)$B!W$r;XDj$7$J$$>l9g$O(Bjpeg$B%i%$%V(B
-$B%i%j$,I,MW$G$9$N$GA0;}$C$FF~$l$F$*$$$F$/$@$5$$!#(BFreeBSD$B$J$i(Bport$B$d(B
-package$B$K$"$j$^$9!#$b$7F~$C$F$$$J$+$C$?$iC1$K;H$($J$/$J$k$@$1$G$9!#(B
+$B!V(B--without-jpeg($B$b$7$/$O(B--with-jpeg=no)$B!W$r;XDj$7$J$$>l9g$O(BJPEG$B%i%$%V(B
+$B%i%j(B(*2)$B$,I,MW$G$9$N$GA0;}$C$FF~$l$F$*$$$F$/$@$5$$!#(BFreeBSD$B$J$i(Bport$B$d(B
+package$B$K$"$j$^$9!#(B
+
+
+   *1)XPM$B%i%$%V%i%j(B   ftp://avahi.inria.fr/pub/xpm/
+   *2)JPEG$B%i%$%V%i%j(B  ftp://ftp.uu.net/graphics/jpeg/
+
 
 $B!V(B--disable-ext_filter$B!W$r;XDj$7$J$1$l$P!"%a%C%;!<%8$NI=<($K30It%U%#%k(B
 $B%?$r;H$$$^$9!#%G%U%)%k%H$G$O30It%U%#%k%?%3%^%s%I$O!V(Bnkf -e -m$B!W$G$9!#(B
