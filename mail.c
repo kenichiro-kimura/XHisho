@@ -871,31 +871,30 @@ static void CheckYoubin(Widget w, int *fid, XtInputId * id)
   if (tmp1 == NULL)
     goto End;
 
-  while (tmp1 && i < mar.mail_lines && !(isFrom && isSubject)) {
+  while (tmp1 != NULL && i < mar.mail_lines && !(isFrom && isSubject)) {
     ch_ptr = tmp1;
-    while(ch_ptr && (isdigit((unsigned char)*ch_ptr) || isspace((unsigned char)*ch_ptr)))
-	  ch_ptr++;
+    while(*ch_ptr != '\0' && 
+	  (isdigit((unsigned char)*ch_ptr) 
+	   || isspace((unsigned char)*ch_ptr))){
+      ch_ptr++;
+      tmp1++;
+    }
     if (!strncmp(ch_ptr, "From:", 5) || !strncmp(ch_ptr, "Subject:", 8)) {
       *tmp2 = '\0';
 
-      if(*ch_ptr == 'S')
-	isSubject = 1;
-
 #ifdef PETNAME
       if (!strncmp(ch_ptr, "From:", 5) && !isFrom) {
-	isFrom = 1;
 	next_ptr = ch_ptr;
-	ch_ptr += strlen("From:");
-	for (j = 0; j < strlen(ch_ptr) - 1; j++)
-	  if (isspace((unsigned char)*ch_ptr))
+	for (j = 0; j < strlen(ch_ptr) - strlen("From:") - 1; j++)
+	  if (!isspace((unsigned char)*(ch_ptr + j + strlen("From:"))))
 	    break;
 
-	strcpy(who, ch_ptr + j + 1);
-	
+	strcpy(who, ch_ptr + j + strlen("From:"));
+
 	if (strchr(who, '@') != NULL && strchr(who,'<') == NULL){
 	  strcpy(pname, who);
 	} else {
-	  if (strchr(tmp1, '<') == NULL)
+	  if (strchr(ch_ptr, '<') == NULL)
 	    next_ptr = strtok(NULL, "\n");
 	  if(next_ptr != NULL){
 	    left_ptr = strchr(next_ptr, '<');
@@ -920,7 +919,7 @@ static void CheckYoubin(Widget w, int *fid, XtInputId * id)
       if ((t_file = fopen(t_filename, "w")) == NULL) {
 	fprintf(stderr, "can't open temporary file,%s\n", t_filename);
       } else {
-	fprintf(t_file, "%s\n", tmp1);
+	fprintf(t_file, "%s\n", ch_ptr);
 	fclose(t_file);
 
 	sprintf(command, "%s %s", FilterCommand, t_filename);
@@ -935,19 +934,24 @@ static void CheckYoubin(Widget w, int *fid, XtInputId * id)
 	unlink(t_filename);
       }
 #else
-	strcpy(tmp2, ch_ptr);
+      strcpy(tmp2, ch_ptr);
 #endif
 
-      strncat(From, tmp2, MIN(mar.from_maxlen - 1, strlen(tmp2)));
-      if(tmp2[MIN(mar.from_maxlen - 1, strlen(tmp2))] != '\0')
-	strcat(From,"\n");
-      i++;
+      if((!strncmp(tmp2, "Subject:", 8) && !isSubject) || 
+	 (!strncmp(tmp2, "From:", 5) && !isFrom)){
+	if(*tmp2 == 'S') isSubject = 1;
+	if(*tmp2 == 'F') isFrom = 1;
+	strncat(From, tmp2, MIN(mar.from_maxlen - 1, strlen(tmp2)));
+	if(tmp2[MIN(mar.from_maxlen - 1, strlen(tmp2))] != '\0')
+	  strcat(From,"\n");
+	i++;
+      }
     }
     tmp1 = strtok(NULL, "\n");
   }
 
   XtVaSetValues(from, XtNlabel, From, NULL);
-  i = CheckYoubinNow(1);
+  i = CheckYoubinNow(0);
   if(i < 1) i = 1;
 
   ExistMailNum = i;
@@ -957,8 +961,8 @@ static void CheckYoubin(Widget w, int *fid, XtInputId * id)
     sprintf(message,mar.mail_l,i);
   else
     sprintf(message,tmp,i);
-  
-  if(!IsPopped(mail) && *From != '\0'){
+
+  if(*From != '\0'){
     XtVaSetValues(xhisho, XtNanimType, MAIL, NULL);
     XtVaSetValues(label, XtNlabel, message, NULL);
     MailPopup(0,1);
