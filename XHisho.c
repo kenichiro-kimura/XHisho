@@ -1,18 +1,17 @@
 /*
-   画像張り付け & 時計表示 Widget 「XHisho Widget」 Widget本体処理ファイル
+ * 画像張り付け & 時計表示 Widget 「XHisho Widget」 Widget本体処理ファイル
+ *
+ * copyright(c) 1998,1999  Ken'ichirou Kimura(kimura@db.is.kyushu-u.ac.jp)
 
-   copyright(c) 1998,1999  Ken'ichirou Kimura(kimura@db.is.kyushu-u.ac.jp)
-
-   指定された(XtNcgFile)xpmデータを張り付ける。その下にxpmと同じ幅で指
-   定された(XtNfontSet)フォントと同じ高さの余白を作り、そこに時計を表
-   示する。時計の表示フォーマットはリソースXtNclockFormatで指定できる。
-
-   また、リソースXtNfocusWinをTrueにすると、フォーカスの当っているウイ
-   ンドウのタイトルに「おすわり」するようになる。focusWinへの追随は時
-   計の書き換えと同時(つまり1秒毎)に行っているので、やや反応が鈍い。速
-   くすることも可能だが、負荷をあげてまでこの反応をあげることに意味を
-   見いだせない。
-*/
+ * 指定された(XtNcgFile)xpmデータを張り付ける。その下にxpmと同じ幅で指
+ * 定された(XtNfontSet)フォントと同じ高さの余白を作り、そこに時計を表
+ * 示する。時計の表示フォーマットはリソースXtNclockFormatで指定できる。
+ * また、リソースXtNfocusWinをTrueにすると、フォーカスの当っているウイ
+ * ンドウのタイトルに「おすわり」するようになる。focusWinへの追随は時
+ * 計の書き換えと同時(つまり1秒毎)に行っているので、やや反応が鈍い。速
+ * くすることも可能だが、負荷をあげてまでこの反応をあげることに意味を
+ * 見いだせない。
+ */
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -417,6 +416,3 @@ static void NewInterval(XHishoWidget xhw){
   xhw->xhisho.intervalId = XtAppAddTimeOut(XtWidgetToApplicationContext((Widget)xhw)
 					   ,1* 1000,(XtTimerCallbackProc)ClockDraw,xhw); 
 }
-
-  
-  

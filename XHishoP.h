@@ -1,9 +1,8 @@
 /*
-   画像張り付け & 時計表示 Widget 「XHisho Widget」 プライベートヘッダファイル
-
-   copyright(c) 1998,1999  Ken'ichirou Kimura(kimura@db.is.kyushu-u.ac.jp)
-
-*/
+ * 画像張り付け & 時計表示 Widget 「XHisho Widget」 プライベートヘッダファイル
+ *
+ * copyright(c) 1998,1999  Ken'ichirou Kimura(kimura@db.is.kyushu-u.ac.jp)
+ */
 
 #ifndef _XHISHOP_H
 #define _XHISHOP_H
@@ -60,6 +59,3 @@ typedef struct _XHishoRec{
 } XHishoRec;
 
 #endif
-
-
-
