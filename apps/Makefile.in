@@ -7,7 +7,7 @@ countdown: countdown.c
 	@CC@ @CFLAGS@ @LDFLAGS@ -g -O2 countdown.c -o $@
 
 sstp: sstp.c
-	@CC@ @CFLAGS@ @LDFLAGS@ -g -O2 sstp.c -o $@
+	@CC@ @CFLAGS@ @LDFLAGS@ @LIBS@ -g -O2 sstp.c -o $@
 
 clean:
 	rm -rf *.o $(PROGS)
