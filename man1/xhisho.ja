@@ -5,7 +5,7 @@ XHisho - X Window System で動く電子秘書
 .B  xhisho
 [toolkit options] [-cgfile [cg filename]] [-filter [filter
 command]] [-soundcmd [sound command]] [-noclock] [-focus] [-justify
-[left/center/right]] [-shape] [-ypos [n]] [-chime/-nochime]
+[left/center/right]] [-adjust] [-shape] [-ypos [n]] [-chime/-nochime]
  [-yserver [youbin server]] [-pserver [POP3 server]] [-youbin] [-pop] [-apop]
 .SH DESCRIPTION
 .I XHisho
@@ -104,6 +104,10 @@ XHishoを終わります。Shift + 右クリックでも同じです。
 .TP 20
 .BI \-focus 
 focusの当っているウインドウのタイトルバーに"お座り"します。
+
+.TP 20
+.BI \-adjust
+ウインドウ全体が画面に収まるように調整します。
 
 .TP 20
 .BI \-justify " left/center/right"
