@@ -215,6 +215,8 @@ static void ReadAddrBook()
       }
     }
 
+    pname[j] = '\0';
+
     /**
      * Petname の登録。リストからアドレスを順に取り出し、登録する。
      **/
