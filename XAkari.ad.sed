@@ -94,7 +94,8 @@ XHisho.MailAlert.newMailSound: XHISHODIR/newmail.wav
 !!About XAkari...
 !!
 
-XHisho.About.aboutLabel:\                 About XAkari.....\n\
+XHisho.About.aboutLabel:\
+\                 XAkari Ver.%s \n\
 \n\
 Copyright(c) 1998,1999  ÌÚÂ¼·ò°ìÏº<Ken'ichirou Kimura>\n\
 \n\

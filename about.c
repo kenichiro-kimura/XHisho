@@ -42,6 +42,7 @@ static void Destroy(Widget w, caddr_t client_data, caddr_t call_data)
 Widget CreateAboutWindow(Widget w)
 {
   static XtPopdownIDRec pdrec;
+  char* aboutMessage;
 
   static Arg openargs[] = {
     {XtNwindowMode, 0},
@@ -78,8 +79,11 @@ Widget CreateAboutWindow(Widget w)
 
   XtGetApplicationResources(top, &abr, resources, XtNumber(resources), NULL, 0);
 
+  aboutMessage = malloc(strlen(abr.about_s) + 20);
+  sprintf(aboutMessage,abr.about_s,XHISHO_VERSION);
+
   labelargs[0].value = (XtArgVal) POINT_WIDTH + LABEL_OFFSET;
-  labelargs[1].value = (XtArgVal) abr.about_s;
+  labelargs[1].value = (XtArgVal) aboutMessage;
 
 
   about = XtCreateManagedWidget("about", msgwinWidgetClass

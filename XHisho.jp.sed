@@ -90,7 +90,8 @@ XHisho.MailAlert.newMailSound: XHISHODIR/newmail.wav
 !!About XHisho
 !!
 
-XHisho.About.aboutLabel:\                 About XHisho.....\n\
+XHisho.About.aboutLabel:\
+\              XHisho Ver.%s\n\
 \n\
 Copyright(c) 1998,1999  ÌÚÂ¼·ò°ìÏº<Ken'ichirou Kimura>\n\
 \n\
