@@ -65,21 +65,27 @@ Widget CreateOptionWindow(Widget w){
 			     ,w,NULL);
 
   XtGetApplicationResources(top, &opr, resources, XtNumber(resources), NULL, 0);
-
   local_option = XtVaCreateManagedWidget("option", msgwinWidgetClass, top
-					 ,NULL);
+  				 ,NULL);
 
   label = XtVaCreateManagedWidget("optionLabel", asciiTextWidgetClass
 				  ,local_option
 				  ,XtNvertDistance,10
 				  ,XtNhorizDistance, POINT_WIDTH + LABEL_OFFSET
-				  ,XtNborderWidth,0
+				  ,XtNborderWidth,1
 				  ,XtNwidth,opr.width
 				  ,XtNheight,opr.height
-				  ,XtNresize,False
-				  ,XtNdisplayCaret,False
+				  ,XtNleft,XtChainLeft
+				  ,XtNright,XtChainRight
+				  ,XtNsensitive,True
+				  ,XtNjustify,XtJustifyLeft
+				  /*
+				  ,XtNresize,XawtextResizeWidth
+				  */
 				  ,XtNscrollHorizontal,XawtextScrollWhenNeeded
 				  ,XtNscrollVertical,XawtextScrollWhenNeeded
+				  ,XtNautoFill,True
+				  ,XtNeditType,XawtextAppend
 				  ,NULL);
 
   ok = XtVaCreateManagedWidget("optionOk", commandWidgetClass, local_option
@@ -143,6 +149,8 @@ static void CheckOption(Widget w, int *fid, XtInputId * id)
   int is_end;
   XFontSet fset;
   XRectangle ink, log;
+  int max_len;
+  Dimension width;
 #ifdef EXT_FILTER
   char command[128];
   char t_filename[BUFSIZ];
@@ -160,8 +168,9 @@ static void CheckOption(Widget w, int *fid, XtInputId * id)
 
   _buffer[len] = '\0';
 
-  if(x == 0)
+  if(x == 0){
     memset(message_buffer,'\0',BUFSIZ * 20);
+  }
 
   is_end = 0;
   x = 1;
@@ -245,10 +254,28 @@ static void CheckOption(Widget w, int *fid, XtInputId * id)
   */
 
   strcat(message_buffer,chr_ptr);
+  max_len = 0;
+  chr_ptr = strtok(message_buffer,"\n");
+  if(chr_ptr == NULL) max_len = strlen(message_buffer);
 
-  XtVaSetValues(label,XtNstring,message_buffer
-		,XtNjustify,XtJustifyLeft
-		,XtNborderWidth,0
+  while(chr_ptr){
+    next_ptr = strtok(NULL,"\n");
+    if(next_ptr == NULL)
+      if(max_len < strlen(message_buffer))
+	max_len = strlen(message_buffer);
+    else 
+      if(max_len < strlen(chr_ptr) - strlen(next_ptr))
+	max_len = strlen(chr_ptr) - strlen(next_ptr);
+
+    chr_ptr = next_ptr;
+  }
+  printf("%d\n", max_len * log.width);
+  width = max_len * log.width;
+
+  XtVaSetValues(label
+		,XtNstring,message_buffer
+		,XtNresize,XawtextResizeWidth
+		,XtNautoFill,True
 		,NULL);
 
   XtPopup(XtParent(local_option), XtGrabNone);
@@ -265,3 +292,5 @@ static int Option_exit(Display * disp)
   kill(0, SIGTERM);
   return 0;
 }
+
+
