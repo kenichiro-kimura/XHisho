@@ -27,7 +27,7 @@ static int IsSet = 0;		/** 1回目のExposeでだけ子Widgetを作る **/
 
 Widget mail, openwin, xhisho, about, editwin, calendarwin, menu, nomail,
     resedit;
-int MailWindowShown, OpenWindowShown, MenuWindowShown, AboutWindowShown;
+int MailWindowShown, OpenWindowShown, MenuWindowShown, AboutWindowShown, CalendarWindowShown;
 BiffMethod Biff = LOCAL;
 int UseSound = 1;
 String FilterCommand, SoundCommand;
@@ -44,7 +44,7 @@ extern int isMailChecked;	/** in mail.c **/
 
 static void Wait(Widget, XEvent *, String *, unsigned int *);
 static void Quit(Widget, XEvent *, String *, unsigned int *);
-static void OpenWindowPopup(Widget, XEvent *, String *, unsigned int *);
+static void ScheduleWindowPopup(Widget, XEvent *, String *, unsigned int *);
 static void AboutWindowPopup(Widget, XEvent *, String *, unsigned int *);
 static void MenuWindowPopup(Widget, XEvent *, String *, unsigned int *);
 static void CalendarWindowPopup(Widget, XEvent *, String *, unsigned int *);
@@ -80,10 +80,10 @@ extern int ReadRcfile(char *);
 
 static XtActionsRec actionTable[] = {
   {"Quit", Quit},
-  {"OpenWindowPopup", OpenWindowPopup},
+  {"ScheduleWindowPopup", ScheduleWindowPopup},
+  {"CalendarWindowPopup", CalendarWindowPopup},
   {"AboutWindowPopup", AboutWindowPopup},
   {"MenuWindowPopup", MenuWindowPopup},
-  {"CalendarWindowPopup", CalendarWindowPopup},
   {"CheckMailNow", CheckMailNow},
   {"Expose", Wait},
 };
@@ -199,7 +199,7 @@ static void CheckMailNow(Widget w, XEvent * event, String * params, unsigned int
 }
 
 
-static void OpenWindowPopup(Widget w, XEvent * event, String * params, unsigned int *num_params)
+static void ScheduleWindowPopup(Widget w, XEvent * event, String * params, unsigned int *num_params)
 {
   time_t now;
   struct tm *tm_now;
@@ -260,6 +260,12 @@ static void CalendarWindowPopup(Widget w, XEvent * event, String * params, unsig
   time_t now;
   struct tm *tm_now;
 
+  if(CalendarWindowShown){
+    CalendarWindowShown = 0;
+    XtPopdown(XtParent(calendarwin));
+    return;
+  }
+
   time(&now);
   tm_now = localtime(&now);
 
@@ -269,6 +275,7 @@ static void CalendarWindowPopup(Widget w, XEvent * event, String * params, unsig
    * Calendar WindowのPopup
    **/
   XtVaSetValues(calendarwin, XtNwindowMode, 0, NULL);
+  CalendarWindowShown = 1;
   XtPopup(XtParent(calendarwin), XtGrabNone);
 }
 
@@ -297,18 +304,14 @@ int main(int argc, char **argv)
    **/
 
   static char defaultTranslations[] = "Shift<Btn2Down> : AboutWindowPopup()\n\
-                                            <Btn2Down> : OpenWindowPopup()\n\
+                                            <Btn2Down> : ScheduleWindowPopup()\n\
                                        Shift<Btn3Down> : Quit()\n\
                                        <Btn1Down> : MenuWindowPopup()\n\
                                        <Btn3Down> : CheckMailNow()\n\
                                        <Expose>: Expose()";
 
-  static Arg args[] = {
-    {XtNtranslations, (XtArgVal) NULL},
-    {XtNlabel, (XtArgVal) ""},
-  };
-
   String rcfile, petname_f;
+  XtTranslations trans_table;
 
   /**
    *  Localeをセットする
@@ -328,12 +331,10 @@ int main(int argc, char **argv)
   XtVaSetValues(toplevel, XtNwidth, 100, XtNheight, 100, NULL);
 
   /**
-   * main windowを生成。class名はxhisho。actionも追加。
+   * main windowを生成。class名はxhisho。
    **/
 
-  args[0].value = (XtArgVal) XtParseTranslationTable(defaultTranslations);
-  xhisho = XtCreateManagedWidget("xhisho", xHishoWidgetClass, toplevel
-				 ,args, XtNumber(args));
+  xhisho = XtVaCreateManagedWidget("xhisho",xHishoWidgetClass,toplevel,NULL);
 
   /**
    * rcfileとfilter commandとpetname fileをセット
@@ -357,6 +358,8 @@ int main(int argc, char **argv)
    * Action のセット
    **/
   XtAddActions(actionTable, XtNumber(actionTable));
+  trans_table = XtParseTranslationTable(defaultTranslations);
+  XtAugmentTranslations(xhisho,trans_table);
 
   /**
    *  WidgetのRealize

@@ -8,7 +8,7 @@ static MenuRes mres;
 static const char ResName[][128] = {"menul", "menu0", "menu1", "menu2"
 ,"menu3", "menu4", "menu5"};
 
-extern int WindowMode, MenuWindowShown, OpenWindowShown, AboutWindowShown;
+extern int WindowMode, MenuWindowShown, OpenWindowShown, AboutWindowShown, CalendarWindowShown;
 extern Widget openwin, calendarwin, about, resedit;
 
 static void Destroy(Widget, caddr_t, caddr_t);
@@ -123,6 +123,7 @@ static void CalendarWindowPopup(Widget w, caddr_t client_data, caddr_t call_data
   calendarwin = CreateCalendarWindow(XtParent(top), tm_now->tm_mon, *tm_now);
   XtPopdown(XtParent(XtParent(w)));
   MenuWindowShown = 0;
+  CalendarWindowShown = 1;
   XtPopup(XtParent(calendarwin), XtGrabNone);
 }
 

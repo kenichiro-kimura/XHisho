@@ -452,3 +452,26 @@ focusWin関係のリソースには以下のものがあります。
 XHisho*frameMode:
 
 に0〜2の3種類の値を与えてみてください。
+
+
+13. Translations 〜トランスレーションの設定〜
+
+XHishoのアクションには以下のものがあります。
+
+Quit()                : XHishoを終了する
+ScheduleWindowPopup() : 今日のスケジュールを表示する
+CalendarWindowPopup() : 予定編集ウインドを表示する
+AboutWindowPopup()    : 「XHishoについて」を表示する
+MenuWindowPopup()     : メニューウインドを表示する
+CheckMailNow()        : メールをチェックする
+
+そして、デフォルトのトランスレーションは以下のようになっています。
+
+XHisho*translations: #override Shift<Btn2Down> : AboutWindowPopup()\n\
+                                    <Btn2Down> : ScheduleWindowPopup()\n\
+                               Shift<Btn3Down> : Quit()\n\
+                                    <Btn1Down> : MenuWindowPopup()\n\
+                                    <Btn3Down> : CheckMailNow()
+
+これらはリソースファイルで設定することができます。
+

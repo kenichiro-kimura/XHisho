@@ -14,6 +14,7 @@ static int Edited_Month, Edited_Year;
 static CalendarRes cres;
 
 extern Widget editwin, calendarwin;
+extern CalendarWindowShown;
 
 /**
  * 関数のプロトタイプ
@@ -74,6 +75,7 @@ static XtResource resources[] = {
 
 static void Destroy(Widget w, caddr_t client_data, caddr_t call_data)
 {
+  CalendarWindowShown = 0;
   XtPopdown(XtParent(XtParent(w)));
 }
 
