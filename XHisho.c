@@ -1,7 +1,7 @@
 /**
  * 画像張り付け & 時計表示 Widget 「XHisho Widget」 Widget本体処理ファイル
  *
- * copyright(c) 1998,1999  Ken'ichirou Kimura(kimura@db.is.kyushu-u.ac.jp)
+ * copyright(c) 1998-2000 Ken'ichirou Kimura(kimura@db.is.kyushu-u.ac.jp)
  *
  * 指定された(XtNcgFile)xpmデータを張り付ける。その下にxpmと同じ幅で指
  * 定された(XtNfontSet)フォントと同じ高さの余白を作り、そこに時計を表

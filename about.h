@@ -22,7 +22,7 @@
 
 #define ABOUT_S "              XHisho Ver.%s\n\
 \n\
-Copyright(c) 1998,1999  Ken'ichirou Kimura\n\
+Copyright(c) 1998-2000  Ken'ichirou Kimura\n\
 \n\
 \n\
 XHisho is your private secretary on X Window System.\n\
