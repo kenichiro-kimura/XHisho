@@ -1,7 +1,7 @@
 #include "config.h"
 
 CC = gcc
-XCOMM CDEBUGFLAGS = -g -Wall
+CDEBUGFLAGS = -g -Wall
 XCOMM CCOPTIONS = 
 
 XCOMM

@@ -329,6 +329,7 @@ int CheckPOP3(XtPointer cl, XtIntervalId *id){
   case POP:
     ret_value = pop3(POP_AUTH,mar.p_server,buf);
     break;
+  default:
   }
 
   if(ret_value >0){
@@ -833,5 +834,5 @@ static void CheckYoubin(Widget w,int *fid,XtInputId *id){
 }
 
 static int Youbin_exit(Display* disp){
-    kill(0, SIGTERM);           /* kill all the children */
+    return kill(0, SIGTERM);           /* kill all the children */
 }
