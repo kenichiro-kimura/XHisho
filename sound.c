@@ -36,7 +36,8 @@
 /**
  *  プロトタイプ
  **/
-static int _SoundPlay(const char *filename);
+static int _SoundPlay(const char *);
+static int ExtSoundCommand(const char *);
 
 #ifdef NORMAL_SOUND_PLAY
 static int readWaveFile(int fd, PWAVEFORMAT pwavefmt, u_int * datasize);
@@ -250,7 +251,7 @@ int SoundPlay(const char *filename)
   return 0;
 }
 
-int ExtSoundCommand(const char *filename)
+static int ExtSoundCommand(const char *filename)
 {
   char command[BUFSIZ];
 

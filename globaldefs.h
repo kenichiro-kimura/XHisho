@@ -170,7 +170,6 @@ SCHEDULE_GLOBAL int ExistHoliday(int, int, int);
 SCHEDULE_GLOBAL void ReadHoliday();
 
 SOUND_GLOBAL int SoundPlay(const char *filename);
-SOUND_GLOBAL int ExtSoundCommand(const char *filename);
 
 
 /**
