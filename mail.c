@@ -697,54 +697,18 @@ static void CheckYoubin(Widget w,int *fid,XtInputId *id){
   mail_size = (int)strtol(buf,&cp,10);
   if(*cp != ' '){
     fprintf(stderr,"Invalid message from youbin\n");
-#ifdef PETNAME
-    free(from_who);
-    free(who);
-    free(pname);
-#endif
-    free(buf);
-    free(From);
-    free(tmp2);
-    return;
+    goto End;
   }
 
-  if (mail_size != old_mail_size){
-    if(!MailWindowShown){
-      isMailChecked = 1;
-      MailWindowShown = 1;
+  if (mail_size == old_mail_size)
+    goto End;
 
-      XtVaSetValues(mail[0],XtNwindowMode,0,NULL);
-      XtPopup(XtParent(mail[0]),XtGrabNone);
-      
-      if(mar.sound_f && UseSound){
-	if(0 == fork()){
-	  SoundPlay(mar.sound_f);
-	  exit(0);
-	}
-      }
-      
-      MailWindowShown = 1;
-    }
-  }
   old_mail_size = mail_size;
-
   date = strtol(cp, &q, 10);
-
   tmp1 = strtok(q + 1, "\n");
 
-  if(tmp1 == NULL){
-#ifdef PETNAME
-    free(from_who);
-    free(who);
-    free(pname);
-#endif
-    free(buf);
-    free(From);
-    free(tmp2);
-    return;
-  }
-
-    
+  if(tmp1 == NULL)
+    goto End;
 
   while(tmp1 && i < mar.mail_lines){
     if(!strncmp(tmp1,"From:",5) || !strncmp(tmp1,"Subject:",8)){
@@ -810,7 +774,22 @@ static void CheckYoubin(Widget w,int *fid,XtInputId *id){
   }
 
   XtVaSetValues(from,XtNlabel,From,NULL);
+  if(!MailWindowShown){
+    isMailChecked = 1;
+    MailWindowShown = 1;
 
+    XtVaSetValues(mail[0],XtNwindowMode,0,NULL);
+    XtPopup(XtParent(mail[0]),XtGrabNone);
+      
+    if(mar.sound_f && UseSound){
+      if(0 == fork()){
+	SoundPlay(mar.sound_f);
+	exit(0);
+      }
+    }
+  }
+
+End: /* 共通終了処理 */
   free(From);
   free(tmp2);
   free(buf);
