@@ -737,8 +737,21 @@ MHCD* openmhc(const char* home_dir, const char* year_month){
   }
 
   while ((dp = readdir(dirp)) != NULL){
+    int filename_length,is_mhcfile;
+
     if(!strncmp(dp->d_name,".",1)) continue;
 
+    filename_length = 0;
+    is_mhcfile = 1;
+    while(filename_length <= strlen(dp->d_name)){
+      if(!isdigit((unsigned char)dp->d_name[filename_length])){
+	is_mhcfile = 0;
+	break;
+      }
+      filename_length++;
+    }
+     
+    if(!is_mhcfile) continue;
     strcpy(filename,dirname);
     strcat(filename,dp->d_name);
     fp = fopen(filename,"r");
