@@ -13,7 +13,11 @@ JPEG_OBJS = load_jpeg.o
 XPM_OBJS = load_xpm.o
 #endif
 
-OBJS = $(BASE_OBJS) $(JPEG_OBJS) $(XPM_OBJS)
+#ifdef HAVE_LIBPNG
+PNG_OBJS = load_png.o
+#endif
+
+OBJS = $(BASE_OBJS) $(JPEG_OBJS) $(XPM_OBJS) $(PNG_OBJS)
 
 SRCS = $(OBJS:.o=.c)
 

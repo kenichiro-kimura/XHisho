@@ -56,6 +56,17 @@ then
 AC_CHECK_LIB(jpeg, main)
 fi
 
+AC_ARG_WITH(png,
+        [  --without-png           compile without PNG library],
+        [with_png=$withval],
+        [with_png=yes])
+test "$with_png" = "yes"
+
+if test "$with_png" = "yes";
+then
+AC_CHECK_LIB(png, main)
+fi
+
 AC_ARG_ENABLE(personal,
         [  --enable-personal       compile for personal],
         [with_personal=$enableval],

@@ -143,16 +143,21 @@ From$B$K$O(BMew$B$HF1$87A<0$N(BPetname$B$rMQ$$$F!V(Bhogeyama@dokka.com$B!
 $B!&(B--disable-petname    : Petname$B$r;H$$$^$;$s(B
 $B!&(B--without-xpm        : $B2hA|7A<0$H$7$F(Bxpm$B$r;H$$$^$;$s(B
 $B!&(B--without-jpeg       : $B2hA|7A<0$H$7$F(Bjpeg$B$r;H$$$^$;$s(B
+$B!&(B--without-png        : $B2hA|7A<0$H$7$F(Bpng$B$r;H$$$^$;$s(B
 
 
-XPM$B%i%$%V%i%j(B(*1)$B5Z$S(BJPEG$B%i%$%V%i%j(B(*2)$B$,%$%s%9%H!<%k$5$l$F$$$k$H!"(B
-configure$B$,$=$l$r8+$D$1$F(BXPM$B$H(BJPEG$B$r;H$($k$h$&$K%3%s%Q%$%k$7$^$9!#(B
-$B%i%$%V%i%j$O%$%s%9%H!<%k$7$F$$$k$,!"2hA|7A<0$H$7$F;H$$$?$/$J$$>l9g$O(B
-$B!V(B--without-xx$B!W$r;XDj$7$F$/$@$5$$!#(B
+XPM$B%i%$%V%i%j(B(*1)$B5Z$S(BJPEG$B%i%$%V%i%j(B(*2)$B!"(BPNG$B%i%$%V%i%j(B(*3)$B$,%$%s%9%H!<(B
+$B%k$5$l$F$$$k$H!"(Bconfigure$B$,$=$l$r8+$D$1$F(BXPM$B!"(BJPEG$B!"(BPNG$B$r;H$($k$h$&$K(B
+$B%3%s%Q%$%k$7$^$9!#%i%$%V%i%j$O%$%s%9%H!<%k$7$F$$$k$,!"2hA|7A<0$H$7$F;H(B
+$B$$$?$/$J$$>l9g$O!V(B--without-xx$B!W$r;XDj$7$F$/$@$5$$!#(B
 
 XPM$B%i%$%V%i%j$,$&$^$/8+$D$+$i$J$$$H$-$O!"(Bconfigure$B$N%*%W%7%g%s$G(B
 $B!V(B--x-libraries$B!W$r;XDj$7$F$_$F$/$@$5$$!#Nc$($P(B/usr/X11R6/lib$B$K$"$k$N(B
 $B$J$i!V(B./configure --x-libraries=/usr/X11R6/lib$B!W$G$9!#(B
+
+JPEG$B%i%$%V%i%j$d(BPNG$B%i%$%V%i%j$,$&$^$/8+$D$+$i$J$$$H$-$O!"(Bconfigure$B$N%*(B
+$B%W%7%g%s$G!V(B--libdir$B!W$r;XDj$7$F$_$F$/$@$5$$!#Nc$($P(B/usr/local/lib$B$K$"(B
+$B$k$N$J$i!"!V(B./configure --libdir=/usr/local/lib$B!W$G$9!#(B
 
 $B$$$:$l$N%i%$%V%i%j$b(BFreeBSD$B$J$i(Bport$B$d(Bpackage$B$K$"$j$^$9!#(B
 
@@ -160,6 +165,7 @@ XPM$B%i%$%V%i%j$,$&$^$/8+$D$+$i$J$$$H$-$O!"(Bconfigure$B$N%*%W%7%g%s$G(B
 
    *1)XPM$B%i%$%V%i%j(B   ftp://avahi.inria.fr/pub/xpm/
    *2)JPEG$B%i%$%V%i%j(B  ftp://ftp.uu.net/graphics/jpeg/
+   *3)PNG$B%i%$%V%i%j(B   ftp://ftp.uu.net/graphics/png
 
 
 
@@ -203,8 +209,8 @@ XPM$B%i%$%V%i%j$,$&$^$/8+$D$+$i$J$$$H$-$O!"(Bconfigure$B$N%*%W%7%g%s$G(B
 
 
 $B$^$?!"GX7J$KD%$jIU$1$k3($N%G!<%?$OI,?\$G$9!#L5$$$H5/F0$7$^$;$s!#%5%]!<(B
-$B%H$7$F$$$k2hA|7A<0$O8=:_$N$H$3$m(BXPM$B$H(BBMP$B$H(BJPEG$B$G$9$N$G!"$3$l0J30$N%G!<(B
-$B%?$O2hA|7A<0$rJQ99$7$F$/$@$5$$!#(B
+$B%H$7$F$$$k2hA|7A<0$O8=:_$N$H$3$m(BXPM$B!"(BBMP$B!"(BJPEG$B!"(BPNG$B$G$9$N$G!"$3$l0J30(B
+$B$N%G!<%?$O2hA|7A<0$rJQ99$7$F$/$@$5$$!#(B
 
 
 $B%5%s%W%k$N%&%$!<%/%j!<%G!<%?(B(xhs.weekly)$B$H=KF|%G!<%?(B(xhs.holiday)$B$O<j(B

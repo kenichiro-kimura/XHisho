@@ -23,15 +23,16 @@ You can custom every message,CG,etc.
 
 3.How to install
 
- (1) run "./configure" script. If you don't use "--without-xpm"
-       option, xpm library(*1) is required.If you don't use
-       "--without-jpeg" option, jpeg library(*2) is required.
+ (1) run "./configure" script. If you have some graphic
+     libraries(you can use XPM(*1),JPEG(*2),and PNG(*3)
+     library),XHisho uses these libraries.
  (2) run "make".
  (3) run "make install"
 
 
   *1)XPM library   ftp://avahi.inria.fr/pub/xpm/
   *2)JPEG library  ftp://ftp.uu.net/graphics/jpeg/
+  *3)PNG library   ftp://ftp.uu.net/graphics/png
 
 
 4.How to use

@@ -25,6 +25,12 @@
 #define XPM_GLOBAL extern
 #endif
 
+#ifdef _PNG_GLOBAL
+#define PNG_GLOBAL
+#else
+#define PNG_GLOBAL extern
+#endif
+
 #include <X11/Xlib.h>
 #include "../config.h"
 
@@ -86,6 +92,10 @@ JPEG_GLOBAL int LoadJpeg(ImageInfo *);
 
 #ifdef HAVE_LIBXPM
 XPM_GLOBAL int LoadXpm(ImageInfo *);
+#endif
+
+#ifdef HAVE_LIBPNG
+PNG_GLOBAL int LoadPng(ImageInfo *);
 #endif
 
 #endif

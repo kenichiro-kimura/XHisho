@@ -26,6 +26,12 @@ static struct {
   },
 #endif
 
+#ifdef HAVE_LIBPNG
+  {
+    LoadPng
+  },
+#endif
+
 #ifdef HAVE_LIBXPM
   {
     LoadXpm
