@@ -23,6 +23,7 @@ static XtIntervalId OptionTimeoutId = 0;
 static XtIntervalId MessageWaitId = 0;
 static messageBuffer mbuf;
 static int sstp_fd;
+static int pause_message = 0;
 
 #ifdef USE_KAWARI
 static XtIntervalId KAWARITimeoutId = 0;
@@ -31,6 +32,7 @@ static XtIntervalId KAWARITimeoutId = 0;
 static char BufferFileName[] = "_xhisho_sstp_buffer";
 
 static void Destroy(Widget,XEvent *, String *, unsigned int *);
+static void NextPage(Widget,XEvent *, String *, unsigned int *);
 static void CommandInit();
 static void CheckOption(Widget, int *, XtInputId *);
 static int Option_exit(Display *);
@@ -69,6 +71,7 @@ static void SakuraParser(char*); /* only for reference */
 
 static XtActionsRec actionTable[] = {
   {"Destroy", Destroy},
+  {"NextPage", NextPage},
 };
 
 static XtResource resources[] = {
@@ -219,13 +222,17 @@ static void Destroy(Widget w, XEvent * event, String * params, unsigned int *num
   */
 }
 
+static void NextPage(Widget w, XEvent * event, String * params, unsigned int *num_params)
+{
+  pause_message = 0;
+}
 
 Widget CreateOptionWindow(Widget w){
   static XtPopdownIDRec pdrec;
   XtTranslations trans_table;
   static int virgine = 1;
 
-  static char defaultTranslations[] = "<Btn1Down> : Destroy()\n\
+  static char defaultTranslations[] = "<Btn1Down> : NextPage()\n\
                                        <Btn2Down> : Destroy()\n\
                                        <Btn3Down>: Destroy()";
 
@@ -792,121 +799,131 @@ static void InsertMessage(XtPointer cl,XtIntervalId* id)
   int is_display = 0;
   static int is_end = 0;
 
-  HeadOfBuffer(&mbuf,chr_ptr);
+  if(!pause_message){
+    HeadOfBuffer(&mbuf,chr_ptr);
 
-  if(*chr_ptr){
-    GetBuffer(&mbuf,chr_ptr);
-    switch(*chr_ptr){
-    case '\\':
-      switch(*(chr_ptr + 1)){
-      case 'h':
-	dest_win = SAKURA;
-	break;
-      case 'u':
-	dest_win = UNYUU;
-	break;
-      case 'n':
-	is_display = 2;
-	pos[dest_win] = 0;
-	break;
-      case 'e':
-	is_end = 1;
-	pos[0] = pos[1] = 0;
-	dest_win = SAKURA;
-	if(opr.timeout > 0){
-	  OptionTimeoutId = XtAppAddTimeOut(XtWidgetToApplicationContext(local_option)
-					    , opr.timeout * 1000
-					    , (XtTimerCallbackProc) Destroy
-					    , NULL);
-	}
+    if(*chr_ptr){
+      GetBuffer(&mbuf,chr_ptr);
+      switch(*chr_ptr){
+      case '\\':
+	switch(*(chr_ptr + 1)){
+	case 'h':
+	  dest_win = SAKURA;
+	  break;
+	case 'u':
+	  dest_win = UNYUU;
+	  break;
+	case 'n':
+	  is_display = 2;
+	  pos[dest_win] = 0;
+	  break;
+	case 'x':
+	  pause_message = 1;
+	  is_display = 1;
+	  strcpy(chr_ptr,"\n[click]");
+	  break;
+	case 'c':
+	  ClearMessage((dest_win == SAKURA? label:ulabel));
+	  pos[dest_win] = 0;
+	case 'e':
+	  is_end = 1;
+	  pos[0] = pos[1] = 0;
+	  dest_win = SAKURA;
+	  if(opr.timeout > 0){
+	    OptionTimeoutId = XtAppAddTimeOut(XtWidgetToApplicationContext(local_option)
+					      , opr.timeout * 1000
+					      , (XtTimerCallbackProc) Destroy
+					      , NULL);
+	  }
 #ifdef USE_KAWARI
-	if(KAWARITimeoutId){
+	  if(KAWARITimeoutId){
+	    XtRemoveTimeOut(KAWARITimeoutId);
+	    KAWARITimeoutId = 0;
+	  }
+
+	  if(opr.k_wait > 0)
+	    KAWARITimeoutId = XtAppAddTimeOut(XtWidgetToApplicationContext(local_option)
+					      , opr.k_wait * 1000
+					      , (XtTimerCallbackProc) GetMessageFromKawari
+					      , NULL
+					      );
+#endif
+	  break;
+	case 'w':
+	  cg_num = atoi(chr_ptr + 2);
+	  usleep(cg_num * 50 * 1000);
+	  break;
+	case 's':
+	  cg_num = atoi(chr_ptr + 2);
+	  if (dest_win == UNYUU) cg_num += 10;
+	  XtVaSetValues(xhisho,XtNforceCG,True
+			,(dest_win == SAKURA)? XtNcgNumber:XtNucgNumber
+			,cg_num
+			,NULL);
+	}
+	break;
+      default:
+	if(strncmp(chr_ptr,"\r\n",2) != 0)
+	  is_display = 1;
+      }
+
+      if(is_display){
+	w = (dest_win == SAKURA)? label:ulabel;
+	if(is_end && *chr_ptr != '\n' && strncmp(chr_ptr,"\r\n",2) != 0){
+	  ClearMessage(label);
+	  ClearMessage(ulabel);
+	  is_end = 0;
+	}
+
+#ifdef USE_KAWARI
+	if(KAWARITimeoutId && !is_end){
 	  XtRemoveTimeOut(KAWARITimeoutId);
 	  KAWARITimeoutId = 0;
 	}
-
-	if(opr.k_wait > 0)
-	  KAWARITimeoutId = XtAppAddTimeOut(XtWidgetToApplicationContext(local_option)
-					  , opr.k_wait * 1000
-					  , (XtTimerCallbackProc) GetMessageFromKawari
-					  , NULL
-					  );
-#endif
-	break;
-      case 'w':
-	cg_num = atoi(chr_ptr + 2);
-	usleep(cg_num * 50 * 1000);
-	break;
-      case 's':
-	cg_num = atoi(chr_ptr + 2);
-	if (dest_win == UNYUU) cg_num += 10;
-	XtVaSetValues(xhisho,XtNforceCG,True
-		      ,(dest_win == SAKURA)? XtNcgNumber:XtNucgNumber
-		      ,cg_num
-		      ,NULL);
-      }
-      break;
-    default:
-      if(strncmp(chr_ptr,"\r\n",2) != 0)
-	is_display = 1;
-    }
-
-    if(is_display){
-      w = (dest_win == SAKURA)? label:ulabel;
-      if(is_end && *chr_ptr != '\n' && strncmp(chr_ptr,"\r\n",2) != 0){
-	ClearMessage(label);
-	ClearMessage(ulabel);
-	is_end = 0;
-      }
-
-#ifdef USE_KAWARI
-      if(KAWARITimeoutId && !is_end){
-	XtRemoveTimeOut(KAWARITimeoutId);
-	KAWARITimeoutId = 0;
-      }
 #endif
 
-      if(OptionTimeoutId && !is_end){
-	XtRemoveTimeOut(OptionTimeoutId);
-	OptionTimeoutId = 0;
-      }
-
-      XtVaGetValues(w, XtNfontSet, &fset, XtNwidth,&width,NULL);
-      XmbTextExtents(fset, chr_ptr, strlen(chr_ptr), &ink, &log);
-      max_len = width - log.width - 1;
-
-      if(!IsPopped(XtParent(w)))
-	XtPopup(XtParent(XtParent(w)), XtGrabNone);
-
-      last = XawTextSourceScan (XawTextGetSource (w),(XawTextPosition) 0,
-				XawstAll, XawsdRight, 1, TRUE);
-
-      if(*chr_ptr == '\n') pos[dest_win] = 0;
-
-      if(is_display == 2){
-	strcpy(buffer,"\n");
-      } else {
-	if((pos[dest_win] += log.width) > max_len){
-	  pos[dest_win] = log.width;
-	  if(IsKinsoku(chr_ptr)){
-	    sprintf(buffer,"%s\n",chr_ptr);
-	  } else {
-	    sprintf(buffer,"\n%s",chr_ptr);
-	  }
-	} else {
-	  strcpy(buffer,chr_ptr);
+	if(OptionTimeoutId && !is_end){
+	  XtRemoveTimeOut(OptionTimeoutId);
+	  OptionTimeoutId = 0;
 	}
-      }
+
+	XtVaGetValues(w, XtNfontSet, &fset, XtNwidth,&width,NULL);
+	XmbTextExtents(fset, chr_ptr, strlen(chr_ptr), &ink, &log);
+	max_len = width - log.width - 1;
+
+	if(!IsPopped(XtParent(w)))
+	  XtPopup(XtParent(XtParent(w)), XtGrabNone);
+
+	last = XawTextSourceScan (XawTextGetSource (w),(XawTextPosition) 0,
+				  XawstAll, XawsdRight, 1, TRUE);
+
+	if(*chr_ptr == '\n') pos[dest_win] = 0;
+
+	if(is_display == 2){
+	  strcpy(buffer,"\n");
+	} else {
+	  if((pos[dest_win] += log.width) > max_len){
+	    pos[dest_win] = log.width;
+	    if(IsKinsoku(chr_ptr)){
+	      sprintf(buffer,"%s\n",chr_ptr);
+	    } else {
+	      sprintf(buffer,"\n%s",chr_ptr);
+	    }
+	  } else {
+	    strcpy(buffer,chr_ptr);
+	  }
+	}
 	
-      textblock.firstPos = 0;
-      textblock.length = strlen(buffer);
-      textblock.ptr = buffer;
-      textblock.format = FMT8BIT;
-      XtVaSetValues(w,XtNeditType,XawtextEdit,NULL);
-      XawTextReplace(w,last,last,&textblock);
-      XtVaSetValues(w,XtNeditType,XawtextRead,NULL);
-      XFlush(XtDisplay(XtParent(w)));
-      XawTextSetInsertionPoint(w , last + textblock.length);
+	textblock.firstPos = 0;
+	textblock.length = strlen(buffer);
+	textblock.ptr = buffer;
+	textblock.format = FMT8BIT;
+	XtVaSetValues(w,XtNeditType,XawtextEdit,NULL);
+	XawTextReplace(w,last,last,&textblock);
+	XtVaSetValues(w,XtNeditType,XawtextRead,NULL);
+	XFlush(XtDisplay(XtParent(w)));
+	XawTextSetInsertionPoint(w , last + textblock.length);
+      }
     }
   }
 
@@ -933,10 +950,10 @@ static void AddBuffer(messageBuffer* buffer,const char* message,int use_file)
   char* b;
   unsigned char* _b_ptr;
   int _i = 0;
-/*
+
   if(use_file)
-    flock(sstp_fd,0x02);
-*/
+    fcntl(sstp_fd,F_WRLCK);
+
   if(strlen(message) < 1) return;
   newsize = strlen(buffer->buffer) + strlen(message) + 1;
 
@@ -958,10 +975,9 @@ static void AddBuffer(messageBuffer* buffer,const char* message,int use_file)
   }
 
   strcat(buffer->buffer,message);
-/*
+
   if(use_file)
-    flock(sstp_fd,0x08);
-*/
+    fcntl(sstp_fd,F_UNLCK);
 }
 
 static void _GetBuffer(messageBuffer* buffer,char* ret,int mode)
@@ -975,7 +991,6 @@ static void _GetBuffer(messageBuffer* buffer,char* ret,int mode)
   unsigned char str_num[128];
   int wait;
   unsigned char* c_ptr;
-  int skip_return = 0;
   int i;
 
   ret[0] = first_byte = *(buffer->buffer);
@@ -999,20 +1014,9 @@ static void _GetBuffer(messageBuffer* buffer,char* ret,int mode)
       case 'b':
       case 'i':
 	c_ptr = buffer->buffer + 2;
-	while(isdigit(*c_ptr) || *c_ptr == '\n' 
-	      || *c_ptr == '[' || *c_ptr == ']'){
-	  /*
-	   * if "\w10HOGE" -> "\w1\n0HOGE" ,
-	   *  this function return "\w10" 
-	   *     and rest of message should be "\nHOGE".
-	   */
+	while(isdigit(*c_ptr) || *c_ptr == '[' || *c_ptr == ']'){
 	  switch(*c_ptr){
-	  case '\n':
-	    skip_return++;
-	    strcpy(c_ptr,c_ptr + 1);
-	    break;
 	  case '[':
-	  case ']':
 	    strcpy(c_ptr,c_ptr + 1);
 	    break;
 	  default:
@@ -1020,15 +1024,48 @@ static void _GetBuffer(messageBuffer* buffer,char* ret,int mode)
 	    is_wbyte++;
 	    break;
 	  }
+	  if(*c_ptr == ']'){
+	    strcpy(c_ptr,c_ptr + 1);
+	    break;
+	  }
 	}
 	strncpy(str_num,buffer->buffer + 2
-		,is_wbyte);
-	str_num[is_wbyte] = '\0';
+		,is_wbyte - 1);
+	str_num[is_wbyte - 1] = '\0';
 	sprintf(ret + 2,"%d",atoi(str_num));
-	
-	for(i = 0; i < skip_return;i++)
-	  *(--c_ptr) = '\n';
 	break;
+      case '_':
+	c_ptr = buffer->buffer + 2;
+	is_wbyte++;
+	ret[2] = *c_ptr;
+	ret[3] = '\0';
+	switch(*c_ptr){
+	case 'w':
+	case 'l':
+	  c_ptr = buffer->buffer + 3;
+	  while(isdigit(*c_ptr) || *c_ptr == '[' || *c_ptr == ']'
+		|| (*(buffer->buffer + 2) == 'l' && *c_ptr == ',')){
+	    switch(*c_ptr){
+	    case '[':
+	      strcpy(c_ptr,c_ptr + 1);
+	      break;
+	    default:
+	      c_ptr++;
+	      is_wbyte++;
+	      break;
+	    }
+	    if(*c_ptr == ']'){
+	      strcpy(c_ptr,c_ptr + 1);
+	      break;
+	    }
+	  }
+	  strncpy(str_num,buffer->buffer + 3
+		  ,is_wbyte - 1);
+	  str_num[is_wbyte - 1] = '\0';
+	  sprintf(ret + 3,"%d",atoi(str_num));
+	  printf("%s\n",ret);
+	  break;
+	}
       default:
 	break;
       }
@@ -1039,7 +1076,7 @@ static void _GetBuffer(messageBuffer* buffer,char* ret,int mode)
   }
 
   if(mode)
-    strcpy(buffer->buffer,buffer->buffer + 1 + is_wbyte - skip_return);
+    strcpy(buffer->buffer,buffer->buffer + 1 + is_wbyte);
   
   return;
 }
