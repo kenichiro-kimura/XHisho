@@ -6,6 +6,7 @@ open3 no schedule.
 alert1 Master,now the time for
 alert2 .
 alertformat %s,from %s:%s
+messagearg ehm
 schedule What is your schedule at %s/%s ?
 menul What's happened ?
 menu0 Show me opening message.

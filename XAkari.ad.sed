@@ -1,5 +1,6 @@
 XHisho*international: TRUE
 XHisho*thickness: 5
+XHisho*frameMode: 0
 XHisho*messageFile: XHISHODIR/Messages
 
 XHisho*FontSet: -*-fixed-medium-r-normal--16-*

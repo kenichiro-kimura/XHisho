@@ -6,6 +6,7 @@ open3 ....
 alert1 「え、何？ああ、もうすぐ」
 alert2 「の時間なんだね？」\n「...(こくこく)」
 alertformat %s時%s分から%s
+messagearg hme
 schedule 「....」\n「%s月%s日？そうだなぁ...」
 menul 「...？」
 menu0 起動のあいさつ

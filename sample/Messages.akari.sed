@@ -6,6 +6,7 @@ open3 何もないみたい。
 alert1 YOUR_NAMEちゃん、もうすぐ
 alert2 の時間だよ。
 alertformat %s時%s分から%s
+messagearg hme
 schedule YOUR_NAMEちゃん、%s月%s日は何するの？
 menul どうしたの、YOUR_NAMEちゃん？
 menu0 起動のあいさつが見たい

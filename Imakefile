@@ -136,13 +136,9 @@ InstallNonExec(sample/xhs.holiday,$(IXHISHODIR)/xhs.holiday)
 InstallNonExec(sample/xhs.weekly,$(XHISHODIR))
 InstallNonExec(sample/Messages,$(XHISHODIR))
 InstallNonExec(sample/greeting.cfg,$(XHISHODIR))
-
 InstallNonExec(sample/Petname,$(XHISHODIR))
-
-#ifdef USE_SOUND
 InstallNonExec(sample/newmail.wav,$(XHISHODIR))
 InstallNonExec(sample/schedule.wav,$(XHISHODIR))
-#endif
 
 #ifdef AKARI
 InstallNonExec(sample/aisatu.cfg.akari,$(XHISHODIR)/xhs.aisatu.cfg)

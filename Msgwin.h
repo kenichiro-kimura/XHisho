@@ -26,6 +26,8 @@ typedef struct _MsgwinRec *MsgwinWidget;
 
 #define XtNwindowMode "windowMode"
 #define XtCWindowMode "WindowMode"
+#define XtNframeMode "frameMode"
+#define XtCFrameMode "FrameMode"
 
 enum {
   /*

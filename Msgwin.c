@@ -50,6 +50,7 @@ static XtGeometryResult GeometryManager();
 static void ConstraintInitialize(Widget,Widget,ArgList,Cardinal*);
 static void SetWindowLocate(MsgwinWidget);
 static XtGeometryResult GeometryManager();
+static void SwapFrameInfo(Dimension*,Dimension*);
 
 static CompositeClassExtensionRec extension_rec = {
   NULL,                               /* next extension */
@@ -74,6 +75,15 @@ static XtResource resources[] = {
     XtRInt,
     sizeof(int),
     XtOffset(MsgwinWidget,msgwin.WindowMode),
+    XtRImmediate,
+    0,
+  },
+  {
+    XtNframeMode,
+    XtCFrameMode,
+    XtRInt,
+    sizeof(int),
+    XtOffset(MsgwinWidget,msgwin.FrameMode),
     XtRImmediate,
     0,
   },
@@ -155,7 +165,6 @@ static void Initialize(Widget request,Widget new,ArgList args,Cardinal *num_args
   msw->msgwin.is_shaped = FALSE;
 }
 
-
 static void Realize(Widget w,XtValueMask *valueMask,XSetWindowAttributes *attrs){
   MsgwinWidget msw = (MsgwinWidget)w;
 
@@ -208,7 +217,7 @@ static void ShapeWindow(MsgwinWidget msw){
   Pixmap window_mask;
   Display *d;
   Window w;
-  int WindowMode;
+  int WindowMode,FrameMode;
   XArc mask_arc[4];
   XRectangle mask_rect[4]; /* 2,3 is dummy */
   XPoint mask_point[4];  /* 3 is dummy */
@@ -216,6 +225,7 @@ static void ShapeWindow(MsgwinWidget msw){
   d = XtDisplay(msw);
   w = XtWindow(msw);
   WindowMode = msw->msgwin.WindowMode;
+  FrameMode = msw->msgwin.FrameMode;
 
   /* maskを作るためにウインドウの大きさを取得*/
 
@@ -279,6 +289,18 @@ static void ShapeWindow(MsgwinWidget msw){
 
   XFillRectangle(d,window_mask,mask_gc,0,0,mask_width + POINT_WIDTH * 2
 		 ,mask_height);
+
+  /* FrameMode によって マスクの形を変える */
+
+  switch(FrameMode){
+  case 1:
+    SwapFrameInfo(&mask_point[0].y , &mask_point[1].y);
+    break;
+  case 2:
+    SwapFrameInfo(&mask_point[1].y , &mask_point[2].y);
+    break;
+  default:
+  }
 
   /* マスクを白で描画する */
 
@@ -561,4 +583,12 @@ static void ManageChild(Widget parent){
     }
   }
   SetWindowLocate(msw);
+}
+
+static void SwapFrameInfo(Dimension* a,Dimension* b){
+  Dimension tmp;
+
+  tmp = *a;
+  *a = *b;
+  *b = tmp;
 }

@@ -12,8 +12,8 @@ static int virgine = 1;
 static Schedule* schedule;
 static int Edited_Month,Edited_Day;
 static XtIntervalId LeaveWindowID = 0;
-static const char ResName[7][128] = {"open1","open2","open3","alert1","alert2"
-				     ,"alertformat","schedule"};
+static const char ResName[8][128] = {"open1","open2","open3","alert1","alert2"
+				     ,"alertformat","schedule","messagearg"};
 
 OpenMessageRes omr;
 
@@ -294,11 +294,13 @@ Widget CreateEditorWindow(Widget w,int Mode,struct tm tm_now){
   char *string_e;
   char *tmpstring;
   char *sched_list[MAX_SCHED_NUM];
-  char* argarray[3];
+  char* argarray[4];
   int i,j,k,l,Longest_sched,schedules;
+  char *since_minutes[MAX_SCHED_NUM];
   Dimension Label_width;
-  char* messages[7];
+  char* messages[8];
   char daystring[MAX_SCHED_NUM][256],leavestring[MAX_SCHED_NUM][256];
+  char* mesarg;
   
   static Arg editargs[] = {
     {XtNwindowMode,0},
@@ -357,11 +359,13 @@ Widget CreateEditorWindow(Widget w,int Mode,struct tm tm_now){
   memset(string_f,0,BUFSIZ * 2);
   memset(tmpstring,0,BUFSIZ * 2);
   memset(string_e,0,256);
-  
 
-  for(i = 0;i < 10;i++){
+
+  for(i = 0;i < MAX_SCHED_NUM;i++){
     sched_list[i] = malloc(BUFSIZ * 3);
+    since_minutes[i] = malloc(BUFSIZ);
     memset(sched_list[i],0,BUFSIZ * 3);
+    memset(since_minutes[i],0,BUFSIZ);
   }
 
   /* Popdown処理のための準備 */
@@ -383,7 +387,7 @@ Widget CreateEditorWindow(Widget w,int Mode,struct tm tm_now){
     ReadHoliday();
   }
 
-  for(i = 0; i < 7; i++){
+  for(i = 0; i < 8; i++){
     messages[i] = malloc(BUFSIZ);
     memset(messages[i],0,BUFSIZ);
     ReadRcdata(ResName[i],messages[i],BUFSIZ);
@@ -502,9 +506,14 @@ Widget CreateEditorWindow(Widget w,int Mode,struct tm tm_now){
 
     /* Mode =0,1,2ならそのままlabelWidgetを作ってしまう */
 
+    if(messages[7][0] != '\0')
+      mesarg = messages[7];
+    else
+      mesarg = omr.message_arg;
+
     if(Mode == 0 || Mode == 1 || Mode ==2){
-      for(k = 0;k < strlen(omr.message_arg) && k < 3;k++){
-	switch(omr.message_arg[k]){
+      for(k = 0;k < strlen(omr.message_arg) && k < 4;k++){
+	switch(mesarg[k]){
 	case 'h':
 	  argarray[k] = schedule[j].hour;
 	  break;
@@ -514,16 +523,21 @@ Widget CreateEditorWindow(Widget w,int Mode,struct tm tm_now){
 	case 'e':
 	  argarray[k] = schedule[j].ev;
 	  break;
+	case 'l':
+	  argarray[k] = since_minutes[j];
+	  break;
 	default:
 	  argarray[k] = "Invarid argument format";
 	}
       }
 
       l = CheckIsSchedPast(j,schedule);
+      sprintf(since_minutes[j],"%d",l);
+
       if(*messages[5]){
-        sprintf(tmpstring,messages[5],argarray[0],argarray[1],argarray[2]);
+        sprintf(tmpstring,messages[5],argarray[0],argarray[1],argarray[2],argarray[3]);
       }else{
-        sprintf(tmpstring,omr.message_f,argarray[0],argarray[1],argarray[2]);
+        sprintf(tmpstring,omr.message_f,argarray[0],argarray[1],argarray[2],argarray[3]);
       }
 
       /* Mode2(Schedule Alert)のとき、「もうすぐ」なSchedule(5分以内)以外は

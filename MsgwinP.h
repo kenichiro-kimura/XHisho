@@ -36,6 +36,7 @@ typedef struct _MsgwinPart {
 
   /* resource data */
   int WindowMode;
+  int FrameMode;
 } MsgwinPart;
 
 typedef struct _MsgwinRec{

@@ -6,6 +6,7 @@ open3 何もないみたいですね。
 alert1 もうすぐ
 alert2 の時間ですよ。
 alertformat %s時%s分より%s
+messagearg hme
 schedule %s月%s日の予定はどうなってますか?
 menul はい、なんでしょう?
 menu0 起動のあいさつ

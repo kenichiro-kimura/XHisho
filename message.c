@@ -1,4 +1,4 @@
-#define MAX_MESSAGE_NUM 18
+#define MAX_MESSAGE_NUM 19
 
 #include "globaldefs.h"
 #include <stdio.h>
@@ -14,7 +14,7 @@ void ReadRcdata(const char*,char*,int size);
 static const char RcName[][256] = {"newmail","nomail","open1","open2","open3","alert1"
 				   ,"alert2","alertformat","schedule","menul","menu0"
 				   ,"menu1","menu2","menu3","menu4","menu5","calendar"
-				   ,"resource"};
+				   ,"resource","messagearg"};
 
 static char* RcData[MAX_MESSAGE_NUM];
 

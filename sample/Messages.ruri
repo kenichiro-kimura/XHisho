@@ -6,6 +6,7 @@ open3 何もないです。暇なんですね...
 alert1 艦長、もうすぐ
 alert2 の時間です。
 alertformat %s時%s分から%s
+messagearg hme
 schedule 艦長、%s月%s日は何するつもりですか？
 menul 何ですか?
 menu0 起動のあいさつが見たい
