@@ -390,7 +390,7 @@ static void Realize(Widget w, XtValueMask * valueMask, XSetWindowAttributes * at
 			, 1);
       
       XSetForeground(DISPLAY, MGC, 0);
-      
+      XSetFunction(DISPLAY,MGC,GXcopy);
       XFillRectangle(DISPLAY, p, MGC, 0, 0,WIDTH
 		     , HEIGHT + xhw->xhisho.i_info->ext_height);
       
