@@ -30,9 +30,7 @@ static HolidayList *HolidayList_new(int day, char *name)
 
   h_ptr->day = day;
   h_ptr->next = NULL;
-  h_ptr->name = malloc(strlen(name) + 1);
-  memset(h_ptr->name, 0, strlen(name) + 1);
-  strcpy(h_ptr->name, name);
+  h_ptr->name = strdup(name);
 
   return h_ptr;
 }

@@ -963,9 +963,7 @@ static void ChangeReturn(String val, char *ret)
   char *tmp;
   int i;
 
-  tmp = malloc(strlen(val) + 1);
-  memset(tmp, 0, strlen(val) + 1);
-  strcpy(tmp, val);
+  tmp = strdup(val);
   ret[0] = '\0';
   i = 0;
 

@@ -130,9 +130,7 @@ void Escape2Return(char *ret_value)
   int i;
 
   if(ret_value == NULL) return;
-  tmp = malloc(strlen(ret_value) + 1);
-  memset(tmp,0, strlen(ret_value) + 1);
-  strcpy(tmp, ret_value);
+  tmp = strdup(ret_value);
   *ret_value = '\0';
 
   for (i = 0; tmp[i] != '\0'; i++) {

@@ -117,12 +117,7 @@ static mhcent* ReadEntry(FILE* fp){
       for(chr_ptr++;chr_ptr;chr_ptr++)
 	if(!isspace(*chr_ptr)) break;
     
-      mhcent_ptr->Entry[tag] = (char*)malloc(strlen(chr_ptr) + 1);
-      if(mhcent_ptr->Entry[tag] == NULL){
-	free(buffer);
-	return NULL;
-      }
-      strcpy(mhcent_ptr->Entry[tag],chr_ptr);
+      mhcent_ptr->Entry[tag] = strdup(chr_ptr);
     }
   }
 
@@ -707,9 +702,7 @@ MHCD* openmhc(const char* home_dir, const char* year_month){
     if(fp){
       entry = ReadEntry(fp);
       if(entry){
-	entry->filename = (char*)malloc(strlen(filename) + 1);
-	if(entry->filename)
-	  strcpy(entry->filename,filename);
+	entry->filename = strdup(filename);
 
 	if(!mhc_ptr){
 	  mhc_ptr = (MHCD*)malloc(sizeof(MHCD));
