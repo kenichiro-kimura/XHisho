@@ -142,6 +142,13 @@ MAIL_GLOBAL int CheckPOP3(XtPointer, XtIntervalId *);
 MAIL_GLOBAL int IsMailChecked(int);
 
 MAIN_GLOBAL void CloseEditWindow();
+MAIN_GLOBAL void Quit(Widget, XEvent *, String *, unsigned int *);
+MAIN_GLOBAL void ScheduleWindowPopup(Widget, XEvent *, String *, unsigned int *);
+MAIN_GLOBAL void OpeningWindowPopup(Widget, XEvent *, String *, unsigned int *);
+MAIN_GLOBAL void AboutWindowPopup(Widget, XEvent *, String *, unsigned int *);
+MAIN_GLOBAL void MenuWindowPopup(Widget, XEvent *, String *, unsigned int *);
+MAIN_GLOBAL void CalendarWindowPopup(Widget, XEvent *, String *, unsigned int *);
+MAIN_GLOBAL void ResEditWindowPopup(Widget, XEvent *, String *, unsigned int *);
 
 MENU_GLOBAL Widget CreateMenuWindow(Widget);
 
@@ -176,7 +183,7 @@ MAIN_GLOBAL String FilterCommand, SoundCommand;
 MAIN_GLOBAL Widget mail, openwin, xhisho, about, editwin, calendarwin, menu
                   ,nomail, resedit;
 MAIN_GLOBAL int MailWindowShown, OpenWindowShown, MenuWindowShown
-              , AboutWindowShown, CalendarWindowShown;
+              , AboutWindowShown, CalendarWindowShown, ResEditWindowShown;
 MAIN_GLOBAL ResEditRes rer;
 MAIN_GLOBAL OpenMessageRes omr;
 

@@ -30,11 +30,6 @@ static int IsSet = 0;		/** 1回目のExposeでだけ子Widgetを作る **/
  **/
 
 static void Wait(Widget, XEvent *, String *, unsigned int *);
-static void Quit(Widget, XEvent *, String *, unsigned int *);
-static void ScheduleWindowPopup(Widget, XEvent *, String *, unsigned int *);
-static void AboutWindowPopup(Widget, XEvent *, String *, unsigned int *);
-static void MenuWindowPopup(Widget, XEvent *, String *, unsigned int *);
-static void CalendarWindowPopup(Widget, XEvent *, String *, unsigned int *);
 static void CheckMailNow(Widget, XEvent *, String *, unsigned int *);
 static void PrintUsage(int, char **);
 
@@ -125,7 +120,7 @@ static void Wait(Widget w, XEvent * e, String * s, unsigned int *i)
   }
 }
 
-static void Quit(Widget w, XEvent * event, String * params, unsigned int *num_params)
+void Quit(Widget w, XEvent * event, String * params, unsigned int *num_params)
 {
   Widget top;
 
@@ -163,7 +158,7 @@ static void CheckMailNow(Widget w, XEvent * event, String * params, unsigned int
 }
 
 
-static void ScheduleWindowPopup(Widget w, XEvent * event, String * params, unsigned int *num_params)
+void ScheduleWindowPopup(Widget w, XEvent * event, String * params, unsigned int *num_params)
 {
   time_t now;
   struct tm *tm_now;
@@ -187,7 +182,31 @@ static void ScheduleWindowPopup(Widget w, XEvent * event, String * params, unsig
   XtPopup(XtParent(openwin), XtGrabNone);
 }
 
-static void AboutWindowPopup(Widget w, XEvent * event, String * params, unsigned int *num_params)
+void OpeningWindowPopup(Widget w, XEvent * event, String * params, unsigned int *num_params)
+{
+  time_t now;
+  struct tm *tm_now;
+
+  if (OpenWindowShown) {
+    OpenWindowShown = 0;
+    XtPopdown(XtParent(openwin));
+    return;
+  }
+  time(&now);
+  tm_now = localtime(&now);
+
+  XtDestroyWidget(XtParent(openwin));
+  openwin = CreateEditorWindow(XtParent(w), 0, *tm_now);
+
+  /**
+   * Opening message WindowのPopup
+   **/
+  OpenWindowShown = 1;
+  XtVaSetValues(openwin, XtNwindowMode, 0, NULL);
+  XtPopup(XtParent(openwin), XtGrabNone);
+}
+
+void AboutWindowPopup(Widget w, XEvent * event, String * params, unsigned int *num_params)
 {
 
   if (AboutWindowShown) {
@@ -203,7 +222,23 @@ static void AboutWindowPopup(Widget w, XEvent * event, String * params, unsigned
   AboutWindowShown = 1;
 }
 
-static void MenuWindowPopup(Widget w, XEvent * event, String * params, unsigned int *num_params)
+void ResEditWindowPopup(Widget w, XEvent * event, String * params, unsigned int *num_params)
+{
+
+  if (ResEditWindowShown) {
+    XtPopdown(XtParent(resedit));
+    ResEditWindowShown = 0;
+    return;
+  }
+  /**
+   * Resource editor WindowのPopup
+   **/
+  XtVaSetValues(resedit, XtNwindowMode, 0, NULL);
+  XtPopup(XtParent(resedit), XtGrabNone);
+  ResEditWindowShown = 1;
+}
+
+void MenuWindowPopup(Widget w, XEvent * event, String * params, unsigned int *num_params)
 {
 
   if (MenuWindowShown) {
@@ -219,7 +254,7 @@ static void MenuWindowPopup(Widget w, XEvent * event, String * params, unsigned 
   MenuWindowShown = 1;
 }
 
-static void CalendarWindowPopup(Widget w, XEvent * event, String * params, unsigned int *num_params)
+void CalendarWindowPopup(Widget w, XEvent * event, String * params, unsigned int *num_params)
 {
   time_t now;
   struct tm *tm_now;

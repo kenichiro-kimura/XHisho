@@ -10,12 +10,33 @@ static const char ResName[][128] = {"menul", "menu0", "menu1", "menu2"
 ,"menu3", "menu4", "menu5"};
 
 static void Destroy(Widget, caddr_t, caddr_t);
-static void Quit(Widget, caddr_t, caddr_t);
-static void CalendarWindowPopup(Widget, caddr_t, caddr_t);
-static void OpeningWindowPopup(Widget, caddr_t, caddr_t);
-static void TodayScheduleWindowPopup(Widget, caddr_t, caddr_t);
-static void AboutWindowPopup(Widget, caddr_t, caddr_t);
-static void ResEditWindowPopup(Widget, caddr_t, caddr_t);
+
+static struct {
+  /**
+   * Menuで選んだものに対応するWindowをPopupする関数の配列
+   **/
+void (*WindowPopup)(Widget, XEvent *, String *, unsigned int *);
+
+} PopupFunctions[] = {
+  {
+    OpeningWindowPopup
+  },
+  {
+    ScheduleWindowPopup
+  },
+  {
+    CalendarWindowPopup
+  },
+  {
+    ResEditWindowPopup
+  },
+  {
+    AboutWindowPopup
+  },
+  {
+    Quit
+  }
+};
 
 static XtResource resources[] = {
   {
@@ -99,75 +120,16 @@ static void Destroy(Widget w, caddr_t client_data, caddr_t call_data)
   MenuWindowShown = 0;
 }
 
-static void Quit(Widget w, caddr_t client_data, caddr_t call_data)
+static void SubWindowPopup(Widget w, caddr_t client_data, caddr_t call_data)
 {
-  exit(0);
-}
-
-static void CalendarWindowPopup(Widget w, caddr_t client_data, caddr_t call_data)
-{
-  time_t now;
-  struct tm *tm_now;
-
-  XtDestroyWidget(XtParent(calendarwin));
-
-  time(&now);
-  tm_now = localtime(&now);
-
-  calendarwin = CreateCalendarWindow(XtParent(top), tm_now->tm_mon, *tm_now);
+  int menu_pos;
+  menu_pos = (int) client_data;
   XtPopdown(XtParent(XtParent(w)));
   MenuWindowShown = 0;
-  CalendarWindowShown = 1;
-  XtPopup(XtParent(calendarwin), XtGrabNone);
-}
 
-static void OpeningWindowPopup(Widget w, caddr_t client_data, caddr_t call_data)
-{
-  time_t now;
-  struct tm *tm_now;
-
-  XtDestroyWidget(XtParent(openwin));
-
-  time(&now);
-  tm_now = localtime(&now);
-
-  openwin = CreateEditorWindow(XtParent(top), 0, *tm_now);
-  XtPopdown(XtParent(XtParent(w)));
-  MenuWindowShown = 0;
-  OpenWindowShown = 1;
-  XtPopup(XtParent(openwin), XtGrabNone);
-}
-
-static void TodayScheduleWindowPopup(Widget w, caddr_t client_data, caddr_t call_data)
-{
-  time_t now;
-  struct tm *tm_now;
-
-  XtDestroyWidget(XtParent(openwin));
-
-  time(&now);
-  tm_now = localtime(&now);
-
-  openwin = CreateEditorWindow(XtParent(top), 1, *tm_now);
-  XtPopdown(XtParent(XtParent(w)));
-  MenuWindowShown = 0;
-  XtPopup(XtParent(openwin), XtGrabNone);
-  OpenWindowShown = 1;
-}
-
-static void AboutWindowPopup(Widget w, caddr_t client_data, caddr_t call_data)
-{
-  XtPopdown(XtParent(XtParent(w)));
-  MenuWindowShown = 0;
-  XtPopup(XtParent(about), XtGrabNone);
-  AboutWindowShown = 1;
-}
-
-static void ResEditWindowPopup(Widget w, caddr_t client_data, caddr_t call_data)
-{
-  XtPopdown(XtParent(XtParent(w)));
-  MenuWindowShown = 0;
-  XtPopup(XtParent(resedit), XtGrabNone);
+  if(menu_pos > 0 && menu_pos <= MENU_NUM){
+    PopupFunctions[menu_pos - 1].WindowPopup(top,NULL,NULL,NULL);
+  }
 }
 
 Widget CreateMenuWindow(Widget w)
@@ -272,14 +234,19 @@ Widget CreateMenuWindow(Widget w)
       XtVaSetValues(item[i], XtNvertDistance, 2, NULL);
       XtVaSetValues(head[i], XtNvertDistance, 2, NULL);
     }
-  }
 
+    XtAddCallback(item[i], XtNcallback,
+		  (XtCallbackProc) SubWindowPopup, (XtPointer)i);
+  }
+  
+  /*
   XtAddCallback(item[1], XtNcallback, (XtCallbackProc) OpeningWindowPopup, NULL);
   XtAddCallback(item[2], XtNcallback, (XtCallbackProc) TodayScheduleWindowPopup, NULL);
   XtAddCallback(item[3], XtNcallback, (XtCallbackProc) CalendarWindowPopup, NULL);
   XtAddCallback(item[4], XtNcallback, (XtCallbackProc) ResEditWindowPopup, NULL);
   XtAddCallback(item[5], XtNcallback, (XtCallbackProc) AboutWindowPopup, NULL);
   XtAddCallback(item[6], XtNcallback, (XtCallbackProc) Quit, NULL);
+  */
 
   ok = XtVaCreateManagedWidget("menuOk", commandWidgetClass, menu, XtNfromVert
 			       ,item[MENU_NUM]
