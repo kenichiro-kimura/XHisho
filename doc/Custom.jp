@@ -402,13 +402,21 @@ XHisho.Menu.menuItem5: 終了するメニューの項目名
 
 カレンダーの表示では次のリソースをカスタムすることができます。
 
-XHisho.Calendar.calendarLabel: カレンダーのラベル
-XHisho.Calendar.prevButton:    先月のカレンダーに戻るボタンのラベル
-XHisho.Calendar.nextButton:    来月のカレンダーに進むボタンのラベル
-XHisho.Calendar.existColor:    予定のある日の表示色
+XHisho.Calendar.calendarLabel:  カレンダーのラベル
+XHisho.Calendar.prevButton:     先月のカレンダーに戻るボタンのラベル
+XHisho.Calendar.nextButton:     来月のカレンダーに進むボタンのラベル
+XHisho.Calendar.existColor:     予定のある日の表示色
+XHisho.Calendar.hiddenCategory: MHCのデータのうち、カレンダーで色を変
+                                えたくないカテゴリーのリスト
+
 
 カレンダーラベルはメッセージファイルのタグcalendarでも設定可能です。
 
+通常、MHCでデータのある日も全てカレンダーの該当日の色は変わります。特
+定のカテゴリー(X-SC-Category)は色を変えたくない場合は、そのカテゴリー
+をhiddenCategoryにスペース区切りで列挙してください。例えば毎日見るTV番
+組もMHCで登録してたりするとほとんど全ての日の色が変わってしまって、重
+要な予定がいつあるのか分からなくなります。その時はこれを使ってください。
 
 
 

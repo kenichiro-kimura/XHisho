@@ -1,5 +1,15 @@
 				<Change Log>
 
+1.90 [Lime Release 9]  
+
+・XHisho*hiddenCategoryに列挙されたカテゴリーのMHCデータのある日は、カ
+  レンダーで色を変えないようにした。MHCのデータがあるところ全て色が変
+  わると邪魔だった
+
+
+
+
+
 1.80 [Lime Release 8]  
 
 ・biffがIMAP4に対応
