@@ -6,7 +6,6 @@
 #include <X11/Xmu/Atoms.h>
 #include <X11/extensions/shape.h>
 #include <X11/Xlocale.h>
-#include <X11/xpm.h>
 #include <X11/Shell.h>
 #include <X11/Xaw/AsciiText.h>
 #include <X11/Xmu/Editres.h>
@@ -20,14 +19,14 @@
 #include <X11/Xaw/Label.h>
 #include <X11/Xaw/Command.h>
 
-#define XtNopenMessageF "openMessageF" 
-#define XtNopenMessageL "openMessageL" 
-#define XtNopenMessageN "openMessageN" 
-#define XtNalertMessageF "alertMessageF" 
-#define XtNalertMessageL "alertMessageL" 
+#define XtNopenMessageF "openMessageF"
+#define XtNopenMessageL "openMessageL"
+#define XtNopenMessageN "openMessageN"
+#define XtNalertMessageF "alertMessageF"
+#define XtNalertMessageL "alertMessageL"
 #define XtCAlertMessage "AlertMessage"
-#define XtNmessageFormat "messageFormat" 
-#define XtNmessageArg "messageArg" 
+#define XtNmessageFormat "messageFormat"
+#define XtNmessageArg "messageArg"
 #define XtCOpenMessage  "Openmessage"
 #define XtCMessageFormat  "MessageFormat"
 #define XtCMessageArg  "MessageArg"
@@ -81,13 +80,13 @@
 #define ARG "ehm"
 
 
-typedef struct{
+typedef struct {
   char hour[3];
   char min[3];
   int leave;
   int is_checked;
   char ev[BUFSIZ];
-}Schedule;
+}   Schedule;
 
 
 typedef struct {
@@ -114,6 +113,6 @@ typedef struct {
   Boolean xcalendar;
   String ext_hello;
   Boolean chime;
-} OpenMessageRes;
+}   OpenMessageRes;
 
 #endif

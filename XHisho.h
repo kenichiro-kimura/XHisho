@@ -1,9 +1,9 @@
-/*
-   画像張り付け & 時計表示 Widget 「XHisho Widget」 パブリックヘッダファイル
-
-   copyright(c) 1998,1999  Ken'ichirou Kimura(kimura@db.is.kyushu-u.ac.jp)
-
-*/
+/**
+ * 画像張り付け & 時計表示 Widget 「XHisho Widget」 パブリックヘッダファイル
+ * 
+ * copyright(c) 1998,1999  Ken'ichirou Kimura(kimura@db.is.kyushu-u.ac.jp)
+ * 
+ **/
 
 
 #ifndef _XHISHO_h
@@ -51,4 +51,3 @@ typedef struct _XHishoRec *XHishoWidget;
 #define PETNAME_F "Petname"
 
 #endif
-

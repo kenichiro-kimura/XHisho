@@ -2,6 +2,10 @@
 #define _IMAGE_H
 
 enum {
+  /**
+   * BMP用の定数定義
+   **/
+
   BI_RGB = 0,
   BI_RLE8 = 1,
   BI_RLE4 = 2,
@@ -13,25 +17,25 @@ enum {
 
 struct palette {
   /**
-   * 画像パレットテーブル 
+   * 画像パレットテーブル
    **/
-  unsigned char r,g,b,pad;
+
+  unsigned char r, g, b, pad;
 };
 
-typedef struct _ImageInfo{
+typedef struct _ImageInfo {
   /**
-   * 画像データ
+   * 画像データ受け渡し用
    */
 
-  Display *d;
-  Window w;
+  unsigned char *ImageData;
   struct palette *ImagePalette;
   int colorsuu;
-  int width,height;
+  int width, height;
   int depth;
   short BitCount;
-  unsigned char* ImageData;
+  int trans_pix;
 } ImageInfo;
-  
+
 
 #endif

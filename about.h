@@ -6,7 +6,6 @@
 #include <X11/Xmu/Atoms.h>
 #include <X11/extensions/shape.h>
 #include <X11/Xlocale.h>
-#include <X11/xpm.h>
 #include <X11/Shell.h>
 #include <X11/Xmu/Editres.h>
 #include <stdio.h>
@@ -23,6 +22,6 @@
 
 typedef struct {
   String about_s;
-} AboutRes;
+}   AboutRes;
 
 #endif

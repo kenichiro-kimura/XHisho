@@ -1,13 +1,5 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <X11/Intrinsic.h>
-#include <X11/IntrinsicP.h>
-#include <X11/StringDefs.h>
-#include <X11/Shell.h>
-#include <X11/Xmu/Atoms.h>
-#include <X11/extensions/shape.h>
-#include <X11/Xlocale.h>
-#include <X11/Xaw/Command.h>
 #include <jpeglib.h>
 #include <setjmp.h>
 
@@ -41,7 +33,7 @@ typedef struct my_error_mgr *my_error_ptr;
 
 METHODDEF(void) my_error_exit(j_common_ptr cinfo)
 {
-  my_error_ptr myerr = (my_error_ptr) cinfo->err;
+  /*  my_error_ptr myerr = (my_error_ptr) cinfo->err;*/
 
   /**
    * _Errorを1にして,Error_jmpの場所に復帰。Error_jmpを設定したところでは
@@ -59,6 +51,7 @@ static int JpegDecode(ImageInfo * i_info, FILE * infile)
   int row_stride, cmap_entries, i;
   JSAMPARRAY buffer, colormap;
 
+  _Error = 0;
   cinfo.err = jpeg_std_error((struct jpeg_error_mgr *) (&jerr));
   jerr.pub.error_exit = my_error_exit;
 
@@ -70,8 +63,10 @@ static int JpegDecode(ImageInfo * i_info, FILE * infile)
    **/
 
   setjmp(Error_jmp);
-  if (_Error == 1)
+  if (_Error == 1){
+    jpeg_destroy_decompress(&cinfo);
     return -1;
+  }
 
   jpeg_read_header(&cinfo, 1);
   jpeg_start_decompress(&cinfo);
@@ -84,16 +79,22 @@ static int JpegDecode(ImageInfo * i_info, FILE * infile)
 
   if (cinfo.out_color_space == JCS_RGB) {
     if (cinfo.quantize_colors) {
-      /* Colormapped RGB */
+      /**
+       * Colormapped RGB
+       **/
       i_info->BitCount = 8;
       cmap_entries = 256;
     } else {
-      /* Unquantized, full color RGB */
+      /**
+       * Unquantized, full color RGB
+       **/
       i_info->BitCount = 24;
       cmap_entries = 0;
     }
   } else {
-    /* Grayscale output.  We need to fake a 256-entry colormap. */
+    /**
+     * Grayscale output.  We need to fake a 256-entry colormap.
+     **/
     i_info->BitCount = 8;
     cmap_entries = 256;
   }
@@ -104,6 +105,7 @@ static int JpegDecode(ImageInfo * i_info, FILE * infile)
       : malloc(sizeof(i_info->ImagePalette[0]) * cmap_entries);
     if (!i_info->ImagePalette) {
       fprintf(stderr, "jpeg:read palette failed.\n");
+      jpeg_destroy_decompress(&cinfo);
       return -1;
     }
   }
@@ -122,6 +124,7 @@ static int JpegDecode(ImageInfo * i_info, FILE * infile)
 
   if ((i_info->ImageData = malloc(row_stride * cinfo.output_height)) == NULL) {
     fprintf(stderr, "can't alloc image buffer\n");
+    jpeg_destroy_decompress(&cinfo);
     return -1;
   } else {
     char *b_ptr = i_info->ImageData;

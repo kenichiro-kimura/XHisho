@@ -1,7 +1,8 @@
 #include "ResEdit.h"
 #include "mail.h"
 
-static Widget top, resedit, ok, scrollbar[5], label[5], parameter[5], toplabel, cancel;
+static Widget top, resedit, ok, scrollbar[5], label[5], parameter[5], toplabel,
+    cancel;
 ResEditRes rer;
 extern MailAlertRes mar;
 

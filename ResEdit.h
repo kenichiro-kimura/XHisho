@@ -10,7 +10,6 @@
 #include <X11/Xmu/Atoms.h>
 #include <X11/extensions/shape.h>
 #include <X11/Xlocale.h>
-#include <X11/xpm.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/stat.h>
@@ -24,14 +23,14 @@
 #include <X11/Xaw/Scrollbar.h>
 #include "Msgwin.h"
 
-typedef struct _Preference{
+typedef struct _Preference {
   String label;
   String name;
   float offset;
   float param;
   float max;
   int is_set;
-} Preference;
+}   Preference;
 
 #define XtNresEditLabel0 "resEditLabel0"
 #define XtNresEditLabel1 "resEditLabel1"
@@ -88,11 +87,6 @@ typedef struct _Preference{
 typedef struct {
   Preference Pref[MAX_PREF_NUM];
   String label;
-} ResEditRes;
+}   ResEditRes;
 
 #endif
-
-
-
-
-

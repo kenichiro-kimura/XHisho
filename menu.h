@@ -43,9 +43,6 @@ typedef struct {
   String menu4;
   String menu5;
   String head;
-} MenuRes;
+}   MenuRes;
 
 #endif
-
-
-

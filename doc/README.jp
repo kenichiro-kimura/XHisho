@@ -179,11 +179,11 @@ packageにあります。
 (--enable-personalならsuは不要)
 で終りです。もし、makeがうまくいかなかったらconfigureのあとに
 
-%xmkmf
+%xmkmf;make -f Makefile
 
 もしくは
 
-%make Makefile
+%make -f makefile Makefile;make -f Makefile
 
 としてみてください。
 
@@ -255,6 +255,8 @@ xhs.holidayというファイルを置いてください。書式はサンプルを見てくださ
          [-youbin]
          [-pop]
          [-apop]
+         [-version]
+         [-coption]
 
 起動すると、定期的にメールボックス(もしくはYOUBINやPOP3)をチェックし、
 メールが来ていると吹き出しが出て通知してくれます。
@@ -312,10 +314,15 @@ xhs.holidayというファイルを置いてください。書式はサンプルを見てくださ
 ・-youbin    … biffにYoubinを使う
 ・-pop       … biffにPOPを使う
 ・-apop      … biffにAPOPを使う
+・-version   … バージョンを表示する
+・-coption   … コンパイルオプションを表示する
+
 
 オプション [-youbin] と [-pop] と [-apop] は、同時には使えません。最後
 に指定した物が有効になります。いずれかが指定されると、ローカルのスプー
 ルは見張らなくなります。
+
+
 
 
 
@@ -348,8 +355,10 @@ $HOME/.Schedule/xhs.holidayというファイルに休日を記述すると、カレンダー
 でその日が赤く表示されます。書式についてはサンプルファイル 
 'xhs.holiday' を見てください。
 
-また、xcalendarとスケジュールのデータを共有することもできます。その場
-合、リソースを以下のようにセットします。
+また、xcalendarとスケジュールのデータを共有する(xcalendarのファイル名
+をそのまま使える)こともできます。その場合、リソースを以下のようにセッ
+トします。
+
 
 XHisho.OpenMessage.scheduleDir: Calendar/
 XHisho.OpenMessage.xcalendarCompatible: TRUE
@@ -465,8 +474,8 @@ PASS:パスワード
 xmaid(xmulti)を作られた渡邊剛さん(go@cclub.tutcc.tut.ac.jp)。両ソフト
 のコードは非常に参考になりました。
 
-PetnameについてはMewおよびim(http://www.mew.org/)のPetname機能を元に開
-発しました。
+Petname及びアドレス帳についてはMewおよびim(http://www.mew.org/)の
+Petname機能を元に開発しました。
 
 西野隆典さん(nishino@itakura.nuee.nagoya-u.ac.jp)には、calendarで休日
 の色を変えるパッチを頂きました。
@@ -490,10 +499,12 @@ special thanks to...
 
 13.To do 〜宿題及びVer.2での野望〜
 
-・英語が適当すぎ ^^;
+・画像がアニメーションするとうれしいかも。せめてメール到着時は別の絵が
+  出るとか。
 ・impwagentに対応して、~/.pop_passwordを書かないでもいいようにする(オ
   プション)
 ・各種機能のモジュール化。XHishoは条件に合わせてふきだしを出すだけにし
   てしまう
 ・ふきだし内のレイアウトをHTMLでカスタムできると楽しそう(かなり難題)
+・英語が適当すぎ ^^;
 

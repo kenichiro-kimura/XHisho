@@ -14,23 +14,23 @@
 #include <sys/stat.h>
 
 enum {
-  /*
-   * define POP error messages 
-   */
+  /**
+   * define POP error messages
+   **/
   OK = 0,
   ERR = 1,
-  BUFFER_IS_TOO_SMALL  = 2,
+  BUFFER_IS_TOO_SMALL = 2,
   NO_PASSWORD_FILE = 3,
   INVALID_PERMISSION = 4
 };
 
-typedef struct _UserData{
-  /*
+typedef struct _UserData {
+  /**
    * user data for POP Authorization
-   */
-  char name[128]; 
+   **/
+  char name[128];
   char pass[256];
   char server[256];
-} UserData;
+}   UserData;
 
 #endif

@@ -1,10 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <X11/Xlib.h>
-#include <X11/Xutil.h>
-#include <X11/Intrinsic.h>
-#include <X11/extensions/shape.h>
 #include "image.h"
 
 static long bfSize;
@@ -80,14 +76,16 @@ static int ReadHeader(FILE * fp, ImageInfo * i_info)
     biPlanes = GetShort(fp);
     i_info->BitCount = GetShort(fp);
     biCompression = BI_RGB;
-    biSizeImage = (((biPlanes * i_info->BitCount * (i_info->width)) + 31) / 32) * 4 * (i_info->height);
+    biSizeImage = (((biPlanes * i_info->BitCount * (i_info->width)) + 31) / 32)
+      * 4 * (i_info->height);
     biXPelsPerMeter = biYPelsPerMeter = 0;
     biClrUsed = biClrImportant = 0;
   }
   /**
    * error checking
    **/
-  if ((i_info->BitCount != 1 && i_info->BitCount != 4 && i_info->BitCount != 8 && i_info->BitCount != 24)
+  if ((i_info->BitCount != 1 && i_info->BitCount != 4 && i_info->BitCount != 8
+       && i_info->BitCount != 24)
       || biPlanes != 1 || biCompression > BI_RLE4) {
     fprintf(stderr, "Bogus BMP File! "
 	    "(bitCount=%d, Planes=%d, Compression=%ld)\n",
@@ -119,8 +117,10 @@ static int ReadHeader(FILE * fp, ImageInfo * i_info)
 
     cmaplen = (biClrUsed) ? biClrUsed : 1 << i_info->BitCount;
 
-    i_info->ImagePalette = i_info->ImagePalette ? realloc(i_info->ImagePalette, sizeof(i_info->ImagePalette[0]) * cmaplen)
+    i_info->ImagePalette = i_info->ImagePalette ?
+      realloc(i_info->ImagePalette, sizeof(i_info->ImagePalette[0]) * cmaplen)
       : malloc(sizeof(i_info->ImagePalette[0]) * cmaplen);
+
     if (!i_info->ImagePalette) {
       fprintf(stderr, "bmp:read palette failed.\n");
       return -1;
@@ -444,6 +444,8 @@ int LoadBmp(ImageInfo * i_info, char *fname)
     i_info->ImageData = malloc(i_info->width * i_info->height * 3);
     break;
   }
+  if (!i_info->ImageData)
+    return -1;
 
   i_info->colorsuu = (biClrUsed) ? biClrUsed : 1 << i_info->BitCount;
 

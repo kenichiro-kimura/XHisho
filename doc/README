@@ -54,6 +54,8 @@ You can custom every message,CG,etc.
          [-youbin]
          [-pop]
          [-apop]
+         [-version]
+         [-coption]
 
   * Click 1 button,open/close Menu window.
   * Click 2 button,open/close today's schedule.

@@ -1,7 +1,7 @@
-/*
-  header file for waveplay.
-  Copyright(c) 1998 Yoshihide Sonoda (ysonoda@dontaku.csce.kyushu-u.ac.jp)
-*/
+/**
+ * header file for waveplay. Copyright(c) 1998 Yoshihide Sonoda
+ * (ysonoda@dontaku.csce.kyushu-u.ac.jp)
+ **/
 
 #ifndef _WAVE_FMT_H_
 #define _WAVE_FMT_H_
@@ -13,24 +13,26 @@
 #define H_DATA (*(int *)"data")
 #define H_FMT  (*(int *)"fmt ")
 
-/* 構造体定義 (ref. MS-Windows mmsystem.h) */
-typedef struct tWAVEFORMAT{
+/**
+ * 構造体定義 (ref. MS-Windows mmsystem.h) 
+ **/
+typedef struct tWAVEFORMAT {
   u_short wFormatTag;
   u_short nChannels;
-  u_long  nSamplesPerSec;
-  u_long  nAvgBytesPerSec;
+  u_long nSamplesPerSec;
+  u_long nAvgBytesPerSec;
   u_short nBlockAlign;
   u_short wBitsPerSample;
-} WAVEFORMAT, *PWAVEFORMAT;
+}   WAVEFORMAT, *PWAVEFORMAT;
 
-typedef struct tWAVEFORMATEX{
+typedef struct tWAVEFORMATEX {
   u_short wFormatTag;
   u_short nChannels;
-  u_long  nSamplesPerSec;
-  u_long  nAvgBytesPerSec;
+  u_long nSamplesPerSec;
+  u_long nAvgBytesPerSec;
   u_short nBlockAlign;
   u_short wBitsPerSample;
   u_short cbSize;
-} WAVEFORMATEX, *PWAVEFORMATEX;
+}   WAVEFORMATEX, *PWAVEFORMATEX;
 
-#endif /* _WAVE_FMT_H_ */
+#endif				/* _WAVE_FMT_H_ */

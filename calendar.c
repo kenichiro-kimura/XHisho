@@ -159,8 +159,8 @@ Widget CreateCalendarWindow(Widget w, int Month, struct tm tm_now)
   static char tmpstring[256];
   time_t now;
   struct tm *tm_tmp;
-  int i, j, k, l, m, tmp_width, Longest_label, calendar_offset, NowYear, NowMonth,
-      NowDay;
+  int i, j, k, l, m, tmp_width, Longest_label, calendar_offset, NowYear,
+      NowMonth, NowDay;
   Dimension Label_width;
   char *message;
   int uru_adjust;

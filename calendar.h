@@ -30,7 +30,6 @@ typedef struct {
   String prev;
   String next;
   String color;
-} CalendarRes;
+}   CalendarRes;
 
 #endif
-

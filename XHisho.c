@@ -259,11 +259,11 @@ static void Realize(Widget w, XtValueMask * valueMask, XSetWindowAttributes * at
   }
 
   if (LoadImage(XtParent((Widget) xhw), &(XH_GC), &(PIXMAP), BCG, &WIDTH
-		,&HEIGHT , clock_height, xhw->xhisho.is_shape) != 0) {
+		,&HEIGHT, clock_height, xhw->xhisho.is_shape) != 0) {
     fprintf(stderr, "fail read CG data,%s\n", BCG);
     exit(1);
   }
-  XtResizeWidget(XtParent(xhw), WIDTH ,HEIGHT + clock_height, FRAME_WIDTH);
+  XtResizeWidget(XtParent(xhw), WIDTH, HEIGHT + clock_height, FRAME_WIDTH);
   XtResizeWidget((Widget) xhw, WIDTH, HEIGHT + clock_height
 		 ,FRAME_WIDTH);
 }
@@ -334,7 +334,7 @@ static void ClockDraw(XHishoWidget xhw)
     x = (width > xhw->core.width) ? 0 : (int) ((xhw->core.width - width) / 2);
 
     XmbDrawString(DISPLAY, WINDOW, xhw->label.fontset, XH_GC
-	 ,x, HEIGHT + xhw->label.label_height, clock, strlen(clock));
+		,x, HEIGHT + xhw->label.label_height, clock, strlen(clock));
   }
   if (xhw->xhisho.focuswin) {
     /**

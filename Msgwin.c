@@ -560,8 +560,8 @@ static void SetWindowLocate(MsgwinWidget msw)
 
 static void ManageChild(Widget parent)
 {
-  int Longest_width, Form_height, i, ypos, b_ypos, tmp_width, b_height, b_width,
-      tmp_height;
+  int Longest_width, Form_height, i, ypos, b_ypos, tmp_width, b_height,
+      b_width, tmp_height;
   int same_line;
   Widget child, b_child;
   MsgwinWidget msw = (MsgwinWidget) parent;

@@ -1,9 +1,9 @@
-/*
- ふきだし型Form Widget 「Msgwin Widget」 プライベートヘッダファイル
-
- copyright(c) 1998,1999   Ken'ichirou Kimura(kimura@db.is.kyushu-u.ac.jp)
-
-*/
+/**
+ * ふきだし型Form Widget 「Msgwin Widget」 プライベートヘッダファイル
+ * 
+ * copyright(c) 1998,1999   Ken'ichirou Kimura(kimura@db.is.kyushu-u.ac.jp)
+ * 
+ **/
 
 #ifndef _MSGWINP_H
 #define _MSGWINP_H
@@ -14,21 +14,21 @@
 
 typedef struct _MsgwinClassPart {
   int dummy;
-} MsgwinClassPart;
+}   MsgwinClassPart;
 
 typedef struct _MsgwinClassRec {
-  CoreClassPart       core_class;
-  CompositeClassPart  composite_class;
+  CoreClassPart core_class;
+  CompositeClassPart composite_class;
   ConstraintClassPart constraint_class;
   FormClassPart form_class;
   MsgwinClassPart msgwin_class;
-} MsgwinClassRec;
+}   MsgwinClassRec;
 
 extern MsgwinClassRec msgwinClassRec;
 
 typedef struct _MsgwinPart {
   /* Private data */
-  GC gc;
+  GC  gc;
   XArc mask_arc[4];
   XRectangle mask_rect[4];
   XPoint mask_point[4];
@@ -37,27 +37,23 @@ typedef struct _MsgwinPart {
   /* resource data */
   int WindowMode;
   int FrameMode;
-} MsgwinPart;
+}   MsgwinPart;
 
-typedef struct _MsgwinRec{
+typedef struct _MsgwinRec {
   CorePart core;
-  CompositePart	composite;
+  CompositePart composite;
   ConstraintPart constraint;
   FormPart form;
   MsgwinPart msgwin;
-} MsgwinRec;
+}   MsgwinRec;
 
-typedef struct _MsgwinConstraintsPart{
+typedef struct _MsgwinConstraintsPart {
   int dummy;
-} MsgwinConstraintsPart;
+}   MsgwinConstraintsPart;
 
-typedef struct _MsgwinConstraintsRec{
+typedef struct _MsgwinConstraintsRec {
   FormConstraintsPart form;
   MsgwinConstraintsPart msgwin;
-} MsgwinConstraintsRec,*MsgwinConstraints;
+}   MsgwinConstraintsRec, *MsgwinConstraints;
 
 #endif
-
-  
-
-

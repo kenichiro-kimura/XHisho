@@ -7,7 +7,6 @@
 #include <X11/StringDefs.h>
 #include <X11/extensions/shape.h>
 #include <X11/Xlocale.h>
-#include <X11/xpm.h>
 #include <X11/Shell.h>
 #include <X11/Xmu/Editres.h>
 #include <sys/stat.h>
@@ -18,8 +17,8 @@
 
 #include <X11/Xaw/Command.h>
 
-#define XtNm_timeout "m_timeout"         
-#define XtCTimeinterval "Timeinterval"   
+#define XtNm_timeout "m_timeout"
+#define XtCTimeinterval "Timeinterval"
 #define XtNm_check "m_check"
 #define XtNmailbox "mailbox"
 #define XtCMailbox "Mailbox"
@@ -63,6 +62,6 @@ typedef struct {
   String y_server;
   String y_command;
   String p_server;
-} MailAlertRes;
+}   MailAlertRes;
 
 #endif

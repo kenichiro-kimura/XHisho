@@ -301,7 +301,7 @@ int CheckMail(XtPointer cl, XtIntervalId * id)
 
 int CheckPOP3(XtPointer cl, XtIntervalId * id)
 {
-  int ret_value;
+  int ret_value = 0;
   char *buf;
 
   buf = malloc(mar.from_maxlen * mar.mail_lines + 1);

@@ -989,6 +989,7 @@ test "$with_xpm" = "yes" && cat >> confdefs.h <<\EOF
 EOF
 
 
+
 # Check whether --with-jpeg or --without-jpeg was given.
 if test "${with_jpeg+set}" = set; then
   withval="$with_jpeg"
@@ -997,11 +998,12 @@ else
   with_jpeg=yes
 fi
 
-test "$with_jpeg" = "yes" && cat >> confdefs.h <<\EOF
-#define WITH_JPEG 1
-EOF
- && echo $ac_n "checking for main in -ljpeg""... $ac_c" 1>&6
-echo "configure:1005: checking for main in -ljpeg" >&5
+test "$with_jpeg" = "yes"
+
+if test "$with_jpeg" = "yes";
+then
+echo $ac_n "checking for main in -ljpeg""... $ac_c" 1>&6
+echo "configure:1007: checking for main in -ljpeg" >&5
 ac_lib_var=`echo jpeg'_'main | sed 'y%./+-%__p_%'`
 if eval "test \"`echo '$''{'ac_cv_lib_$ac_lib_var'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
@@ -1009,14 +1011,14 @@ else
   ac_save_LIBS="$LIBS"
 LIBS="-ljpeg  $LIBS"
 cat > conftest.$ac_ext <<EOF
-#line 1013 "configure"
+#line 1015 "configure"
 #include "confdefs.h"
 
 int main() {
 main()
 ; return 0; }
 EOF
-if { (eval echo configure:1020: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
+if { (eval echo configure:1022: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
   rm -rf conftest*
   eval "ac_cv_lib_$ac_lib_var=yes"
 else
@@ -1043,6 +1045,7 @@ else
   echo "$ac_t""no" 1>&6
 fi
 
+fi
 
 # Check whether --enable-personal or --disable-personal was given.
 if test "${enable_personal+set}" = set; then
@@ -1120,7 +1123,6 @@ fi
 test "$with_akari" = "yes" && cat >> confdefs.h <<\EOF
 #define AKARI 1
 EOF
-
 
 
 

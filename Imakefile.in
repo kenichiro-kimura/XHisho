@@ -49,9 +49,7 @@ PETNAME_OBJS = petname.o
 #endif
 
 #ifdef HAVE_LIBJPEG
-#ifdef WITH_JPEG
 JPEG_OBJS = load_jpeg.o
-#endif
 #endif
 
 #ifdef WITH_XPM

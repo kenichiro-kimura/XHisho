@@ -1,9 +1,9 @@
-/*
- ふきだし型Form Widget 「Msgwin Widget」 パブリックヘッダファイル
-
- copyright(c) 1998,1999   Ken'ichirou Kimura(kimura@db.is.kyushu-u.ac.jp)
-
-*/
+/**
+ * ふきだし型Form Widget 「Msgwin Widget」 パブリックヘッダファイル
+ * 
+ * copyright(c) 1998,1999   Ken'ichirou Kimura(kimura@db.is.kyushu-u.ac.jp)
+ * 
+ **/
 
 #ifndef _MSGWIN_H
 #define _MSGWIN_H
@@ -30,14 +30,16 @@ typedef struct _MsgwinRec *MsgwinWidget;
 #define XtCFrameMode "FrameMode"
 
 enum {
-  /*
-   * いくつかの定数定義をenumで書き直したが、XtNxxの定義などはXの流儀
+  /**
+   * いくつかの定数定義をenumで書き直したが、XtNxxの定義などはXの流儀 
    * にしたがってそのまま。
-   */
+   * 
+   **/
 
   LABEL_OFFSET = 20,
   POINT_WIDTH = 30,
   FONT_OFFSET = 2,
   YPOS_OFFSET = 0
 };
+
 #endif

@@ -1,9 +1,9 @@
+#include "config.h"
 #include <X11/Intrinsic.h>
 #include <X11/StringDefs.h>
 #include <X11/Xmu/Atoms.h>
 #include <X11/extensions/shape.h>
 #include <X11/Xlocale.h>
-#include <X11/xpm.h>
 #include <X11/Xmu/Editres.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -17,7 +17,6 @@
 #include "XHisho.h"
 #include "Msgwin.h"
 #include "globaldefs.h"
-#include "config.h"
 
 /**
  * local variable
@@ -26,7 +25,8 @@
 static Widget toplevel;
 static int IsSet = 0;		/** 1回目のExposeでだけ子Widgetを作る **/
 
-Widget mail, openwin, xhisho, about, editwin, calendarwin, menu, nomail, resedit;
+Widget mail, openwin, xhisho, about, editwin, calendarwin, menu, nomail,
+    resedit;
 int MailWindowShown, OpenWindowShown, MenuWindowShown, AboutWindowShown;
 BiffMethod Biff = LOCAL;
 int UseSound = 1;
@@ -381,17 +381,17 @@ static void PrintUsage(int argc, char **argv)
   "     -coption                    : show compile option\n"
   "     -cgfile [file_name]         : cg file name(BMP"
 #ifdef WITH_XPM
-,XPM
+  ",XPM"
 #endif
-#ifdef WITH_JPEG
-,JPEG
+#ifdef HAVE_LIBJPEG
+  ",JPEG"
 #endif
-)\n"
+  ")\n"
   "     -noclock                    : don't draw clock\n"
   "     -focus                      : use Focuswin module\n"
   "     -justify [left/center/rignt]: set Focuswin justify\n"
   "     -ypos [n]                   : Y-position offset for Focuswin\n"
-  "     -shape                      : use transparent BMP's background\n"
+  "     -shape                      : use transparent background\n"
   "     -message [file_name]        : message file name\n"
   "     -scheddir [dir_name]        : schedule dir name\n"
   "     -chime                      : use zero-hour chime\n"
@@ -408,7 +408,7 @@ static void PrintUsage(int argc, char **argv)
 #ifdef WITH_XPM
   "    Use XPM file\n"
 #endif
-#ifdef WITH_JPEG
+#ifdef HAVE_LIBJPEG
   "    Use JPEG file\n"
 #endif
 #ifdef EXT_FILTER
