@@ -45,8 +45,9 @@ static Boolean SetValues(Widget, Widget, Widget, ArgList, Cardinal *);
 static void NewInterval(XHishoWidget);
 static void FocusInterval(XHishoWidget);
 static void SetSize(XHishoWidget);
-static void Animation(XHishoWidget);
+static void Animation(XHishoWidget,int);
 static void ChangeAnimType(XHishoWidget);
+static void DrawNewCG(XHishoWidget);
 
 static XtResource resources[] = {
   {
@@ -505,7 +506,7 @@ static void MoveFocusWindow(XHishoWidget xhw)
   }
 
   if(xhw->xhisho.i_info->num_of_images > 1){
-    Animation(xhw);
+    Animation(xhw,0);
   }
 
   FocusInterval(xhw);
@@ -519,10 +520,13 @@ void SetSize(XHishoWidget xhw)
   }
 }
 
-void Animation(XHishoWidget xhw)
+void Animation(XHishoWidget xhw,int force)
 {
+  /**
+   * force == 1 なら、強制的に書き換える。イベント処理用。
+   **/
+
   unsigned int change;
-  int clock_height;
   
   change = 0;
   if(xhw->xhisho.cg_sec == -1) return;
@@ -580,29 +584,12 @@ void Animation(XHishoWidget xhw)
        CG_NUM < 0) CG_NUM = 0;
   }
 
-  if(change){
-    if (!xhw->xhisho.c_draw) {
-      xhw->label.label_height = 0;
-      clock_height = 0;
-    } else {
-      clock_height = xhw->label.label_height + 4;
-    }
-
-    xhw->xhisho.cg_sec = ((xhw->xhisho.i_info->image) + CG_NUM)->secs;
-    SetSize(xhw);
-    XtResizeWidget(XtParent(xhw), WIDTH, HEIGHT + clock_height, FRAME_WIDTH);
-    XtResizeWidget((Widget) xhw, WIDTH, HEIGHT + clock_height
-		 ,FRAME_WIDTH);
-    XCopyArea(DISPLAY, PIXMAP(CG_NUM), WINDOW, XH_GC, 0, 0, WIDTH, HEIGHT, 0, 0);
-    if (xhw->xhisho.i_info->is_shape){
-      XShapeCombineMask(DISPLAY, XtWindow(XtParent(xhw)), ShapeBounding, 0, 0
-			,((xhw->xhisho.i_info->image) + CG_NUM)->mask, ShapeSet);
-    }
-    XFlush(DISPLAY);
-  }
+  if(change || force)
+    DrawNewCG(xhw);
 }
 
-static void ChangeAnimType(XHishoWidget xhw){
+static void ChangeAnimType(XHishoWidget xhw)
+{
   /**
    * XtNanimTypeがセットされたときの処理
    **/
@@ -628,9 +615,44 @@ static void ChangeAnimType(XHishoWidget xhw){
   CG_NUM = xhw->xhisho.i_info->anim_number[xhw->xhisho.anim_type];
 
   /**
-   * Animation()の中ですぐに処理されるように,タイマーを0にしておく
+   * cg_sec = 2 にするのは、「規定時間を過ぎた」チェックに引っ掛かって 
+   * CG_NUM++されないようにするため
    **/
 
-  xhw->xhisho.cg_sec = 0;
-  Animation(xhw);
+  xhw->xhisho.cg_sec = 2;
+
+  /**
+   * DrawNewCG()ではなく、Animation(xhw,1) (つまり、強制書き換え)を呼ぶ
+   * のはラベルの処理のため。
+   **/
+
+  Animation(xhw,1);
+}
+
+static void DrawNewCG(XHishoWidget xhw)
+{
+  /**
+   * CGの書き換えを行う。最初にサイズを変更し,それから描画。
+   **/
+
+  int clock_height;
+
+  if (!xhw->xhisho.c_draw) {
+    xhw->label.label_height = 0;
+    clock_height = 0;
+  } else {
+    clock_height = xhw->label.label_height + 4;
+  }
+
+  xhw->xhisho.cg_sec = ((xhw->xhisho.i_info->image) + CG_NUM)->secs;
+  SetSize(xhw);
+  XtResizeWidget(XtParent(xhw), WIDTH, HEIGHT + clock_height, FRAME_WIDTH);
+  XtResizeWidget((Widget) xhw, WIDTH, HEIGHT + clock_height
+		 ,FRAME_WIDTH);
+  XCopyArea(DISPLAY, PIXMAP(CG_NUM), WINDOW, XH_GC, 0, 0, WIDTH, HEIGHT, 0, 0);
+  if (xhw->xhisho.i_info->is_shape){
+    XShapeCombineMask(DISPLAY, XtWindow(XtParent(xhw)), ShapeBounding, 0, 0
+		      ,((xhw->xhisho.i_info->image) + CG_NUM)->mask, ShapeSet);
+  }
+  XFlush(DISPLAY);
 }

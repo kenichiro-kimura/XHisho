@@ -109,7 +109,6 @@ static void Wait(Widget w, XEvent * e, String * s, unsigned int *i)
      * openwin のポップアップ
      **/
 
-    XtVaSetValues(xhisho, XtNanimType, MAIL, NULL);
     XtVaSetValues(openwin, XtNwindowMode, 0, NULL);
     XtPopup(XtParent(openwin), XtGrabNone);
     OpenWindowShown = 1;
