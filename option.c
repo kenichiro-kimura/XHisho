@@ -49,6 +49,7 @@ static void HeadOfBuffer(messageBuffer*,char*);
 static void _GetBuffer(messageBuffer*,char*,int);
 static int IsKinsoku(char*);
 static unsigned char* SJIS2EUC(unsigned char*);
+static unsigned char* EUC2SJIS(unsigned char*);
 static unsigned char* UTF82EUC(unsigned char*);
 static unsigned char* JIS2EUC(unsigned char*);
 static unsigned int UNICODE2EUC(unsigned int);
@@ -1238,6 +1239,51 @@ static unsigned char* SJIS2EUC(unsigned char* in) {
 
   out_ptr = ChangeBadKanjiCode(ret);
   free(ret);
+  return out_ptr;
+}
+
+static unsigned char* EUC2SJIS(unsigned char* in) {
+  /*
+   * change EUC to SJIS. original is in xakane by NAO.
+   */
+
+  unsigned char c1;
+  unsigned char c2;
+  unsigned char* in_ptr;
+  unsigned char first_byte;
+  unsigned char* out_ptr;
+  unsigned char* ret;
+
+  if(in == NULL || *in == '\0') return NULL;
+  
+  ret = (unsigned char*)malloc(strlen(in) * 2);
+  in_ptr = in;
+  out_ptr = ret;
+
+  while(*in_ptr != '\0'){
+    first_byte = *in_ptr++;
+    if(first_byte < 0x80){
+      *out_ptr++ = first_byte;
+    } else if (first_byte == 0x8e){
+      *out_ptr++ = *in_ptr++;
+    } else {
+      if(*in_ptr == '\0') break;
+      c1 = first_byte & ~0x80;
+      c2 = *in_ptr++ & ~0x80;
+
+      c2 += (c1 & 1) ? 0x1f : 0x7d;
+      if (c2 >= 0x7f) c2++;
+      c1 = ((c1 - 0x21) >> 1) + 0x81;
+      if (c1 > 0x9f) c1 += 0x40;
+      *out_ptr++ = c1;
+      *out_ptr++ = c2;
+    }
+  }
+  *out_ptr = '\0';
+
+  out_ptr = (unsigned char*)strdup(ret);
+  free(ret);
+
   return out_ptr;
 }
 
@@ -8337,157 +8383,176 @@ static void sstp(int port)
     if(accept_desc != -1){
       /*      write(accept_desc,"200 OK\r\n",strlen("200 OK\r\n")); */
       is_script = is_command = 0;
-      stream = fdopen(accept_desc,"rw");
-      while(1){
-	if(fgets(buffer,BUFSIZ * 10,stream) == NULL) break;
-	/*
-	do{
-	  fromlen = read(accept_desc,buffer,BUFSIZ * 10);
-	} while(fromlen < 1);
-	buffer[fromlen] = '\0';
-	*/
-	while((chr_ptr = strstr(buffer,"\r")) != NULL){
-	  strcpy(chr_ptr,chr_ptr + 1);
-	}
-
-	if(!strncmp(buffer,"Script:",strlen("Script:"))){
-	  is_script = 1;
-	  status++;
-	  AddBuffer(&kbuf,buffer + strlen("Script:"),0);
-	} else if(!strncmp(buffer,"SEND SSTP/1.0",strlen("SEND SSTP/1.0"))){
-	  status = 1;
-	  /* NULL */
-	} else if(!strncmp(buffer,"SEND SSTP/1.1",strlen("SEND SSTP/1.1"))){
-	  status = 1;
-	  /* NULL */
-	} else if(!strncmp(buffer,"Sender:",strlen("Sender:"))){
-	  status++;
-	  /* NULL */
-	} else if(!strncmp(buffer,"Option:",strlen("Option:"))){
-	  /* NULL */
-	} else if(!strncmp(buffer,"Charset:",strlen("Charset:"))){
-	  /* 
-	   * select charset converter
-	   */
-	  for(chr_ptr = buffer + strlen("Charset:")
-		;isspace(*chr_ptr);chr_ptr++);
-
-	  switch(*chr_ptr){
-	  case 'S':
-	    /* is Shift_JIS */
-	    conv = SJIS2EUC;
+      stream = fdopen(accept_desc,"a+");
+      while(11){
+	while(1){
+	  if(fgets(buffer,BUFSIZ * 10,stream) == NULL){
+	    status = -2;
 	    break;
-	  case 'I':
-	    /* is ISO-2022-JP */
-	    conv = JIS2EUC;
-	    break;
-	  case 'E':
-	    /* is EUC-JP */
-	    conv = ChangeBadKanjiCode;
-	    break;
-	  case 'U':
-	    /* is UTF-8 */
-	    conv = UTF82EUC;
-	    break;
-	  default:
-	    /* oh, it's not good! */
-	    conv = SJIS2EUC;
 	  }
-	} else if(!strncmp(buffer,"EXECUTE SSTP/1.0",strlen("EXECUTE SSTP/1.0"))){
 	  /*
-	   *  not supported
-	   */
-	  is_command = 1;
-	  status = 1;
-	} else if(!strncmp(buffer,"Command:",strlen("Command:"))
-		  && is_command){
-	  for(chr_ptr = buffer + strlen("Command:");
-	      isspace(*chr_ptr);chr_ptr++);
+	    do{
+	    fromlen = read(accept_desc,buffer,BUFSIZ * 10);
+	    } while(fromlen < 1);
+	    buffer[fromlen] = '\0';
+	  */
+	  while((chr_ptr = strstr(buffer,"\r")) != NULL){
+	    strcpy(chr_ptr,chr_ptr + 1);
+	  }
 
-	  if(!strncmp(chr_ptr,"GetName",strlen("GetName"))){
+	  printf("%s",buffer);
+	  if(!strncmp(buffer,"Script:",strlen("Script:"))){
+	    is_script = 1;
 	    status++;
-	  } else {
+	    AddBuffer(&kbuf,buffer + strlen("Script:"),0);
+	  } else if(!strncmp(buffer,"SEND SSTP/1.0",strlen("SEND SSTP/1.0"))){
+	    status = 1;
+	    /* NULL */
+	  } else if(!strncmp(buffer,"SEND SSTP/1.1",strlen("SEND SSTP/1.1"))){
+	    status = 1;
+	    /* NULL */
+	  } else if(!strncmp(buffer,"Sender:",strlen("Sender:"))){
+	    status++;
+	    /* NULL */
+	  } else if(!strncmp(buffer,"Option:",strlen("Option:"))){
+	    /* NULL */
+	  } else if(!strncmp(buffer,"Charset:",strlen("Charset:"))){
+	    /* 
+	     * select charset converter
+	     */
+	    for(chr_ptr = buffer + strlen("Charset:")
+		  ;isspace(*chr_ptr);chr_ptr++);
+	    
+	    switch(*chr_ptr){
+	    case 'S':
+	      /* is Shift_JIS */
+	      conv = SJIS2EUC;
+	      break;
+	    case 'I':
+	      /* is ISO-2022-JP */
+	      conv = JIS2EUC;
+	      break;
+	    case 'E':
+	      /* is EUC-JP */
+	      conv = ChangeBadKanjiCode;
+	      break;
+	    case 'U':
+	      /* is UTF-8 */
+	      conv = UTF82EUC;
+	      break;
+	    default:
+	      /* oh, it's not good! */
+	      conv = SJIS2EUC;
+	    }
+	  } else if(!strncmp(buffer,"EXECUTE SSTP/1.0",strlen("EXECUTE SSTP/1.0"))){
+	    /*
+	     *  not supported
+	     */
+	    is_command = 1;
+	    status = 1;
+	  } else if(!strncmp(buffer,"Command:",strlen("Command:"))
+		    && is_command){
+	    for(chr_ptr = buffer + strlen("Command:");
+		isspace(*chr_ptr);chr_ptr++);
+	    
+	    if(!strncmp(chr_ptr,"GetName",strlen("GetName"))){
+	      status++;
+	    } else {
+	      status = -1;
+	      break;
+	    }
+	  } else if(!strncmp(buffer,"EXECUTE",strlen("EXECUTE"))){
+	    /*
+	     *  not supported
+	     */
 	    status = -1;
 	    break;
+	  } else if(!strncmp(buffer,"GIVE",strlen("GIVE"))){
+	    /*
+	     *  not supported
+	     */
+	    status = -1;
+	    break;
+	  } else if(!strncmp(buffer,"SEND",strlen("SEND"))){
+	    /*
+	     *  this is SEND/ 1.2 , 1.3 , 1.4
+	     *  not supported
+	     */
+	    status = -1;
+	    break;
+	  } else if(!strncmp(buffer,"COMMUNICATE",strlen("COMMUNICATE"))){
+	    /*
+	     *  not supported
+	     */
+	    status = -1;
+	    break;
+	  } else if(!strncmp(buffer,"NOTIFY",strlen("NOTIFY"))){
+	    /*
+	     *  this is SEND/ 1.2 , 1.3 , 1.4
+	     *  not supported
+	     */
+	    status = -1;
+	    break;
+	  } else if(is_script){
+	    AddBuffer(&kbuf,buffer,0);
 	  }
-	} else if(!strncmp(buffer,"EXECUTE",strlen("EXECUTE"))){
-	  /*
-	   *  not supported
-	   */
-	  status = -1;
+	  
+	  if(*buffer == '\n') break;
+	}
+
+	if(status == -2) break;
+
+	printf("status:%d,command:%d,script:%d\n",status,is_command,is_script);
+	switch(status){
+	case -1:
+	  fprintf(stream,"501 Not Implemented\r\n");
 	  break;
-	} else if(!strncmp(buffer,"GIVE",strlen("GIVE"))){
-	  /*
-	   *  not supported
-	   */
-	  status = -1;
+	case 0:
+	case 1:
+	case 2:
+	  fprintf(stream,"400 Bad Request\r\n");
 	  break;
-	} else if(!strncmp(buffer,"SEND",strlen("SEND"))){
-	  /*
-	   *  this is SEND/ 1.2 , 1.3 , 1.4
-	   *  not supported
-	   */
-	  status = -1;
+	case 3:
+	  if(is_script){
+	    fprintf(stream,"204 No Connect\r\n");
+	  } 
+	  if (is_command){
+	    fprintf(stream,"200 OK\r\n");
+	    chr_ptr = EUC2SJIS(opr.s_name);
+	    fprintf(stream,"%s,",chr_ptr);
+	    free(chr_ptr);
+	    chr_ptr = EUC2SJIS(opr.u_name);
+	    fprintf(stream,"%s\r\n",chr_ptr);
+	    free(chr_ptr);
+	  }
+	  if(!is_script && !is_command){
+	    fprintf(stream,"204 No Connect\r\n");
+	  }
 	  break;
-	} else if(!strncmp(buffer,"COMMUNICATE",strlen("COMMUNICATE"))){
-	  /*
-	   *  not supported
-	   */
-	  status = -1;
+	default:
+	  fprintf(stream,"501 Not Implemented\r\n");
 	  break;
-	} else if(!strncmp(buffer,"NOTIFY",strlen("NOTIFY"))){
-	  /*
-	   *  this is SEND/ 1.2 , 1.3 , 1.4
-	   *  not supported
-	   */
-	  status = -1;
-	  break;
-	} else if(is_script){
-	  AddBuffer(&kbuf,buffer,0);
 	}
 	
-	if(strncmp(buffer,"\n",2) == 0 || strstr(buffer,"\n\n")) break;
-      }
-
-      switch(status){
-      case -1:
-	fprintf(stream,"501 Not Implemented\r\n");
-	break;
-      case 0:
-      case 1:
-      case 2:
-	fprintf(stream,"400 Bad Request\r\n");
-	break;
-      case 3:
-	if(is_script){
-	  fprintf(stream,"204 No Connect\r\n");
-	} else if (is_command){
-	  fprintf(stream,"XHisho with option\r\n");
-	  fprintf(stream,"200 OK\r\n");
-	} else {
-	  fprintf(stream,"204 No Connect\r\n");
+	fflush(stream);
+	
+	if(status == 3 && is_script){
+	  chr_ptr = conv(kbuf.buffer);
+	  *kbuf.buffer = '\0';
+	  AddBuffer(&kbuf,chr_ptr,0);
+	  free(chr_ptr);
+	  
+	  chr_ptr = SSTPParser(kbuf.buffer);
+	  
+	  AddBuffer(&mbuf,chr_ptr,UseSSTP);
+	  free(chr_ptr);
+	  *kbuf.buffer = '\0';
 	}
-	break;
-      default:
-	fprintf(stream,"501 Not Implemented\r\n");
-	break;
+	is_script = is_command = status = 0;
+	printf("go next wait..\n");
       }
-
-      fflush(stream);
       fclose(stream);
-
-      if(status == 3 && is_script){
-	chr_ptr = conv(kbuf.buffer);
-	*kbuf.buffer = '\0';
-	AddBuffer(&kbuf,chr_ptr,0);
-	free(chr_ptr);
-
-	chr_ptr = SSTPParser(kbuf.buffer);
-
-	AddBuffer(&mbuf,chr_ptr,UseSSTP);
-	free(chr_ptr);
-	*kbuf.buffer = '\0';
-      }
+      printf("close\n");
     }
   }
   free(buffer);
