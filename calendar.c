@@ -205,7 +205,7 @@ Widget CreateCalendarWindow(Widget w, int Month, struct tm tm_now)
   };
 
   Arg weekargs[] = {
-    {XtNborderWidth, 0},	/** 0 **/
+    {XtNborderWidth, 1},	/** 0 **/
     {XtNinternational, TRUE},	/** 1 **/
     {XtNleft, XtChainLeft},	/** 2 **/
     {XtNright, XtChainLeft},	/** 3 **/
@@ -347,7 +347,9 @@ Widget CreateCalendarWindow(Widget w, int Month, struct tm tm_now)
 
     week[i] = XtCreateManagedWidget(wname[i], labelWidgetClass, calendar
 				    ,weekargs, XtNumber(weekargs));
-    XtVaGetValues(week[i], XtNwidth, &Label_width, NULL);
+    XtVaGetValues(week[i], XtNwidth, &Label_width
+		  , XtNbackground, &bg_color, NULL);
+    XtVaSetValues(week[i], XtNborderColor, bg_color, NULL);
     tmp_width += Label_width;
 
   }
