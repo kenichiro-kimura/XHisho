@@ -441,8 +441,8 @@ Widget CreateMailAlert(Widget w, int Mode)
 
   sprintf(m_filename, "%s%s", mar.mailbox, getenv("USER"));
 
-  labelargs[0].value = Mode ? (XtArgVal) ((*messages[1] == NULL) ? mar.no_l : messages[1])
-    : (XtArgVal) ((*messages[0] == NULL) ? mar.mail_l : messages[0]);
+  labelargs[0].value = Mode ? (XtArgVal) ((*messages[1] == '\0') ? mar.no_l : messages[1])
+    : (XtArgVal) ((*messages[0] == '\0') ? mar.mail_l : messages[0]);
   labelargs[8].value = (XtArgVal) POINT_WIDTH + LABEL_OFFSET;
   labelargs[9].value = Mode ? (XtArgVal) 30 : (XtArgVal) 0;
 

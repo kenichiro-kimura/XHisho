@@ -988,13 +988,61 @@ test "$with_xpm" = "yes"
 
 
 
-XDIR=`dirname ${XMKMF}|tr -d "bin"`
-LDFLAGS="$LDFLAGS -L${x_libraries} -L${XDIR}lib"
-
 if test "$with_xpm" = "yes";
 then
+  XMKMF=`which xmkmf`
+  XDIR=`dirname ${XMKMF}|tr -d "bin"`
+
+  if test "${x_libraries}" != "NONE"
+  then
+    LDFLAGS="$LDFLAGS -L${x_libraries}"
+  fi
+  LDFLAGS="$LDFLAGS -L${XDIR}lib"
+  echo $ac_n "checking for main in -lX11""... $ac_c" 1>&6
+echo "configure:1003: checking for main in -lX11" >&5
+ac_lib_var=`echo X11'_'main | sed 'y%./+-%__p_%'`
+if eval "test \"`echo '$''{'ac_cv_lib_$ac_lib_var'+set}'`\" = set"; then
+  echo $ac_n "(cached) $ac_c" 1>&6
+else
+  ac_save_LIBS="$LIBS"
+LIBS="-lX11  $LIBS"
+cat > conftest.$ac_ext <<EOF
+#line 1011 "configure"
+#include "confdefs.h"
+
+int main() {
+main()
+; return 0; }
+EOF
+if { (eval echo configure:1018: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
+  rm -rf conftest*
+  eval "ac_cv_lib_$ac_lib_var=yes"
+else
+  echo "configure: failed program was:" >&5
+  cat conftest.$ac_ext >&5
+  rm -rf conftest*
+  eval "ac_cv_lib_$ac_lib_var=no"
+fi
+rm -f conftest*
+LIBS="$ac_save_LIBS"
+
+fi
+if eval "test \"`echo '$ac_cv_lib_'$ac_lib_var`\" = yes"; then
+  echo "$ac_t""yes" 1>&6
+    ac_tr_lib=HAVE_LIB`echo X11 | sed -e 's/[^a-zA-Z0-9_]/_/g' \
+    -e 'y/abcdefghijklmnopqrstuvwxyz/ABCDEFGHIJKLMNOPQRSTUVWXYZ/'`
+  cat >> confdefs.h <<EOF
+#define $ac_tr_lib 1
+EOF
+
+  LIBS="-lX11 $LIBS"
+
+else
+  echo "$ac_t""no" 1>&6
+fi
+
   echo $ac_n "checking for main in -lXpm""... $ac_c" 1>&6
-echo "configure:998: checking for main in -lXpm" >&5
+echo "configure:1046: checking for main in -lXpm" >&5
 ac_lib_var=`echo Xpm'_'main | sed 'y%./+-%__p_%'`
 if eval "test \"`echo '$''{'ac_cv_lib_$ac_lib_var'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
@@ -1002,14 +1050,14 @@ else
   ac_save_LIBS="$LIBS"
 LIBS="-lXpm  $LIBS"
 cat > conftest.$ac_ext <<EOF
-#line 1006 "configure"
+#line 1054 "configure"
 #include "confdefs.h"
 
 int main() {
 main()
 ; return 0; }
 EOF
-if { (eval echo configure:1013: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
+if { (eval echo configure:1061: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
   rm -rf conftest*
   eval "ac_cv_lib_$ac_lib_var=yes"
 else
@@ -1053,7 +1101,7 @@ test "$with_jpeg" = "yes"
 if test "$with_jpeg" = "yes";
 then
 echo $ac_n "checking for main in -ljpeg""... $ac_c" 1>&6
-echo "configure:1057: checking for main in -ljpeg" >&5
+echo "configure:1105: checking for main in -ljpeg" >&5
 ac_lib_var=`echo jpeg'_'main | sed 'y%./+-%__p_%'`
 if eval "test \"`echo '$''{'ac_cv_lib_$ac_lib_var'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
@@ -1061,14 +1109,14 @@ else
   ac_save_LIBS="$LIBS"
 LIBS="-ljpeg  $LIBS"
 cat > conftest.$ac_ext <<EOF
-#line 1065 "configure"
+#line 1113 "configure"
 #include "confdefs.h"
 
 int main() {
 main()
 ; return 0; }
 EOF
-if { (eval echo configure:1072: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
+if { (eval echo configure:1120: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
   rm -rf conftest*
   eval "ac_cv_lib_$ac_lib_var=yes"
 else
