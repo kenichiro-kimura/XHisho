@@ -421,13 +421,13 @@ static void Realize(Widget w, XtValueMask * valueMask, XSetWindowAttributes * at
 		, HEIGHT - (((xhw->xhisho.i_info->image) + UCG_NUM)->height)
 		);
       XSetFunction(DISPLAY,MGC,GXcopy);
-      XShapeCombineMask(DISPLAY, XtWindow(XtParent(xhw)), ShapeBounding, 0, 0
+      XShapeCombineMask(DISPLAY, XtWindow(XtParent(xhw)), ShapeBounding, 1,1 
 			,p, ShapeSet);
       XFreePixmap(DISPLAY,p);
     } else {
       XShapeCombineMask(DISPLAY
 			, XtWindow(XtParent(xhw))
-			, ShapeBounding, 0, 0
+			, ShapeBounding, 1,1 
 			,((xhw->xhisho.i_info->image) + CG_NUM)->mask, ShapeSet);
     }
   }
@@ -947,11 +947,11 @@ static void DrawNewCG(XHishoWidget xhw)
 		, 0/* + xhw->xhisho.ucg_off*/
 		, HEIGHT - (((xhw->xhisho.i_info->image) + UCG_NUM)->height)
 		);
-      XShapeCombineMask(DISPLAY, XtWindow(XtParent(xhw)), ShapeBounding, 0, 0
+      XShapeCombineMask(DISPLAY, XtWindow(XtParent(xhw)), ShapeBounding, 1,1 
 			,p, ShapeSet);
       XFreePixmap(DISPLAY,p);
     } else {
-      XShapeCombineMask(DISPLAY, XtWindow(XtParent(xhw)), ShapeBounding, 0, 0
+      XShapeCombineMask(DISPLAY, XtWindow(XtParent(xhw)), ShapeBounding, 1,1 
 			,((xhw->xhisho.i_info->image) + CG_NUM)->mask, ShapeSet);
     }
   }
