@@ -55,14 +55,14 @@ static unsigned char* JIS2EUC(unsigned char*);
 static unsigned int UNICODE2EUC(unsigned int);
 static void sstp(int);
 static unsigned char* SSTPParser(unsigned char* );
-static void ReplaceSSTPEscape(messageBuffer*,const unsigned char*);
-static unsigned char* Escape2Message(const unsigned char*);
+static void ReplaceSSTPMetaString(messageBuffer*,const unsigned char*);
+static unsigned char* Meta2Message(const unsigned char*);
 
 
 #ifdef USE_KAWARI
 static void GetMessageFromKawari(Widget, int *, XtInputId *);
 extern char* RandomMessage(char*);
-extern char* DecodeEscapeMessage(const char*,const char*);
+extern char* DecodeMetaString(const char*,const char*);
 #endif
 
 static void SakuraParser(char*); /* only for reference */
@@ -450,11 +450,11 @@ static void CheckOption(Widget w, int *fid, XtInputId * id)
 
 #ifdef USE_KAWARI
 static void GetMessageFromKawari(Widget w, int * i, XtInputId * id){
-  static unsigned char *_buffer;
   static int x = 0;
   int len;
   int message_buffer_size = BUFSIZ * 20;
   unsigned char* message_ptr;
+  static messageBuffer kbuf;
 
   if(OptionTimeoutId){
     XtRemoveTimeOut(OptionTimeoutId);
@@ -467,35 +467,29 @@ static void GetMessageFromKawari(Widget w, int * i, XtInputId * id){
   }
 
   if(x == 0){
-    _buffer = (char *)malloc(message_buffer_size);
+    kbuf.buffer = (unsigned char*)malloc(message_buffer_size);
+    kbuf.size = message_buffer_size;
   }
-  x = 1;
 
-  memset(_buffer,'\0',message_buffer_size);
+  x = 1;
+  *kbuf.buffer = '\0';
 
   message_ptr = RandomMessage(opr.kawari_dir);
-  strncpy(_buffer,message_ptr,MIN(message_buffer_size -1,strlen(message_ptr)));
-  _buffer[MIN(message_buffer_size -1,strlen(message_ptr))] = '\0';
+  AddBuffer(&kbuf,message_ptr,0);
   free(message_ptr);
 
-  message_ptr = SJIS2EUC(_buffer);
-  strncpy(_buffer,message_ptr,MIN(message_buffer_size -1,strlen(message_ptr)));
-  _buffer[MIN(message_buffer_size -1,strlen(message_ptr))] = '\0';
+  message_ptr = SJIS2EUC(kbuf.buffer);
+  *kbuf.buffer = '\0';
+  AddBuffer(&kbuf,message_ptr,0);
   free(message_ptr);
 
-  /*
-  message_ptr = ChangeBadKanjiCode(_buffer);
-  strncpy(_buffer,message_ptr,MIN(message_buffer_size -1,strlen(message_ptr)));
-  free(message_ptr);
-  */
 #ifdef DEBUG
-  printf("#%s\n",buffer);
+  printf("#%s\n",kbuf.buffer);
 #endif
 
-  ORParser(_buffer);
+  ORParser(kbuf.buffer);
 
-  AddBuffer(&mbuf,_buffer,UseSSTP);
-
+  AddBuffer(&mbuf,kbuf.buffer,UseSSTP);
 }
 #endif
 
@@ -1244,7 +1238,7 @@ static unsigned char* SJIS2EUC(unsigned char* in) {
 
 static unsigned char* EUC2SJIS(unsigned char* in) {
   /*
-   * change EUC to SJIS. original is in xakane by NAO.
+   * change EUC to SJIS
    */
 
   unsigned char c1;
@@ -8589,16 +8583,16 @@ static unsigned char* SSTPParser(unsigned char* in)
   kbuf.size = strlen(in) + 1;
 
   for(i = 0; strlen(escape[i]) && strchr(kbuf.buffer,'%');i++)
-    ReplaceSSTPEscape(&kbuf,escape[i]);
+    ReplaceSSTPMetaString(&kbuf,escape[i]);
 
   tmp = (unsigned char*)strdup(kbuf.buffer);
   free(kbuf.buffer);
   return tmp;
 }
   
-static void ReplaceSSTPEscape(messageBuffer* kbuf,const unsigned char* tag){
+static void ReplaceSSTPMetaString(messageBuffer* kbuf,const unsigned char* tag){
   /*
-   * SSTP escape message (tag) in target is replaced and add into kbuf
+   * SSTP Meta message (tag) in target is replaced and add into kbuf
    */
 
   unsigned char* tmp;
@@ -8608,7 +8602,7 @@ static void ReplaceSSTPEscape(messageBuffer* kbuf,const unsigned char* tag){
 
   if(strstr(kbuf->buffer,tag) == NULL) return;
 
-  message = Escape2Message(tag);
+  message = Meta2Message(tag);
   tmp = (unsigned char*)malloc(strlen(kbuf->buffer) + 1);
   tbuf.buffer = (unsigned char*)malloc(strlen(kbuf->buffer) + 1);
   tbuf.size = strlen(kbuf->buffer) + 1;
@@ -8629,15 +8623,14 @@ static void ReplaceSSTPEscape(messageBuffer* kbuf,const unsigned char* tag){
   free(tbuf.buffer);
 }
 
-static unsigned char* Escape2Message(const unsigned char* in){
+static unsigned char* Meta2Message(const unsigned char* in){
   unsigned char* r;
   unsigned char* _r;
   struct tm *tm_now;
   time_t tval;
 
   /*
-   * this function should call KAWARI's routine and decode
-   *  SSTP escape message
+   * decode  SSTP Meta message
    */
 
   time(&tval);
@@ -8674,12 +8667,11 @@ static unsigned char* Escape2Message(const unsigned char* in){
   }
 
 #ifdef USE_KAWARI
-  r = DecodeEscapeMessage(opr.kawari_dir,in);
+  r = DecodeMetaString(opr.kawari_dir,in);
   _r = SJIS2EUC(r);
   free(r);
 #else
-  _r = (unsigned char*)malloc(1);
-  *_r = '\0';
+  _r = (unsigned char*)strdup(in);
 #endif
   return _r;
 }

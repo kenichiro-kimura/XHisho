@@ -49,7 +49,7 @@ extern "C" char* RandomMessage(char* kawari_dir)
 	return r_str;
 }
 
-extern "C" char* DecodeEscapeMessage(const char* kawari_dir, const char* word){
+extern "C" char* DecodeMetaString(const char* kawari_dir, const char* word){
   static string sakuraname="sakura";
   static string keroname="unyuu";
   static string friendname="sirone";
