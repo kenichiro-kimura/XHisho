@@ -50,6 +50,7 @@ typedef struct _XHishoPart {
   int f_cg_number;
   int uf_cg_number;
   Boolean force_cg;
+  Boolean use_unyuu;
 
   /* private data */
   ImageInfo* i_info;

@@ -55,6 +55,9 @@ typedef struct _XHishoRec *XHishoWidget;
 #define XtCCgNumber "CgNumber"
 #define XtNforceCG "forceCG"
 #define XtCForceCG "ForceCG"
+#define XtNuseUnyuu "useUnyuu"
+#define XtCUseUnyuu "UseUnyuu"
+
 
 
 
