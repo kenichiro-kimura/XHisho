@@ -609,6 +609,9 @@ static Boolean SetValues(Widget current, Widget request, Widget new, ArgList arg
 	 || inew->xhisho.f_cg_number < 0)
 	inew->xhisho.f_cg_number = 0;
 
+      if(!strcmp(((iold->xhisho.i_info->image) + inew->xhisho.f_cg_number)->filename,"GOTO"))
+	inew->xhisho.f_cg_number = 0;
+	
       is_changed = 1;
       inew->xhisho.cg_number = inew->xhisho.f_cg_number;
     }
@@ -616,7 +619,10 @@ static Boolean SetValues(Widget current, Widget request, Widget new, ArgList arg
        && inew->xhisho.uf_cg_number != -1){
       if(inew->xhisho.uf_cg_number > inew->xhisho.i_info->num_of_images
        || inew->xhisho.uf_cg_number < 0)
-      inew->xhisho.uf_cg_number = 10;
+	inew->xhisho.uf_cg_number = 10;
+
+      if(!strcmp(((iold->xhisho.i_info->image) + inew->xhisho.uf_cg_number)->filename,"GOTO"))
+	inew->xhisho.uf_cg_number = 10;
 
       inew->xhisho.ucg_number = inew->xhisho.uf_cg_number;
       is_changed = 1;

@@ -137,7 +137,12 @@ GOTO 1
 surface3.png
 ---------------------
 
-「surface1000.png」なんてのが要るときは...がんばってください ^^;
+これを自動でやってくれるスクリプトをapps/surf2anim.plに用意しました。
+surface*.pngのあるディレクトリで
+
+#./surf2anim.pl > hogehoge.anim
+
+とでもしてください。
 まゆらについては、sample/mayura.animというファイルを用意してます。
 
 
