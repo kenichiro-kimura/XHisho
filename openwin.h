@@ -62,7 +62,6 @@
 #define PAST_C "LightGrey"
 #define ALERT_C "red"
 #define NORMAL_C "black"
-#define MAX_SCHED_NUM 10
 #define CFGFILE "aisatu.cfg"
 #define LEAVE_TIME 5
 #define FILTER "nkf -e -m"

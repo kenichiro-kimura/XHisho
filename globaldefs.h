@@ -102,6 +102,7 @@
 #define MAX(a,b) ((a) > (b) ? (a) :(b))
 #define NUM_OF_ARRAY(a) (sizeof(a) / sizeof(a[0]))
 #define HASH_KEY 253
+#define MAX_SCHED_NUM 10
 
 typedef enum _Method {
   POP_AUTH, APOP_AUTH, RPOP_AUTH
