@@ -175,6 +175,7 @@ Widget CreateCalendarWindow(Widget w, int Month, struct tm tm_now)
   Dimension Label_width, DayWidth;
   char *message;
   int uru_adjust;
+  Pixel bg_color;
   int exist_schedule = 0;
 #ifdef LIBMHC
   int exist_mhc[31];
@@ -192,7 +193,7 @@ Widget CreateCalendarWindow(Widget w, int Month, struct tm tm_now)
 
   Arg labelargs[] = {
     {XtNlabel, (XtArgVal) ""},	/** 0 **/
-    {XtNborderWidth, 0},	/** 1 **/
+    {XtNborderWidth, 1},	/** 1 **/
     {XtNinternational, TRUE},	/** 2 **/
     {XtNleft, XtChainLeft},	/** 3 **/
     {XtNright, XtChainLeft},	/** 4 **/
@@ -310,7 +311,10 @@ Widget CreateCalendarWindow(Widget w, int Month, struct tm tm_now)
 
   cal_label = XtCreateManagedWidget("label", labelWidgetClass, calendar
 				    ,labelargs, XtNumber(labelargs));
-  XtVaGetValues(cal_label, XtNwidth, &Label_width, NULL);
+  XtVaGetValues(cal_label, XtNwidth, &Label_width
+		, XtNbackground, &bg_color
+		, NULL);
+  XtVaSetValues(cal_label, XtNborderColor, bg_color, NULL);
   tmp_width += Label_width;
 
   next = XtVaCreateManagedWidget("calendarNext", commandWidgetClass, calendar, XtNfromVert
@@ -385,6 +389,11 @@ Widget CreateCalendarWindow(Widget w, int Month, struct tm tm_now)
 	labelargs[0].value = (XtArgVal) tmpstring;
 	day[k] = XtCreateManagedWidget("day", labelWidgetClass, calendar
 				       ,labelargs, XtNumber(labelargs));
+	if(k == 0)
+	  XtVaGetValues(day[0], XtNbackground, &bg_color, NULL);
+
+	XtVaSetValues(day[k], XtNborderColor, bg_color, NULL);
+
       } else {
 	sprintf(tmpstring, "%2d", l);
 	l++;
@@ -394,6 +403,7 @@ Widget CreateCalendarWindow(Widget w, int Month, struct tm tm_now)
 
 	day[k] = XtCreateManagedWidget("day", commandWidgetClass, calendar
 				       ,labelargs, XtNumber(labelargs));
+	XtVaSetValues(day[k], XtNborderColor, bg_color, NULL);
 	XtAddCallback(day[k], XtNcallback, (XtCallbackProc) EditorWindowPopup
 		      ,(XtPointer) (l - 1));
 
@@ -447,7 +457,7 @@ Widget CreateCalendarWindow(Widget w, int Month, struct tm tm_now)
 	 **/
 
 	if (Edited_Year == NowYear && Edited_Month == NowMonth && l - 1 == NowDay)
-	  XtVaSetValues(day[k], XtNforeground, GetColor(XtDisplay(top), "navy"), NULL);
+	XtVaSetValues(day[k], XtNborderColor, GetColor(XtDisplay(top), "navy"), NULL);
       }
       XtVaSetValues(day[k],XtNwidth,DayWidth,NULL);
       k++;
