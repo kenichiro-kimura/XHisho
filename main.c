@@ -22,7 +22,6 @@
  * local variable
  **/
 
-static Widget toplevel;
 static int IsSet = 0;		/** 1回目のExposeでだけ子Widgetを作る **/
 
 /**
@@ -81,29 +80,29 @@ static void Wait(Widget w, XEvent * e, String * s, unsigned int *i)
 
   if (!IsSet) {
 
-    resedit = CreateResEditWindow(toplevel);
+    resedit = CreateResEditWindow(xhisho);
     XtVaSetValues(xhisho, XtNfocusWinInterval, (int)rer.Pref[4].param, NULL);
 
-    about = CreateAboutWindow(toplevel);
+    about = CreateAboutWindow(xhisho);
 
     /**
      * Mail Windowの生成
      **/
 
-    nomail = CreateMailAlert(toplevel, 1);
-    mail = CreateMailAlert(toplevel, 0);
+    nomail = CreateMailAlert(xhisho, 1);
+    mail = CreateMailAlert(xhisho, 0);
 
     /**
      * OpenMessage Windowを生成し、Opening messageを表示する
      **/
 
-    openwin = CreateEditorWindow(toplevel, 0, *tm_now);
+    openwin = CreateEditorWindow(xhisho, 0, *tm_now);
 
-    calendarwin = CreateCalendarWindow(toplevel, tm_now->tm_mon, *tm_now);
+    calendarwin = CreateCalendarWindow(xhisho, tm_now->tm_mon, *tm_now);
 
-    editwin = CreateEditorWindow(toplevel, 3, *tm_now);
+    editwin = CreateEditorWindow(xhisho, 3, *tm_now);
 
-    menu = CreateMenuWindow(toplevel);
+    menu = CreateMenuWindow(xhisho);
 
     /**
      * openwin のポップアップ
@@ -117,7 +116,7 @@ static void Wait(Widget w, XEvent * e, String * s, unsigned int *i)
      * 起動時のスケジュール時間のチェック
      **/
 
-    CheckTimeForSchedule((XtPointer) toplevel, (XtIntervalId) NULL);
+    CheckTimeForSchedule((XtPointer) xhisho, (XtIntervalId) NULL);
 
     IsSet = 1;
   }
@@ -275,7 +274,7 @@ void CalendarWindowPopup(Widget w, XEvent * event, String * params, unsigned int
   tm_now = localtime(&now);
 
   XtDestroyWidget(XtParent(calendarwin));
-  calendarwin = CreateCalendarWindow(toplevel, tm_now->tm_mon, *tm_now);
+  calendarwin = CreateCalendarWindow(xhisho, tm_now->tm_mon, *tm_now);
   /**
    * Calendar WindowのPopup
    **/
@@ -297,8 +296,8 @@ void CloseEditWindow()
   tm_now = localtime(&now);
 
   XtDestroyWidget(XtParent(openwin));
-  openwin = CreateEditorWindow(toplevel, 0, *tm_now);
-  CheckTimeForSchedule((XtPointer) toplevel, (XtIntervalId) NULL);
+  openwin = CreateEditorWindow(xhisho, 0, *tm_now);
+  CheckTimeForSchedule((XtPointer) xhisho, (XtIntervalId) NULL);
 }
 
 int main(int argc, char **argv)
@@ -317,6 +316,7 @@ int main(int argc, char **argv)
 
   String rcfile, petname_f;
   XtTranslations trans_table;
+  XtAppContext app;
 
   Biff = LOCAL;
   IsMailChecked(0);
@@ -329,21 +329,17 @@ int main(int argc, char **argv)
   XtSetLanguageProc(NULL, NULL, NULL);
 
   /**
-   * toplevel widgetを生成
+   * Usageの表示
    **/
 
-  toplevel = XtInitialize(argv[0], "XHisho", options, XtNumber(options), &argc, argv);
-  XtAddEventHandler(toplevel, 0, True, _XEditResCheckMessages, NULL);
-
   PrintUsage(argc, argv);
-
-  XtVaSetValues(toplevel, XtNwidth, 100, XtNheight, 100, NULL);
 
   /**
    * main windowを生成。class名はxhisho。
    **/
 
-  xhisho = XtVaCreateManagedWidget("xhisho",xHishoWidgetClass,toplevel,NULL);
+  xhisho = XtVaOpenApplication(&app, "XHisho", options, XtNumber(options)
+			       , &argc, argv, NULL, xHishoWidgetClass,NULL);
 
   /**
    * rcfileとfilter commandとpetname fileをセット
@@ -357,6 +353,7 @@ int main(int argc, char **argv)
   /**
    * rcfileとpetnameを読む
    **/
+
   ReadRcfile(rcfile);
 #ifdef PETNAME
   ReadPetname(petname_f);
@@ -365,7 +362,10 @@ int main(int argc, char **argv)
   /**
    * Action のセット
    **/
-  XtAddActions(actionTable, XtNumber(actionTable));
+
+  XtAddEventHandler(xhisho, 0, True, _XEditResCheckMessages, NULL);
+
+  XtAppAddActions(app,actionTable, XtNumber(actionTable));
   trans_table = XtParseTranslationTable(defaultTranslations);
   XtAugmentTranslations(xhisho,trans_table);
 
@@ -373,13 +373,13 @@ int main(int argc, char **argv)
    *  WidgetのRealize
    **/
 
-  XtRealizeWidget(toplevel);
+  XtRealizeWidget(xhisho);
 
   /**
    * Event Loop
    **/
 
-  XtMainLoop();
+  XtAppMainLoop(app);
 
   return (-1);
 }
