@@ -48,6 +48,7 @@ typedef struct _XHishoPart {
   int focus_interval;
   String ext_editcommand;
   int f_cg_number;
+  int uf_cg_number;
   Boolean force_cg;
 
   /* private data */
@@ -57,6 +58,10 @@ typedef struct _XHishoPart {
   int cg_number;
   int cg_sec;
   int anim_type;
+  int ucg_number;
+  Pixmap mask_p;
+  Pixmap u_p;
+  GC mask_gc;
 }   XHishoPart;
 
 typedef struct _XHishoRec {

@@ -51,6 +51,7 @@ typedef struct _XHishoRec *XHishoWidget;
 #define XtNextEditCommand "extEditCommand"
 #define XtCExtEditCommand "ExtEditCommand"
 #define XtNcgNumber "cgNumber"
+#define XtNucgNumber "ucgNumber"
 #define XtCCgNumber "CgNumber"
 #define XtNforceCG "forceCG"
 #define XtCForceCG "ForceCG"
