@@ -1,5 +1,6 @@
 newmail YOUR_NAMEちゃん、新しいメールが届いてるよ
 nomail YOUR_NAMEちゃん、新しいメールはないみたいだよ。
+youbin %d通来てるみたい。
 open1 YOUR_NAMEちゃん、今日(%s/%s)の予定は
 open2 だよ。忘れないでね。
 open3 何もないみたい。

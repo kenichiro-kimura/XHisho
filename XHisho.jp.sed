@@ -12,9 +12,9 @@ XHisho*extFilter: nkf -e -m
 !!
 
 XHisho*petnameFile: IXHISHODIR/Petname
-XHisho.MailAlert.youbinServer: localhost
-XHisho.MailAlert.youbinCommand: /usr/local/bin/youbin
-XHisho.MailAlert.popServer: localhost
+XHisho*youbinServer: localhost
+XHisho*youbinCommand: /usr/local/bin/youbin
+XHisho*popServer: localhost
 
 !!
 !!時計のリソース
@@ -45,6 +45,7 @@ XHisho.OpenMessage.scheduleDir: .Schedule/
 
 XHisho.OpenMessage.scheduleSeparator: より
 XHisho*inputMethod: kinput2
+!XHisho*extEditCommand: gemcal
 
 !!
 !!カレンダーのリソース

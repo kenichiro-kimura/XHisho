@@ -12,7 +12,7 @@ static const char RcName[][256] = {"newmail", "nomail", "open1", "open2",
 				   "schedule", "menul", "menu0",
 				   "menu1", "menu2", "menu3", "menu4", 
 				   "menu5", "calendar","resource", 
-				   "messagearg"};
+				   "messagearg","youbin"};
 
 static char *RcData[NUM_OF_ARRAY(RcName)];
 

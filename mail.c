@@ -24,6 +24,7 @@ static XtInputId YoubinId;
 static int virgine = 1;
 static char Tmp_dir[256];
 static int isMailChecked;
+static char YoubinFile[256];
 
 /**
  * isMailChecked =
@@ -37,8 +38,8 @@ static int isMailChecked;
  * function definition
  **/
 
-static void Destroy(Widget w, caddr_t client_data, caddr_t call_data);
-static int isMail();
+static void Destroy(Widget, caddr_t, caddr_t);
+static int isMail(int*,int);
 static void SetPrefVal(int, float);
 static int Youbin_exit(Display *);
 
@@ -96,6 +97,15 @@ static XtResource resources[] = {
     XtOffsetOf(MailAlertRes, no_l),
     XtRImmediate,
     (XtPointer) NOLABEL
+  },
+  {
+    XtNyoubinLabel,
+    XtCYoubinLabel,
+    XtRString,
+    sizeof(String),
+    XtOffsetOf(MailAlertRes, y_l),
+    XtRImmediate,
+    (XtPointer) YOUBINLABEL
   },
   {
     XtNmaxLines,
@@ -196,23 +206,18 @@ static void TimerCheck(XtPointer cl, XtIntervalId * id)
 }
 
 
-static int isMail()
+static int isMail(int* OldSize,int NewSize)
 {
-  static int OldSize;
-  int NewSize = 0;
-  struct stat MailStat;
-  NewSize = (stat(m_filename, &MailStat) == 0) ? MailStat.st_size : 0;
-
   if (NewSize == 0) {
-    OldSize = NewSize;		/** inc されたか メールが来ていないか **/
+    *OldSize = NewSize;		/** inc されたか メールが来ていないか **/
     return 0;
-  } else if (NewSize > OldSize) {	/** 新しいメールが来た **/
-    OldSize = NewSize;
+  } else if (NewSize > *OldSize) {	/** 新しいメールが来た **/
+    *OldSize = NewSize;
     return 1;
-  } else if (NewSize == OldSize) {	/** 新しいメールは来ていないが、incしてない **/
+  } else if (NewSize == *OldSize) {	/** 新しいメールは来ていないが、incしてない **/
     return 2;
   }
-  OldSize = NewSize;		/** NewSize < OldSizeである -> incしている。**/
+  *OldSize = NewSize;		/** NewSize < OldSizeである -> incしている。**/
   return 0;
 }
 
@@ -235,11 +240,16 @@ int CheckMail(XtPointer cl, XtIntervalId * id)
 {
   int i;
   char *buf;
+  static int OldSize = 0;
+  int NewSize = 0;
+  struct stat MailStat;
+
+  NewSize = (stat(m_filename, &MailStat) == 0) ? MailStat.st_size : 0;
 
   buf = malloc(mar.from_maxlen * mar.mail_lines + 1);
   memset(buf, 0, mar.from_maxlen * mar.mail_lines + 1);
 
-  i = isMail();
+  i = isMail(&OldSize,NewSize);
 
   switch (i) {
   case 0:
@@ -322,6 +332,71 @@ int CheckPOP3(XtPointer cl, XtIntervalId * id)
   return ret_value;
 }
 
+int CheckYoubinNow(XtPointer cl, XtIntervalId * id){
+  static int OldSize = 0;
+  int num_of_mail = 0;
+  int i;
+  FILE *fp;
+  char* tmp;
+  char* message;
+
+  tmp = (char*)malloc(BUFSIZ);
+  message = (char*)malloc(BUFSIZ);
+
+  if((fp = fopen(YoubinFile,"r")) != NULL){
+
+    while(fgets(tmp,BUFSIZ,fp) != NULL)
+      num_of_mail++;
+
+  }
+
+
+  ReadRcdata("youbin",tmp,BUFSIZ);
+  if(*tmp == '\0')
+    sprintf(message,mar.y_l,num_of_mail);
+  else
+    sprintf(message,tmp,num_of_mail);
+
+  i = isMail(&OldSize,num_of_mail);
+
+  switch (i) {
+  case 0:
+    break;
+  case 1:
+    if (!IsPopped(mail)) {
+      isMailChecked = 1;
+      XtVaSetValues(from, XtNlabel, message, NULL);
+      MailPopup();
+    }
+    break;
+  case 2:
+    switch (isMailChecked) {
+    case 1:
+      if (!IsPopped(mail)) {
+	MailPopup();
+      }
+      break;
+    case 2:
+      isMailChecked = 1;
+      break;
+    }
+
+    break;
+  }
+
+  if(MailCheckId){
+    XtRemoveTimeOut(MailCheckId);
+    MailTimeoutId = 0;
+  }
+    
+  MailCheckId = XtAppAddTimeOut(XtWidgetToApplicationContext(local_mail[0])
+				,MailCheckInterval
+				, (XtTimerCallbackProc) CheckYoubinNow
+				, (XtPointer) local_mail[0]);
+  free(tmp);
+  free(message);
+  return i;
+}
 
 Widget CreateMailAlert(Widget w, int Mode)
 {
@@ -501,6 +576,7 @@ Widget CreateMailAlert(Widget w, int Mode)
     switch (Biff) {
     case YOUBIN:
       YoubinInit();
+      CheckYoubinNow((XtPointer) (w), (XtIntervalId) NULL);
       XSetIOErrorHandler(Youbin_exit);	/** child process の youbin を殺す **/
       break;
     case POP:
@@ -646,6 +722,8 @@ static void YoubinInit()
   char *command;
   struct stat Ystat;
   static FILE *pfp;
+  static FILE *pfp2;
+  int pid,status;
 
   command = malloc(256);
 
@@ -653,13 +731,23 @@ static void YoubinInit()
     fprintf(stderr, "no such youbin command, \"%s\"\n", mar.y_command);
     exit(1);
   }
-  sprintf(command, "exec %s -b -s %s", mar.y_command, mar.y_server);
 
   sprintf(Tmp_dir, "/tmp/xhtmp%s", getenv("USER"));
+  sprintf(YoubinFile, "/tmp/xhtmp%s/xhyoubin", getenv("USER"));
 
   mkdir(Tmp_dir, S_IRWXU);
 
   if (virgine) {
+    sprintf(command, "exec %s -m %s -s %s", mar.y_command
+	    , YoubinFile,mar.y_server);
+
+    if ((pfp2 = popen(command, "r")) == NULL) {
+      fprintf(stderr, "can't exec youbin\n");
+      perror("popen");
+      exit(1);
+    }
+
+    sprintf(command, "exec %s -b -s %s", mar.y_command, mar.y_server);
     if ((pfp = popen(command, "r")) == NULL) {
       fprintf(stderr, "can't exec youbin\n");
       perror("popen");
@@ -682,6 +770,7 @@ static void CheckYoubin(Widget w, int *fid, XtInputId * id)
   static int old_mail_size = 0;
   long date;
   int i = 0, j;
+  int isFrom = 0, isSubject = 0;
 
 #ifdef PETNAME
   unsigned char *from_who, *who, *pname, *next_ptr, *left_ptr, *right_ptr;
@@ -730,9 +819,15 @@ static void CheckYoubin(Widget w, int *fid, XtInputId * id)
   if (tmp1 == NULL)
     goto End;
 
-  while (tmp1 && i < mar.mail_lines) {
+  while (tmp1 && i < mar.mail_lines && !(isFrom && isSubject)) {
     if (!strncmp(tmp1, "From:", 5) || !strncmp(tmp1, "Subject:", 8)) {
       tmp2[0] = '\0';
+
+      if(*tmp1 == 'F')
+	isFrom = 1;
+
+      if(*tmp1 == 'S')
+	isSubject = 1;
 
 #ifdef PETNAME
       if (!strncmp(tmp1, "From:", 5)) {
@@ -744,7 +839,7 @@ static void CheckYoubin(Widget w, int *fid, XtInputId * id)
 	    break;
 
 	strcpy(who, tmp1 + j);
-
+	
 	if (strchr(who, '@') != NULL) {
 	  strcpy(pname, who);
 	} else {

@@ -149,6 +149,7 @@ EDITOR_GLOBAL unsigned long GetColor(Display *, char *);
 MAIL_GLOBAL Widget CreateMailAlert(Widget, int);
 MAIL_GLOBAL int CheckMail(XtPointer, XtIntervalId *);
 MAIL_GLOBAL int CheckPOP3(XtPointer, XtIntervalId *);
+MAIL_GLOBAL int CheckYoubinNow(XtPointer, XtIntervalId *);
 MAIL_GLOBAL int IsMailChecked(int);
 
 MAIN_GLOBAL void CloseEditWindow();

@@ -128,6 +128,12 @@ XHisho.MailAlert.noMailLabel:           右ボタンでメールボックスを調べ
                                         て、メールがなかったときのメッ
                                         セージ
 
+XHisho.MailAlert.youbinLabel:           youbin使用時に右ボタンでメール
+                                        ボックスを調べて、メールが来て
+                                        いた時のメッセージ。%dがメール
+                                        数に置き換わる。
+
+
 XHisho.OpenMessage.openMessageF:        スケジュールメッセージ(1)。
 
 XHisho.OpenMessage.openMessageL:        スケジュールメッセージ(2)。
