@@ -32,6 +32,10 @@ static int IsSet = 0;		/** 1回目のExposeでだけ子Widgetを作る **/
 static Widget toplevel;
 static int ShowGreet = 1;
 
+#ifdef OPTION
+static int UseOption = 1;
+#endif
+
 /**
  * local function
  **/
@@ -133,7 +137,8 @@ static void Wait(Widget w, XEvent * e, String * s, unsigned int *i)
     calendarwin = CreateCalendarWindow(toplevel, tm_now->tm_mon, *tm_now);
     menu = CreateMenuWindow(toplevel);
 #ifdef OPTION
-    optionwin = CreateOptionWindow(toplevel);
+    if(UseOption)
+      optionwin = CreateOptionWindow(toplevel);
 #endif
 
     /**
@@ -577,6 +582,10 @@ static void PrintUsage(int argc, char **argv)
       UseSound = 0;
     } else if (!strcmp(argv[i], "-nogreeting")) {
       ShowGreet = 0;
+#ifdef OPTION
+    } else if (!strcmp(argv[i], "-nooption")) {
+      UseOption = 0;
+#endif
     } else if (*argv[i] == '-') {
       j++;
       printf("unknown option:%s\n", argv[i]);

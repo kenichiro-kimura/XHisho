@@ -1,24 +1,24 @@
 //---------------------------------------------------------------------------
 //
-// "²ÚÏÂÍü" for ¤¢¤ì°Ê³°¤Î²¿¤«°Ê³°¤Î²¿¤«
-// »ÃÄêshiori.dll
+// "‰Ø˜a—œ" for ‚ ‚êˆÈŠO‚Ì‰½‚©ˆÈŠO‚Ì‰½‚©
+// b’èshiori.dll
 //
 //      Programed by NAKAUE.T (Meister)
 //
-//  2001.02.03  Phase 0.3     ¥Î¡¼¥³¥á¥ó¥È
-//  2001.02.11  Phase 0.31    ºÆµ¢ÄêµÁ¼ÂÁõ
-//  2001.02.23  Phase 0.4     Â´ÏÀÀïÁè½ªÀïµ§Ç°
-//                            ¡Á°Â¤é¤«¤Ë¤ªÌ²¤ê²¼¤µ¤¤¡¢²á¤Á¤Ï·«¤êÊÖ¤·¤Ş¤»¤ó¡Á
-//                                                                ¥Ğ¡¼¥¸¥ç¥ó
-//                            kawari.iniÆ³Æş
-//                            Ê£¿ô¼­½ñ¥Õ¥¡¥¤¥ë
-//                            sentence.txtÇÑ»ß
-//  2001.02.27  Phase 0.41    ½µËöÁ´¤¯¤ä¤ì¤Ê¤«¤Ã¤¿¥Ğ¥°¼è¤ê(getword´ØÏ¢)
-//  2001.03.15  Phase 0.42    unloadÍ½Ìó
-//                            ¥í¥®¥ó¥°µ¡Ç½
-//                            °Å¹æ²½¥Õ¥¡¥¤¥ëÂĞ±ş
-//                            ´Á»ú¥¨¥ó¥È¥êÂĞ±ş
-//                            ¥í¡¼¥«¥ëÊÑ¿ôÂĞ±ş
+//  2001.02.03  Phase 0.3     ƒm[ƒRƒƒ“ƒg
+//  2001.02.11  Phase 0.31    Ä‹A’è‹`À‘•
+//  2001.02.23  Phase 0.4     ‘²˜_í‘ˆIí‹F”O
+//                            `ˆÀ‚ç‚©‚É‚¨–°‚è‰º‚³‚¢A‰ß‚¿‚ÍŒJ‚è•Ô‚µ‚Ü‚¹‚ñ`
+//                                                                ƒo[ƒWƒ‡ƒ“
+//                            kawari.ini“±“ü
+//                            •¡”«‘ƒtƒ@ƒCƒ‹
+//                            sentence.txt”p~
+//  2001.02.27  Phase 0.41    T––‘S‚­‚â‚ê‚È‚©‚Á‚½ƒoƒOæ‚è(getwordŠÖ˜A)
+//  2001.03.15  Phase 0.42    unload—\–ñ
+//                            ƒƒMƒ“ƒO‹@”\
+//                            ˆÃ†‰»ƒtƒ@ƒCƒ‹‘Î‰
+//                            Š¿šƒGƒ“ƒgƒŠ‘Î‰
+//                            ƒ[ƒJƒ‹•Ï”‘Î‰
 //
 //---------------------------------------------------------------------------
 #include <string>
@@ -31,13 +31,13 @@ using namespace std;
 #include "kawari.h"
 #include "kawari_crypt.h"
 //---------------------------------------------------------------------------
-// 0¤«¤énum-1¤Ş¤Ç¤ÎÍğ¿ô¤òÈ¯À¸
+// 0‚©‚çnum-1‚Ü‚Å‚Ì—”‚ğ”­¶
 inline int Random(int num)
 {
 	return((int)((double(rand())/RAND_MAX)*num));
 }
 //---------------------------------------------------------------------------
-// Ê¸»úÎó¤ÎÁ°¸å¤Î¶õÇò¤ò¼è¤ê½ü¤¯
+// •¶š—ñ‚Ì‘OŒã‚Ì‹ó”’‚ğæ‚èœ‚­
 string StringTrim(string str)
 {
 	string::size_type linetop=str.find_first_not_of(" \t\r\n");
@@ -47,26 +47,26 @@ string StringTrim(string str)
 	return(str.substr(linetop,lineend-linetop+1));
 }
 //---------------------------------------------------------------------------
-// 2¥Ğ¥¤¥ÈÊ¸»ú¤Î1¥Ğ¥¤¥ÈÌÜ¤«?
+// 2ƒoƒCƒg•¶š‚Ì1ƒoƒCƒg–Ú‚©?
 inline bool iskanji1st(char c)
 {
 #if 1
 	// SJIS
 	// 0x00-0x7f ASCII
-	// 0x80-0x9f,0xe0-0xfc ¤¤¤ï¤æ¤ëÁ´³Ñ1¥Ğ¥¤¥ÈÌÜ
-	// 0xa0-0xdf ¤¤¤ï¤æ¤ëÈ¾³Ñ¥«¥Ê
+	// 0x80-0x9f,0xe0-0xfc ‚¢‚í‚ä‚é‘SŠp1ƒoƒCƒg–Ú
+	// 0xa0-0xdf ‚¢‚í‚ä‚é”¼ŠpƒJƒi
 //	if((0<=c)||((-96<=c)&&(c<=-33))) return(false);
 //	return(true);
 	return((unsigned char)((c^0x20)-0xa1)<=0x3b);
-	// ¤Á¤Ê¤ß¤Ë2¥Ğ¥¤¥ÈÌÜ¤Ï0x40-0xfc
+	// ‚¿‚È‚İ‚É2ƒoƒCƒg–Ú‚Í0x40-0xfc
 #else
 	// EUC
 	return(c<0);
 #endif
 }
 //---------------------------------------------------------------------------
-// ${}¤Ç°Ï¤Ş¤ì¤¿¥é¥ó¥À¥à¥ï¡¼¥É»ØÄê¤ò¥Ç¥³¡¼¥É¤¹¤ë
-// ¥Ç¥³¡¼¥É·ë²Ì¤Ë¥é¥ó¥À¥à¥ï¡¼¥É»ØÄê¤¬Æş¤Ã¤Æ¤¤¤ë¾ì¹ç¤Ë¤ÏºÆµ¢½èÍı
+// ${}‚ÅˆÍ‚Ü‚ê‚½ƒ‰ƒ“ƒ_ƒ€ƒ[ƒhw’è‚ğƒfƒR[ƒh‚·‚é
+// ƒfƒR[ƒhŒ‹‰Ê‚Éƒ‰ƒ“ƒ_ƒ€ƒ[ƒhw’è‚ª“ü‚Á‚Ä‚¢‚éê‡‚É‚ÍÄ‹Aˆ—
 string TNS_KawariANI::AIStringDecode(string &orgsen,int level)
 {
 	if(level<=0) {
@@ -121,7 +121,7 @@ string TNS_KawariANI::AIStringDecode(string &orgsen,int level)
 	return(retstr);
 }
 //---------------------------------------------------------------------------
-// ¥é¥ó¥À¥àÊ¸¤òÊÖ¤¹
+// ƒ‰ƒ“ƒ_ƒ€•¶‚ğ•Ô‚·
 string TNS_KawariANI::GetAIStringRandom(void)
 {
 	if(LogFS) (*LogFS) << "GetAIStringRandom:" << endl;
@@ -134,7 +134,7 @@ string TNS_KawariANI::GetAIStringRandom(void)
 		string &orgsen=*(WordDictionary[key][Random(WordDictionary[key].size())]);
 		aistr=AIStringDecode(orgsen);
 	} else {
-		aistr="sentence¤¬¤¢¤ê¤Ş¤»¤ó";
+		aistr="sentence‚ª‚ ‚è‚Ü‚¹‚ñ";
 	}
 
 	if(LogFS) (*LogFS) << "GetAIStringRandom(output):" << aistr << endl;
@@ -142,10 +142,10 @@ string TNS_KawariANI::GetAIStringRandom(void)
 	return(aistr);
 }
 //---------------------------------------------------------------------------
-// ¼ïÊÌ¤Ë°ìÃ×¤¹¤ë¥é¥ó¥À¥àÃ±¸ì¤òÊÖ¤¹
+// í•Ê‚Éˆê’v‚·‚éƒ‰ƒ“ƒ_ƒ€’PŒê‚ğ•Ô‚·
 string TNS_KawariANI::GetWord(string wordtype)
 {
-	// wordtype¤Ë¤Ï¡Ö\ms¡×¤Î¤è¤¦¤ÊÊ¸»úÎó¤¬ÅÏ¤µ¤ì¤ë
+	// wordtype‚É‚Íu\msv‚Ì‚æ‚¤‚È•¶š—ñ‚ª“n‚³‚ê‚é
 
 	if(LogFS) (*LogFS) << "GetWord:" << wordtype << endl;
 
@@ -158,7 +158,7 @@ string TNS_KawariANI::GetWord(string wordtype)
 		string &orgsen=*(WordDictionary[key][Random(WordDictionary[key].size())]);
 		aistr=AIStringDecode(orgsen);
 	} else {
-		aistr=key+"¤¬¸«¤Ä¤«¤ê¤Ş¤»¤ó";
+		aistr=key+"‚ªŒ©‚Â‚©‚è‚Ü‚¹‚ñ";
 	}
 
 	if(LogFS) (*LogFS) << "GetWord(output):" << aistr << endl;
@@ -166,7 +166,7 @@ string TNS_KawariANI::GetWord(string wordtype)
 	return(aistr);
 }
 //---------------------------------------------------------------------------
-// ¼ïÊÌ¡Ödms¡×¤Ë°ìÃ×¤¹¤ë¥é¥ó¥À¥àÃ±¸ì¤òÊÖ¤¹
+// í•Êudmsv‚Éˆê’v‚·‚éƒ‰ƒ“ƒ_ƒ€’PŒê‚ğ•Ô‚·
 string TNS_KawariANI::GetDMS(void)
 {
 	if(LogFS) (*LogFS) << "GetDMS:" << endl;
@@ -174,25 +174,25 @@ string TNS_KawariANI::GetDMS(void)
 	return(GetWord("\\dms"));
 }
 //---------------------------------------------------------------------------
-// GetMatchWord¤ÇÊÖ¤·¤¿Ã±¸ì¤Ë´ğ¤Å¤­¡¢¥é¥ó¥À¥àÊ¸¤òÊÖ¤¹
+// GetMatchWord‚Å•Ô‚µ‚½’PŒê‚ÉŠî‚Ã‚«Aƒ‰ƒ“ƒ_ƒ€•¶‚ğ•Ô‚·
 string TNS_KawariANI::GetAIStringFromTargetWord(string targetword)
 {
 	if(LogFS) (*LogFS) << "GetAIStringFromTargetWord:" << targetword << endl;
 
-//	string aistr=targetword+"¤Ã¤Æ¡¢¥à¥Í¤­¤å¤ó¡©";
-	string aistr=GetAIStringRandom();	// »ÃÄêÁ¼ÃÖ
+//	string aistr=targetword+"‚Á‚ÄAƒ€ƒl‚«‚ã‚ñH";
+	string aistr=GetAIStringRandom();	// b’è‘[’u
 
 	if(LogFS) (*LogFS) << "GetAIStringFromTargetWord(output):" << aistr << endl;
 
 	return(aistr);
 }
 //---------------------------------------------------------------------------
-// ¼ç¤ËGetAIStringRandom¤ÇÊÖ¤·¤¿Ê¸¤«¤é¡¢³ºÅö¤¹¤ëÃ±¸ì¤òÁÜ¤·½Ğ¤¹
+// å‚ÉGetAIStringRandom‚Å•Ô‚µ‚½•¶‚©‚çAŠY“–‚·‚é’PŒê‚ğ‘{‚µo‚·
 string TNS_KawariANI::GetMatchWord(string sentence)
 {
 	if(LogFS) (*LogFS) << "GetMatchWord:" << sentence << endl;
 
-	string aistr="¤Û¤²¤Û¤²\1\\ms\r\n";
+	string aistr="‚Ù‚°‚Ù‚°\1\\ms\r\n";
 
 	return(aistr);
 }
@@ -209,8 +209,8 @@ void TNS_KawariANI::GetAIState(int state[6])
 	state[4]=1;
 	state[5]=1;
 #else
-	// GetAIState¤ÎµóÆ°¤¬Íı²òÉÔÇ½¤Ê¤Î¤Ç»È¤¦¤Î¥ä¥á
-	// GetMatchWord¤È´ØÏ¢¤·¤Æ¤¤¤ë¤Î¤«?
+	// GetAIState‚Ì‹““®‚ª—‰ğ•s”\‚È‚Ì‚Åg‚¤‚Ìƒ„ƒ
+	// GetMatchWord‚ÆŠÖ˜A‚µ‚Ä‚¢‚é‚Ì‚©?
 	state[0]=0;
 	state[1]=0;
 	state[2]=0;
@@ -222,13 +222,13 @@ void TNS_KawariANI::GetAIState(int state[6])
 //---------------------------------------------------------------------------
 bool TNS_KawariANI::Load(string datapath)
 {
-	// ¤³¤Î¥¿¥¤¥ß¥ó¥°¤ÇÍğ¿ô½é´ü²½¤·¤Ş¤¹
+	// ‚±‚Ìƒ^ƒCƒ~ƒ“ƒO‚Å—”‰Šú‰»‚µ‚Ü‚·
 	srand((unsigned int)time(NULL));
 
-	// ÆÉ¤ß¹ş¤à¤Ù¤­¼­½ñ¥Õ¥¡¥¤¥ë°ìÍ÷
+	// “Ç‚İ‚Ş‚×‚««‘ƒtƒ@ƒCƒ‹ˆê——
 	vector<string> dictfiles;
 
-	// ini¥Õ¥¡¥¤¥ë¤ÎÆÉ¤ß¹ş¤ß
+	// iniƒtƒ@ƒCƒ‹‚Ì“Ç‚İ‚İ
 	ifstream ifs;
 	ifs.open((datapath+"kawari.ini").c_str());
 	if(ifs.is_open()) {
@@ -259,13 +259,13 @@ bool TNS_KawariANI::Load(string datapath)
 		}
 		ifs.close();
 	} else {
-		// ÆÉ¤ß¹ş¤á¤Ê¤«¤Ã¤¿»İ¤ò°Õ»ÖÉ½¼¨
-		// ¸½ºß¤Î½ê¥æ¡¼¥¶¡¼¤Ø¤ÎÄó¼¨ÊıË¡¤Ï¤³¤ì¤·¤«¤Ê¤¤
-		WordDictionary[string("sentence")].push_back(new string("kawari.ini¤¬ÆÉ¤á¤Ş¤»¤ó¡£"));
+		// “Ç‚İ‚ß‚È‚©‚Á‚½|‚ğˆÓu•\¦
+		// Œ»İ‚ÌŠƒ†[ƒU[‚Ö‚Ì’ñ¦•û–@‚Í‚±‚ê‚µ‚©‚È‚¢
+		WordDictionary[string("sentence")].push_back(new string("kawari.ini‚ª“Ç‚ß‚Ü‚¹‚ñB"));
 	}
 
 
-	// ¼­½ñ¥Õ¥¡¥¤¥ëÆÉ¤ß¹ş¤ß
+	// «‘ƒtƒ@ƒCƒ‹“Ç‚İ‚İ
 	for(unsigned int i=0;i<dictfiles.size();i++) {
 		ifstream ifs;
 		ifs.open((datapath+dictfiles[i]).c_str());
@@ -362,7 +362,7 @@ string TNS_KawariANI::GetResponse(string sentence)
 {
 	if(LogFS) (*LogFS) << "GetResponse:" << sentence << endl;
 
-	string aistr="¤´¤á¤ó¤Ê¤µ¤¤¡¢¤³¤¦¤¤¤¦»ş(GetResponse)¤Ê¤ó¤Æ¸À¤¨¤Ğ¤¤¤¤¤«¤ï¤«¤é¤Ê¤¤¤Î¡£";
+	string aistr="‚²‚ß‚ñ‚È‚³‚¢A‚±‚¤‚¢‚¤(GetResponse)‚È‚ñ‚ÄŒ¾‚¦‚Î‚¢‚¢‚©‚í‚©‚ç‚È‚¢‚ÌB";
 
 	return(aistr);
 }
@@ -371,25 +371,25 @@ string TNS_KawariANI::GetImpression(string sentence)
 {
 	if(LogFS) (*LogFS) << "GetImpression:" << sentence << endl;
 
-	string aistr="¤´¤á¤ó¤Ê¤µ¤¤¡¢¤³¤¦¤¤¤¦»ş(GetImpression)¤Ê¤ó¤Æ¸À¤¨¤Ğ¤¤¤¤¤«¤ï¤«¤é¤Ê¤¤¤Î¡£";
+	string aistr="‚²‚ß‚ñ‚È‚³‚¢A‚±‚¤‚¢‚¤(GetImpression)‚È‚ñ‚ÄŒ¾‚¦‚Î‚¢‚¢‚©‚í‚©‚ç‚È‚¢‚ÌB";
 
 	return(aistr);
 }
 //---------------------------------------------------------------------------
-// °Ê²¼¤Î¥¨¥ó¥È¥ê¤ÏÆÃÊÌ°·¤¤¤µ¤ì¤ë
+// ˆÈ‰º‚ÌƒGƒ“ƒgƒŠ‚Í“Á•Êˆµ‚¢‚³‚ê‚é
 //
-// myname : ¼«Ê¬¤ÎÌ¾Á°
-// unyuname : ¤¦¤Ë¤å¤¦¤ÎÌ¾Á°
-// friendname : Í§¿Í¤ÎÌ¾Á°
+// myname : ©•ª‚Ì–¼‘O
+// unyuname : ‚¤‚É‚ã‚¤‚Ì–¼‘O
+// friendname : —Fl‚Ì–¼‘O
 //
-// °Ê²¼¤Ïgetword,getdmsÍÑ
-// compatible-ms  : Ì¾»ì-¿Í
-// compatible-mz  : Ì¾»ì-Ìµµ¡Êª
-// compatible-mc  : Ì¾»ì-¼ÒÌ¾
-// compatible-mh  : Ì¾»ì-Å¹Ì¾
-// compatible-mt  : Ì¾»ì-µ»
-// compatible-me  : Ì¾»ì-¿©Êª
-// compatible-mp  : Ì¾»ì-ÃÏÌ¾¤ß¤¿¤¤¤Ê¤â¤Î
-// compatible-m   : Ì¾»ì-Èó¸ÂÄê
-// compatible-dms : ¡Ö¡Á¤Ë¡Á¤¹¤ë¡Á¡×Åª¤Ê¡¢ÉÊ»ì¤¬Ê£¿ôÏ¢·ë¤µ¤ì¤¿Ä¹¤á¤ÎÌ¾»ì
+// ˆÈ‰º‚Ígetword,getdms—p
+// compatible-ms  : –¼Œ-l
+// compatible-mz  : –¼Œ-–³‹@•¨
+// compatible-mc  : –¼Œ-Ğ–¼
+// compatible-mh  : –¼Œ-“X–¼
+// compatible-mt  : –¼Œ-‹Z
+// compatible-me  : –¼Œ-H•¨
+// compatible-mp  : –¼Œ-’n–¼‚İ‚½‚¢‚È‚à‚Ì
+// compatible-m   : –¼Œ-”ñŒÀ’è
+// compatible-dms : u`‚É`‚·‚é`v“I‚ÈA•iŒ‚ª•¡”˜AŒ‹‚³‚ê‚½’·‚ß‚Ì–¼Œ
 //
