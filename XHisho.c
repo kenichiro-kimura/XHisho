@@ -77,6 +77,15 @@ static XtResource resources[] = {
     (XtPointer)FILTER
   },
   {
+    XtNextSoundCommand,
+    XtCExtSoundCommand,
+    XtRString,
+    sizeof(String),
+    XtOffset(XHishoWidget,xhisho.ext_soundcommand),
+    XtRImmediate,
+    (XtPointer)NULL
+  },
+  {
     XtNpetnameFile,
     XtCPetnameFile,
     XtRString,

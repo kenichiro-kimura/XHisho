@@ -1,4 +1,5 @@
 #include "countdown.h"
+#include "../config.h"
 
 int main(){
   FILE *inputfile;

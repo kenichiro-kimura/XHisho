@@ -23,6 +23,8 @@ typedef struct _XHishoRec *XHishoWidget;
 #define XtCMessageFile "MessageFile"
 #define XtNextFilter "extFilter"
 #define XtCExtFilter "ExtFilter"
+#define XtNextSoundCommand "extSoundCommand"
+#define XtCExtSoundCommand "ExtSoundCommand"
 #define XtNclockText "clockText"
 #define XtCClockText "ClockText"
 #define XtNclockFormat "clockFormat"

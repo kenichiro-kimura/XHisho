@@ -12,7 +12,7 @@
 #include <sys/ioctl.h>
 #include <sys/stat.h>
 #include "globaldefs.h"
-#include "mail.h"
+#include <X11/Intrinsic.h>
 
 #if defined (__FreeBSD__)
 #include <machine/soundcard.h>
@@ -32,7 +32,7 @@
 #define DEFAULT_BUFFERSIZE 2048
 #endif
 
-extern MailAlertRes mar;
+extern String SoundCommand;
 
 /*  プロトタイプ */
 int SoundPlay(const char* filename);
@@ -53,7 +53,7 @@ int SoundPlay(const char* filename){
   u_int datasize;
   int rc;
   
-  if(mar.ext_soundcommand){
+  if(SoundCommand){
     return ExtSoundCommand(filename);
   }
 
@@ -222,6 +222,6 @@ int SoundPlay(const char* filename){
 int ExtSoundCommand(const char* filename){
   char command[BUFSIZ];
 
-  sprintf(command,mar.ext_soundcommand,filename);
+  sprintf(command,SoundCommand,filename);
   return system(command);
 }  

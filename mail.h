@@ -39,8 +39,6 @@
 #define XtCYoubinCommand "YoubinCommand"
 #define XtNpopServer "popServer"
 #define XtCPopServer "PopServer"
-#define XtNextSoundCommand "extSoundCommand"
-#define XtCExtSoundCommand "ExtSoundCommand"
 
 #define MAILBOX "/var/mail/"
 #define CFGFILE "aisatu.cfg"
@@ -65,7 +63,6 @@ typedef struct {
   String y_server;
   String y_command;
   String p_server;
-  String ext_soundcommand;
 } MailAlertRes;
 
 #endif

@@ -39,6 +39,7 @@ typedef struct _XHishoPart{
   int yoff;
   XtJustify just;
   Boolean is_shape;
+  String ext_soundcommand;
 
   /* private data */
   Display* d;

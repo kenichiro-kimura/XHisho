@@ -1,0 +1,7 @@
+SRC      = countdown.c
+PROGS    = countdown
+
+all: $(PROGS)
+
+$(PROGS): $(SRC)
+	@CC@ @CFLAGS@ $(SRC) -o $@

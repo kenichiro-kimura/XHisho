@@ -1,8 +1,8 @@
-#include "config.tmpl"
 #include "config.h"
 
+CC = @CC@
+CCOPTIONS = @CFLAGS@
 XCOMM CDEBUGFLAGS = -g -Wall
-XCOMM CCOPTIONS = 
 
 XCOMM
 XCOMM	do not touch below
@@ -10,21 +10,6 @@ XCOMM
 
 XHISHODIR = $(LIBDIR)/xhisho
 LOCALEDIR = $(LIBDIR)/$(LANG)/app-defaults
-
-#ifdef HAVE_LIBXPG4
-LIB_XPG4 = -lxpg4
-#endif
-
-#ifdef HAVE_LIBNSL
-LIB_NSL = -lnsl
-DSP_FILE = "/dev/audio"
-#endif
-
-#ifdef HAVE_LIBSOCKET
-LIB_SOCKET = -lsocket
-#endif
-
-LIB_SOLARIS = $(LIB_SOCKET) $(LIB_NSL)
 
 #ifdef WITH_XPM
 LIB_XPM = -lXpm 
@@ -50,11 +35,9 @@ ADD = -DADDRESSBOOK -DPETNAME
 
 IXHISHODIR = $(XHISHODIR)/$(LANG)
 
-
-
 DEFINES = $(FILTER) $(PET) $(ADD)
 
-EXTRA_LIBRARIES = $(LIB_XPM) $(LIB_XPG4) $(LIB_SOLARIS)
+EXTRA_LIBRARIES = @LIBS@ $(LIB_XPM)
 
 DEPLIBS = XawClientDepLibs
 LOCAL_LIBRARIES = XawClientLibs

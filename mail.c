@@ -167,15 +167,6 @@ static XtResource resources[] = {
     XtRImmediate,
     (XtPointer)Y_SERVER
   },
-  {
-    XtNextSoundCommand,
-    XtCExtSoundCommand,
-    XtRString,
-    sizeof(String),
-    XtOffsetOf(MailAlertRes,ext_soundcommand),
-    XtRImmediate,
-    (XtPointer)NULL
-  },
 };
 
 static void SetPrefVal(int i,float p){

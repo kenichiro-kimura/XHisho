@@ -28,7 +28,7 @@ Widget mail,openwin,xhisho,about,editwin,calendarwin,menu,nomail,resedit;
 int MailWindowShown,OpenWindowShown,MenuWindowShown,AboutWindowShown;
 BiffMethod Biff = LOCAL;
 int UseSound = 1;
-String FilterCommand;
+String FilterCommand,SoundCommand;
 
 /* external variable */
 
@@ -299,6 +299,7 @@ int main(int argc,char** argv){
 
   XtVaGetValues(xhisho,XtNmessageFile,&rcfile,NULL);
   XtVaGetValues(xhisho,XtNextFilter,&FilterCommand,NULL);
+  XtVaGetValues(xhisho,XtNextSoundCommand,&SoundCommand,NULL);
   XtVaGetValues(xhisho,XtNpetnameFile,&petname_f,NULL);
 
   /* rcfileとpetnameを読む */
