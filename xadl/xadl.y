@@ -40,37 +40,36 @@
 %%
 
 all: statements events { print_all(); }
+   | statements {print_all(); }
 ;
 
 statements:
-          | statement statements  { print_all(); }
-          | '{' statements '}'  { print_all(); }
+          | statement statements
+          | '{' statements '}'
 ;
+
 
 statement: DISPLAY ';'
          | GOTO ';'
          | LABEL ':' { label_add($1); }
-         | loop_event
+         | LOOP statement { pop_lp(loop_l);sprintf(tmp,"GOTO %d %d",loop_l->l,loop_l->number);item_add(tmp); }
+         | LOOP '{' statements '}'  { pop_lp(loop_l);sprintf(tmp,"GOTO %d %d",loop_l->l,loop_l->number);item_add(tmp); } 
 ;
 
-m_event:
-       | MAIL statement { sprintf(tmp,"GOTO %d",mail_l);item_add(tmp); }
+m_event: MAIL statement { sprintf(tmp,"GOTO %d",mail_l);item_add(tmp); }
        | MAIL '{' statements '}'  { sprintf(tmp,"GOTO %d",mail_l);item_add(tmp); }
 ;
 
-s_event:
-       | SCHEDULE statement { sprintf(tmp,"GOTO %d",schedule_l);item_add(tmp); }
+s_event: SCHEDULE statement { sprintf(tmp,"GOTO %d",schedule_l);item_add(tmp); }
        | SCHEDULE '{' statements '}'  { sprintf(tmp,"GOTO %d",schedule_l);item_add(tmp); }
 ;
 
 events: m_event s_event
-      | s_event m_event 
+      | s_event m_event
+      | s_event 
+      | m_event 
 ;
 
-loop_event:
-       | LOOP statement { pop_lp(loop_l);sprintf(tmp,"GOTO %d %d",loop_l->l,loop_l->number);item_add(tmp); }
-       | LOOP '{' statements '}'  { pop_lp(loop_l);sprintf(tmp,"GOTO %d %d",loop_l->l,loop_l->number);item_add(tmp); } 
-;
        
 
 DISPLAY: DP '(' LABEL ',' NUMBER ')' { print_display($3,$5); }
@@ -145,7 +144,7 @@ static int print_goto(char* label)
 {
   int l;
   if((l = search_label(label)) == 0){
-    fprintf(stderr,"not defined label:%s\n",label);
+    fprintf(stderr,"not defined label:%s in %d\n",label,lines);
     exit(1);
   }
   sprintf(tmp,"GOTO %d",l);
@@ -199,7 +198,7 @@ static int label_add(char* label)
 
   for(l_p = labels;l_p;){
     if(!strcmp(label,l_p->val)){
-      fprintf(stderr,"duplicate label %s\n",label);
+      fprintf(stderr,"duplicate label %s in %d\n",label,lines);
       exit(1);
     }
     l_p = l_p->next;

@@ -247,7 +247,7 @@ int pop3(AuthMethod method, char *server, char *From)
   }
 
   if (ret_value == ERR) {
-    sprintf(From, "Fail POP authorization:\n %s@%s\n", user.name, user.server);
+    sprintf(From, "Fail POP authentication:\n %s@%s\n", user.name, user.server);
     ret_value = 1;
     goto POPQUITEND;
   }
@@ -371,7 +371,7 @@ static int Auth(int sock, UserData user)
   WritePOPCommand(sock, comm_buffer);
 
   if (ERR == ReadPOPMessage(sock, comm_buffer, BUFSIZ)) {
-    fprintf(stderr, "Fail POP authorization:%s@%s\n", user.name, user.server);
+    fprintf(stderr, "Fail POP authentication:%s@%s\n", user.name, user.server);
 
 #ifdef DEBUG
     fprintf(stderr, "%s\n", comm_buffer);
@@ -432,7 +432,7 @@ static int ApopAuth(int sock, UserData user)
   WritePOPCommand(sock, digest);
 
   if (ERR == ReadPOPMessage(sock, comm_buffer, BUFSIZ)) {
-    fprintf(stderr, "Fail APOP authorization:%s@%s\n", user.name, user.server);
+    fprintf(stderr, "Fail APOP authentication:%s@%s\n", user.name, user.server);
 
 #ifdef DEBUG
     fprintf(stderr, "%s\n", comm_buffer);
@@ -468,7 +468,7 @@ static int RpopAuth(int sock, UserData user)
   WritePOPCommand(sock, comm_buffer);
 
   if (ERR == ReadPOPMessage(sock, comm_buffer, BUFSIZ)) {
-    fprintf(stderr, "Fail POP authorization:%s@%s\n", user.name, user.server);
+    fprintf(stderr, "Fail POP authentication:%s@%s\n", user.name, user.server);
 
 #ifdef DEBUG
     fprintf(stderr, "%s\n", comm_buffer);

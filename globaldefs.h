@@ -97,7 +97,11 @@
  * HASH_KEY の 値は適当 ^^;
  **/
 
+#ifdef AKARI
+#define XHISHO_PACKAGE "XAkari"
+#else
 #define XHISHO_PACKAGE "XHisho"
+#endif
 #define XHISHO_VERSION "1.80[Lime release 8]"
 #define MIN(a,b) ((a) > (b) ? (b) :(a))
 #define MAX(a,b) ((a) > (b) ? (a) :(b))

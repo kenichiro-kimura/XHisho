@@ -107,6 +107,8 @@ typedef struct _MHC{
 typedef _MHC* MHC;
 
 enum {
+  CONTINUED_LINE = -2,
+  NO_TAG = -1,
   X_SC_Day = 0,
   X_SC_Time = 1,
   X_SC_Duration = 2,
@@ -114,8 +116,6 @@ enum {
   X_SC_Alarm = 4,
   X_SC_Subject = 5
 };
-
-
 
 MHCD* openmhc(const char *, const char *);
 mhcent* readmhc(MHCD*);

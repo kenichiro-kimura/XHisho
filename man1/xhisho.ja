@@ -145,7 +145,7 @@ YOUBINサーバの名前を指定します。
 
 .TP 20
 .BI  \-pserver " servername"
-POP3サーバの名前を指定します。
+POP3(もしくはIMAP4)サーバの名前を指定します。
 
 .TP 20
 .BI  \-youbin
@@ -158,6 +158,10 @@ biffでPOPを使います。
 .TP 20
 .BI  \-apop
 biffでAPOPを使います。
+
+.TP 20
+.BI  \-imap
+biffでIMAP4を使います。
 
 .SH BUGS
 色々(笑)。見つけたら報告してください。

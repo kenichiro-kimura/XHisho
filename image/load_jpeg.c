@@ -59,7 +59,7 @@ static int JpegDecode(ImageInfo * i_info, FILE * infile)
   jpeg_stdio_src(&cinfo, infile);
 
   /**
-   * エラーハンドラから帰ってきたら-１を返すようにする
+   * エラーハンドラから帰ってきたら-1を返すようにする
    **/
 
   setjmp(Error_jmp);

@@ -447,6 +447,7 @@ static void PrintUsage(int argc, char **argv)
   ")\n"
   "     -pop                        : check POP for biff\n"
   "     -apop                       : check APOP for biff\n"
+  "     -imap                       : check IMAP4 for biff\n"
   "     -youbin                     : check youbin for biff\n"
   "     -noclock                    : don't draw clock\n"
   "     -focus                      : use Focuswin module\n"
@@ -462,7 +463,7 @@ static void PrintUsage(int argc, char **argv)
 #endif
   "     -soundcmd command           : external sound command\n"
   "     -yserver [server_name]      : youbin server name\n"
-  "     -pserver [server_name]      : POP3 server name\n"
+  "     -pserver [server_name]      : POP3(or IMAP4) server name\n"
   "\n";
 
   static char *compile_option =

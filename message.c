@@ -35,7 +35,7 @@ static int RcHash(const char *name)
 int ReadRcfile(char *filename)
 {
   /**
-   * Messageファイルを読み、RcDataに登録。成功で0,失敗で-１。
+   * Messageファイルを読み、RcDataに登録。成功で0,失敗で-1。
    **/
 
   FILE *infile;
