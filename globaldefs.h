@@ -139,6 +139,7 @@ EDITOR_GLOBAL unsigned long GetColor(Display *, char *);
 MAIL_GLOBAL Widget CreateMailAlert(Widget, int);
 MAIL_GLOBAL int CheckMail(XtPointer, XtIntervalId *);
 MAIL_GLOBAL int CheckPOP3(XtPointer, XtIntervalId *);
+MAIL_GLOBAL int IsMailChecked(int);
 
 MAIN_GLOBAL void CloseEditWindow();
 
@@ -166,15 +167,6 @@ SOUND_GLOBAL int ExtSoundCommand(const char *filename);
 
 /**
  * global variables define
- **/
-
-MAIN_GLOBAL int isMailChecked;
-
-/**
- * isMailChecked =
- *                 0 .. checked
- *                 1 .. not yet
- *                 2 .. timeout closed(not checked)
  **/
 
 MAIN_GLOBAL MailAlertRes mar;

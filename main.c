@@ -148,7 +148,7 @@ static void CheckMailNow(Widget w, XEvent * event, String * params, unsigned int
     XtPopdown(XtParent(nomail));
     return;
   }
-  isMailChecked = 1;
+  IsMailChecked(1);
 
   if (Biff == POP || Biff == APOP)
     ret_value = CheckPOP3((XtPointer) (mail), (XtIntervalId) NULL);
@@ -278,7 +278,7 @@ int main(int argc, char **argv)
   XtTranslations trans_table;
 
   Biff = LOCAL;
-  isMailChecked = 0;
+  IsMailChecked(0);
   UseSound = 1;
 
   /**

@@ -23,6 +23,15 @@ static const char ResName[][256] = {"newmail", "nomail"};
 static XtInputId YoubinId;
 static int virgine = 1;
 static char Tmp_dir[256];
+static int isMailChecked;
+
+/**
+ * isMailChecked =
+ *                 0 .. checked
+ *                 1 .. not yet
+ *                 2 .. timeout closed(not checked)
+ **/
+
 
 /**
  * function definition
@@ -199,6 +208,21 @@ static int isMail()
   }
   OldSize = NewSize;		/** NewSize < OldSizeである -> incしている。**/
   return 0;
+}
+
+int IsMailChecked(int x)
+{
+  switch(x){
+  case 0:
+  case 1:
+  case 2:
+    isMailChecked = x;
+    break;
+  default:
+    isMailChecked = 1;
+  }
+
+  return isMailChecked;
 }
 
 int CheckMail(XtPointer cl, XtIntervalId * id)
