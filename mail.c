@@ -819,15 +819,25 @@ static void YoubinInit()
   sprintf(YoubinFile, "/tmp/xhtmp%s-%d/xhyoubin", getenv("USER"),getpid());
 
   if (virgine) {
+    if((youbin_pid[0] = fork()) < 0){
+      perror("youbin fork");
+      exit(1);
+    }
+    if(youbin_pid[0] == 0){
+      execl(mar.y_command, "youbin", "-m", YoubinFile, "-s", mar.y_server
+	    , (char *) NULL);
+      perror("youbin_init:execlp");
+      exit(1);
+    }
     if(pipe(youbin_pfp)){
       perror("youbin pipe");
       exit(1);
     }
-    if((youbin_pid = fork()) < 0){
+    if((youbin_pid[1] = fork()) < 0){
       perror("youbin fork");
       exit(1);
     }
-    if(youbin_pid == 0){
+    if(youbin_pid[1] == 0){
       close(1);
       dup(youbin_pfp[1]);
       close(youbin_pfp[1]);
@@ -939,10 +949,11 @@ static void CheckYoubin(Widget w, int *fid, XtInputId * id)
 	} else {
 	  if (strchr(ch_ptr, '<') == NULL)
 	    next_ptr = strtok(NULL, "\n");
-	  if(next_ptr != NULL){
+	  if(next_ptr != NULL && strlen(next_ptr) > 2){
 	    left_ptr = strchr(next_ptr, '<');
 	    right_ptr = strchr(next_ptr, '>');
-	    if (left_ptr != NULL && right_ptr != NULL){
+	    if (left_ptr != NULL && right_ptr != NULL
+		&& strlen(left_ptr) > 1 && right_ptr - left_ptr - 1 > 0){
 	      strncpy(pname, left_ptr + 1,
 		      MIN(right_ptr - left_ptr - 1,BUFSIZ- 1));
 	      pname[MIN(right_ptr - left_ptr - 1,BUFSIZ- 1)] = '\0';

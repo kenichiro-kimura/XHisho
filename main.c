@@ -180,8 +180,10 @@ void Quit(Widget w, XEvent * event, String * params, unsigned int *num_params)
   if(Biff == YOUBIN){
     if(youbin_fd)
       fclose(youbin_fd);
-    if(youbin_pid > 0)
-      kill(youbin_pid,SIGTERM);
+    if(youbin_pid[0] > 0)
+      kill(youbin_pid[0],SIGTERM);
+    if(youbin_pid[1] > 0)
+      kill(youbin_pid[1],SIGTERM);
   }
 
 #ifdef OPTION
@@ -404,7 +406,7 @@ int main(int argc, char **argv)
   SSTP_port = 9801;
   ExistMailNum = HaveSchedule = 0;
 
-  youbin_pid = option_pid = -1;
+  youbin_pid[0] = youbin_pid[1] = option_pid = -1;
   youbin_fd = option_fd = NULL;
 
   if(!IsSet)
