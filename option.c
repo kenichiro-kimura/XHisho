@@ -15,6 +15,7 @@ static Widget utop,ulabel,ulocal_option;
 static XtInputId OptionId;
 static int virgine = 1;
 static XtIntervalId OptionTimeoutId = 0;
+static XtIntervalId MessageWaitId = 0;
 #ifdef USE_KAWARI
 static XtIntervalId KAWARITimeoutId = 0;
 #endif
@@ -252,10 +253,10 @@ Widget CreateOptionWindow(Widget w){
   CommandInit();
 
   if(opr.m_wait)
-    XtAppAddTimeOut(XtWidgetToApplicationContext(local_option)
-				      , opr.m_wait * 10
-				      , (XtTimerCallbackProc) _InsertMessage
-				      , NULL);
+    MessageWaitId = XtAppAddTimeOut(XtWidgetToApplicationContext(local_option)
+				    , opr.m_wait * 10
+				    , (XtTimerCallbackProc) _InsertMessage
+				    , NULL);
   return(local_option);
 }
 
@@ -322,6 +323,12 @@ static void CheckOption(Widget w, int *fid, XtInputId * id)
     XtRemoveTimeOut(OptionTimeoutId);
     OptionTimeoutId = 0;
   }
+#ifdef USE_KAWARI
+  if(KAWARITimeoutId){
+    XtRemoveTimeOut(KAWARITimeoutId);
+    KAWARITimeoutId = 0;
+  }
+#endif
 
   if(x == 0){
     message_buffer = (char *)malloc(message_buffer_size);
@@ -365,10 +372,6 @@ static void CheckOption(Widget w, int *fid, XtInputId * id)
   }
 
 #ifdef USE_KAWARI
-  if(KAWARITimeoutId){
-    XtRemoveTimeOut(KAWARITimeoutId);
-    KAWARITimeoutId = 0;
-  }
   ClearMessage(label);
 #ifdef USE_UNYUU
   ClearMessage(ulabel);
@@ -518,6 +521,7 @@ static void CheckOption(Widget w, int *fid, XtInputId * id)
 
     ORParser(message_ptr);
     strcpy(_buffer,message_ptr);
+
 #ifdef USE_UNYUU
     if(last_message == SAKURA)
       RemoveStr(_buffer,"sakura:");
@@ -532,6 +536,7 @@ static void CheckOption(Widget w, int *fid, XtInputId * id)
 		    ,XtNucgNumber,u_cg_num
 		    ,NULL);
     cg_num = u_cg_num = -1;
+
 #ifdef USE_UNYUU
     if(last_message == SAKURA)
       InsertMessage(label,message_ptr,SAKURA);
@@ -545,6 +550,7 @@ static void CheckOption(Widget w, int *fid, XtInputId * id)
     next_ptr = strtok(NULL,"\n");
     XFlush(XtDisplay(label));
   }
+
 
   if(is_end && opr.timeout > 0 && opr.m_wait == 0){
     OptionTimeoutId = XtAppAddTimeOut(XtWidgetToApplicationContext(local_option)
@@ -801,8 +807,8 @@ static void ChangeBadKanjiCode(char *source)
 
 static void ClearMessage(Widget w)
 {
-  XawTextPosition current,last;
-  XawTextBlock textblock;
+  static XawTextPosition current,last;
+  static XawTextBlock textblock;
 
   last = XawTextSourceScan (XawTextGetSource (w),(XawTextPosition) 0,
 			    XawstAll, XawsdRight, 1, TRUE);
@@ -818,8 +824,8 @@ static void ClearMessage(Widget w)
 
 static void InsertMessage(Widget w,char* message_buffer,int mode)
 {
-  XawTextPosition current,last;
-  XawTextBlock textblock;
+  static XawTextPosition current,last;
+  static XawTextBlock textblock;
   char* chr_ptr;
 
   if(strlen(message_buffer) > 0){
@@ -856,8 +862,8 @@ static void InsertMessage(Widget w,char* message_buffer,int mode)
 
 static void _InsertMessage(XtPointer cl,XtIntervalId* id)
 {
-  XawTextPosition current,last;
-  XawTextBlock textblock;
+  static XawTextPosition current,last;
+  static XawTextBlock textblock;
   Widget w;
   unsigned char chr_ptr[BUFSIZ];
   char dest[BUFSIZ];
@@ -919,10 +925,15 @@ static void _InsertMessage(XtPointer cl,XtIntervalId* id)
     }
   }
 
-  XtAppAddTimeOut(XtWidgetToApplicationContext(local_option)
-		  , opr.m_wait * 10
-		  , (XtTimerCallbackProc) _InsertMessage
-		  , NULL);
+  if(MessageWaitId){
+    XtRemoveTimeOut(MessageWaitId);
+    MessageWaitId = 0;
+  }
+
+  MessageWaitId = XtAppAddTimeOut(XtWidgetToApplicationContext(local_option)
+				  , opr.m_wait * 10
+				  , (XtTimerCallbackProc) _InsertMessage
+				  , NULL);
 }
 
 static void InsertReturn(char* message_buffer,char* chr_ptr,int max_len,int message_buffer_size)
@@ -1005,7 +1016,6 @@ static void AddBuffer(messageBuffer* buffer,char* message)
     strcpy(buffer->buffer,b);
     free(b);
     buffer->size = newsize;
-    printf("%d\n",newsize);
   }
 
   strcat(buffer->buffer,message);
@@ -1165,21 +1175,17 @@ static void SakuraParser(char* in_ptr)
 }
 
 static void SJIS2EUC(char* in) {
-  unsigned char* out;
   unsigned char c1;
   unsigned char c2;
   unsigned char* in_ptr;
-  unsigned char* out_ptr;
   unsigned char first_byte;
 
-  out = (unsigned char*)malloc(strlen(in) + 1);
   in_ptr = in;
-  out_ptr = out;
 
   while(*in_ptr != '\0'){
     first_byte = *in_ptr;
     if(first_byte < 0x80){
-      *out_ptr++ = *in_ptr++;
+      in_ptr++;
     } else {
       c1 = first_byte;
       in_ptr++;
@@ -1210,13 +1216,8 @@ static void SJIS2EUC(char* in) {
 	}
 	c2 += 2;
       }
-
-      *out_ptr++ = c1;
-      *out_ptr++ = c2;
-      in_ptr++;
+      *(in_ptr -1) = c1;
+      *in_ptr++ = c2;
     }
   }
-  *out_ptr = '\0';
-  strcpy(in,out);
-  free(out);
 }
