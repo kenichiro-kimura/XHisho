@@ -22,6 +22,7 @@
 #include <X11/ShellP.h>
 #include "XHisho.h"
 #include "Msgwin.h"
+#include "config.h"
 
 /**
  * local variable
@@ -92,6 +93,10 @@ static XrmOptionDescRec options[] = {
   {"-uwidth", "*UOptionWindow*optionWidth", XrmoptionSepArg, "300"},
   {"-uheight", "*UOptionWindow*optionHeight", XrmoptionSepArg, "200"},
   {"-ucgoff", "*uCGoff", XrmoptionSepArg, "0"},
+#endif
+#ifdef USE_KAWARI
+  {"-kawaridir", "*kawariDir", XrmoptionSepArg, "xhisho"},
+  {"-kwait", "*kawariWait", XrmoptionSepArg, "60"},
 #endif
 };
 
@@ -495,6 +500,7 @@ static void PrintUsage(int argc, char **argv)
   "     -optionwidth                : width of Option window\n"
   "     -optionheight               : height of Option window\n"
   "     -optiontimeout              : Option window timeout\n"
+  "     -wait                       : Option message wait\n"
 #endif
 #ifdef USE_UNYUU
   "     -unyuu                      : use UNYUU Window \n"
@@ -503,6 +509,9 @@ static void PrintUsage(int argc, char **argv)
   "     -uwidth                     : UNYUU Window Width\n"
   "     -uheight                    : UNYUU Window Height\n"
   "     -ucgoff                     : UNYUU CG X-offset\n"
+#endif
+#ifdef USE_KAWARI
+  "     -kwait                      : KAWARI wait\n"
 #endif
   "\n";
 
@@ -537,6 +546,9 @@ static void PrintUsage(int argc, char **argv)
 #endif
 #ifdef USE_SHARED
   "    Use own libraries as shared library\n"
+#endif
+#ifdef USE_KAWARI
+  "    Use KAWARI module for 'Something except that with option'\n"
 #endif
   "\n\n";
 

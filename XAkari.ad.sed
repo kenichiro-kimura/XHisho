@@ -99,6 +99,7 @@ XHisho*optionWidth:300
 XHisho*optionHeight:200
 XHisho*option*cursor: left_ptr
 !XHisho*option*scrollVertical: whenNeeded
+XHisho*kawariDir: XHISHODIR
 
 !!
 !!About XAkari...

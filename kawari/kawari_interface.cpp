@@ -6,7 +6,7 @@ using namespace std;
 #include "kawari.h"
 //#include "nisesakura_sakura.h"	// sakuraスクリプト
 
-char* RandomMessage()
+extern "C" char* RandomMessage(char* kawari_dir)
 {
 	int sleeptime=10;
 	string sakuraname="sakura";
@@ -18,7 +18,16 @@ char* RandomMessage()
 
 	TNS_KawariANI NS_Shiori;
 
-	datapath = "./";
+	if(kawari_dir == NULL || strlen(kawari_dir) < 1){
+	  datapath = "./";
+	} else {
+	  if(*kawari_dir == '/' || *kawari_dir == '.'){
+	    datapath = (string)kawari_dir;
+	  } else {
+	    datapath = (string)getenv("HOME") + (string)kawari_dir;
+	  }
+	  cout << datapath << endl;
+	}
 
 	string dllpath=datapath+"shiori.dll";
 

@@ -630,6 +630,7 @@ static inline int CheckDay(char* sc_cond,int day)
   int sc_length;
 
   if(!sc_cond) return -1;
+  sc_length = strlen(sc_cond);
 
   pivot_length = strlen("0000");
   pivot_ptr = (char*)malloc(sc_length + 1);
@@ -638,7 +639,6 @@ static inline int CheckDay(char* sc_cond,int day)
   memset(pivot_ptr,0,pivot_length + 1);
 
   chr_ptr = sc_cond;
-  sc_length = strlen(sc_cond);
 
   while(chr_ptr < sc_cond + sc_length){
     length = 0;

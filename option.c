@@ -15,6 +15,9 @@ static Widget utop,ulabel,ulocal_option;
 static XtInputId OptionId;
 static int virgine = 1;
 static XtIntervalId OptionTimeoutId = 0;
+#ifdef USE_KAWARI
+static XtIntervalId KAWARITimeoutId = 0;
+#endif
 static messageBuffer mbuf,mdest;
 
 static void Destroy(Widget,XEvent *, String *, unsigned int *);
@@ -22,7 +25,7 @@ static void CommandInit();
 static void CheckOption(Widget, int *, XtInputId *);
 static int Option_exit(Display *);
 static char* or2string(char*);
-static void SakuraParser(char*);
+static void ORParser(char*);
 static char* nstrncpy(char*,const char*,size_t);
 static messageStack* messageStack_new(char*);
 static messageStack* messageStack_pop(messageStack**);
@@ -37,6 +40,8 @@ static void AddBuffer(messageBuffer*,char*);
 static char* GetBuffer(messageBuffer*);
 static char* HeadOfBuffer(messageBuffer*);
 static char* _GetBuffer(messageBuffer*,int);
+static void SakuraParser(char*);
+extern char* RandomMessage(char*);
 
 static XtActionsRec actionTable[] = {
   {"Destroy", Destroy},
@@ -106,6 +111,24 @@ static XtResource resources[] = {
     XtRImmediate,
     (XtPointer)0
   },    
+  {
+    XtNkawariWait,
+    XtCKawariWait,
+    XtRInt,
+    sizeof(int),
+    XtOffsetOf(OptionRes, k_wait),
+    XtRImmediate,
+    (XtPointer)60
+  },    
+  {
+    XtNkawariDir,
+    XtCKawariDir,
+    XtRString,
+    sizeof(String),
+    XtOffsetOf(OptionRes, kawari_dir),
+    XtRImmediate,
+    (XtPointer)"xhisho"
+  },    
 };
 
 static void Destroy(Widget w, XEvent * event, String * params, unsigned int *num_params)
@@ -134,14 +157,14 @@ Widget CreateOptionWindow(Widget w){
   pdrec.shell_widget = top;
   pdrec.enable_widget = w;
 
-  mbuf.buffer = (char*)malloc(BUFSIZ * 10);
+  mbuf.buffer = (unsigned char*)malloc(BUFSIZ * 10);
   mbuf.size = BUFSIZ * 10;
   *mbuf.buffer = '\0';
 
-  mdest.buffer = (char*)malloc(BUFSIZ);
+  mdest.buffer = (unsigned char*)malloc(BUFSIZ);
   mdest.size = BUFSIZ;
   *mdest.buffer = '\0';
-  
+
   top = XtVaCreatePopupShell("OptionWindow", transientShellWidgetClass
 			     ,w,NULL);
   XtGetApplicationResources(top, &opr, resources, XtNumber(resources), NULL, 0);
@@ -232,6 +255,9 @@ Widget CreateOptionWindow(Widget w){
 
 static void CommandInit()
 {
+#ifdef USE_KAWARI
+  CheckOption(top,NULL,NULL);
+#else
   if(strlen(opr.o_command) < 1) return;
 
   if (virgine) {
@@ -245,7 +271,8 @@ static void CommandInit()
   OptionId = XtAppAddInput(XtWidgetToApplicationContext(top),
 			   fileno(option_fd), (XtPointer) XtInputReadMask,
 			   (XtInputCallbackProc) CheckOption, NULL);
-  XSetIOErrorHandler(Option_exit);	/** child process の youbin を殺す **/
+  XSetIOErrorHandler(Option_exit);	/** child processを殺す **/
+#endif
 }
 
 static void CheckOption(Widget w, int *fid, XtInputId * id)
@@ -307,7 +334,7 @@ static void CheckOption(Widget w, int *fid, XtInputId * id)
   memset(_buffer,'\0',message_buffer_size);
   memset(buffer,'\0',message_buffer_size);
 
-  //  if ((len = read(*fid,_buffer,message_buffer_size)) == 0) {
+#ifndef USE_KAWARI
   if ((len = read(*fid,_buffer,message_buffer_size)) == 0) {
     XtRemoveInput(OptionId);
     OptionId = 0;
@@ -321,7 +348,7 @@ static void CheckOption(Widget w, int *fid, XtInputId * id)
 
   if(len == 0) return;
   _buffer[len] = '\0';
-
+#endif
 
   if(is_end && opr.m_wait == 0){
     ClearMessage(label);
@@ -330,6 +357,12 @@ static void CheckOption(Widget w, int *fid, XtInputId * id)
 #endif
     is_end = 0;
   }
+
+#ifdef USE_KAWARI
+    message_ptr = RandomMessage(opr.kawari_dir);
+    strcpy(_buffer,message_ptr);
+    free(message_ptr);
+#endif
 
 #ifdef EXT_FILTER
 
@@ -371,6 +404,9 @@ static void CheckOption(Widget w, int *fid, XtInputId * id)
   }
 
   ChangeBadKanjiCode(buffer);
+#ifdef USE_KAWARI
+  SakuraParser(buffer);
+#endif
 
   XtVaGetValues(label, XtNfontSet, &fset, XtNwidth,&width,NULL);
   XmbTextExtents(fset, "a", 1, &ink, &log);
@@ -463,7 +499,7 @@ static void CheckOption(Widget w, int *fid, XtInputId * id)
       }
     }
 
-    SakuraParser(message_ptr);
+    ORParser(message_ptr);
     strcpy(_buffer,message_ptr);
 #ifdef USE_UNYUU
     if(last_message == SAKURA)
@@ -499,6 +535,20 @@ static void CheckOption(Widget w, int *fid, XtInputId * id)
 				      , (XtTimerCallbackProc) Destroy
 				      , NULL);
   }
+
+#ifdef USE_KAWARI
+  if(opr.k_wait == 0)
+    opr.k_wait = 60;
+  if(KAWARITimeoutId){
+    XtRemoveTimeOut(KAWARITimeoutId);
+    KAWARITimeoutId = 0;
+  }
+  KAWARITimeoutId = XtAppAddTimeOut(XtWidgetToApplicationContext(local_option)
+				    , opr.k_wait * 1000
+				    , (XtTimerCallbackProc) CheckOption
+				    , NULL
+				    );
+#endif
 }
 
 static int Option_exit(Display * disp)
@@ -510,7 +560,7 @@ static int Option_exit(Display * disp)
   return 0;
 }
 
-void SakuraParser(char* in)
+void ORParser(char* in)
 {
   /*
     parse random scripts
@@ -814,6 +864,10 @@ static void _InsertMessage(XtPointer cl,XtIntervalId* id)
 					    , (XtTimerCallbackProc) Destroy
 					    , NULL);
 	break;
+      case 'w':
+	cg_num = atoi(chr_ptr + 1);
+	usleep(cg_num * 50 * 1000);
+	break;
       default:
 	cg_num = atoi(chr_ptr + 1);
 	if (*dest == 'u') cg_num += 10;
@@ -943,8 +997,11 @@ static char* _GetBuffer(messageBuffer* buffer,int mode)
   char* ret;
   unsigned char first_byte;
   int is_wbyte = 0;
+  unsigned char str_num[128];
+  int wait;
+  unsigned char* c_ptr;
 
-  ret = (char*)malloc(3);
+  ret = (char*)malloc(BUFSIZ);
   ret[0] = first_byte = *(buffer->buffer);
 
   if((ret[0] = first_byte = *(buffer->buffer)) == '\0') return NULL;
@@ -953,13 +1010,26 @@ static char* _GetBuffer(messageBuffer* buffer,int mode)
       (first_byte == 0x8e) || (first_byte == 0x8f) || first_byte == '\\'){
     is_wbyte = 1;
     ret[1] = *(buffer->buffer + 1);
+    ret[2] = '\0';
+
+    if(strncmp(ret,"\\w",strlen("\\w")) == 0){
+      c_ptr = buffer->buffer + 2;
+      while(isdigit(*c_ptr)){
+	c_ptr++;
+	is_wbyte++;
+      }
+      strncpy(str_num,buffer->buffer + 2
+	      ,is_wbyte);
+      sprintf(ret,"\\w%d",atoi(str_num));
+    }
   } else {
     ret[1] = '\0';
+    ret[2] = '\0';
   }
 
-  ret[2] = '\0';
   if(mode)
     strcpy(buffer->buffer,buffer->buffer + 1 + is_wbyte);
+
   return ret;
 }
   
@@ -973,3 +1043,96 @@ static char* GetBuffer(messageBuffer* buffer)
   return _GetBuffer(buffer,1);
 }
 
+static void SakuraParser(char* in_ptr)
+{
+  messageBuffer kbuf;
+  unsigned char* buffer;
+  unsigned char* chr_ptr;
+  int num;
+  unsigned char* c_ptr;
+  unsigned char str_num[128];
+
+  if(in_ptr == NULL) return;
+  
+  kbuf.buffer = (unsigned char*)malloc(BUFSIZ * 10);
+  kbuf.size = BUFSIZ * 10;
+  *kbuf.buffer = '\0';
+
+  buffer = (unsigned char*)malloc(strlen(in_ptr));
+
+  for(chr_ptr = in_ptr;*chr_ptr;chr_ptr++){
+
+    if(*chr_ptr == '\\'){
+      chr_ptr++;
+      if(*chr_ptr == '\0') goto END;
+      switch(*chr_ptr) {
+      case 'h':
+	strcpy(buffer,"\nsakura:");
+	AddBuffer(&kbuf,buffer);
+	break;
+      case 'u':
+	strcpy(buffer,"\nunyuu:");
+	AddBuffer(&kbuf,buffer);
+	break;
+      case 'n':
+	strcpy(buffer,"\n");
+	AddBuffer(&kbuf,buffer);
+	break;
+      case 'e':
+	strcpy(buffer,"\\e\n");
+	AddBuffer(&kbuf,buffer);
+	goto END;
+	break;
+      case 't':
+	break;
+      case 'c':
+	break;
+      case 'x':
+	break;
+      case '-':
+	break;
+      case 'z':
+	break;
+      case '*':
+	break;
+      case 'a':
+	break;
+      case 'v':
+	break;
+      case 'w':
+	chr_ptr++;
+	if(*chr_ptr  == '\0') goto END;
+	c_ptr = chr_ptr;
+	while(isdigit(*c_ptr)) c_ptr++;
+	strncpy(str_num,chr_ptr
+		,c_ptr - chr_ptr);
+	sprintf(buffer,"\\w%d",atoi(str_num));
+	AddBuffer(&kbuf,buffer);
+	chr_ptr = c_ptr - 1;
+	break;
+      case 's':
+	chr_ptr++;
+	if(*chr_ptr == '\0') goto END;
+	c_ptr = chr_ptr;
+	while(isdigit(*c_ptr)) c_ptr++;
+	strncpy(str_num,chr_ptr
+		,c_ptr - chr_ptr);
+	sprintf(buffer,"(Surface:%d)",atoi(str_num));
+	AddBuffer(&kbuf,buffer);
+	chr_ptr = c_ptr - 1;
+	break;
+      }
+    } else {
+      strncpy(buffer,chr_ptr,1);
+      buffer[1] = '\0';
+      AddBuffer(&kbuf,buffer);
+    }
+  }
+
+ END:
+  free(buffer);
+
+  sprintf(in_ptr,"%s\n",kbuf.buffer);
+  free(kbuf.buffer);
+  return ;
+}

@@ -31,6 +31,10 @@
 #define XtCUYOffset "UYOffset"
 #define XtNmessageWait "messageWait"
 #define XtCMessageWait "MessageWait"
+#define XtNkawariWait "kawariWait"
+#define XtCKawariWait "KawariWait"
+#define XtNkawariDir "kawariDir"
+#define XtCKawariDir "KawariDir"
 
 typedef struct {
   String o_command;
@@ -40,6 +44,8 @@ typedef struct {
   int uyoff;
   int timeout;
   int m_wait;
+  int k_wait;
+  String kawari_dir;
 } OptionRes;
 
 typedef struct _messagestack{
@@ -53,7 +59,7 @@ enum {
 };
 
 typedef struct _messagebuffer{
-  char* buffer;
+  unsigned char* buffer;
   size_t size;
 } messageBuffer;
 #endif

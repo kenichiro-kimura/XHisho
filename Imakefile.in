@@ -81,7 +81,7 @@ EXTRA_LDOPTIONS = -L/usr/local/lib
 
 #ifdef USE_KAWARI
 KAWARIDIR = kawari
-KAWARI_OBJ = $(KAWARIDIR)/$(KAWARIDIR).o $(KAWARIDIR)/$(KAWARIDIR)_crypt.o $(KAWARIDIR)/base64.o
+KAWARI_OBJ = $(KAWARIDIR)/$(KAWARIDIR).o $(KAWARIDIR)/$(KAWARIDIR)_crypt.o $(KAWARIDIR)/base64.o $(KAWARIDIR)/kawari_interface.o
 KAWARI_LIB = -lstdc++
 #endif
 
