@@ -994,6 +994,8 @@ static void SJIS2EUC(char* in) {
     first_byte = *in_ptr;
     if(first_byte < 0x80){
       in_ptr++;
+    } else if(first_byte == 0xa5){
+      *in_ptr++ = '.';
     } else {
       c1 = first_byte;
       in_ptr++;
