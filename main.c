@@ -61,6 +61,7 @@ static XrmOptionDescRec options[] = {
   {"-message", "*messageFile", XrmoptionSepArg, NULL},
   {"-scheddir", "*scheduleDir", XrmoptionSepArg, NULL},
   {"-chime", "*zeroChime", XrmoptionNoArg, "True"},
+  {"-nochime", "*zeroChime", XrmoptionNoArg, "False"},
 #ifdef EXT_FILTER
   {"-filter", "*extFilter", XrmoptionSepArg, NULL},
 #endif
@@ -404,6 +405,7 @@ static void PrintUsage(int argc, char **argv)
   "     -message [file_name]        : message file name\n"
   "     -scheddir [dir_name]        : schedule dir name\n"
   "     -chime                      : use zero-hour chime\n"
+  "     -nochime                    : not use zero-hour chime\n"
 #ifdef EXT_FILTER
   "     -filter command             : external filter command\n"
 #endif

@@ -268,6 +268,7 @@ xhs.holidayというファイルを置いてください。書式はサンプルを見てくださ
          [-message [message filename]]
 	 [-scheddir [dir_name]]
 	 [-chime]
+	 [-nochime]
 	 [-filter [filter command]]
 	 [-yserver [youbin server]]
 	 [-pserver [POP3 server]]
@@ -322,6 +323,7 @@ XHishoをyoubinサーバで動かしているのなら、この機能を使用できます。
 ・-noclock   … 時計を表示しない
 ・-nosound   … 音を鳴らさない
 ・-chime     … 毎時0分に今日の予定を表示する
+・-nochime   … 毎時0分に今日の予定を表示しない
 ・-focus     … focusWinモジュールを使う
 ・-ypos      … focusWinを使うときの縦方向のポジションをピクセル単位で指定
 ・-shape     … 画像の背景を透明にする。focusWinと併用するとよいでしょう

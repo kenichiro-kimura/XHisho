@@ -48,6 +48,7 @@ You can custom every message,CG,etc.
          [-message [message filename]]
 	 [-scheddir [dir_name]]
 	 [-chime]
+	 [-nochime]
 	 [-filter [filter command]]
          [-soundcmd [sound command]]
 	 [-yserver [youbin server]]
