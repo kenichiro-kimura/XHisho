@@ -990,7 +990,7 @@ static void ParseConfigFile(int now, char *ret_value)
 
   FILE *inputfile;
   char *tmp1, *tmp2, *tmp3;
-  int first_h, last_h, return_size;
+  int first_h, last_h, return_size,i;
 
 #ifdef EXT_FILTER
   char command[128];
@@ -1021,6 +1021,12 @@ static void ParseConfigFile(int now, char *ret_value)
 
       if (tmp1[0] != '#' && tmp1[0] != '\0' && tmp1[0] != '\n') {
 	sscanf(tmp1, "%s %s", tmp2, tmp3);
+
+	for (i = 0;i < strlen(tmp1);i++)
+	  if (isspace(tmp1[i]))
+	    break;
+	
+	strcpy(tmp3,tmp1 + i + 1);
 
 	if (strchr(tmp2, '-') == NULL) {
 	  if (atoi(tmp2) >= 0 && atoi(tmp2) < 24 && atoi(tmp2) == now) {
