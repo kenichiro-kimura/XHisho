@@ -133,8 +133,9 @@ static void CommandInit()
 
 static void CheckOption(Widget w, int *fid, XtInputId * id)
 {
-  static char message_buffer[BUFSIZ];
-  static char buffer[BUFSIZ * 10];
+  static char message_buffer[BUFSIZ * 20];
+  char _buffer[BUFSIZ * 5];
+  char buffer[BUFSIZ* 5];
   static int x = 0;
   int len;
   char* chr_ptr;
@@ -142,20 +143,75 @@ static void CheckOption(Widget w, int *fid, XtInputId * id)
   int is_end;
   XFontSet fset;
   XRectangle ink, log;
+#ifdef EXT_FILTER
+  char command[128];
+  char t_filename[BUFSIZ];
+  char d_buffer[BUFSIZ * 3];
+  FILE* t_file;
+  FILE* in;
+#endif			
 
 
-  len = read(*fid,buffer,BUFSIZ);
-  buffer[len] = '\0';
+  if ((len = read(*fid,_buffer,BUFSIZ * 5)) == 0) {
+    fprintf(stderr, "option command died!\n");
+  } else if (len == -1) {
+    fprintf(stderr, "Can't read from option command!\n");
+  }
+
+  _buffer[len] = '\0';
+
   if(x == 0)
-    memset(message_buffer,'\0',BUFSIZ * 10);
+    memset(message_buffer,'\0',BUFSIZ * 20);
 
   is_end = 0;
   x = 1;
 
+#ifdef EXT_FILTER
+  strcpy(t_filename, tempnam(Tmp_dir, "xhtmp"));
+  if ((t_file = fopen(t_filename, "w")) == NULL) {
+    fprintf(stderr, "can't open temporary file,%s\n", t_filename);
+  } else {
+    fprintf(t_file, "%s", _buffer);
+    fclose(t_file);
+
+    sprintf(command, "%s %s", FilterCommand, t_filename);
+    if ((in = popen(command, "r")) == NULL) {
+      fprintf(stderr, "no such filter command:%s\n", command);
+      exit(1);
+    }
+    buffer[0] = '\0';
+    while((fgets(d_buffer, BUFSIZ * 3, in)) != NULL){
+      strcat(buffer,d_buffer);
+    }
+    pclose(in);
+    unlink(t_filename);
+  }
+#else
+  strcpy(buffer, _buffer);
+#endif
 
   /* here is script decoder .. */
 
+  if((chr_ptr = strchr(buffer,'(')) != NULL){
+    if(!strncasecmp(chr_ptr + 1,"Surface:",strlen("Surface:"))){
+      int cg_num;
+      char str_num[128];
+
+      chr_ptr += strlen("(Surface:");
+      next_ptr = chr_ptr;
+      while(isdigit((unsigned char)(*next_ptr))) next_ptr++;
+      strncpy(str_num,chr_ptr,next_ptr - chr_ptr);
+
+      cg_num = atoi(str_num);
+      XtVaSetValues(xhisho,XtNforceCG,True,XtNcgNumber,cg_num,NULL);
+      chr_ptr = strchr(buffer,')') + 1;
+      strcpy(_buffer,chr_ptr);
+      strcpy(strchr(buffer,'('),_buffer);
+    }
+  }
+  
   chr_ptr = buffer;
+
   if(len >= strlen("Surface:0")){
     if(!strncasecmp(buffer,"Surface:",strlen("Surface:"))){
       int cg_num;
