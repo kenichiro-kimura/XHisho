@@ -8,7 +8,7 @@
  */
 
 #define XHISHO_VERSION "1.00"
-#define CODE_NAME "Lime"
+#define CODE_NAME "Lime Release 0"
 #define MIN(a,b) ((a) > (b) ? (b) :(a))
 #define MAX(a,b) ((a) > (b) ? (a) :(b))
 #define HASH_KEY 253 

@@ -197,6 +197,7 @@ static void ReadAddrBook(){
     /*
      * Petname の読み込み。" で囲まれた文字列中の空白文字はPetnameの1
      * 部。" で囲まれていない空白文字はPetnameの区切り文字。
+     *
      * int in_quote = 1 (現在呼んでいる文字は " で囲まれた文字列の一部
      *                   である)
      */
@@ -207,7 +208,7 @@ static void ReadAddrBook(){
 	in_quote = 1;
       } else {
 	if(!in_quote && isspace(buffer[i])) break;
-	if(buffer[i] == '#') goto End;
+	if(buffer[i] == '#') break;
 	if(buffer[i] != '"') pname[j++] = buffer[i];
       }
     }
@@ -235,7 +236,9 @@ static void ReadAddrBook(){
 
   End:
   /*
-   * 終了処理。通常の終了以外にコメント行以下の作業中止(行頭の ";",途中の "#")がある
+   * 終了処理。通常の終了以外にコメント行以下の作業中止(行頭の ";",途
+   * 中の "#")がある。Petnameの途中で "#" が出たら、そこまでをPetname
+   * として登録する。
    */
 
 #ifdef EXT_FILTER

@@ -8,7 +8,7 @@
 #
 #
 #
-# $XFree86: xc/config/cf/Imake.tmpl,v 3.32.2.11 1998/11/08 09:06:27 dawes Exp $
+# $XFree86: xc/config/cf/Imake.tmpl,v 3.32.2.8 1998/02/08 11:19:24 dawes Exp $
 # ----------------------------------------------------------------------
 
 all::
@@ -16,7 +16,7 @@ all::
 .SUFFIXES: .i
 
 # $TOG: Imake.cf /main/28 1997/06/25 08:31:36 barstow $
-# $XFree86: xc/config/cf/Imake.cf,v 3.34.2.11 1998/12/22 11:23:01 hohndel Exp $
+# $XFree86: xc/config/cf/Imake.cf,v 3.34.2.3 1997/07/27 02:41:02 dawes Exp $
 
 # -----------------------------------------------------------------------
 # site-specific configuration parameters that need to come before
@@ -25,23 +25,23 @@ all::
 # site:  $XConsortium: site.def /main/revisionist/4 1996/12/31 08:02:07 kaleb $
 # site:  $XFree86: xc/config/cf/site.def,v 3.17.2.1 1997/06/22 10:32:21 dawes Exp $
 
-# $XFree86: xc/config/cf/xf86site.def,v 3.101.2.25 1998/11/08 09:06:29 dawes Exp $
+# $XFree86: xc/config/cf/xf86site.def,v 3.101.2.15 1998/02/24 19:05:42 hohndel Exp $
 
 # ----------------------------------------------------------------------
 # platform-specific configuration parameters - edit FreeBSD.cf to change
 
 # platform:  $TOG: FreeBSD.cf /main/18 1997/06/12 07:40:35 kaleb $
-# platform:  $XFree86: xc/config/cf/FreeBSD.cf,v 3.58.2.19 1998/12/18 11:56:07 dawes Exp $
+# platform:  $XFree86: xc/config/cf/FreeBSD.cf,v 3.58.2.11 1998/03/01 01:08:59 dawes Exp $
 
-# operating system:  FreeBSD 2.2.8-RELEASE i386  (2.2.8)
+# operating system:  FreeBSD 3.0-RELEASE i386 [ELF] (3.0.0)
 
    COMPRESSMANCMD = gzip -n
 
 # $XConsortium: bsdLib.rules /main/3 1996/09/28 16:09:18 rws $
 
-# $XFree86: xc/config/cf/bsdLib.rules,v 3.4.2.6 1998/11/08 11:49:53 dawes Exp $
+# $XFree86: xc/config/cf/bsdLib.rules,v 3.4.2.1 1997/05/11 05:04:04 dawes Exp $
 
-# $XFree86: xc/config/cf/xfree86.cf,v 3.129.2.36 1998/11/07 04:42:24 dawes Exp $
+# $XFree86: xc/config/cf/xfree86.cf,v 3.129.2.22 1998/02/24 19:05:43 hohndel Exp $
 
 # $XConsortium: xfree86.cf /main/34 1996/12/06 11:45:18 rws $
 
@@ -85,10 +85,10 @@ XF98PWSKBDRIVERSRC = $(XF98SRC)/accel/s3pwskb/drivers
  XF98PWLBDRIVERSRC = $(XF98SRC)/accel/s3pwlb/drivers
 XF98GA968DRIVERSRC = $(XF98SRC)/accel/s3ga968/drivers
 
-        XFREE86DOCDIR = $(DOCDIR)
-      XFREE86PSDOCDIR = $(DOCPSDIR)
-    XFREE86HTMLDOCDIR = $(DOCHTMLDIR)
-XFREE86JAPANESEDOCDIR = $(DOCDIR)/Japanese
+        XFREE86DOCDIR = $(LIBDIR)/doc
+      XFREE86PSDOCDIR = $(XFREE86DOCDIR)/PostScript
+    XFREE86HTMLDOCDIR = $(XFREE86DOCDIR)/html
+XFREE86JAPANESEDOCDIR = $(XFREE86DOCDIR)/Japanese
 
 # $XConsortium: xf86.rules /main/9 1996/10/31 14:54:26 kaleb $
 # $XFree86: xc/config/cf/xf86.rules,v 3.16.2.1 1997/05/18 12:00:01 dawes Exp $
@@ -103,17 +103,21 @@ XFREE86JAPANESEDOCDIR = $(DOCDIR)/Japanese
 # ---------------------------------------------------------------------
 # Imake rules for building libraries, programs, scripts, and data files
 # rules:  $TOG: Imake.rules /main/222 1997/07/17 20:04:40 kaleb $
-# rules:  $XFree86: xc/config/cf/Imake.rules,v 3.33.2.10 1998/11/04 10:53:01 dawes Exp $
+# rules:  $XFree86: xc/config/cf/Imake.rules,v 3.33.2.7 1998/02/06 09:02:17 dawes Exp $
 
  _NULLCMD_ = @ echo -n
 
-TKLIBNAME = tk80
+TKLIBNAME = tk42
 
 TKLIBDIR =
 
-TCLLIBNAME = tcl80
+TCLLIBNAME = tcl76
 
 TCLIBDIR =
+
+FREETYPELIBNAME = ttf
+
+FREETYPELIBDIR = /usr/local/lib
 
           PATHSEP = /
             SHELL = /bin/sh
@@ -187,14 +191,13 @@ CXXEXTRA_INCLUDES =
      LIBMANSUFFIX = 3
     FILEMANSUFFIX = 5
             TROFF = groff -Tps
-            NROFF = groff -Tascii
+            NROFF = nroff
          MSMACROS = -ms
         MANMACROS = -man
               TBL = tbl
               EQN = eqn
              NEQN = neqn
               COL = col
-         COLFLAGS = -b
 
             DVIPS = dvips
             LATEX = latex
@@ -202,21 +205,21 @@ CXXEXTRA_INCLUDES =
      STD_INCLUDES =
   STD_CPP_DEFINES = -traditional $(PROJECT_DEFINES)
       STD_DEFINES = -DCSRG_BASED $(PROJECT_DEFINES)
- EXTRA_LOAD_FLAGS = -Wl,-R,$(USRLIBDIRPATH)
+ EXTRA_LOAD_FLAGS = -Wl,-rpath,$(USRLIBDIRPATH)
   EXTRA_LDOPTIONS =
-  EXTRA_LIBRARIES =  -lxpg4
+  EXTRA_LIBRARIES =
              TAGS = ctags
 
    PARALLELMFLAGS =
 
     SHAREDCODEDEF =
-         SHLIBDEF = -DBSDSHLIB
+         SHLIBDEF =
 
-     SHLIBLDFLAGS = -Bshareable -R $(USRLIBDIRPATH)
+     SHLIBLDFLAGS = -shared -rpath $(USRLIBDIRPATH)
 
-         PICFLAGS = -fpic
+         PICFLAGS = -fPIC
 
-      CXXPICFLAGS = -fpic
+      CXXPICFLAGS = -fPIC
 
     PROTO_DEFINES = -DFUNCPROTO=15 -DNARROWPROTO
 
@@ -236,6 +239,7 @@ CXXEXTRA_INCLUDES =
         CCOPTIONS =
 
       ALLINCLUDES = $(INCLUDES) $(EXTRA_INCLUDES) $(TOP_INCLUDES) $(STD_INCLUDES)
+
        ALLDEFINES = $(ALLINCLUDES) $(STD_DEFINES) $(EXTRA_DEFINES) $(PROTO_DEFINES) $(THREADS_DEFINES) $(DEFINES)
            CFLAGS = $(CDEBUGFLAGS) $(CCOPTIONS) $(THREADS_CFLAGS) $(ALLDEFINES)
         LINTFLAGS = $(LINTOPTS) -DLINT $(ALLDEFINES) $(DEPEND_DEFINES)
@@ -256,12 +260,12 @@ CXXEXTRA_INCLUDES =
 
 # Not sure this belongs here
          TKLIBDIR =
-         TKINCDIR = /usr/local/include/tk8.0
-        TKLIBNAME = tk80
+         TKINCDIR = /usr/local/include/tk4.2
+        TKLIBNAME = tk42
         TKLIBRARY = -L$(TKLIBDIR) -l$(TKLIBNAME)
         TCLLIBDIR =
-        TCLINCDIR = /usr/local/include/tcl8.0
-       TCLLIBNAME = tcl80
+        TCLINCDIR = /usr/local/include/tcl7.6
+       TCLLIBNAME = tcl76
        TCLLIBRARY = -L$(TCLLIBDIR) -l$(TCLLIBNAME)
 
         MACROFILE = FreeBSD.cf
@@ -270,15 +274,12 @@ CXXEXTRA_INCLUDES =
     IMAKE_DEFINES =
 
          IRULESRC = $(CONFIGDIR)
+
         IMAKE_CMD = $(IMAKE) -DUseInstalled -I$(IRULESRC) $(IMAKE_DEFINES)
 
      ICONFIGFILES = $(IRULESRC)/Imake.tmpl $(IRULESRC)/X11.tmpl 			$(IRULESRC)/site.def $(IRULESRC)/$(MACROFILE) 			$(IRULESRC)/xfree86.cf $(IRULESRC)/xf86.rules $(IRULESRC)/xf86site.def $(IRULESRC)/host.def $(EXTRA_ICONFIGFILES)
 
 # $TOG: X11.rules /main/4 1997/04/30 15:23:24 kaleb $
-#
-#
-#
-# $XFree86: xc/config/cf/X11.rules,v 1.1.1.1.2.3 1998/10/04 15:22:47 hohndel Exp $
 
 # ----------------------------------------------------------------------
 # X Window System Build Parameters and Rules
@@ -287,9 +288,7 @@ CXXEXTRA_INCLUDES =
 #
 #
 #
-# $XFree86: xc/config/cf/X11.tmpl,v 1.8.2.9 1998/12/30 10:04:09 dawes Exp $
-
-CONNECTION_FLAGS = -DTCPCONN -DUNIXCONN -DHAS_STICKY_DIR_BIT
+# $XFree86: xc/config/cf/X11.tmpl,v 1.8.2.4 1998/01/23 12:35:08 dawes Exp $
 
 # -----------------------------------------------------------------------
 # X Window System make variables; these need to be coordinated with rules
@@ -310,13 +309,10 @@ CONNECTION_FLAGS = -DTCPCONN -DUNIXCONN -DHAS_STICKY_DIR_BIT
            INCDIR = $(INCROOT)
            ADMDIR = /usr/adm
            LIBDIR = $(USRLIBDIR)/X11
-   TOP_X_INCLUDES =
+   TOP_X_INCLUDES = -I$(XPROJECTROOT)/include
 
            VARDIR = /var/X11
 
-           DOCDIR = $(LIBDIR)/doc
-       DOCHTMLDIR = $(DOCDIR)/html
-         DOCPSDIR = $(DOCDIR)/PostScript
           FONTDIR = $(LIBDIR)/fonts
          XINITDIR = $(LIBDIR)/xinit
            XDMDIR = $(LIBDIR)/xdm
@@ -365,7 +361,7 @@ CONNECTION_FLAGS = -DTCPCONN -DUNIXCONN -DHAS_STICKY_DIR_BIT
    CLIENTENVSETUP = LD_LIBRARY_PATH=$(XENVLIBDIR)
 
 # $XConsortium: bsdLib.tmpl /main/3 1996/09/28 16:09:25 rws $
-# $XFree86: xc/config/cf/bsdLib.tmpl,v 3.3.2.2 1998/11/06 13:54:16 dawes Exp $
+# $XFree86: xc/config/cf/bsdLib.tmpl,v 3.3.2.1 1997/07/27 02:41:03 dawes Exp $
 
           XLIBSRC = $(LIBSRC)/X11
 
@@ -443,7 +439,7 @@ LINTXDMCP = $(LINTLIBDIR)/llib-lXdmcp.ln
 
 SOXMUREV = 6.0
 DEPXMULIB =
-XMULIB =  -lXmu $(LDPRELIBS) $(XTOOLONLYLIB) $(XONLYLIB)
+XMULIB =  -lXmu
 
 LINTXMU = $(LINTLIBDIR)/llib-lXmu.ln
 
@@ -568,9 +564,9 @@ LINTFS = $(LINTLIBDIR)/llib-lFS.ln
 
          FONTLIBSRC = $(LIBSRC)/font
 
-SOFONTREV = 1.2
+SOFONTREV = 1.0
 DEPFONTLIB =
-FONTLIB = -L$(FREETYPELIBDIR) -L$(FONTLIBSRC)  -lfont
+FONTLIB =  -lfont
 
 LINTFONT = $(LINTLIBDIR)/llib-lfont.ln
 
@@ -623,10 +619,6 @@ XMULIB = $(XMULIBONLY) $(XTOOLLIB) $(XLIB)
 
 CXXPROJECT_DEFINES =
 
-FREETYPELIBNAME = ttf
-
-FREETYPELIBDIR = /usr/local/lib
-
 # ----------------------------------------------------------------------
 # start of Imakefile
 
@@ -636,7 +628,7 @@ FREETYPELIBDIR = /usr/local/lib
 CC = gcc
 XHISHODIR = $(LIBDIR)/xhisho
 
-CDEBUGFLAGS = -g -Wall
+# CDEBUGFLAGS = -g -Wall
 # CCOPTIONS =
 
 #
@@ -653,10 +645,14 @@ CDEBUGFLAGS = -g -Wall
 
 #
 # Use external filter program for printing From: and Subject: ?
-#  (default filter is 'nkf -e -m'
+#  (default filter is 'nkf -e -m')
 
 #
 # Use Petname for printing From: ?
+#
+
+#
+# Use Mew's address book for Petname. but,it is not tested enough...
 #
 
 #
@@ -698,14 +694,12 @@ PET = -DPETNAME
 
 LNG = -DJP
 
-ADD = -DADDRESSBOOK -DPETNAME
-
 DEFINES = $(DEF_XAW3D) $(FILTER) $(PET) $(SOUND) $(YOUBIN) $(POP) $(SHAPE) $(LNG) $(ADD)
 
 EXTRA_LIBRARIES = -lXpm $(LIB_XPG4) $(LIB_SOLARIS)
 
 DEPLIBS = $(DEPXAWLIB) $(DEPXMULIB) $(DEPXTOOLLIB) $(DEPXLIB)
-LOCAL_LIBRARIES = $(XAWLIB) $(XMULIB) $(XTOOLLIB) $(XLIB)
+LOCAL_LIBRARIES = $(XAWLIB) $(XMULIBONLY) $(XTOOLLIB) $(XLIB)
 
 BASE_OBJS =  mail.o main.o Msgwin.o XHisho.o about.o editor.o schedule.o calendar.o menu.o ResEdit.o load_bmp.o message.o
 
@@ -732,7 +726,7 @@ install.man:: xhisho.man
 	else (set -x; $(MKDIRHIER) $(DESTDIR)$(MANDIR)); fi
 	$(RM) $(DESTDIR)$(MANDIR)/xhisho.$(MANSUFFIX)*
 	$(INSTALL) -c $(INSTMANFLAGS) xhisho.man \
-	$(DESTDIR)$(MANDIR)/xhisho.$(MANSUFFIX)
+ $(DESTDIR)$(MANDIR)/xhisho.$(MANSUFFIX)
 	-$(COMPRESSMANCMD) $(DESTDIR)$(MANDIR)/xhisho.$(MANSUFFIX)
 
 depend:: .depend

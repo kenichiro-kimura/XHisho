@@ -10,11 +10,12 @@ void Escape2Return(char*);
 int ReadRcfile(char*);
 void ReadRcdata(const char*,char*,int size);
 
-static char* RcData[MAX_MESSAGE_NUM];
 static const char RcName[][256] = {"newmail","nomail","open1","open2","open3","alert1"
 				   ,"alert2","alertformat","schedule","menul","menu0"
 				   ,"menu1","menu2","menu3","menu4","menu5","calendar"
 				   ,"resource"};
+
+static char* RcData[MAX_MESSAGE_NUM];
 
 static int RcHash(const char* name){
   /*
@@ -69,6 +70,8 @@ int ReadRcfile(char* filename){
   free(tmp);
   free(tmp2);
   free(tmp3);
+
+  fclose(infile);
 
   return 0;
 }

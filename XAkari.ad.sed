@@ -92,7 +92,7 @@ XHisho.MailAlert.newMailSound: XHISHODIR/newmail.wav
 
 XHisho.About.aboutLabel:\                 About XAkari.....\n\
 \n\
-Copyright(c) 1998, 木村健一郎<Ken'ichirou Kimura>\n\
+Copyright(c) 1998,1999  木村健一郎<Ken'ichirou Kimura>\n\
 \n\
 \n\
 XAkariはあなたのデスクトップに常駐するあかりちゃんです。\n\
