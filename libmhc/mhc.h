@@ -40,6 +40,13 @@
  *   スケジュールであるならば1を返し、違うなら0を返す。
  *
  *
+ * int iscategory(const mhcent*,const char*);
+ *   与えた文字列がX-SC-Category: に入っているかをチェック。
+ *   文字列はX-SC-Category: 同様,スペース区切りで複数記述できる。
+ *   例えばX-SC-Category: が "work private" で、チェックする文字列として
+ *   "work public"は1が返る。
+ *
+ *
  * MHC* OpenMHC(const char* home_dir, int year, int month);
  *   home_dir/year/month に加えてintersectも読み込む。
  *   さらに、dayごとに保持する。読み込みに失敗したらNULLを返す。

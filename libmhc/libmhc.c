@@ -13,6 +13,7 @@ static mhcent* EntryNew();
 static void EntryDelete(mhcent*);
 static mhcent* ReadEntry(FILE*);
 static MHC* MHCNew();
+static inline int _iscategory(const mhcent* ,const char*);
 static inline entrylist* EntrylistNew(mhcent*);
 static inline int AddEntry(MHC*,mhcent*,int);
 static inline int CheckSC_Day(char*,int,int,int);
@@ -1230,22 +1231,73 @@ char* GetCategory(const mhcent* ent_ptr)
   return ent_ptr->Entry[X_SC_Category];
 }
 
-int iscategory(const mhcent* ent_ptr,const char* category){
+static inline int _iscategory(const mhcent* ent_ptr,const char* category){
   char* chr_ptr;
   char* first_ptr;
+  char* e_category;
   
   if(!ent_ptr) return 0;
   if(!(chr_ptr = ent_ptr->Entry[X_SC_Category])) return 0;
+  if(!category) return 0;
 
-  for(first_ptr = chr_ptr;*chr_ptr != '\0';chr_ptr++){
+  e_category = (char*)malloc(strlen(chr_ptr) + 1);
+  first_ptr = e_category;
+
+  for(first_ptr = e_category;*chr_ptr != '\0';chr_ptr++){
+    *first_ptr++ = *chr_ptr;
     if(isspace((unsigned char)*chr_ptr)){
-      if(!strncmp(first_ptr,category,strlen(first_ptr) - strlen(chr_ptr))) return 1;
+      *first_ptr = '\0';
+      if(!strcmp(e_category,category)){
+	free(e_category);
+	return 1;
+      }
+      first_ptr = e_category;
       for(chr_ptr++;*chr_ptr != '\0';chr_ptr++)
 	if(!isspace((unsigned char)*chr_ptr)) break;
-      first_ptr = chr_ptr;
+      *first_ptr++ = *chr_ptr;
     }
   }
 
-  if(!strcmp(first_ptr,category)) return 1;
+  *first_ptr = '\0';
+  printf("##%s##\n",first_ptr);
+  if(!strcmp(e_category,category)){
+    free(e_category);
+    return 1;
+  }
+
+  free(e_category);
   return 0;
 }
+
+int iscategory(const mhcent* ent_ptr,const char* category){
+  char* chr_ptr;
+  char* first_ptr;
+  char* _category;
+  int ret_value = 0;
+
+  if(!ent_ptr) return 0;
+  if(!category) return 0;
+
+  chr_ptr = category;
+  _category = (char*)malloc(strlen(category) + 1);
+
+  for(first_ptr = _category;*chr_ptr != '\0';chr_ptr++){
+    *first_ptr++ = *chr_ptr;
+    if(isspace((unsigned char)*chr_ptr)){
+      *first_ptr = '\0';
+      if(_iscategory(ent_ptr,_category)){
+	free(_category);
+	return 1;
+      }
+      first_ptr = _category;
+      for(chr_ptr++;*chr_ptr != '\0';chr_ptr++)
+	if(!isspace((unsigned char)*chr_ptr)) break;
+      *first_ptr++ = *chr_ptr;
+    }
+  }
+  *first_ptr = '\0';
+  
+  ret_value = _iscategory(ent_ptr,_category);
+  return ret_value;
+}
+    
