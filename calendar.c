@@ -301,7 +301,6 @@ Widget CreateCalendarWindow(Widget w, int Month, struct tm tm_now)
   for(i = 0; i < 31;i++){
     SetMHC(mhc_ptr,i + 1);
 
-    printf("%s\n",cres.hidden);
     exist_mhc[i] = 0;      
     while((ent_ptr = ReadMHC(mhc_ptr)) != NULL){
       if(iscategory(ent_ptr,cres.hidden) == 0){
