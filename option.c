@@ -9,6 +9,9 @@
 #include <signal.h>
 
 static Widget top,label,local_option;
+#ifdef USE_UNYUU
+static Widget utop,,ulabel,ulocal_option;
+#endif
 static XtInputId OptionId;
 static int virgine = 1;
 static XtIntervalId OptionTimeoutId = 0;
@@ -24,6 +27,8 @@ static messageStack* messageStack_new(char*);
 static messageStack* messageStack_pop(messageStack**);
 static void messageStack_push(messageStack**,char*);
 static void ChangeBadKanjiCode(char *);
+static void ClearMessage(Widget);
+static void InsertMessage(Widget,char*);
 
 static XtActionsRec actionTable[] = {
   {"Destroy", Destroy},
@@ -75,6 +80,9 @@ static void Destroy(Widget w, XEvent * event, String * params, unsigned int *num
     OptionTimeoutId = 0;
   }
   XtPopdown(top);
+#ifdef USE_UNYUU
+  XtPopdown(utop);
+#endif
 }
 
 
@@ -92,7 +100,6 @@ Widget CreateOptionWindow(Widget w){
 
   top = XtVaCreatePopupShell("OptionWindow", transientShellWidgetClass
 			     ,w,NULL);
-
   XtGetApplicationResources(top, &opr, resources, XtNumber(resources), NULL, 0);
   local_option = XtVaCreateManagedWidget("option", msgwinWidgetClass, top
   				 ,NULL);
@@ -110,13 +117,33 @@ Widget CreateOptionWindow(Widget w){
 				  ,XtNdisplayCaret,False
 				  ,XtNsensitive,True
 				  ,XtNjustify,XtJustifyLeft
-				  /*
-				  ,XtNresize,XawtextResizeWidth
-				  ,XtNscrollHorizontal,XawtextScrollWhenNeeded
-				  ,XtNscrollVertical,XawtextScrollAlways
-				  */
 				  ,XtNautoFill,True
 				  ,NULL);
+
+#ifdef USE_UNYUU
+  utop = XtVaCreatePopupShell("OptionWindow", transientShellWidgetClass
+			     ,w,NULL);
+  ulocal_option = XtVaCreateManagedWidget("option", msgwinWidgetClass, utop
+					  ,XtNxoff,opr.width + 100
+					  ,NULL);
+  ulabel = XtVaCreateManagedWidget("optionLabel", asciiTextWidgetClass
+				  ,ulocal_option
+				  ,XtNvertDistance,10
+				  ,XtNhorizDistance, POINT_WIDTH + LABEL_OFFSET
+				  ,XtNvertDistance, 30
+				  ,XtNborderWidth,0
+				  ,XtNwidth,opr.width
+				  ,XtNheight,opr.height
+				  ,XtNleft,XtChainLeft
+				  ,XtNright,XtChainRight
+				  ,XtNdisplayCaret,False
+				  ,XtNsensitive,True
+				  ,XtNjustify,XtJustifyLeft
+				  ,XtNautoFill,True
+				  ,NULL);
+
+#endif
+
   XtAppAddActions(XtWidgetToApplicationContext(label)
 		  ,actionTable, XtNumber(actionTable));
   trans_table = XtParseTranslationTable(defaultTranslations);
@@ -239,19 +266,11 @@ static void CheckOption(Widget w, int *fid, XtInputId * id)
 
 
   if(is_end){
-    last = XawTextSourceScan (XawTextGetSource (label),(XawTextPosition) 0,
-			      XawstAll, XawsdRight, 1, TRUE);
-    //    last = XawTextGetInsertionPoint(XawTextGetSource(label));
-    textblock.ptr = "";
-    textblock.firstPos = 0;
-    textblock.length = 0;
-    textblock.format = FMT8BIT;
+    ClearMessage(label);
+#ifdef USE_UNYUU
+    ClearMessage(ulabel);
+#endif
 
-    XtVaSetValues(label,XtNeditType,XawtextEdit,NULL);
-    XawTextReplace (label, 0, last, &textblock);
-    XtVaSetValues(label,XtNeditType,XawtextRead,NULL);
-
-    XawTextSetInsertionPoint(label,0);
     is_end = 0;
   }
 
@@ -289,8 +308,10 @@ static void CheckOption(Widget w, int *fid, XtInputId * id)
   printf("#%s\n",buffer);
 #endif
 
-  while((chr_ptr = strstr(buffer,"\\n")) != NULL)
-    strcpy(chr_ptr,chr_ptr +2);
+  while((chr_ptr = strstr(buffer,"\\n")) != NULL){
+    strcpy(_buffer,chr_ptr +2);
+    sprintf(chr_ptr,"\n%s",_buffer);
+  }
 
   /* surface changer */
 
@@ -393,23 +414,10 @@ static void CheckOption(Widget w, int *fid, XtInputId * id)
     insert message into window
   */
 
-  current = XawTextGetInsertionPoint(label);
-  last = XawTextSourceScan (XawTextGetSource (label),(XawTextPosition) 0,
-			    XawstAll, XawsdRight, 1, TRUE);
-
-  textblock.firstPos = 0;
-  textblock.length = strlen(message_buffer);
-  textblock.ptr = message_buffer;
-  textblock.format = FMT8BIT;
-  XtVaSetValues(label,XtNeditType,XawtextEdit,NULL);
-  XawTextReplace(label,last,last,&textblock);
-  XtVaSetValues(label,XtNeditType,XawtextRead,NULL);
-  if (current == last)
-    XawTextSetInsertionPoint(label
-			     , last + textblock.length);
-
-  if(strlen(message_buffer) > 0)
-     XtPopup(XtParent(local_option), XtGrabNone);
+  InsertMessage(label,message_buffer);
+#ifdef USE_UNYUU
+  InsertMessage(ulabel,message_buffer);
+#endif
 
   if(sakura && cg_num != -1)
     XtVaSetValues(xhisho,XtNforceCG,True,XtNcgNumber,cg_num,NULL);
@@ -647,3 +655,45 @@ static void ChangeBadKanjiCode(char *source)
     strcpy(source,result);
     return;
 }
+
+static void ClearMessage(Widget w)
+{
+  XawTextPosition current,last;
+  XawTextBlock textblock;
+
+  last = XawTextSourceScan (XawTextGetSource (w),(XawTextPosition) 0,
+			    XawstAll, XawsdRight, 1, TRUE);
+  textblock.ptr = "";
+  textblock.firstPos = 0;
+  textblock.length = 0;
+  textblock.format = FMT8BIT;
+
+  XtVaSetValues(w,XtNeditType,XawtextEdit,NULL);
+  XawTextReplace (w, 0, last, &textblock);
+  XtVaSetValues(w,XtNeditType,XawtextRead,NULL);
+}
+
+static void InsertMessage(Widget w,char* message_buffer)
+{
+  XawTextPosition current,last;
+  XawTextBlock textblock;
+
+  current = XawTextGetInsertionPoint(w);
+  last = XawTextSourceScan (XawTextGetSource (w),(XawTextPosition) 0,
+			    XawstAll, XawsdRight, 1, TRUE);
+
+  textblock.firstPos = 0;
+  textblock.length = strlen(message_buffer);
+  textblock.ptr = message_buffer;
+  textblock.format = FMT8BIT;
+  XtVaSetValues(w,XtNeditType,XawtextEdit,NULL);
+  XawTextReplace(w,last,last,&textblock);
+  XtVaSetValues(w,XtNeditType,XawtextRead,NULL);
+
+  if (current == last)
+    XawTextSetInsertionPoint(w
+			     , last + textblock.length);
+  if(strlen(message_buffer) > 0)
+     XtPopup(XtParent(XtParent(w)), XtGrabNone);
+}
+
