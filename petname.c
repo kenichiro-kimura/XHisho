@@ -205,7 +205,7 @@ static void ReadAddrBook()
      *                   д╟двды)
      **/
 
-    for (i++, j = in_quote = 0; i < strlen(buffer), j < BUFSIZ; i++) {
+    for (i++, j = in_quote = 0; i < strlen(buffer) && j < BUFSIZ; i++) {
       if (buffer[i] == '"') {
 	if (in_quote == 1)
 	  break;
