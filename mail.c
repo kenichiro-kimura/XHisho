@@ -673,10 +673,10 @@ static void CheckYoubin(Widget w,int *fid,XtInputId *id){
   int mail_size,length;
   static int old_mail_size = 0;
   long date;
-  int i = 0;
+  int i = 0,j;
 
 #ifdef PETNAME
-  char *from_who,*who,*pname,*next_ptr;
+  char *from_who,*who,*pname,*next_ptr,*left_ptr,*right_ptr;
 #endif /* PETNAME */
 #ifdef EXT_FILTER
   FILE *in,*t_file;
@@ -691,6 +691,7 @@ static void CheckYoubin(Widget w,int *fid,XtInputId *id){
   memset(tmp2,0,mar.from_maxlen + 1);
 
   buf = malloc(BUFSIZ);
+  memset(buf,0,BUFSIZ);
 
 #ifdef PETNAME
   from_who = malloc(BUFSIZ);
@@ -704,7 +705,7 @@ static void CheckYoubin(Widget w,int *fid,XtInputId *id){
   } else if(len == -1){
     fprintf(stderr,"Can;'t read from Youbin!\n");
   }
-  buf[len] = '\0';
+  buf[MIN(len,BUFSIZ)] = '\0';
 
   mail_size = (int)strtol(buf,&cp,10);
   if(*cp != ' '){
@@ -714,6 +715,9 @@ static void CheckYoubin(Widget w,int *fid,XtInputId *id){
     free(who);
     free(pname);
 #endif
+    free(buf);
+    free(From);
+    free(tmp2);
     return;
   }
 
@@ -749,6 +753,9 @@ static void CheckYoubin(Widget w,int *fid,XtInputId *id){
     free(who);
     free(pname);
 #endif
+    free(buf);
+    free(From);
+    free(tmp2);
     return;
   }
 
@@ -762,12 +769,20 @@ static void CheckYoubin(Widget w,int *fid,XtInputId *id){
       if(!strncmp(tmp1,"From:",5)){
 	next_ptr = tmp1;
 	sscanf(tmp1,"%s %s",from_who,who);
-	if(strchr(who,'@')){
+
+	for(j = 0; j < strlen(from_who);j++)
+	  if(isspace(tmp1[j])) break;
+
+	strcpy(who,tmp1 + j);
+
+	if(strchr(who,'@') != NULL){
 	  strcpy(pname,who);
 	} else {
-	  if(!strchr(tmp1,'<')) next_ptr = strtok(NULL,"\n");
-	  if(strchr(next_ptr,'<') != NULL && strchr(next_ptr,'>') != NULL)
-	    strcpy(pname, strtok(strchr(next_ptr,'<') + 1,">"));
+	  if(strchr(tmp1,'<') == NULL) next_ptr = strtok(NULL,"\n");
+	  left_ptr = strchr(next_ptr,'<');
+	  right_ptr = strchr(next_ptr,'>');
+	  if(left_ptr != NULL && right_ptr != NULL)
+	    strcpy(pname, strtok(left_ptr + 1,">"));
 	}
 	SearchPetname(tmp2,pname);
       }
