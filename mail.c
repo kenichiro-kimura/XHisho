@@ -763,7 +763,7 @@ static void CheckYoubin(Widget w,int *fid,XtInputId *id){
 
   while(tmp1 && i < mar.mail_lines){
     if(!strncmp(tmp1,"From:",5) || !strncmp(tmp1,"Subject:",8)){
-      *tmp2 = '\0';
+      tmp2[0] = '\0';
 
 #ifdef PETNAME
       if(!strncmp(tmp1,"From:",5)){
@@ -787,6 +787,7 @@ static void CheckYoubin(Widget w,int *fid,XtInputId *id){
 	SearchPetname(tmp2,pname);
       }
 #endif
+
 #ifdef EXT_FILTER
       t_filename[0] = '\0';
 
