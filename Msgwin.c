@@ -16,6 +16,8 @@
  * ウのPopup位置がずれて見えるかも知れない。その時は,Popupの前にModeを
  * SetValueしてからPopupしてやるとよい。出来ればこれもどうにかしたいのだ
  * が。
+ *
+ * リソース forceMode をTrueにすると、WindowModeの自動設定が効かなくなる。
  **/
 
 #define ARC_WIDTH (int)(mask_height / 10)
