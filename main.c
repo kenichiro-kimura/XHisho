@@ -93,6 +93,13 @@ static void Wait(Widget w, XEvent * e, String * s, unsigned int *i)
     about = CreateAboutWindow(toplevel);
 
     /**
+     * Mail Windowの生成
+     **/
+
+    nomail = CreateMailAlert(toplevel, 1);
+    mail = CreateMailAlert(toplevel, 0);
+
+    /**
      * OpenMessage Windowを生成し、Opening messageを表示する
      **/
 
@@ -116,13 +123,6 @@ static void Wait(Widget w, XEvent * e, String * s, unsigned int *i)
      **/
 
     CheckTimeForSchedule((XtPointer) toplevel, (XtIntervalId) NULL);
-
-    /**
-     * Mail Windowの生成
-     **/
-
-    nomail = CreateMailAlert(toplevel, 1);
-    mail = CreateMailAlert(toplevel, 0);
 
     IsSet = 1;
   }
@@ -182,7 +182,6 @@ void ScheduleWindowPopup(Widget w, XEvent * event, String * params, unsigned int
 
   if (IsPopped(openwin)) {
     XtPopdown(XtParent(openwin));
-    XtVaSetValues(xhisho, XtNanimType, BeforeAnimatonMode, NULL);
     return;
   }
   time(&now);
@@ -205,7 +204,6 @@ void OpeningWindowPopup(Widget w, XEvent * event, String * params, unsigned int 
 
   if (IsPopped(openwin)) {
     XtPopdown(XtParent(openwin));
-    XtVaSetValues(xhisho, XtNanimType, BeforeAnimatonMode, NULL);
     return;
   }
   time(&now);
@@ -344,6 +342,7 @@ int main(int argc, char **argv)
   Biff = LOCAL;
   IsMailChecked(0);
   UseSound = 1;
+  ExistMailNum = HaveSchedule = 0;
   if(!IsSet)
     BeforeAnimatonMode = USUAL;
 

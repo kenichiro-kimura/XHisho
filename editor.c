@@ -239,14 +239,12 @@ static void DestroyEdit(Widget w, caddr_t client_data, caddr_t call_data)
   for (i = 0; i < MAX_SCHED_NUM; i++)
     (int) schedule[i].is_checked = 0;
 
-  XtVaSetValues(xhisho,XtNanimType,BeforeAnimatonMode,NULL);
   XtPopdown(XtParent(XtParent(w)));
   CloseEditWindow();
 }
 
 static void Destroy(Widget w, caddr_t client_data, caddr_t call_data)
 {
-  XtVaSetValues(xhisho,XtNanimType,BeforeAnimatonMode,NULL);
   XtPopdown(XtParent(XtParent(w)));
 }
 
@@ -254,7 +252,6 @@ static void Dismiss(Widget w, caddr_t client_data, caddr_t call_data)
 {
   int i;
 
-  XtVaSetValues(xhisho,XtNanimType,BeforeAnimatonMode,NULL);
   XtPopdown(XtParent(XtParent(w)));
 
   for (i = 0; i < past_index + 1; i++) {
@@ -1213,17 +1210,28 @@ void CheckTimeForSchedule(XtPointer cl, XtIntervalId * id)
     for (i = 0; i < past_index + 1; i++)
       check &= (int) schedule[i].is_checked;
 
+    printf("mail:%d,schedule:%d\n",ExistMailNum,check);
+
     if (check == 0) {
+      HaveSchedule = 1;
       OpenPopup();
     }
+  } else {
+    HaveSchedule = 0;
+    if(ExistMailNum){
+      XtVaSetValues(xhisho, XtNanimType, MAIL, NULL);
+    }else{
+      XtVaSetValues(xhisho, XtNanimType, USUAL, NULL);
+    }
+      
   }
+
   LeaveWindowID = XtAppAddTimeOut(XtWidgetToApplicationContext(XtParent(top))
 			    ,(60 - tmp->tm_sec) * 1000, CheckTimeForSchedule
 				  ,cl);
 }
 
 static void OpenPopup(){
-  XtVaGetValues(xhisho,XtNanimType,&BeforeAnimatonMode,NULL);
   XtVaSetValues(xhisho, XtNanimType, SCHEDULE, NULL);
   XtVaSetValues(openwin, XtNwindowMode, 0, NULL);
   XtPopup(XtParent(openwin), XtGrabNone);

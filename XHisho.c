@@ -645,11 +645,11 @@ static void ChangeAnimType(XHishoWidget xhw)
    * USUAL → 他のtypeの変更の時は現在のアニメーション処理の番号を
    * テーブルに覚えておく
    **/
-
-  if(xhw->xhisho.anim_type){
+  /*
+    if(xhw->xhisho.anim_type){
     xhw->xhisho.i_info->anim_number[0] = CG_NUM;
-  }
-  
+    }
+  */
   CG_NUM = xhw->xhisho.i_info->anim_number[xhw->xhisho.anim_type];
 
   /**

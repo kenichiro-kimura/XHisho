@@ -305,10 +305,15 @@ int CheckMail(XtPointer cl, XtIntervalId * id)
   free(tmp);
   free(message);
 
-  if(num_of_mail == 0)
-    XtVaSetValues(xhisho, XtNanimType, USUAL, NULL);
+  if(num_of_mail == 0){
+    if(HaveSchedule){
+      XtVaSetValues(xhisho, XtNanimType, SCHEDULE, NULL);
+    } else {
+      XtVaSetValues(xhisho, XtNanimType, USUAL, NULL);
+    }
+  }
 
-  return num_of_mail;
+  return (ExistMailNum = num_of_mail);
 }
 
 int CheckPOP3(XtPointer cl, XtIntervalId * id)
@@ -361,16 +366,21 @@ int CheckPOP3(XtPointer cl, XtIntervalId * id)
   free(message);
   free(tmp);
 
-  if(ret_value == 0)
-    XtVaSetValues(xhisho, XtNanimType, USUAL, NULL);
+  if(ret_value == 0){
+    if(HaveSchedule){
+      XtVaSetValues(xhisho, XtNanimType, SCHEDULE, NULL);
+    } else {
+      XtVaSetValues(xhisho, XtNanimType, USUAL, NULL);
+    }
+  }
 
-  return ret_value;
+  return (ExistMailNum = ret_value);
 }
 
 static int CheckYoubinNowTimer(XtPointer cl, XtIntervalId * id){
   int ret_value;
 
-  while(CheckYoubinNow(0) < 0);
+  while((ret_value = CheckYoubinNow(0)) < 0);
 
   if(MailCheckId){
     XtRemoveTimeOut(MailCheckId);
@@ -381,14 +391,17 @@ static int CheckYoubinNowTimer(XtPointer cl, XtIntervalId * id){
 				,MailCheckInterval
 				, (XtTimerCallbackProc) CheckYoubinNowTimer
 				, (XtPointer) local_mail[0]);
-  if(ret_value == 0)
-    XtVaSetValues(xhisho, XtNanimType, USUAL, NULL);
+  if(ret_value == 0){
+    if(HaveSchedule){
+      XtVaSetValues(xhisho, XtNanimType, SCHEDULE, NULL);
+    } else {
+      XtVaSetValues(xhisho, XtNanimType, USUAL, NULL);
+    }
+  }
 
-  return ret_value;
+  return (ExistMailNum = ret_value);
 }
   
-
-
 int CheckYoubinNow(int mode){
   static int OldSize = 0;
   int num_of_mail = 0;
@@ -407,6 +420,7 @@ int CheckYoubinNow(int mode){
 
     fclose(fp);
   } else {
+    ExistMailNum = 0;
     return -1;
   }
 
@@ -423,14 +437,12 @@ int CheckYoubinNow(int mode){
 
   free(tmp);
   free(message);
+
   if(num_of_mail > 0){
     XtVaSetValues(xhisho, XtNanimType, MAIL, NULL);
-    BeforeAnimatonMode = MAIL;
-  } else {
-    XtVaSetValues(xhisho, XtNanimType, USUAL, NULL);
-    BeforeAnimatonMode = USUAL;
   }
-  return num_of_mail;
+
+  return (ExistMailNum = num_of_mail);
 }
 
 Widget CreateMailAlert(Widget w, int Mode)
@@ -955,11 +967,10 @@ void MailPopup(int mode){
 
   XtVaSetValues(local_mail[mode], XtNwindowMode, 0, NULL);
   if(mode){
-    XtVaSetValues(xhisho, XtNanimType, USUAL, NULL);
-    BeforeAnimatonMode = USUAL;
+    if(!HaveSchedule)
+      XtVaSetValues(xhisho, XtNanimType, USUAL, NULL);
   } else {
     XtVaSetValues(xhisho, XtNanimType, MAIL, NULL);
-    BeforeAnimatonMode = MAIL;
   }
   MailCount = 0;
 
@@ -968,3 +979,4 @@ void MailPopup(int mode){
     SoundPlay(mar.sound_f);
   }
 }
+
