@@ -939,6 +939,9 @@ static void AddBuffer(messageBuffer* buffer,const char* message,int use_file)
   unsigned char* _b_ptr;
   int _i = 0;
 
+  if(use_file)
+    flock(sstp_fd,0x02);
+
   if(strlen(message) < 1) return;
   newsize = strlen(buffer->buffer) + strlen(message) + 1;
 
@@ -977,6 +980,8 @@ static void AddBuffer(messageBuffer* buffer,const char* message,int use_file)
   }
 
   strcat(buffer->buffer,message);
+  if(use_file)
+    flock(sstp_fd,0x08);
 }
 
 static void _GetBuffer(messageBuffer* buffer,char* ret,int mode)
