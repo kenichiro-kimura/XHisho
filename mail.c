@@ -207,7 +207,7 @@ int IsMailChecked(int x)
   switch(x){
   case -1:
     AddMailTimeout();
-    isMailChecked = 1;
+    isMailChecked = 2;
     break;
   case 0:
   case 1:
