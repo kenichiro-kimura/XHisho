@@ -175,12 +175,13 @@ void Quit(Widget w, XEvent * event, String * params, unsigned int *num_params)
 
   while((i = rmdir(Tmp_dir)) < 0);
 
-  if(Biff == YOUBIN){
+  if(Biff == YOUBIN && youbin_fd && youbin_pid >= 0){
     fclose(youbin_fd);
     kill(youbin_pid,SIGTERM);
   }
 
 #ifdef OPTION
+  if(option_fd && option_pid >= 0)
   fclose(option_fd);
   kill(option_pid,SIGTERM);
 #endif
