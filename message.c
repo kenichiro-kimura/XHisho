@@ -1,5 +1,3 @@
-#define MAX_MESSAGE_NUM 19
-
 #include "globaldefs.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -16,7 +14,7 @@ static const char RcName[][256] = {"newmail","nomail","open1","open2","open3","a
 				   ,"menu1","menu2","menu3","menu4","menu5","calendar"
 				   ,"resource","messagearg"};
 
-static char* RcData[MAX_MESSAGE_NUM];
+static char* RcData[NUM_OF_ARRAY(RcName)];
 
 extern String FilterCommand;
 
@@ -26,7 +24,7 @@ static int RcHash(const char* name){
    */
   int i = 0;
 
-  for(i = 0; i < MAX_MESSAGE_NUM;i++){
+  for(i = 0; i < NUM_OF_ARRAY(RcName);i++){
     if(!strcmp(RcName[i],name)) return i;
   }
 
@@ -47,8 +45,7 @@ int ReadRcfile(char* filename){
   char pcommand[128];
 #endif
 
-
-  for(i = 0; i < MAX_MESSAGE_NUM;i++){
+  for(i = 0; i < NUM_OF_ARRAY(RcName);i++){
     RcData[i] = malloc(1);
     *RcData[i] = '\0';
   }

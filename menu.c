@@ -1,5 +1,6 @@
 #include "Msgwin.h"
 #include "menu.h"
+#include "globaldefs.h"
 
 static Widget top,menu,item[MENU_NUM + 1],head[MENU_NUM + 1],ok;
 static char Menu[MENU_NUM][256];
@@ -170,7 +171,7 @@ static void ResEditWindowPopup(Widget w,caddr_t client_data,caddr_t call_data){
 Widget CreateMenuWindow(Widget w){
   static XtPopdownIDRec pdrec;
   int i;
-  char* messages[7];
+  char* messages[NUM_OF_ARRAY(ResName)];
 
   static Arg menuargs[] = {
     {XtNwindowMode,0},
@@ -184,7 +185,7 @@ Widget CreateMenuWindow(Widget w){
   pdrec.shell_widget = top;
   pdrec.enable_widget = w;
 
-  for(i = 0; i < 7; i++){
+  for(i = 0; i < NUM_OF_ARRAY(ResName); i++){
     messages[i] = malloc(BUFSIZ);
     ReadRcdata(ResName[i],messages[i],BUFSIZ);
   }

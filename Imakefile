@@ -1,7 +1,7 @@
 #include "config.tmpl"
 #include "config.h"
 
-CDEBUGFLAGS = -g -Wall
+XCOMM CDEBUGFLAGS = -g -Wall
 XCOMM CCOPTIONS = 
 
 XCOMM

@@ -12,7 +12,7 @@ static int virgine = 1;
 static Schedule* schedule;
 static int Edited_Month,Edited_Day;
 static XtIntervalId LeaveWindowID = 0;
-static const char ResName[8][128] = {"open1","open2","open3","alert1","alert2"
+static const char ResName[][128] = {"open1","open2","open3","alert1","alert2"
 				     ,"alertformat","schedule","messagearg"};
 
 OpenMessageRes omr;
@@ -298,7 +298,7 @@ Widget CreateEditorWindow(Widget w,int Mode,struct tm tm_now){
   int i,j,k,l,Longest_sched,schedules;
   char *since_minutes[MAX_SCHED_NUM];
   Dimension Label_width;
-  char* messages[8];
+  char* messages[NUM_OF_ARRAY(ResName)];
   char daystring[MAX_SCHED_NUM][256],leavestring[MAX_SCHED_NUM][256];
   char* mesarg;
   
@@ -387,7 +387,7 @@ Widget CreateEditorWindow(Widget w,int Mode,struct tm tm_now){
     ReadHoliday();
   }
 
-  for(i = 0; i < 8; i++){
+  for(i = 0; i < NUM_OF_ARRAY(ResName); i++){
     messages[i] = malloc(BUFSIZ);
     memset(messages[i],0,BUFSIZ);
     ReadRcdata(ResName[i],messages[i],BUFSIZ);

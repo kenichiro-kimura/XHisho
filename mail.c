@@ -346,7 +346,7 @@ Widget CreateMailAlert(Widget w,int Mode){
   int i;
   XFontSet fset;
   XRectangle ink,log;
-  char* messages[2];
+  char* messages[NUM_OF_ARRAY(ResName)];
 
   static Arg mailargs[] = {
     {XtNwindowMode,0},
@@ -418,7 +418,7 @@ Widget CreateMailAlert(Widget w,int Mode){
     SetPrefVal(3,(float)mar.mail_lines);
   }
 
-  for(i = 0; i < 2; i++){
+  for(i = 0; i < NUM_OF_ARRAY(ResName); i++){
     messages[i] = malloc(BUFSIZ);
     ReadRcdata(ResName[i],messages[i],BUFSIZ);
   }
