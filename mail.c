@@ -11,10 +11,9 @@
  * local variable
  **/
 
+#define TIMEOUT_INTERVAL (mar.m_timeout * 1000)
 static Widget top[2], local_mail[2], from, label;
 static char m_filename[256];
-static int TimeoutInterval = 1 * 1000;
-static int MailTimeout;
 static XtIntervalId MailTimeoutId,MailCheckId;
 static int MailCheckInterval;
 static const char ResName[][256] = {"newmail", "nomail"};
@@ -22,7 +21,6 @@ static const char ResName[][256] = {"newmail", "nomail"};
 static XtInputId YoubinId;
 static int virgine = 1;
 static int isMailChecked;
-static int MailCount = 0;
 
 /**
  * isMailChecked =
@@ -44,6 +42,8 @@ static void CheckYoubin(Widget, int *, XtInputId *);
 static void YoubinInit();
 static void GetFromandSubject(char *, char *);
 static int Youbin_exit(Display *);
+static void AddMailTimeout();
+static void RemoveMailTimeout();
 
 /**
  * resources
@@ -167,9 +167,8 @@ static void Destroy(Widget w, caddr_t client_data, caddr_t call_data)
 
   if (!Mode) {
     isMailChecked = 0;
-    MailCount = 0;
-    MailTimeout = mar.m_timeout;
   }
+
   XtPopdown(top[Mode]);
 }
 
@@ -178,25 +177,13 @@ static void TimerCheck(XtPointer cl, XtIntervalId * id)
   int i = 0;
 
   if ((i = IsPopped(mail)) || IsPopped(nomail)) {
-    MailCount++;
-    if (MailCount == MailTimeout) {
-      MailCount = 0;
       isMailChecked = 2;
       if (i)
 	XtPopdown(top[0]);
       else
 	XtPopdown(top[1]);
-    }
-  } else {
-    MailCount = 0;
   }
-  if(MailTimeoutId){
-    XtRemoveTimeOut(MailTimeoutId);
-    MailTimeoutId = 0;
-  }
-    
-  MailTimeoutId = XtAppAddTimeOut(XtWidgetToApplicationContext(top[0])
-			  ,TimeoutInterval, TimerCheck, (XtPointer) top[0]);
+  AddMailTimeout();
 }
 
 
@@ -219,8 +206,8 @@ int IsMailChecked(int x)
 {
   switch(x){
   case -1:
-    MailTimeout = mar.m_timeout;
-    isMailChecked = -1;
+    AddMailTimeout();
+    isMailChecked = 1;
     break;
   case 0:
   case 1:
@@ -231,7 +218,7 @@ int IsMailChecked(int x)
     isMailChecked = 1;
   }
 
-  MailCount = 0;
+  AddMailTimeout();
   return isMailChecked;
 }
 
@@ -332,7 +319,7 @@ int CheckMail(int mode)
   }
 
   if(mode == 2)
-    MailTimeout = -1;
+    RemoveMailTimeout();
 
   return (ExistMailNum = num_of_mail);
 }
@@ -412,7 +399,7 @@ int CheckPOP3(int mode)
   }
 
   if(mode == 2)
-    MailTimeout = -1;
+    RemoveMailTimeout();
 
   return (ExistMailNum = ret_value);
 }
@@ -492,7 +479,7 @@ int CheckYoubinNow(int mode){
   free(message);
 
   if(mode == 2)
-    MailTimeout = -1;
+    RemoveMailTimeout();
 
   return num_of_mail;
 }
@@ -606,8 +593,6 @@ Widget CreateMailAlert(Widget w, int Mode)
 
   MailCheckInterval = mar.m_check * 1000;
 
-  MailTimeout = mar.m_timeout;
-
   local_mail[Mode] = XtCreateManagedWidget("mail", msgwinWidgetClass, top[Mode],
 				     mailargs, XtNumber(mailargs));
 
@@ -663,8 +648,7 @@ Widget CreateMailAlert(Widget w, int Mode)
 				 ,XtNleft, XtChainLeft, XtNright, XtChainLeft
 				 ,XtNinternalHeight, FONT_OFFSET, NULL);
     XtAddCallback(ok, XtNcallback, (XtCallbackProc) Destroy, (XtPointer) Mode);
-    MailTimeoutId = XtAppAddTimeOut(XtWidgetToApplicationContext(top[Mode])
-		       ,TimeoutInterval, TimerCheck, (XtPointer) top[Mode]);
+    AddMailTimeout();
   }
 
 
@@ -1062,7 +1046,7 @@ void MailPopup(int mode,int sound){
   } else {
     XtVaSetValues(xhisho, XtNanimType, MAIL, NULL);
   }
-  MailCount = 0;
+  AddMailTimeout();
 
   XtPopup(XtParent(local_mail[mode]), XtGrabNone);
   if (mar.sound_f  && UseSound && mode == 0 && sound == 1) {
@@ -1070,3 +1054,19 @@ void MailPopup(int mode,int sound){
   }
 }
 
+static void AddMailTimeout(){
+  if(MailTimeoutId){
+    XtRemoveTimeOut(MailTimeoutId);
+  }
+  if(top[0] != NULL)
+    MailTimeoutId = XtAppAddTimeOut(XtWidgetToApplicationContext(top[0])
+				    ,TIMEOUT_INTERVAL, TimerCheck
+				    , (XtPointer) top[0]);
+}
+
+static void RemoveMailTimeout(){
+  if(MailTimeoutId){
+    XtRemoveTimeOut(MailTimeoutId);
+    MailTimeoutId = 0;
+  }
+}
