@@ -1,0 +1,40 @@
+/* config.h.in.  Generated automatically from configure.in by autoheader.  */
+
+/* Define if you use for personal */
+#undef PERSONAL
+
+/* Define if you use external filter */
+#undef EXT_FILTER
+
+/* Define if you use petname */
+#undef PETNAME
+
+/* Define if you use sound */
+#undef USE_SOUND
+
+/* Define if you use youbin */
+#undef USE_YOUBIN
+
+/* Define if you use POP */
+#undef USE_POP
+
+/* Define if you use APOP */
+#undef USE_APOP
+
+/* Define if you use japasese */
+#undef JAPANESE
+
+/* Define if you use address book */
+#undef ABOOK
+
+/* Define for XAkari :-) */
+#undef AKARI
+
+/* Define if you have the nsl library (-lnsl).  */
+#undef HAVE_LIBNSL
+
+/* Define if you have the socket library (-lsocket).  */
+#undef HAVE_LIBSOCKET
+
+/* Define if you have the xpg4 library (-lxpg4).  */
+#undef HAVE_LIBXPG4

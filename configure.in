@@ -1,0 +1,76 @@
+dnl Process this file with autoconf to produce a configure script.
+AC_INIT(main.c)
+AC_CONFIG_HEADER(config.h )
+
+dnl Replace `main' with a function in -lxpg4:
+AC_CHECK_LIB(xpg4, main)
+AC_CHECK_LIB(nsl, main)
+AC_CHECK_LIB(socket, main)
+
+dnl Check compile options
+
+AC_ARG_ENABLE(personal,
+        [  --enable-personal        compile for personal],
+        [with_personal=$enableval],
+        [with_personal=no])
+test "$with_personal" = "yes" && AC_DEFINE(PERSONAL)
+
+AC_ARG_ENABLE(ext_filter,
+        [  --disable-ext_filter     don't use external filter],
+        [with_ext_filter=$enableval],
+        [with_ext_filter=yes])
+test "$with_ext_filter" = "yes" && AC_DEFINE(EXT_FILTER)
+
+AC_ARG_ENABLE(petname,
+        [  --disable-petname     don't use petname],
+        [with_petname=$enableval],
+        [with_petname=yes])
+test "$with_petname" = "yes" && AC_DEFINE(PETNAME)
+
+AC_ARG_ENABLE(sound,
+        [  --enable-sound     use sound],
+        [with_sound=$enableval],
+        [with_sound=no])
+test "$with_sound" = "yes" && AC_DEFINE(USE_SOUND)
+
+AC_ARG_ENABLE(youbin,
+        [  --enable-youbin     use youbin],
+        [with_youbin=$enableval],
+        [with_youbin=no])
+test "$with_youbin" = "yes" && AC_DEFINE(USE_YOUBIN)
+
+AC_ARG_ENABLE(pop,
+        [  --enable-pop     use pop],
+        [with_pop=$enableval],
+        [with_pop=no])
+test "$with_pop" = "yes" && AC_DEFINE(USE_POP)
+
+AC_ARG_ENABLE(apop,
+        [  --enable-apop     use apop],
+        [with_apop=$enableval],
+        [with_apop=no])
+test "$with_apop" = "yes" && AC_DEFINE(USE_APOP)
+
+AC_ARG_ENABLE(japanese,
+        [  --disable-japanese     don't use japanese],
+        [with_japanese=$enableval],
+        [with_japanese=yes])
+test "$with_japanese" = "yes" && AC_DEFINE(JAPANESE)
+
+AC_ARG_ENABLE(abook,
+        [  --enable-abook     use address book],
+        [with_abook=$enableval],
+        [with_abook=no])
+test "$with_abook" = "yes" && AC_DEFINE(ABOOK)
+
+AC_ARG_ENABLE(akari,
+        [  --enable-akari     for XAkari :-)],
+        [with_akari=$enableval],
+        [with_akari=no])
+test "$with_akari" = "yes" && AC_DEFINE(AKARI)
+
+
+
+
+
+AC_OUTPUT(Makefile)

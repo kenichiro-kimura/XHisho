@@ -1,5 +1,5 @@
 #include "config.tmpl"
-
+#include "config.h"
 
 XCOMM
 XCOMM	do not touch below
@@ -11,22 +11,24 @@ DEPXAWLIB = $(USRLIBDIR)/libXaw3d.a
 XAWLIB = -lXaw3d
 #endif
 
-#ifdef FREEBSD22
+#ifdef HAVE_LIBXPG4
 LIB_XPG4 = -lxpg4
 #endif
 
-#ifdef SOLARIS
-LIB_SOLARIS = -lnsl -lsocket
+#ifdef HAVE_LIBNSL
+LIB_NSL = -lnsl
 DSP_FILE = "/dev/audio"
 #endif
+
+#ifdef HAVE_LIBSOCKET
+LIB_SOCKET = -lsocket
+#endif
+
+LIB_SOLARIS = $(LIB_SOCKET) $(LIB_NSL)
 
 #ifdef PERSONAL
 BINDIR	= $(HOME)/bin
 XHISHODIR = $(HOME)/xhisho
-#endif
-
-#ifdef USE_SHAPE
-SHAPE = -DSHAPE
 #endif
 
 #ifdef EXT_FILTER
@@ -65,7 +67,7 @@ LNG = -DJP
 ADD = -DADDRESSBOOK -DPETNAME
 #endif
 
-DEFINES = $(DEF_XAW3D) $(FILTER) $(PET) $(SOUND) $(YOUBIN) $(POP) $(SHAPE) $(LNG) $(ADD)
+DEFINES = $(DEF_XAW3D) $(FILTER) $(PET) $(SOUND) $(YOUBIN) $(POP) $(LNG) $(ADD)
 
 EXTRA_LIBRARIES = -lXpm $(LIB_XPG4) $(LIB_SOLARIS)
 
@@ -99,26 +101,27 @@ ComplexProgramTarget(xakari)
 ComplexProgramTarget(xhisho)
 #endif
 
-#ifdef PERSONAL
-InstallNonExec(XHisho.ad,$(HOME)/XHisho)
-#else
-InstallAppDefaults(XHisho)
-#endif
 
+#ifdef JAPANESE
+all:: XHisho.ad XHisho.jp
+#else
 all:: XHisho.ad
+#endif
 
 #ifdef AKARI
 XHisho.ad:: XAkari.ad.sed
 	sed 's!XHISHODIR!$(XHISHODIR)!' XAkari.ad.sed  >$@
 #else
-#ifdef JAPANESE
-XHisho.ad:: XHisho.jp.sed
-	sed 's!XHISHODIR!$(XHISHODIR)!' XHisho.jp.sed >$@
-#else
 XHisho.ad:: XHisho.ad.sed
 	sed 's!XHISHODIR!$(XHISHODIR)!' XHisho.ad.sed >$@
 #endif
+
+#ifdef JAPANESE
+XHisho.jp:: XHisho.jp.sed
+	sed 's!XHISHODIR!$(XHISHODIR)!' XHisho.jp.sed >$@
 #endif
+
+
 
 #ifdef AKARI
 sample/Messages.akari:: sample/Messages.akari.sed
@@ -133,7 +136,20 @@ clean::
 
 MakeDirectories(install,$(XHISHODIR))
 
+#ifdef PERSONAL
 #ifdef JAPANESE
+InstallNonExec(XHisho.jp,$(HOME)/XHisho)
+#else
+InstallNonExec(XHisho.ad,$(HOME)/XHisho)
+#endif
+#else
+InstallAppDefaults(XHisho)
+#endif
+
+#ifdef JAPANESE
+LOCALEDIR = $(LIBDIR)/$(LANG)/app-defaults
+MakeDirectories(install,$(LOCALEDIR))
+InstallNonExec(XHisho.jp,$(LOCALEDIR)/XHisho)
 InstallNonExec(sample/aisatu.cfg,$(XHISHODIR))
 InstallNonExec(sample/xhs.weekly.jp,$(XHISHODIR)/xhs.weekly)
 InstallNonExec(sample/Messages.jp,$(XHISHODIR)/Messages)
