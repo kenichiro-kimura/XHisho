@@ -74,6 +74,15 @@ static XtResource resources[] = {
     XtRImmediate,
     (XtPointer) False
   },
+  {
+    XtNhiddenCategory,
+    XtCHiddenCategory,
+    XtRString,
+    sizeof(String),
+    XtOffsetOf(CalendarRes, hidden),
+    XtRImmediate,
+    NULL
+  },
 };
 
 
@@ -253,20 +262,6 @@ Widget CreateCalendarWindow(Widget w, int Month, struct tm tm_now)
 
   uru_adjust = ((tm_now.tm_year % 4) == 0 && Month == 1) ? 1 : 0;
 
-#ifdef LIBMHC
-  sprintf(home,"%s/Mail/schedule/",getenv("HOME"));
-  mhc_ptr = OpenMHC(home,tm_now.tm_year + 1900,Month + 1);
-  for(i = 0; i < 31;i++){
-    SetMHC(mhc_ptr,i + 1);
-    if(ReadMHC(mhc_ptr) != NULL){
-      exist_mhc[i] = 1;
-    }else{
-      exist_mhc[i] = 0;      
-    }
-  }
-  CloseMHC(mhc_ptr);
-#endif
-
   /**
    * Popdown処理のための準備
    **/
@@ -299,6 +294,24 @@ Widget CreateCalendarWindow(Widget w, int Month, struct tm tm_now)
 
   XtVaGetValues(prev, XtNwidth, &Label_width, NULL);
   tmp_width = Label_width;
+
+#ifdef LIBMHC
+  sprintf(home,"%s/Mail/schedule/",getenv("HOME"));
+  mhc_ptr = OpenMHC(home,tm_now.tm_year + 1900,Month + 1);
+  for(i = 0; i < 31;i++){
+    SetMHC(mhc_ptr,i + 1);
+
+    printf("%s\n",cres.hidden);
+    exist_mhc[i] = 0;      
+    while((ent_ptr = ReadMHC(mhc_ptr)) != NULL){
+      if(iscategory(ent_ptr,cres.hidden) == 0){
+	exist_mhc[i] = 1;
+	break;
+      }
+    }
+  }
+  CloseMHC(mhc_ptr);
+#endif
 
   string_l[0] = '\0';
   if (*message) {
