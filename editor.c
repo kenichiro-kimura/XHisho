@@ -1135,7 +1135,7 @@ void CheckTimeForSchedule(XtPointer cl, XtIntervalId * id)
     XtDestroyWidget(XtParent(openwin));
     openwin = CreateEditorWindow(cl, 0, *tmp);
   }
-  if (tmp->tm_min == 0 && omr.chime) {
+  if (tmp->tm_min == 0 && omr.chime ) {
     /**
      * 毎時0分のチャイム。OpenWinを開く
      **/

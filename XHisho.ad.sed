@@ -28,7 +28,6 @@ XHisho*clockArg:hMs
 !!resources for Scheduler
 !!
 
-XHisho.OpenMessage.zeroChime: True
 XHisho.OpenMessage.configFile: XHISHODIR/greeting.cfg
 
 XHisho.OpenMessage.messageArg: ehm

@@ -29,7 +29,6 @@ XHisho*clockArg: hMs
 !!予定表示のリソース
 !!
 
-XHisho.OpenMessage.zeroChime: True
 XHisho.OpenMessage.configFile: IXHISHODIR/aisatu.cfg
 XHisho.OpenMessage.messageArg: hme
 XHisho.OpenMessage.pastSchedColor: LightGrey
