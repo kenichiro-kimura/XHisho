@@ -641,8 +641,6 @@ FILTER = -DEXT_FILTER
 
 PET = -DPETNAME
 
-YOUBIN = -DYOUBIN
-
 DEFINES = $(FILTER) $(PET) $(SOUND) $(YOUBIN) $(POP) $(ADD)
 
 EXTRA_LIBRARIES = -lXpm $(LIB_XPG4) $(LIB_SOLARIS)
@@ -692,13 +690,10 @@ lint1:
 clean::
 	$(RM) xhisho
 
-all:: XHisho.ad XHisho.jp
+all:: XHisho.ad
 
 XHisho.ad:: XHisho.ad.sed
 	sed 's!XHISHODIR!$(XHISHODIR)!' XHisho.ad.sed >$@
-
-XHisho.jp:: XHisho.jp.sed
-	sed 's!XHISHODIR!$(XHISHODIR)!' XHisho.jp.sed >$@
 
 clean::
 	$(RM) XHisho.ad
@@ -710,32 +705,19 @@ install::
 	set +x; else (set -x; $(MKDIRHIER) $(DESTDIR)$$i); fi; \
 	done
 
-install::
-	@for flag in ${MAKEFLAGS} ''; do \
-	case "$$flag" in *=*) ;; *[i]*) set +e;; esac; done; \
-	for i in $(LOCALEDIR); do if [ -d $(DESTDIR)$$i ]; then \
-	set +x; else (set -x; $(MKDIRHIER) $(DESTDIR)$$i); fi; \
-	done
-
 install:: XHisho.ad
 	@if [ -d $(DESTDIR)$(XAPPLOADDIR) ]; then set +x; \
 	else (set -x; $(MKDIRHIER) $(DESTDIR)$(XAPPLOADDIR)); fi
 	$(INSTALL) $(INSTALLFLAGS) $(INSTAPPFLAGS) XHisho.ad $(DESTDIR)$(XAPPLOADDIR)/XHisho
 
-install:: XHisho.jp
-	$(INSTALL) $(INSTALLFLAGS) $(INSTDATFLAGS) XHisho.jp $(DESTDIR)$(LOCALEDIR)/XHisho
+install:: sample/xhs.weekly
+	$(INSTALL) $(INSTALLFLAGS) $(INSTDATFLAGS) sample/xhs.weekly $(DESTDIR)$(XHISHODIR)
 
-install:: sample/aisatu.cfg
-	$(INSTALL) $(INSTALLFLAGS) $(INSTDATFLAGS) sample/aisatu.cfg $(DESTDIR)$(XHISHODIR)
+install:: sample/Messages
+	$(INSTALL) $(INSTALLFLAGS) $(INSTDATFLAGS) sample/Messages $(DESTDIR)$(XHISHODIR)
 
-install:: sample/xhs.weekly.jp
-	$(INSTALL) $(INSTALLFLAGS) $(INSTDATFLAGS) sample/xhs.weekly.jp $(DESTDIR)$(XHISHODIR)/xhs.weekly
-
-install:: sample/Messages.jp
-	$(INSTALL) $(INSTALLFLAGS) $(INSTDATFLAGS) sample/Messages.jp $(DESTDIR)$(XHISHODIR)/Messages
-
-install:: sample/xhs.holiday
-	$(INSTALL) $(INSTALLFLAGS) $(INSTDATFLAGS) sample/xhs.holiday $(DESTDIR)$(XHISHODIR)/xhs.holiday
+install:: sample/greeting.cfg
+	$(INSTALL) $(INSTALLFLAGS) $(INSTDATFLAGS) sample/greeting.cfg $(DESTDIR)$(XHISHODIR)
 
 install:: sample/Petname
 	$(INSTALL) $(INSTALLFLAGS) $(INSTDATFLAGS) sample/Petname $(DESTDIR)$(XHISHODIR)

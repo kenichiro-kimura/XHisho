@@ -1,0 +1,12 @@
+all: Makefile
+	make -f Makefile
+
+Makefile: makefile
+	xmkmf
+
+makefile:
+	./configure
+
+clean: Makefile
+	make -f Makefile clean
+	

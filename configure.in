@@ -73,4 +73,4 @@ test "$with_akari" = "yes" && AC_DEFINE(AKARI)
 
 
 
-AC_OUTPUT(Makefile)
+AC_OUTPUT(makefile)

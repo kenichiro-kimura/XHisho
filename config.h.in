@@ -21,8 +21,8 @@
 /* Define if you use APOP */
 #undef USE_APOP
 
-/* Define if you use I18N messages */
-#undef I18N
+/* Define if you use japasese */
+#undef JAPANESE
 
 /* Define if you use address book */
 #undef ABOOK
