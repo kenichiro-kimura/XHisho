@@ -304,7 +304,6 @@ static void CommandInit()
     strcpy(command,opr.o_command);
   }
 
-  printf("%s %s\n",command,opr.o_command);
   if(virgine){
     if(pipe(option_pfp)){
       perror("option pipe");
