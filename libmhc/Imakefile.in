@@ -24,7 +24,9 @@ OBJS = libmhc.o
 SRCS = $(OBJS:.o=.c)
 
 #include <Library.tmpl>
+#ifdef USE_SHARED
 InstallSharedLibrary($(LIBNAME),$(SoRev),/usr/local/lib)
+#endif
 
 CC = @CC@
 CCOPTIONS = @CFLAGS@ @LDFLAGS@
