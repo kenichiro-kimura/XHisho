@@ -108,6 +108,7 @@ static mhcent* ReadEntry(FILE* fp)
   int alarm_length;
   int subject_length;
   int buffer_length;
+  int category_length;
 
   buffer = (char*)malloc(BUFSIZ);
   if(!buffer) return NULL;
@@ -133,6 +134,7 @@ static mhcent* ReadEntry(FILE* fp)
   cond_length = strlen("X-SC-Cond:");
   alarm_length = strlen("X-SC-Alarm:");
   subject_length = strlen("X-SC-Subject:");
+  category_length = strlen("X-SC-Category:");
 
   while(fgets(buffer,BUFSIZ - 1,fp) != NULL){
     tag = NO_TAG;
@@ -163,6 +165,8 @@ static mhcent* ReadEntry(FILE* fp)
       tag = X_SC_Alarm;
     } else if(!strncasecmp("X-SC-Subject:",buffer,subject_length)){
       tag = X_SC_Subject;
+    } else if(!strncasecmp("X-SC-Category:",buffer,category_length)){
+      tag = X_SC_Category;
     } else if(buffer[0] == ' '){
       /*
        * in this case, this line should be append before line.
@@ -1178,6 +1182,7 @@ char* GetSubject(const mhcent* ent_ptr)
   /*
    * return X-SC-Subject: 
    */
+  if(!ent_ptr) return NULL;
   return ent_ptr->Entry[X_SC_Subject];
 }
 
@@ -1216,4 +1221,31 @@ int GetAlarm(const mhcent* ent_ptr)
   return ret_value;
 }
   
+char* GetCategory(const mhcent* ent_ptr)
+{
+  /*
+   * return X-SC-Category: 
+   */
+  if(!ent_ptr) return NULL;
+  return ent_ptr->Entry[X_SC_Category];
+}
 
+int iscategory(const mhcent* ent_ptr,const char* category){
+  char* chr_ptr;
+  char* first_ptr;
+  
+  if(!ent_ptr) return 0;
+  if(!(chr_ptr = ent_ptr->Entry[X_SC_Category])) return 0;
+
+  for(first_ptr = chr_ptr;*chr_ptr != '\0';chr_ptr++){
+    if(isspace((unsigned char)*chr_ptr)){
+      if(!strncmp(first_ptr,category,strlen(first_ptr) - strlen(chr_ptr))) return 1;
+      for(chr_ptr++;*chr_ptr != '\0';chr_ptr++)
+	if(!isspace((unsigned char)*chr_ptr)) break;
+      first_ptr = chr_ptr;
+    }
+  }
+
+  if(!strcmp(first_ptr,category)) return 1;
+  return 0;
+}

@@ -94,7 +94,7 @@
 #define NUM_OF_ARRAY(a) (sizeof(a) / sizeof(a[0]))
 
 typedef struct _mhcent{
-  char* Entry[6];
+  char* Entry[7];
   char* filename;
 } mhcent;
 
@@ -129,7 +129,8 @@ enum {
   X_SC_Duration = 2,
   X_SC_Cond = 3,
   X_SC_Alarm = 4,
-  X_SC_Subject = 5
+  X_SC_Subject = 5,
+  X_SC_Category = 6
 };
 
 MHCD* openmhc(const char *, const char *);
@@ -138,6 +139,7 @@ void seekmhc(MHCD*,int);
 void rewindmhc(MHCD*);
 int  closemhc(MHCD*);
 int  isschedule(const mhcent*,int,int,int);
+int  iscategory(const mhcent*,const char*);
 
 MHC* OpenMHC(const char*, int, int);
 mhcent* ReadMHC(MHC*);
@@ -148,5 +150,6 @@ int CloseMHC(MHC*);
 
 char* GetSubject(const mhcent*);
 int GetAlarm(const mhcent*);
+char* GetCategory(const mhcent*);
 
 #endif
