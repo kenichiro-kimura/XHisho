@@ -397,7 +397,7 @@ Widget CreateEditorWindow(Widget w, int Mode, struct tm tm_now)
    * toplevel Widgetの生成
    **/
 
-  top = XtCreatePopupShell("OpenMessage", overrideShellWidgetClass
+  top = XtCreatePopupShell("OpenMessage", transientShellWidgetClass
 			   ,w, editargs, XtNumber(editargs));
 
   XtGetApplicationResources(top, &omr, resources, XtNumber(resources), NULL, 0);
@@ -657,8 +657,10 @@ Widget CreateEditorWindow(Widget w, int Mode, struct tm tm_now)
       day[j] = XtCreateManagedWidget("day", asciiTextWidgetClass, editor
 				     ,dargs, XtNumber(dargs));
 
+      /*
       XtAddEventHandler(day[j], (EnterWindowMask | LeaveWindowMask),
 			False, texteh, NULL);
+      */
 
       /**
        * 開始時間とスケジュールの間にはいるlabelWidgetを作る
@@ -713,8 +715,10 @@ Widget CreateEditorWindow(Widget w, int Mode, struct tm tm_now)
       XtVaSetValues(editlist[j], XtNwrap, XawtextWrapNever, XtNscrollHorizontal
 		    ,XawtextScrollAlways, XtNthickness,2,NULL);
 
+      /*
       XtAddEventHandler(editlist[j], (EnterWindowMask | LeaveWindowMask),
 			False, texteh, NULL);
+      */
 
       /**
        * leave time 入力用 textWidgetの作成
@@ -750,9 +754,10 @@ Widget CreateEditorWindow(Widget w, int Mode, struct tm tm_now)
 
       leave_t[j] = XtCreateManagedWidget("leave", asciiTextWidgetClass, editor
 					 ,dargs, XtNumber(dargs));
-
+      /*
       XtAddEventHandler(leave_t[j], (EnterWindowMask | LeaveWindowMask),
 			False, texteh, NULL);
+      */
     }
   }
   /**
