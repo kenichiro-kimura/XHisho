@@ -225,6 +225,8 @@ static void Destroy(Widget w, XEvent * event, String * params, unsigned int *num
 
 static void NextPage(Widget w, XEvent * event, String * params, unsigned int *num_params)
 {
+  if(!pause_message)
+    Destroy(w,event,params,num_params);
   pause_message = 0;
 }
 
