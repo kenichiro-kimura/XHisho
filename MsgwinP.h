@@ -1,7 +1,7 @@
 /**
  * ふきだし型Form Widget 「Msgwin Widget」 プライベートヘッダファイル
  * 
- * copyright(c) 1998-2001   Ken'ichirou Kimura(kimura@db.is.kyushu-u.ac.jp)
+ * copyright(c) 1998-2002   Ken'ichirou Kimura(kimura@db.is.kyushu-u.ac.jp)
  * 
  **/
 

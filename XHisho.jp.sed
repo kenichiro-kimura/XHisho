@@ -109,7 +109,7 @@ XHisho*kawariDir: XHISHODIR
 XHisho.About.aboutLabel:\
 \              XHisho Ver.%s\n\
 \n\
-Copyright(c) 1998-2001  木村健一郎<Ken'ichirou Kimura>\n\
+Copyright(c) 1998-2002  木村健一郎<Ken'ichirou Kimura>\n\
 \n\
 \n\
 XHishoはあなたのデスクトップに常駐する秘書さんです。\n\
