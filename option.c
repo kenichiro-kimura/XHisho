@@ -788,9 +788,7 @@ static void _InsertMessage(XtPointer cl,XtIntervalId* id)
   dest = HeadOfBuffer(&mdest);
 
   if(chr_ptr && dest){
-    chr_ptr = GetBuffer(&mbuf);
-
-    switch(*chr_ptr){
+    switch(*(chr_ptr = GetBuffer(&mbuf))){
     case '$':
       dest = GetBuffer(&mdest);
       break;
@@ -805,7 +803,7 @@ static void _InsertMessage(XtPointer cl,XtIntervalId* id)
     default:
       w = (*dest == 's')? label:ulabel;
       last = XawTextSourceScan (XawTextGetSource (w),(XawTextPosition) 0,
-			      XawstAll, XawsdRight, 1, TRUE);
+				XawstAll, XawsdRight, 1, TRUE);
       textblock.firstPos = 0;
       if ((*chr_ptr >= 0xa1 && *chr_ptr <= 0xfe) ||
 	  (*chr_ptr == 0x8e) || (*chr_ptr == 0x8f))
@@ -821,7 +819,7 @@ static void _InsertMessage(XtPointer cl,XtIntervalId* id)
       XawTextSetInsertionPoint(w , last + textblock.length);
     }
   }
-
+  
   XtAppAddTimeOut(XtWidgetToApplicationContext(local_option)
 		  , opr.m_wait * 10
 		  , (XtTimerCallbackProc) _InsertMessage
