@@ -23,6 +23,8 @@ static int CheckOrdinal(char*,int,int,int);
 static int CheckWeek(char*,int,int,int);
 static int CheckDay(char* ,int);
 static int datecmp(char*,char*);
+static int istrcmp(const char*,const char*);
+static int istrncmp(const char*,const char*,size_t);
 
 static _MHCD* _MHCDNew(mhcent* item){
   _MHCD* mhc_ptr;
@@ -115,17 +117,17 @@ static mhcent* ReadEntry(FILE* fp){
     if(isspace((unsigned char)buffer[strlen(buffer) - 1]))
       buffer[strlen(buffer) - 1] = '\0';
 
-    if(!strncmp("X-SC-Day:",buffer,strlen("X-SC-Day:"))){
+    if(!istrncmp("X-SC-Day:",buffer,strlen("X-SC-Day:"))){
       tag = X_SC_Day;
-    } else if(!strncmp("X-SC-Time:",buffer,strlen("X-SC-Time:"))){
+    } else if(!istrncmp("X-SC-Time:",buffer,strlen("X-SC-Time:"))){
       tag = X_SC_Time;        
-    } else if(!strncmp("X-SC-Duration:",buffer,strlen("X-SC-Duration:"))){
+    } else if(!istrncmp("X-SC-Duration:",buffer,strlen("X-SC-Duration:"))){
       tag = X_SC_Duration;        
-    } else if(!strncmp("X-SC-Cond:",buffer,strlen("X-SC-Cond:"))){
+    } else if(!istrncmp("X-SC-Cond:",buffer,strlen("X-SC-Cond:"))){
       tag = X_SC_Cond;        
-    } else if(!strncmp("X-SC-Alarm:",buffer,strlen("X-SC-Alarm:"))){
+    } else if(!istrncmp("X-SC-Alarm:",buffer,strlen("X-SC-Alarm:"))){
       tag = X_SC_Alarm;
-    } else if(!strncmp("X-SC-Subject:",buffer,strlen("X-SC-Subject:"))){
+    } else if(!istrncmp("X-SC-Subject:",buffer,strlen("X-SC-Subject:"))){
       tag = X_SC_Subject;
     }
 
@@ -269,7 +271,7 @@ static int CheckSC_Day(char* sc_day,int year,int month,int day){
       chr_ptr++;
     }
 
-    if(!strncmp(chr_ptr,yearmonth,strlen(yearmonth))){
+    if(!istrncmp(chr_ptr,yearmonth,strlen(yearmonth))){
       chr_ptr += strlen(yearmonth);
       strncpy(pivot_ptr,chr_ptr,strlen("00"));
       pivot_ptr[2] = '\0';
@@ -395,7 +397,7 @@ static int CheckMonth(char* sc_cond,int month){
       *(pivot_ptr + length++) = *chr_ptr++;
 
     for(i = 0; i < 12;i++){
-      if(!strcmp(CondMonth[i],pivot_ptr)){
+      if(!istrcmp(CondMonth[i],pivot_ptr)){
 	ret_value = 0;
 	if(i == month - 1)
 	  tag = 1;
@@ -451,14 +453,14 @@ static int CheckOrdinal(char* sc_cond,int year,int month,int day){
       *(pivot_ptr + length++) = *chr_ptr++;
 
     for(i = 0; i < 4;i++){
-      if(!strcmp(Ordinal[i],pivot_ptr)){
+      if(!istrcmp(Ordinal[i],pivot_ptr)){
 	ret_value = 0;
 	if(i == tOrdinal)
 	  tag = 1;
       }
     }
 
-    if(!strcmp(pivot_ptr,"Last") && isLast){
+    if(!istrcmp(pivot_ptr,"Last") && isLast){
       ret_value = 0;
       tag = 1;
     }
@@ -506,7 +508,7 @@ static int CheckWeek(char* sc_cond,int year,int month,int day){
       *(pivot_ptr + length++) = *chr_ptr++;
 
     for(i = 0; i < 7;i++){
-      if(!strcmp(CondWeek[i],pivot_ptr)){
+      if(!istrcmp(CondWeek[i],pivot_ptr)){
 	ret_value = 0;
 	if(i == tm_sched->tm_wday)
 	  tag = 1;
@@ -739,7 +741,7 @@ MHCD* openmhc(const char* home_dir, const char* year_month){
   while ((dp = readdir(dirp)) != NULL){
     int filename_length,is_mhcfile;
 
-    if(!strncmp(dp->d_name,".",1)) continue;
+    if(!istrncmp(dp->d_name,".",1)) continue;
 
     filename_length = 0;
     is_mhcfile = 1;
@@ -1023,11 +1025,11 @@ int GetAlarm(const mhcent* ent_ptr){
 
   chr_ptr++;
 
-  if(!strcmp(chr_ptr,"minute")){
+  if(!istrcmp(chr_ptr,"minute")){
     ret_value = atoi(tmp);
-  } else if (!strcmp(chr_ptr,"hour")){
+  } else if (!istrcmp(chr_ptr,"hour")){
     ret_value = atoi(tmp) * 60;
-  } else if (!strcmp(chr_ptr,"day")){
+  } else if (!istrcmp(chr_ptr,"day")){
     ret_value = atoi(tmp) * 60 * 24;
   }
 
@@ -1035,4 +1037,25 @@ int GetAlarm(const mhcent* ent_ptr){
   return ret_value;
 }
   
+static int istrcmp(const char* s1,const char* s2){
+  while (tolower(*(const unsigned char*)s1) 
+	 == tolower(*(const unsigned char*)s2++))
+    if (*s1++ == 0)
+      return (0);
+  return (*(const unsigned char *)s1 - *(const unsigned char *)(s2 - 1));
+}
+  
+static int istrncmp(const char* s1,const char* s2,size_t n){
+  if (n == 0)
+    return (0);
+  do {
+    if (tolower(*(const unsigned char*)s1) 
+	!= tolower(*(const unsigned char*)s2++))
+      return (*(const unsigned char *)s1 -
+	      *(const unsigned char *)(s2 - 1));
+    if (*s1++ == 0)
+      break;
+  } while (--n != 0);
+  return (0);
+}
 
