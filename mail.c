@@ -380,7 +380,8 @@ int CheckPOP3(XtPointer cl, XtIntervalId * id)
 static int CheckYoubinNowTimer(XtPointer cl, XtIntervalId * id){
   int ret_value;
 
-  while((ret_value = CheckYoubinNow(0)) < 0);
+  ret_value = CheckYoubinNow(0);
+  if(ret_value < 0) ret_value = 0;
 
   if(MailCheckId){
     XtRemoveTimeOut(MailCheckId);
@@ -932,7 +933,20 @@ static void CheckYoubin(Widget w, int *fid, XtInputId * id)
   }
 
   XtVaSetValues(from, XtNlabel, From, NULL);
-  while(CheckYoubinNow(1)<= 0);
+  i = CheckYoubinNow(1);
+  if(i < 1) i = 1;
+
+  ReadRcdata("newmail",tmp,BUFSIZ);
+  if(*tmp == '\0')
+    sprintf(message,mar.mail_l,i);
+  else
+    sprintf(message,tmp,i);
+  
+  if(!IsPopped(mail) && *From != '\0'){
+    XtVaSetValues(label, XtNlabel, message, NULL);
+    MailPopup(0);
+  }
+
 End:
   /**
    * 共通終了処理
