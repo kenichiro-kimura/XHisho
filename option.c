@@ -293,15 +293,18 @@ static void CommandInit()
   char* command;
   char* chr_ptr;
   int o_argc = 0;
+  char* o_option;
 
   if((chr_ptr = strchr(opr.o_command,' ')) != NULL){
     command = (char*)malloc(chr_ptr - opr.o_command + 1);
     strncpy(command,opr.o_command,chr_ptr - opr.o_command);
     command[chr_ptr - opr.o_command] = '\0';
-    opr.o_command = chr_ptr;
+    o_option = (char*)malloc(strlen(chr_ptr) + 1);
+    strcpy(o_option,chr_ptr);
   } else {
     command = (char*)malloc(strlen(opr.o_command) + 1);
     strcpy(command,opr.o_command);
+    o_option = NULL;
   }
 
   if(virgine){
@@ -317,7 +320,7 @@ static void CommandInit()
       close(1);
       dup(option_pfp[1]);
       close(option_pfp[1]);
-      execl(command,command,opr.o_command,NULL);
+      execl(command,command,o_option,NULL);
       exit(1);
     }
     close(option_pfp[1]);
@@ -334,6 +337,8 @@ static void CommandInit()
 			   (XtInputCallbackProc) CheckOption, NULL);
   XSetIOErrorHandler(Option_exit);	/** child process¤ò»¦¤¹ **/
   free(command);
+  if(o_option)
+    free(o_option);
 }
 
 static void CheckOption(Widget w, int *fid, XtInputId * id)
