@@ -35,7 +35,7 @@ int main(int argc, char** argv)
   sockadd.sin_family = AF_INET;
   sockadd.sin_port = htons(port);
   if(bind(sockdesc, &sockadd, sizeof(sockadd)) < 0){
-    perror("fail bind\n");
+    fprintf(stderr,"fail bind port %d\n",port);
     exit(2);
   }
 
@@ -52,8 +52,6 @@ int main(int argc, char** argv)
       while((chr_ptr = strstr(buffer,"\r")) != NULL){
 	strcpy(chr_ptr,chr_ptr + 1);
       }
-      if(strstr(buffer,"\\e"))
-	strcpy(strstr(buffer,"\\e"),"\\e");
 
       if(strstr(buffer,"Script:")){
 	printf("%s\n",strstr(buffer,"Script:") + strlen("Script:"));
