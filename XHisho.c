@@ -593,6 +593,7 @@ static Boolean SetValues(Widget current, Widget request, Widget new, ArgList arg
     
     inew->xhisho.cg_number = inew->xhisho.f_cg_number;
     inew->xhisho.ucg_number = inew->xhisho.uf_cg_number;
+    inew->xhisho.use_unyuu = iold->xhisho.use_unyuu;
     DrawNewCG(inew);
   } else {
    inew->xhisho.f_cg_number = iold->xhisho.f_cg_number;
@@ -704,7 +705,6 @@ void SetSize(XHishoWidget xhw)
 #endif
     HEIGHT = (((xhw->xhisho.i_info->image) + CG_NUM)->height);
   }
-
 }
 
 void Animation(XHishoWidget xhw,int force)
