@@ -12,3 +12,6 @@ clean: Makefile
 
 install: Makefile
 	make -f Makefile install
+
+install.man: Makefile
+	make -f Makefile install.man
