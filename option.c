@@ -50,6 +50,7 @@ static void _GetBuffer(messageBuffer*,char*,int);
 static int IsKinsoku(char*);
 static unsigned char* SJIS2EUC(unsigned char*);
 static unsigned char* UTF82EUC(unsigned char*);
+static unsigned char* JIS2EUC(unsigned char*);
 static unsigned int UNICODE2EUC(unsigned int);
 static void sstp(int);
 
@@ -8151,6 +8152,54 @@ static unsigned int UNICODE2EUC(unsigned int ucode)
   return 0;
 }
 
+static unsigned char* JIS2EUC(unsigned char* in)
+{
+  unsigned char* out;
+  unsigned char* ret;
+  unsigned char* in_ptr;
+  unsigned char* out_ptr;
+  int mode = 0;
+
+  out = (unsigned char*)malloc(strlen(in) + 1);
+  for(in_ptr = in, out_ptr = out;*in_ptr;in_ptr++){
+    if(*in_ptr == '\x1b'){
+      if(*(in_ptr + 1) == '\0') break;
+      if(*(in_ptr + 2) == '\0') break;
+      if((*(in_ptr + 1) == '$') &&
+	 (*(in_ptr + 2) == 'B' || *(in_ptr + 2) == '@')){
+	mode = 1;
+	in_ptr += 2;
+	continue;
+      } else if((*(in_ptr + 1) == '(') &&
+		(*(in_ptr + 2) == 'B' || *(in_ptr + 2) == 'J' 
+		 || *(in_ptr + 2) == 'I')){
+	in_ptr += 2;
+	mode = 0;
+	continue;
+      }
+    } else if(*in_ptr == '\x0f' || *in_ptr == '\x0e') {
+      if(*(in_ptr + 1) == '\0') break;
+      if(*(in_ptr + 2) == '\0') break;
+      in_ptr += 2;
+      continue;
+    }
+
+    if(mode){
+      *out_ptr++ = (*in_ptr++ | 0x80);
+      *out_ptr++ = (*in_ptr | 0x80);
+    } else {
+      *out_ptr++ = *in_ptr;
+    }
+  }
+  *out_ptr = '\0';
+
+  ret = (unsigned char*)malloc(strlen(out) + 1);
+  strcpy(ret,out);
+  free(out);
+  return ret;
+}
+
+
 void sstpinit(int port)
 {
   int pid,status;
@@ -8262,6 +8311,9 @@ static void sstp(int port)
 	  is_script = 1;
 	  status++;
 	  AddBuffer(&kbuf,buffer + strlen("Script:"));
+	} else if(!strncmp(buffer,"SEND SSTP/1.0",strlen("SEND SSTP/1.0"))){
+	  status = 1;
+	  /* NULL */
 	} else if(!strncmp(buffer,"SEND SSTP/1.1",strlen("SEND SSTP/1.1"))){
 	  status = 1;
 	  /* NULL */
@@ -8280,12 +8332,11 @@ static void sstp(int port)
 	  switch(*chr_ptr){
 	  case 'S':
 	    /* is Shift_JIS */
-	    printf("is SJIS\n");
 	    conv = SJIS2EUC;
 	    break;
 	  case 'I':
 	    /* is ISO-2022-JP */
-	    /* conv = JIS2EUC() */
+	    conv = JIS2EUC;
 	    break;
 	  case 'E':
 	    /* is EUC-JP */
