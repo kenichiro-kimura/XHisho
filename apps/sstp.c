@@ -44,6 +44,7 @@ int main(int argc, char** argv)
   listen(sockdesc, 1);
   while(1){
     accept_desc = accept(sockdesc, &fromadd, &fromlen);
+    write(accept_desc,"200 OK\r\n",strlen("200 OK\r\n"));
     while(1){
       do{
 	fromlen = read(accept_desc,buffer,BUFSIZ * 10);
@@ -59,7 +60,7 @@ int main(int argc, char** argv)
 	
       if(strncmp(buffer,"\n",2) == 0 || strstr(buffer,"\n\n")) break;
     }
-    write(accept_desc,"200 OK\r\n",strlen("200 OK\r\n"));
+    /*    write(accept_desc,"200 OK\r\n",strlen("200 OK\r\n"));*/
     close(accept_desc);
 
     if(strstr(buffer,"\\e") == NULL)
