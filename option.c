@@ -37,9 +37,9 @@ static void _InsertMessage(XtPointer,XtIntervalId*);
 static void InsertReturn(char*,char*,int,int);
 static void RemoveStr(char*,char*);
 static void AddBuffer(messageBuffer*,char*);
-static char* GetBuffer(messageBuffer*);
-static char* HeadOfBuffer(messageBuffer*);
-static char* _GetBuffer(messageBuffer*,int);
+static void GetBuffer(messageBuffer*,char*);
+static void HeadOfBuffer(messageBuffer*,char*);
+static void _GetBuffer(messageBuffer*,char*,int);
 static void SakuraParser(char*);
 extern char* RandomMessage(char*);
 
@@ -149,6 +149,7 @@ static void Destroy(Widget w, XEvent * event, String * params, unsigned int *num
 Widget CreateOptionWindow(Widget w){
   static XtPopdownIDRec pdrec;
   XtTranslations trans_table;
+  static int virgine = 1;
 
   static char defaultTranslations[] = "<Btn1Down> : Destroy()\n\
                                        <Btn2Down> : Destroy()\n\
@@ -157,13 +158,17 @@ Widget CreateOptionWindow(Widget w){
   pdrec.shell_widget = top;
   pdrec.enable_widget = w;
 
-  mbuf.buffer = (unsigned char*)malloc(BUFSIZ * 10);
-  mbuf.size = BUFSIZ * 10;
-  *mbuf.buffer = '\0';
+  if(virgine){
+    mbuf.buffer = (unsigned char*)malloc(BUFSIZ * 10);
+    mbuf.size = BUFSIZ * 10;
+    *mbuf.buffer = '\0';
 
-  mdest.buffer = (unsigned char*)malloc(BUFSIZ);
-  mdest.size = BUFSIZ;
-  *mdest.buffer = '\0';
+    mdest.buffer = (unsigned char*)malloc(BUFSIZ);
+    mdest.size = BUFSIZ;
+    *mdest.buffer = '\0';
+
+    virgine = 0;
+  }
 
   top = XtVaCreatePopupShell("OptionWindow", transientShellWidgetClass
 			     ,w,NULL);
@@ -577,6 +582,7 @@ void ORParser(char* in)
   char* out;
   char* chr_ptr;
   char* next_ptr;
+  char* or_ptr;
   int len;
 
   len = strlen(in) + 1;
@@ -598,7 +604,9 @@ void ORParser(char* in)
     back_ptr = strrchr(tmp_string,'(');
     strncat(tmp_buffer,strchr(tmp_string,'(')
 	    ,back_ptr - strchr(tmp_string,'('));
-    strcat(tmp_buffer,or2string(back_ptr));
+    or_ptr = or2string(back_ptr);
+    strcat(tmp_buffer,or_ptr);
+    free(or_ptr);
     strcat(tmp_buffer,next_ptr+1);
     strcpy(in_buffer,tmp_buffer);
     chr_ptr = strchr(in_buffer,'(');
@@ -607,6 +615,7 @@ void ORParser(char* in)
   strcpy(in,in_buffer);
   free(tmp_string);
   free(tmp_buffer);
+  free(in_buffer);
 }
       
 static char* or2string(char* in)
@@ -635,8 +644,10 @@ static char* or2string(char* in)
   else 
     in_ptr = in;
 
-  if((chr_ptr = strchr(in_ptr,'|')) == NULL)
+  if((chr_ptr = strchr(in_ptr,'|')) == NULL){
+    free(buffer);
     return out;
+  }
 
   top = NULL;
 
@@ -663,6 +674,7 @@ static char* or2string(char* in)
     pos--;
   } while(top);
 
+  free(buffer);
   return out;
 }
 
@@ -779,6 +791,7 @@ static void ChangeBadKanjiCode(char *source)
     }
 
     strcpy(source,result);
+    free(result);
     return;
 }
 
@@ -816,14 +829,12 @@ static void InsertMessage(Widget w,char* message_buffer,int mode)
 
   current = XawTextGetInsertionPoint(w);
   if(opr.m_wait){
-    chr_ptr = (char*) malloc(strlen(message_buffer) + 2);
-    sprintf(chr_ptr,"%s$",message_buffer);
-    AddBuffer(&mbuf,chr_ptr);
+    AddBuffer(&mbuf,message_buffer);
+    AddBuffer(&mbuf,"$");
     if(mode == SAKURA)
       AddBuffer(&mdest,"s");
     else
       AddBuffer(&mdest,"u");
-    free(chr_ptr);
   } else {
     last = XawTextSourceScan (XawTextGetSource (w),(XawTextPosition) 0,
 			      XawstAll, XawsdRight, 1, TRUE);
@@ -844,21 +855,18 @@ static void _InsertMessage(XtPointer cl,XtIntervalId* id)
   XawTextPosition current,last;
   XawTextBlock textblock;
   Widget w;
-  unsigned char* chr_ptr;
-  char* dest;
+  unsigned char chr_ptr[BUFSIZ];
+  char dest[BUFSIZ];
   int cg_num;
 
-  chr_ptr = HeadOfBuffer(&mbuf);
-  dest = HeadOfBuffer(&mdest);
+  HeadOfBuffer(&mbuf,chr_ptr);
+  HeadOfBuffer(&mdest,dest);
 
-  if(chr_ptr && dest){
-    free(chr_ptr);
-    switch(*(chr_ptr = GetBuffer(&mbuf))){
+  if(*chr_ptr && *dest){
+    GetBuffer(&mbuf,chr_ptr);
+    switch(*chr_ptr){
     case '$':
-      free(dest);
-      dest = GetBuffer(&mdest);
-      free(dest);
-      free(chr_ptr);
+      GetBuffer(&mdest,dest);
       break;
     case '\\':
       switch(*(chr_ptr + 1)){
@@ -886,8 +894,6 @@ static void _InsertMessage(XtPointer cl,XtIntervalId* id)
 		      ,cg_num
 		      ,NULL);
       }
-      free(dest);
-      free(chr_ptr);
       break;
     default:
       w = (*dest == 's')? label:ulabel;
@@ -906,11 +912,9 @@ static void _InsertMessage(XtPointer cl,XtIntervalId* id)
       XtVaSetValues(w,XtNeditType,XawtextRead,NULL);
       XFlush(XtDisplay(XtParent(w)));
       XawTextSetInsertionPoint(w , last + textblock.length);
-      free(dest);
-      free(chr_ptr);
     }
   }
-  
+
   XtAppAddTimeOut(XtWidgetToApplicationContext(local_option)
 		  , opr.m_wait * 10
 		  , (XtTimerCallbackProc) _InsertMessage
@@ -997,24 +1001,25 @@ static void AddBuffer(messageBuffer* buffer,char* message)
     strcpy(buffer->buffer,b);
     free(b);
     buffer->size = newsize;
+    printf("%d\n",newsize);
   }
 
   strcat(buffer->buffer,message);
 }
 
-static char* _GetBuffer(messageBuffer* buffer,int mode)
+static void _GetBuffer(messageBuffer* buffer,char* ret,int mode)
 {
-  char* ret;
   unsigned char first_byte;
   int is_wbyte = 0;
   unsigned char str_num[128];
   int wait;
   unsigned char* c_ptr;
 
-  ret = (char*)malloc(BUFSIZ);
   ret[0] = first_byte = *(buffer->buffer);
 
-  if((ret[0] = first_byte = *(buffer->buffer)) == '\0') return NULL;
+  if((ret[0] = first_byte = *(buffer->buffer)) == '\0'){
+    return;
+  }
 
   if ((first_byte >= 0xa1 && first_byte <= 0xfe) ||
       (first_byte == 0x8e) || (first_byte == 0x8f) || first_byte == '\\'){
@@ -1040,17 +1045,17 @@ static char* _GetBuffer(messageBuffer* buffer,int mode)
   if(mode)
     strcpy(buffer->buffer,buffer->buffer + 1 + is_wbyte);
 
-  return ret;
+  return;
 }
   
-static char* HeadOfBuffer(messageBuffer* buffer)
+static void HeadOfBuffer(messageBuffer* buffer,char* ret)
 {
-  return _GetBuffer(buffer,0);
+  return _GetBuffer(buffer,ret,0);
 }
 
-static char* GetBuffer(messageBuffer* buffer)
+static void GetBuffer(messageBuffer* buffer,char* ret)
 {
-  return _GetBuffer(buffer,1);
+  return _GetBuffer(buffer,ret,1);
 }
 
 static void SakuraParser(char* in_ptr)
@@ -1149,9 +1154,8 @@ static void SakuraParser(char* in_ptr)
   }
 
  END:
+  strcpy(in_ptr,kbuf.buffer);
   free(buffer);
-
-  printf("%s\n",kbuf.buffer);
   free(kbuf.buffer);
   return ;
 }

@@ -8,12 +8,9 @@ using namespace std;
 
 extern "C" char* RandomMessage(char* kawari_dir)
 {
-	int sleeptime=10;
 	string sakuraname="sakura";
 	string keroname="unyuu";
 	string friendname="sirone";
-	char* p_ptr;
-	char _path[1024];
 	string datapath="";
 
 	TNS_KawariANI NS_Shiori;
