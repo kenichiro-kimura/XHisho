@@ -1,5 +1,9 @@
 #include "config.h"
 
+#ifdef PERSONAL
+#undef USE_SHARED
+#endif
+
 CC = @CC@
 CCOPTIONS = @CFLAGS@ @LDFLAGS@ 
 PREFIX = @prefix@
@@ -54,7 +58,11 @@ EXTRA_LIBRARIES = @LIBS@ $(LM)
 
 #ifdef LIBMHC
 MHCLIBDIR = libmhc
+#ifdef USE_SHARED
+MHCLIB = $(MHCLIBDIR)/libmhc.so
+#else
 MHCLIB = $(MHCLIBDIR)/libmhc.a
+#endif
 #endif
 
 #ifdef XADL
@@ -62,7 +70,12 @@ XADLDIR = xadl
 #endif
 
 IMAGELIBDIR = image
-IMAGELIB = $(IMAGELIBDIR)/libimage.a
+#ifdef USE_SHARED
+IMAGELIB = $(IMAGELIBDIR)/libxhimage.so
+#else
+IMAGELIB = $(IMAGELIBDIR)/libxhimage.a
+#endif
+
 STD_INCLUDES = -I$(IMAGELIBDIR) -I/usr/local/include -I$(MHCLIBDIR)
 EXTRA_LDOPTIONS = -L/usr/local/lib
 

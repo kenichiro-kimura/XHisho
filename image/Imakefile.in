@@ -1,7 +1,24 @@
 #include "../config.h"
-CC = @CC@
-CCOPTIONS = @CFLAGS@ @LDFLAGS@
-STD_INCLUDES = -I../ -I/usr/local/include
+
+#ifdef PERSONAL
+#undef USE_SHARED
+#endif
+
+#define DoNormalLib YES
+#ifdef USE_SHARED
+#define DoSharedLib YES
+#else
+#define DoSharedLib NO
+#define LibInstall NO
+#endif
+
+#define DoDebugLib NO
+#define DoProfileLib NO
+        
+SOXSAMPLEREV = 1.0
+#define LibName xhimage
+#define SoRev SOXSAMPLEREV
+#define HasSharedData NO
 
 BASE_OBJS = image.o load_bmp.o load_anim.o
 
@@ -21,5 +38,9 @@ OBJS = $(BASE_OBJS) $(JPEG_OBJS) $(XPM_OBJS) $(PNG_OBJS)
 
 SRCS = $(OBJS:.o=.c)
 
-NormalLibraryTarget(image,$(OBJS))
+#include <Library.tmpl>
+
+CC = @CC@
+CCOPTIONS = @CFLAGS@ @LDFLAGS@
+STD_INCLUDES = -I../ -I/usr/local/include
 

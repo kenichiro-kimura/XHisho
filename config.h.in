@@ -45,5 +45,8 @@
 /* Define if you want to use XADL.  */
 #undef XADL
 
-/* Define if you want to use 'Something except that with option.  */
+/* Define if you want to use 'Something except that with option'.  */
 #undef OPTION
+
+/* Define if you want to use shared library(image,mhc) */
+#undef USE_SHARED

@@ -82,8 +82,6 @@ Widget CreateOptionWindow(Widget w){
 				  ,XtNscrollVertical,XawtextScrollWhenNeeded
 				  ,NULL);
 
-  printf("%d x %d\n",opr.width,opr.height);
-
   ok = XtVaCreateManagedWidget("optionOk", commandWidgetClass, local_option
 			       ,XtNfromVert, label
 			       ,XtNhorizDistance, POINT_WIDTH + LABEL_OFFSET

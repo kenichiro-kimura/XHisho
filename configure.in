@@ -134,4 +134,10 @@ AC_ARG_WITH(option,
         [with_option=yes])
 test "$with_option" = "yes" && AC_DEFINE(OPTION)
 
+AC_ARG_WITH(shared,
+        [  --with-shared          compile with shared library(image,mhc)],
+        [with_shared=$withval],
+        [with_shared=no])
+test "$with_shared" = "yes" && AC_DEFINE(USE_SHARED)
+
 AC_OUTPUT(Makefile apps/Makefile Imakefile image/Imakefile xadl/Imakefile libmhc/Imakefile)

@@ -1,11 +1,30 @@
 #include "../config.h"
-CC = @CC@
-CCOPTIONS = @CFLAGS@ @LDFLAGS@
-STD_INCLUDES = -I../ -I/usr/local/include
+#ifdef PERSONAL
+#undef USE_SHARED
+#endif
+
+#define DoNormalLib YES
+#ifdef USE_SHARED
+#define DoSharedLib YES
+#else
+#define DoSharedLib NO
+#define LibInstall NO
+#endif
+
+#define DoDebugLib NO
+#define DoProfileLib NO
+        
+SOXSAMPLEREV = 1.0
+#define LibName mhc
+#define SoRev SOXSAMPLEREV
+#define HasSharedData NO
 
 OBJS = libmhc.o
 
 SRCS = $(OBJS:.o=.c)
 
-NormalLibraryTarget(mhc,$(OBJS))
+#include <Library.tmpl>
 
+CC = @CC@
+CCOPTIONS = @CFLAGS@ @LDFLAGS@
+STD_INCLUDES = -I../ -I/usr/local/include
