@@ -12,6 +12,8 @@ AC_CHECK_LIB(socket, main)
 
 dnl Check compile options
 
+LDFLAGS="$LDFLAGS -L${libdir} -L/usr/local/lib"
+
 AC_ARG_WITH(xpm,
         [  --without-xpm           compile without XPM library],
         [with_xpm=$withval],

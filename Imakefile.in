@@ -37,7 +37,8 @@ EXTRA_LIBRARIES = @LIBS@
 
 IMAGELIBDIR = image
 IMAGELIB = $(IMAGELIBDIR)/libimage.a
-STD_INCLUDES = -I$(IMAGELIBDIR)
+STD_INCLUDES = -I$(IMAGELIBDIR) -I/usr/local/include
+EXTRA_LDOPTIONS = -L/usr/local/lib
 
 #define IHaveSubdirs
 SUBDIRS = $(IMAGELIBDIR)
