@@ -168,9 +168,10 @@ Widget CreateCalendarWindow(Widget w, int Month, struct tm tm_now)
   struct tm *tm_tmp;
   int i, j, k, l, m, tmp_width, Longest_label, calendar_offset, NowYear,
       NowMonth, NowDay;
-  Dimension Label_width;
+  Dimension Label_width, DayWidth;
   char *message;
   int uru_adjust;
+  XFontSet fontset;
 
   static Arg calargs[] = {
     {XtNwindowMode, 0},
@@ -323,6 +324,8 @@ Widget CreateCalendarWindow(Widget w, int Month, struct tm tm_now)
 
   }
 
+  XtVaGetValues(week[0],XtNwidth,&DayWidth,NULL);
+
   if (tmp_width >= Longest_label) {
     calendar_offset = (int) ((tmp_width - Longest_label) / 2);
     XtVaSetValues(prev, XtNhorizDistance, calendar_offset + POINT_WIDTH + LABEL_OFFSET
@@ -364,6 +367,7 @@ Widget CreateCalendarWindow(Widget w, int Month, struct tm tm_now)
 	if (wdays[Month] + uru_adjust < l - 1)
 	  break;
 	labelargs[0].value = (XtArgVal) tmpstring;
+
 	day[k] = XtCreateManagedWidget("day", commandWidgetClass, calendar
 				       ,labelargs, XtNumber(labelargs));
 	XtAddCallback(day[k], XtNcallback, (XtCallbackProc) EditorWindowPopup
@@ -419,6 +423,7 @@ Widget CreateCalendarWindow(Widget w, int Month, struct tm tm_now)
 	if (Edited_Year == NowYear && Edited_Month == NowMonth && l - 1 == NowDay)
 	  XtVaSetValues(day[k], XtNforeground, GetColor(XtDisplay(top), "navy"), NULL);
       }
+      XtVaSetValues(day[k],XtNwidth,DayWidth,NULL);
       k++;
     }
   }
