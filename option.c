@@ -1029,6 +1029,7 @@ static void _GetBuffer(messageBuffer* buffer,char* ret,int mode)
   int wait;
   unsigned char* c_ptr;
   int skip_return = 0;
+  int i;
 
   ret[0] = first_byte = *(buffer->buffer);
 
@@ -1045,9 +1046,14 @@ static void _GetBuffer(messageBuffer* buffer,char* ret,int mode)
     if(strncmp(ret,"\\w",strlen("\\w")) == 0){
       c_ptr = buffer->buffer + 2;
       while(isdigit(*c_ptr) || *c_ptr == '\n'){
-	if(*c_ptr == '\n' && isdigit(*(c_ptr + 1))){
+	/*
+	 * by InsertReturn(), if "\w10HOGE" -> "\w1\n0HOGE" ,
+	 *  this function return "\w10" 
+	 *     and rest of message should be "\nHOGE".
+	 */
+	if(*c_ptr == '\n'){
+	  skip_return++;
 	  strcpy(c_ptr,c_ptr + 1);
-	  skip_return = 1;
 	} else {
 	  c_ptr++;
 	  is_wbyte++;
@@ -1055,9 +1061,11 @@ static void _GetBuffer(messageBuffer* buffer,char* ret,int mode)
       }
       strncpy(str_num,buffer->buffer + 2
 	      ,is_wbyte);
+
       sprintf(ret,"\\w%d",atoi(str_num));
-      if(skip_return)
-	*(c_ptr - 1) = '\n';
+      
+      for(i = 0; i < skip_return;i++)
+	*(--c_ptr) = '\n';
     }
   } else {
     ret[1] = '\0';
@@ -1065,8 +1073,8 @@ static void _GetBuffer(messageBuffer* buffer,char* ret,int mode)
   }
 
   if(mode)
-    strcpy(buffer->buffer,buffer->buffer + 1 + is_wbyte);
-
+    strcpy(buffer->buffer,buffer->buffer + 1 + is_wbyte - skip_return);
+  
   return;
 }
   
