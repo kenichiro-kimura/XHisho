@@ -140,15 +140,14 @@ void Quit(Widget w, XEvent * event, String * params, unsigned int *num_params)
   WritePrefFile();
   XCloseDisplay(XtDisplay(top));
 
-  if(Biff == YOUBIN){
-    kill(youbin_pid[0], SIGTERM);
-    kill(youbin_pid[1], SIGTERM);
-  }
-
   if(Biff == YOUBIN)
     unlink(YoubinFile);
 
   while((i = rmdir(Tmp_dir)) < 0);
+
+  if(Biff == YOUBIN){
+    kill(0, SIGTERM);
+  }
 
   exit(0);
 }
