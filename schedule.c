@@ -199,11 +199,12 @@ int CheckSchedule(OpenMessageRes * l_omr, Schedule * schedule, int WeeklyCheck, 
       pclose(inputfile);
       unlink(t_filename);
 #else
-      strcpy(tmp1, ent_ptr->Entry[X_SC_Subject]);
+      strncpy(tmp1, ent_ptr->Entry[X_SC_Subject],MIN(strlen(ent_ptr->Entry[X_SC_Subject],BUFSIZ)));
 #endif
-      if(ent_ptr->Entry[X_SC_Time] && *ent_ptr->Entry[X_SC_Time]){
+      if(ent_ptr->Entry[X_SC_Time] && strlen(ent_ptr->Entry[X_SC_Time]) >= 4){
 	strncpy(schedule[i].hour, ent_ptr->Entry[X_SC_Time], sizeof(char) * 2);
-	strncpy(schedule[i].min, ent_ptr->Entry[X_SC_Time] + 3, sizeof(char) * 2);
+	strncpy(schedule[i].min, ent_ptr->Entry[X_SC_Time] + 2, sizeof(char) * 2);
+	printf("%s:%s\n",schedule[i].hour,schedule[i].min);
       } else {
 	strcpy(schedule[i].hour, "*");
       }
@@ -216,8 +217,14 @@ int CheckSchedule(OpenMessageRes * l_omr, Schedule * schedule, int WeeklyCheck, 
       strncpy(schedule[i].ev, tmp1, MIN(BUFSIZ, strlen(tmp1)));
       if (schedule[i].ev[MIN(BUFSIZ, strlen(tmp1)) - 1] == '\n')
 	schedule[i].ev[MIN(BUFSIZ, strlen(tmp1)) - 1] = '\0';
-      if (SafeTimeFormat(schedule[i]))
+
+      if (SafeTimeFormat(schedule[i])){
 	i++;
+      }else{
+	strcpy(schedule[i].hour, "*");
+	i++;
+      }
+	
     }
 
     CloseMHC(mhc_ptr);
