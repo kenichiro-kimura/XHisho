@@ -525,6 +525,7 @@ void Animation(XHishoWidget xhw)
   int clock_height;
   
   change = 0;
+  if(xhw->xhisho.cg_sec == -1) return;
   if(--xhw->xhisho.cg_sec <= 0){
     /**
      * 規定の時間が過ぎたらCG変更
@@ -533,6 +534,10 @@ void Animation(XHishoWidget xhw)
     if(CG_NUM >= xhw->xhisho.i_info->num_of_images) CG_NUM = 0;
     change = 1;
   }
+
+  /**
+   * ラベルの処理。ラベルは単純に読み飛ばす
+   **/
 
   if(!strcmp(((xhw->xhisho.i_info->image) + CG_NUM)->filename,"SCHEDULE")||
      !strcmp(((xhw->xhisho.i_info->image) + CG_NUM)->filename,"MAIL")){
@@ -598,16 +603,34 @@ void Animation(XHishoWidget xhw)
 }
 
 static void ChangeAnimType(XHishoWidget xhw){
+  /**
+   * XtNanimTypeがセットされたときの処理
+   **/
+
   if(xhw->xhisho.anim_type > 3 || xhw->xhisho.anim_type < 0) return;
   
+  /**
+   * テーブルの値が -1 → そのラベルは未定義だから無視
+   **/
+
   if(xhw->xhisho.i_info->anim_number[xhw->xhisho.anim_type] == -1)
     return;
+
+  /**
+   * USUAL → 他のtypeの変更の時は現在のアニメーション処理の番号を
+   * テーブルに覚えておく
+   **/
 
   if(xhw->xhisho.anim_type){
     xhw->xhisho.i_info->anim_number[0] = CG_NUM;
   }
   
   CG_NUM = xhw->xhisho.i_info->anim_number[xhw->xhisho.anim_type];
+
+  /**
+   * Animation()の中ですぐに処理されるように,タイマーを0にしておく
+   **/
+
   xhw->xhisho.cg_sec = 0;
   Animation(xhw);
 }

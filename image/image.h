@@ -89,7 +89,13 @@ typedef struct _ImageInfo {
   int num_of_images;
   int loaded_images;
   int anim;
-  int anim_number[3]; /* 0 -> usual, 1 -> mail, 2 ->schedule */
+
+  /**
+   * ラベルのついた行を覚えておくテーブル
+   *  0 -> usual, 1 -> mail, 2 ->schedule
+   **/
+  int anim_number[3];
+
   unsigned int width, height;
   short BitCount;
   int trans_pix;

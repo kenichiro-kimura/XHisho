@@ -63,8 +63,12 @@ int LoadAnim(ImageInfo *i_info)
     if(buffer[0] == '#') continue;
 
     loop = -1;
-    secs = 1;
+    secs = -1;
     sscanf(buffer,"%s %d %d",t_filename,&secs,&loop);
+
+    /**
+     * GOTO及びラベルはファイルの存在チェックを飛ばす
+     **/
 
     if(!strcmp(t_filename,"GOTO")){
       strcpy(filename,t_filename);
@@ -87,10 +91,18 @@ int LoadAnim(ImageInfo *i_info)
     strcpy(i_info->image[i].filename,filename);
     i_info->image[i].secs = secs;
 
+    /**
+     * ラベルの次の行をテーブルに登録しておく
+     **/
+
     if(type){
       i_info->anim_number[type] = i;
       type = USUAL;
     } 
+
+    /**
+     * GOTOの時はループの回数をセットし、カウンタをクリアする
+     **/
 
     if(!strcmp(filename,"GOTO")){
       i_info->image[i].loop_b = loop;
