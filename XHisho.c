@@ -600,7 +600,7 @@ static Boolean SetValues(Widget current, Widget request, Widget new, ArgList arg
     ClockDraw(inew);
   }
   
-  if (inew->xhisho.force_cg){
+  if (inew->xhisho.force_cg && inew->xhisho.f_cg_number < iold->xhisho.i_info->num_of_images){
     int is_changed = 0;
 
     if(iold->xhisho.cg_number != inew->xhisho.f_cg_number 
