@@ -216,7 +216,7 @@ static void Realize(Widget w, XtValueMask * valueMask, XSetWindowAttributes * at
     ShapeWindow(msw);
   DrawFrame(msw);
 
-    XtCreateWindow(w, (unsigned) InputOutput, (Visual *) CopyFromParent, *valueMask, attrs);
+  XtCreateWindow(w, (unsigned) InputOutput, (Visual *) CopyFromParent, *valueMask, attrs);
 
 }
 
@@ -368,7 +368,6 @@ static void ShapeWindow(MsgwinWidget msw)
 
   XShapeCombineMask(d, XtWindow(XtParent(msw)), ShapeBounding
 		    ,0, 0, window_mask, ShapeSet);
-
   XFreePixmap(d, window_mask);
   XFreeGC(d, mask_gc);
   XFlush(d);
@@ -405,7 +404,6 @@ static void Redraw(Widget w, XEvent * event, Region region)
 
   if (msw->msgwin.is_shaped == FALSE)
     ShapeWindow(msw);
-
   DrawFrame(msw);
 }
 
