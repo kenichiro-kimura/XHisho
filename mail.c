@@ -929,13 +929,13 @@ static void CheckYoubin(Widget w, int *fid, XtInputId * id)
 	if (strchr(who, '@') != NULL && strchr(who,'<') == NULL){
 	  strcpy(pname, who);
 	} else {
-	  if (strchr(ch_ptr, '<') == NULL)
+	  if ((next_ptr = strchr(ch_ptr, '<')) == NULL)
 	    next_ptr = strtok(NULL, "\n");
 	  if(next_ptr != NULL){
 	    left_ptr = strchr(next_ptr, '<');
 	    right_ptr = strchr(next_ptr, '>');
 	    if (left_ptr != NULL && right_ptr != NULL){
-	      strncpy(pname, strchr(next_ptr, '<') + 1,
+	      strncpy(pname, left_ptr + 1,
 		      MIN(right_ptr - left_ptr - 1,BUFSIZ- 1));
 	      pname[MIN(right_ptr - left_ptr - 1,BUFSIZ- 1)] = '\0';
 	    } else {
