@@ -24,11 +24,11 @@ extern "C" char* RandomMessage(char* kawari_dir)
 	  if(*kawari_dir == '/' || *kawari_dir == '.'){
 	    datapath = (string)kawari_dir;
 	  } else {
-	    datapath = (string)getenv("HOME") + (string)kawari_dir;
+	    datapath = (string)getenv("HOME") + "/" + (string)kawari_dir;
 	  }
-	  cout << datapath << endl;
 	}
 
+	datapath += "/";
 	string dllpath=datapath+"shiori.dll";
 
 	if(!NS_Shiori.Load(datapath)) {

@@ -21,3 +21,5 @@ base64.o : base64.cpp
 
 clean :
 	rm -rf *.o
+install :
+	

@@ -865,7 +865,7 @@ static void _InsertMessage(XtPointer cl,XtIntervalId* id)
 					    , NULL);
 	break;
       case 'w':
-	cg_num = atoi(chr_ptr + 1);
+	cg_num = atoi(chr_ptr + 2);
 	usleep(cg_num * 50 * 1000);
 	break;
       default:
