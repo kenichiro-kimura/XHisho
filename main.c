@@ -292,6 +292,8 @@ void CloseEditWindow()
 
 int IsPopped(Widget w)
 {
+  if(!w) return 0;
+  if(!XtParent(w)) return 0;
   return ((ShellWidget)XtParent(w))->shell.popped_up;
 }
   
