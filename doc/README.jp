@@ -132,10 +132,7 @@ From$B$K$O(BMew$B$HF1$87A<0$N(BPetname$B$rMQ$$$F!V(Bhogeyama@dokka.com$B!
 
 4.How to install $B!A$5$"!"%$%s%9%H!<%k!A(B
 
-$B$^$:!"(Bxpm$B%i%$%V%i%j$OI,?\$G$9$N$GA0;}$C$FF~$l$F$*$$$F$/$@$5$$!#(BFreeBSD
-$B$J$i(Bport$B$d(Bpackage$B$K$"$j$^$9!#(B
-
-$B<!$K!"(Bconfigure$B%9%/%j%W%H$rF0$+$7$^$9!#(Bconfigure$B$K$O<!$N%*%W%7%g%s$,$"(B
+$B$^$:!"(Bconfigure$B%9%/%j%W%H$rF0$+$7$^$9!#(Bconfigure$B$K$O<!$N%*%W%7%g%s$,$"(B
 $B$j$^$9!#(B
 
 $B!&(B--enable-personal    : $BA4$F$N%U%!%$%k$r(B$HOME$B0J2<$K%$%s%9%H!<%k$7$^$9(B
@@ -148,7 +145,12 @@ From$B$K$O(BMew$B$HF1$87A<0$N(BPetname$B$rMQ$$$F!V(Bhogeyama@dokka.com$B!
                          $B%k$7$^$;$s(B
 $B!&(B--disable-ext_filter : $B30It%U%#%k%?$r;H$$$^$;$s(B
 $B!&(B--disable-petname    : Petname$B$r;H$$$^$;$s(B
+$B!&(B--without-xpm        : $B2hA|7A<0$H$7$F(Bxpm$B$r;H$$$^$;$s(B
 
+
+$B!V(B--without-xpm($B$b$7$/$O(B--with-xpm=no)$B!W$r;XDj$7$J$$>l9g$O(Bxpm$B%i%$%V%i(B
+$B%j$,I,MW$G$9$N$GA0;}$C$FF~$l$F$*$$$F$/$@$5$$!#(BFreeBSD$B$J$i(Bport$B$d(Bpackage
+$B$K$"$j$^$9!#(B
 
 $B!V(B--disable-ext_filter$B!W$r;XDj$7$J$1$l$P!"%a%C%;!<%8$NI=<($K30It%U%#%k(B
 $B%?$r;H$$$^$9!#%G%U%)%k%H$G$O30It%U%#%k%?%3%^%s%I$O!V(Bnkf -e -m$B!W$G$9!#(B
@@ -180,14 +182,18 @@ youbin$B5Z$S(BPOP3$B$r;H$o$J$$$H$-$O%m!<%+%k%^%7%s$N%a!<%k%9%W!<%k$r%]!<%j%s
 
 $B$"$H$O$$$D$bDL$j(B(?)
 
-%xmkmf -a
 %make
 %su
 #make install
 
 (#define PERSONAL$B$J$i(Bsu$B$OITMW(B)
+$B$G=*$j$G$9!#$b$7!"(Bmake$B$,$&$^$/$$$+$J$+$C$?$i(Bconfigure$B$N$"$H$K(B
 
-$B$G=*$j$G$9!#(Bconfigure$B$N$"$H$K(Bxmkmf$B$rF0$+$9$N$rK:$l$J$$$G$/$@$5$$!#(B
+%xmkmf
+
+$B$H$7$F$_$F$/$@$5$$!#(B
+
+
 
 $B$^$?!"GX7J$KD%$jIU$1$k3($N%G!<%?$OI,?\$G$9!#L5$$$H5/F0$7$^$;$s!#%5%]!<(B
 $B%H$7$F$$$k2hA|7A<0$O8=:_$N$H$3$m(Bxpm$B$H(BBMP$B$@$1$G$9$N$G!"(Bxv$BEy$r;H$C$F2hA|(B

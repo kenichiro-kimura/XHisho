@@ -1,7 +1,7 @@
 all: Makefile
 	make -f Makefile
 
-Makefile: makefile
+Makefile: makefile Imakefile
 	xmkmf
 
 makefile:

@@ -27,6 +27,7 @@
 #include <X11/Xaw/XawInit.h>
 
 #include "XHishoP.h"
+#include "config.h"
 
 #define DISPLAY (xhw->xhisho.d)
 #define WINDOW  (xhw->xhisho.w)
@@ -224,11 +225,17 @@ static void Realize(Widget w,XtValueMask *valueMask,XSetWindowAttributes *attrs)
 
   if(LoadBmp(XtParent((Widget)xhw),&(XH_GC),&(PIXMAP),BCG,&(PIXATT.width)
 	     ,&(PIXATT.height),clock_height,xhw->xhisho.is_shape)){
+
+#ifdef WITH_XPM
     if(XpmReadFileToPixmap(DISPLAY,DefaultRootWindow(DISPLAY),BCG,&(PIXMAP)
 			   ,&(PIXMASK),&(PIXATT)) != XpmSuccess){
       fprintf(stderr,"fail read CG data,%s\n",BCG);
       exit(1);
     }
+#else
+    fprintf(stderr,"fail read CG data,%s\n",BCG);
+    exit(1);
+#endif
   }
 
   XtResizeWidget(XtParent(xhw),PIXATT.width

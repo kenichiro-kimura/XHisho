@@ -17,6 +17,7 @@
 #include "XHisho.h"
 #include "Msgwin.h"
 #include "globaldefs.h"
+#include "config.h"
 
 /* local variable */
 
@@ -315,7 +316,11 @@ static void PrintUsage(int argc,char** argv){
     "  optins:\n"
     "     -version                    : print xhisho's version\n"
     "     -coption                    : show compile option\n"
+#ifdef WITH_XPM
     "     -cgfile [file_name]         : cg file name(XPM or BMP)\n"
+#else
+    "     -cgfile [file_name]         : cg file name(BMP)\n"
+#endif
     "     -timeout [n]                : mail window timeout(second)\n"
     "     -mailcheck [n]              : mail check interval(second)\n"
     "     -noclock                    : don't draw clock\n"
@@ -339,6 +344,9 @@ static void PrintUsage(int argc,char** argv){
 
   static char* compile_option = 
     "Compile option:\n"
+#ifdef WITH_XPM
+    "    Use xpm file\n"
+#endif
 #ifdef EXT_FILTER
     "    Use external filter command\n"
 #endif

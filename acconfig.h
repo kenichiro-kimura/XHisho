@@ -1,3 +1,6 @@
+/* Define if you use XPM library */
+#undef WITH_XPM
+
 /* Define if you use for personal */
 #undef PERSONAL
 
