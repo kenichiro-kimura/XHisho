@@ -1,0 +1,23 @@
+CFLAGS = -O2
+LIBS   = 
+OBJS	= kawari.o kawari_crypt.o base64.o
+CCPP = @CXX@
+
+## TARGETS ##
+
+all: kawari_interface.o
+
+kawari_interface.o : $(OBJS)
+	$(CCPP) -c $(CFLAGS) -o $(<:.cpp=.o) $<
+
+kawari.o : kawari.cpp
+	$(CCPP) -c $(CFLAGS) -o $(<:.cpp=.o) $<
+
+kawari_crypt.o : kawari_crypt.cpp
+	$(CCPP) -c $(CFLAGS) -o $(<:.cpp=.o) $<
+
+base64.o : base64.cpp
+	$(CCPP) -c $(CFLAGS) -o $(<:.cpp=.o) $<
+
+clean :
+	rm -rf *.o

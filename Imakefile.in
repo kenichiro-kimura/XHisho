@@ -79,6 +79,10 @@ IMAGELIB = $(IMAGELIBDIR)/libxhimage.a
 STD_INCLUDES = -I$(IMAGELIBDIR) -I/usr/local/include -I$(MHCLIBDIR)
 EXTRA_LDOPTIONS = -L/usr/local/lib
 
+#ifdef USE_KAWARI
+KAWARI_OBJ = kawari/kawari.o kawari/kawari_crypt.o kawari/base64.o
+KAWARI_LIB = -lstdc++
+#endif
 
 #define IHaveSubdirs
 
@@ -89,8 +93,8 @@ SUBDIRS = $(IMAGELIBDIR) $(MHCLIBDIR) $(XADLDIR)
 MakeSubdirs($(SUBDIRS))
 DependSubdirs($(SUBDIRS))
 
-DEPLIBS = XawClientDepLibs $(IMAGELIB) $(MHCLIB)
-LOCAL_LIBRARIES = XawClientLibs $(IMAGELIB) $(MHCLIB)
+DEPLIBS = XawClientDepLibs $(IMAGELIB) $(MHCLIB) $(KAWARI_LIB)
+LOCAL_LIBRARIES = XawClientLibs $(IMAGELIB) $(MHCLIB) $(KAWARI_LIB)
 
 BASE_OBJS =  mail.o main.o Msgwin.o XHisho.o about.o editor.o schedule.o calendar.o menu.o ResEdit.o message.o pop.o md5c.o sound.o
 
@@ -102,7 +106,7 @@ PETNAME_OBJS = petname.o
 OPTION_OBJS = option.o
 #endif
 
-OBJS = $(BASE_OBJS) $(PETNAME_OBJS) $(OPTION_OBJS)
+OBJS = $(BASE_OBJS) $(PETNAME_OBJS) $(OPTION_OBJS) $(KAWARI_OBJ)
 
 SRCS = $(OBJS:.o=.c)
 

@@ -3,6 +3,7 @@ AC_INIT(main.c)
 AC_CONFIG_HEADER(config.h )
 
 AC_PROG_CC
+AC_PROG_CXX
 AC_PROG_INSTALL
 AC_PROG_LEX
 AC_PROG_YACC
@@ -146,4 +147,10 @@ AC_ARG_WITH(unyuu,
         [with_unyuu=no])
 test "$with_unyuu" = "yes" && AC_DEFINE(USE_UNYUU)
 
-AC_OUTPUT(Makefile apps/Makefile Imakefile image/Imakefile xadl/Imakefile libmhc/Imakefile)
+AC_ARG_WITH(kawari,
+        [  --with-kawari          compile with KAWARI module],
+        [with_kawari=$withval],
+        [with_kawari=no])
+test "$with_kawari" = "yes" && AC_DEFINE(USE_KAWARI)
+
+AC_OUTPUT(Makefile apps/Makefile Imakefile image/Imakefile xadl/Imakefile libmhc/Imakefile kawari/Makefile)
