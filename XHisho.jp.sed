@@ -11,10 +11,6 @@ XHisho*extFilter: nkf -e -m
 !!biff関係のリソース
 !!
 
-XHisho.MailAlert.m_timeout: 8
-XHisho.MailAlert.m_check: 10
-XHisho.MailAlert.fromMaxLen: 30
-XHisho.MailAlert.maxLines: 4
 XHisho*petnameFile: XHISHODIR/Petname
 XHisho.MailAlert.youbinServer: localhost
 XHisho.MailAlert.youbinCommand: /usr/local/bin/youbin

@@ -3,8 +3,7 @@
 XHisho - X Window System で動く電子秘書
 .SH SYNOPSIS
 .B  xhisho
-[toolkit options] [-cgfile [cg filename]] [-timeout [mail window
-timeout]] [-mailcheck [mail check interval]] [-filter [filter
+[toolkit options] [-cgfile [cg filename]] [-filter [filter
 command]] [-soundcmd [sound command]] [-noclock] [-focus] [-justify
 [left/center/right]] [-ypos [n]] [-shape]  [-yserver [youbin server]]
 [-pserver [POP3 server]] [-youbin] [-pop] [-apop]
@@ -88,14 +87,6 @@ XHishoを終わります。Shift + 右クリックでも同じです。
 .TP 20
 .BI  \-cgfile " filename"
 張り付けるCGを指定します。
-
-.TP 20
-.BI  \-timeout " n"
-メール着信を知らせるふきだしが消えるまでの時間を秒単位で指定します。
-
-.TP 20
-.BI  \-mailcheck " n"
-ローカルなメールスプールを調べるインターバルを秒単位で指定します。
 
 .TP 20
 .BI \-filter " command"

@@ -34,8 +34,6 @@ You can custom every message,CG,etc.
 
 % xhisho [toolkit options]
 	 [-cgfile [cg filename]]
-	 [-timeout [mail window timeout]]
-	 [-mailcheck [mail check interval]]
 	 [-noclock]
          [-nosound]
 	 [-focus]

@@ -229,8 +229,6 @@ xhs.holidayというファイルを置いてください。書式はサンプルを見てくださ
 
 % xhisho [toolkit options]
 	 [-cgfile [cg filename]]
-	 [-timeout [mail window timeout]]
-	 [-mailcheck [mail check interval]]
 	 [-noclock]
          [-nosound]
 	 [-focus]
@@ -288,8 +286,6 @@ xhs.holidayというファイルを置いてください。書式はサンプルを見てくださ
 起動オプションの意味は以下の通りです。
 
 ・-cgfile    … 張り付けるCGファイル名を指定
-・-timeout   … メールウインドウが自動的に閉じるまでの時間を秒単位で指定
-・-mailcheck … メールをチェックするインターバルを秒単位で指定
 ・-noclock   … 時計を表示しない
 ・-nosound   … 音を鳴らさない
 ・-chime     … 毎時0分に今日の予定を表示する

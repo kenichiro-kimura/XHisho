@@ -14,19 +14,9 @@ XHisho*messageFile:            メッセージファイル。起動オプション
 XHisho*cgfile:                 張り付けるCGファイル名。起動オプション 
                                '-cgfile'でも指定可能。
 
-XHisho.MailAlert.m_timeout:    メールが来たときの通知ウインドを何秒で
-                               消すか。この時間が経過するかOKをクリッ
-                               クすると、ウインドが消える。
-
 XHisho.MailAlert.mailbox:      メールボックスファイルのあるディレクト
                                リ。デフォルトは/var/mail/。Linuxだと
                                /var/spool/mailかな?
-
-XHisho.MailAlert.m_check:      メールをチェックする間隔。メールのチェッ
-                               クにPOP3を指定している場合、1分未満の数
-                               字は1分に置き換えられます(サーバに負荷
-                               をかけすぎないようにするため)。起動オプ
-                               ション'-mailcheck'でも指定可能。
 
 XHisho.OpenMessage.configFile: 挨拶データのデータファイル名
 
@@ -294,13 +284,13 @@ XHisho*clockArg: mdhMs
 とができます。
 
 
-FromとSubjectのリスト表示の最大桁数と最大行数は
+FromとSubjectのリスト表示の最大桁数と最大行数はGUIから設定します。例え
+ば
 
-XHisho.MailAlert.fromMaxLen: 50
-XHisho.MailAlert.maxLines: 2
+メッセージの長さ = 50
+メッセージの行数 = 2
 
-で設定します。上記はデフォルトの値です。これだと最大50文字 x 2行表示さ
-れます。
+だと最大50文字 x 2行表示されます。
 
 
 また、外部のフィルタを用いてFromやSubject中のMIMEをデコードすることが

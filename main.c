@@ -95,8 +95,6 @@ static XtActionsRec actionTable[] = {
 
 static XrmOptionDescRec options[] = {
     {"-cgfile", "*cgFile", XrmoptionSepArg, NULL},
-    {"-timeout", "*m_timeout", XrmoptionSepArg, NULL},
-    {"-mailcheck", "*m_check", XrmoptionSepArg, NULL},
     {"-noclock", "*drawClock", XrmoptionNoArg, "False"},
     {"-focus", "*focusWin", XrmoptionNoArg, "True"},
     {"-justify", "*justify", XrmoptionSepArg, NULL},
@@ -387,8 +385,6 @@ static void PrintUsage(int argc, char **argv)
 #else
     "     -cgfile [file_name]         : cg file name(BMP)\n"
 #endif
-    "     -timeout [n]                : mail window timeout(second)\n"
-    "     -mailcheck [n]              : mail check interval(second)\n"
     "     -noclock                    : don't draw clock\n"
     "     -focus                      : use Focuswin module\n"
     "     -justify [left/center/rignt]: set Focuswin justify\n"
