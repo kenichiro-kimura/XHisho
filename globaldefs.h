@@ -223,5 +223,6 @@ MAIN_GLOBAL FILE* youbin_fd;
 MAIN_GLOBAL pid_t option_pid;
 MAIN_GLOBAL FILE* option_fd;
 MAIN_GLOBAL pid_t* sstp_pid;
+MAIN_GLOBAL int SSTP_port;
 
 #endif

@@ -35,6 +35,15 @@
 #define XtCKawariWait "KawariWait"
 #define XtNkawariDir "kawariDir"
 #define XtCKawariDir "KawariDir"
+#define XtNsakuraName "sakuraName"
+#define XtNsakuraName2 "sakuraName2"
+#define XtCSakuraName "SakuraName"
+#define XtNkeroName "keroName"
+#define XtCKeroName "KeroName"
+#define XtNuserName "userName"
+#define XtCUserName "UserName"
+
+
 
 typedef struct {
   String o_command;
@@ -46,6 +55,10 @@ typedef struct {
   int m_wait;
   int k_wait;
   String kawari_dir;
+  String s_name;
+  String sn_name;
+  String k_name;
+  String u_name;
 } OptionRes;
 
 typedef struct _messagestack{

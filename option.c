@@ -43,7 +43,7 @@ static void messageStack_push(messageStack**,char*);
 static unsigned char* ChangeBadKanjiCode(unsigned char *);
 static void ClearMessage(Widget);
 static void InsertMessage(XtPointer,XtIntervalId*);
-static void AddBuffer(messageBuffer*,const char*);
+static void AddBuffer(messageBuffer*,const char*,int);
 static void GetBuffer(messageBuffer*,char*);
 static void HeadOfBuffer(messageBuffer*,char*);
 static void _GetBuffer(messageBuffer*,char*,int);
@@ -54,13 +54,14 @@ static unsigned char* JIS2EUC(unsigned char*);
 static unsigned int UNICODE2EUC(unsigned int);
 static void sstp(int);
 static unsigned char* SSTPParser(unsigned char* );
-static void ReplaceSSTPEscape(unsigned char* ,const unsigned char*,messageBuffer*);
+static void ReplaceSSTPEscape(messageBuffer*,const unsigned char*);
 static unsigned char* Escape2Message(const unsigned char*);
 
 
 #ifdef USE_KAWARI
 static void GetMessageFromKawari(Widget, int *, XtInputId *);
 extern char* RandomMessage(char*);
+extern char* DecodeEscapeMessage(const char*,const char*);
 #endif
 
 static void SakuraParser(char*); /* only for reference */
@@ -151,6 +152,42 @@ static XtResource resources[] = {
     XtRImmediate,
     (XtPointer)"xhisho"
   },    
+  {
+    XtNsakuraName,
+    XtCSakuraName,
+    XtRString,
+    sizeof(String),
+    XtOffsetOf(OptionRes, s_name),
+    XtRImmediate,
+    (XtPointer)"sakura"
+  },    
+  {
+    XtNsakuraName2,
+    XtCSakuraName,
+    XtRString,
+    sizeof(String),
+    XtOffsetOf(OptionRes, sn_name),
+    XtRImmediate,
+    (XtPointer)"sakura"
+  },    
+  {
+    XtNkeroName,
+    XtCKeroName,
+    XtRString,
+    sizeof(String),
+    XtOffsetOf(OptionRes, k_name),
+    XtRImmediate,
+    (XtPointer)"unyuu"
+  },    
+  {
+    XtNuserName,
+    XtCUserName,
+    XtRString,
+    sizeof(String),
+    XtOffsetOf(OptionRes, u_name),
+    XtRImmediate,
+    (XtPointer)"user"
+  },    
 };
 
 static void Destroy(Widget w, XEvent * event, String * params, unsigned int *num_params)
@@ -194,17 +231,19 @@ Widget CreateOptionWindow(Widget w){
   pdrec.shell_widget = top;
   pdrec.enable_widget = w;
 
-  if(!UseSSTP){
-    mbuf.buffer = (unsigned char*)malloc(BUFSIZ * 10);
-    mbuf.size = BUFSIZ * 10;
-    *mbuf.buffer = '\0';
-
-    virgine = 0;
-  }
-
   top = XtVaCreatePopupShell("OptionWindow", transientShellWidgetClass
 			     ,w,NULL);
   XtGetApplicationResources(top, &opr, resources, XtNumber(resources), NULL, 0);
+
+  if(UseSSTP){
+    sstpinit(SSTP_port);
+  } else {
+    mbuf.buffer = (unsigned char*)malloc(BUFSIZ * 10);
+    mbuf.size = BUFSIZ * 10;
+    *mbuf.buffer = '\0';
+  }
+
+
   local_option = XtVaCreateManagedWidget("option", msgwinWidgetClass, top
   				 ,NULL);
 
@@ -392,11 +431,11 @@ static void CheckOption(Widget w, int *fid, XtInputId * id)
   strncpy(_buffer,message_ptr,MIN(message_buffer_size -1,strlen(message_ptr)));
   _buffer[MIN(message_buffer_size -1,strlen(message_ptr))] = '\0';
   free(message_ptr);
-  /*
-  message_ptr = ChangeBadKanjiCode(_buffer);
+
+  message_ptr = SSTPParser(_buffer);
   strncpy(_buffer,message_ptr,MIN(message_buffer_size -1,strlen(message_ptr)));
   free(message_ptr);
-  */
+
 
 #ifdef DEBUG
   printf("#%s\n",_buffer);
@@ -404,7 +443,7 @@ static void CheckOption(Widget w, int *fid, XtInputId * id)
 
   ORParser(_buffer);
 
-  AddBuffer(&mbuf,_buffer);
+  AddBuffer(&mbuf,_buffer,UseSSTP);
 
 }
 
@@ -454,7 +493,7 @@ static void GetMessageFromKawari(Widget w, int * i, XtInputId * id){
 
   ORParser(_buffer);
 
-  AddBuffer(&mbuf,_buffer);
+  AddBuffer(&mbuf,_buffer,UseSSTP);
 
 }
 #endif
@@ -887,7 +926,7 @@ static void InsertMessage(XtPointer cl,XtIntervalId* id)
 				  , NULL);
 }
 
-static void AddBuffer(messageBuffer* buffer,const char* message)
+static void AddBuffer(messageBuffer* buffer,const char* message,int use_file)
 {
   /*
    * add message int message buffer.
@@ -904,8 +943,7 @@ static void AddBuffer(messageBuffer* buffer,const char* message)
   newsize = strlen(buffer->buffer) + strlen(message) + 1;
 
   if(newsize > buffer->size){
-    b = strdup(buffer->buffer);
-    if(UseSSTP){
+    if(use_file){
       char* file;
       /*
       file = (char*)malloc(strlen("/tmp/") + strlen(BufferFileName) + 10);
@@ -930,10 +968,11 @@ static void AddBuffer(messageBuffer* buffer,const char* message)
       */
       free(file);
     } else {
+      b = strdup(buffer->buffer);
       buffer->buffer = (unsigned char*)realloc(buffer->buffer,newsize);
+      strcpy(buffer->buffer,b);
+      free(b);
     }
-    strcpy(buffer->buffer,b);
-    free(b);
     buffer->size = newsize;
   }
 
@@ -1074,19 +1113,19 @@ static void SakuraParser(char* in_ptr)
       switch(*chr_ptr) {
       case 'h':
 	strcpy(buffer,"\nsakura:");
-	AddBuffer(&kbuf,buffer);
+	AddBuffer(&kbuf,buffer,0);
 	break;
       case 'u':
 	strcpy(buffer,"\nunyuu:");
-	AddBuffer(&kbuf,buffer);
+	AddBuffer(&kbuf,buffer,0);
 	break;
       case 'n':
 	strcpy(buffer,"\n");
-	AddBuffer(&kbuf,buffer);
+	AddBuffer(&kbuf,buffer,0);
 	break;
       case 'e':
 	strcpy(buffer,"\\e\n");
-	AddBuffer(&kbuf,buffer);
+	AddBuffer(&kbuf,buffer,0);
 	goto END;
 	break;
       case 't':
@@ -1115,7 +1154,7 @@ static void SakuraParser(char* in_ptr)
 		  ,c_ptr - chr_ptr);
 	  str_num[c_ptr - chr_ptr] = '\0';
 	  sprintf(buffer,"\\w%d",atoi(str_num));
-	  AddBuffer(&kbuf,buffer);
+	  AddBuffer(&kbuf,buffer,0);
 	}
 	chr_ptr = c_ptr - 1;
 	break;
@@ -1128,14 +1167,14 @@ static void SakuraParser(char* in_ptr)
 		,c_ptr - chr_ptr);
 	str_num[c_ptr - chr_ptr] = '\0';
 	sprintf(buffer,"(Surface:%d)",atoi(str_num));
-	AddBuffer(&kbuf,buffer);
+	AddBuffer(&kbuf,buffer,0);
 	chr_ptr = c_ptr - 1;
 	break;
       }
     } else {
       strncpy(buffer,chr_ptr,1);
       buffer[1] = '\0';
-      AddBuffer(&kbuf,buffer);
+      AddBuffer(&kbuf,buffer,0);
     }
   }
 
@@ -8326,7 +8365,7 @@ static void sstp(int port)
 	if(!strncmp(buffer,"Script:",strlen("Script:"))){
 	  is_script = 1;
 	  status++;
-	  AddBuffer(&kbuf,buffer + strlen("Script:"));
+	  AddBuffer(&kbuf,buffer + strlen("Script:"),0);
 	} else if(!strncmp(buffer,"SEND SSTP/1.0",strlen("SEND SSTP/1.0"))){
 	  status = 1;
 	  /* NULL */
@@ -8416,7 +8455,7 @@ static void sstp(int port)
 	  status = -1;
 	  break;
 	} else if(is_script){
-	  AddBuffer(&kbuf,buffer);
+	  AddBuffer(&kbuf,buffer,0);
 	}
 	
 	if(strncmp(buffer,"\n",2) == 0 || strstr(buffer,"\n\n")) break;
@@ -8450,23 +8489,19 @@ static void sstp(int port)
       fclose(stream);
 
       if(status == 3 && is_script){
-	chr_ptr = SSTPParser(kbuf.buffer);
+	chr_ptr = conv(kbuf.buffer);
+
 	*kbuf.buffer = '\0';
-	AddBuffer(&kbuf,chr_ptr);
+	AddBuffer(&kbuf,chr_ptr,0);
 	free(chr_ptr);
 
-	chr_ptr = conv(kbuf.buffer);
+	chr_ptr = SSTPParser(kbuf.buffer);
+
+	AddBuffer(&mbuf,chr_ptr,UseSSTP);
 	/*
-	 *kbuf.buffer = '\0';
-	 AddBuffer(&kbuf,chr_ptr);
-	 free(chr_ptr);
-	 chr_ptr = ChangeBadKanjiCode(kbuf.buffer);
-	 */
-	AddBuffer(&mbuf,chr_ptr);
-
 	if(strstr(chr_ptr,"\\e") == NULL)
-	  AddBuffer(&mbuf,"\\e");
-
+	  AddBuffer(&mbuf,"\\e",UseSSTP);
+	*/
 	free(chr_ptr);
 	*kbuf.buffer = '\0';
       }
@@ -8486,31 +8521,39 @@ static unsigned char* SSTPParser(unsigned char* in)
   int i;
 
   static const char escape[][256] = {
+    "%selfname2",
+    "%selfname",
     "%username",
+    "%keroname",
+    "%minute",
+    "%second",
+    "%month",
+    "%hour",
+    "%day",
+    "%dms",
+    "%ms",
+    "%mz",
+    "%mc",
+    "%mh",
+    "%mt",
+    "%me",
+    "%mp",
+    "%m",
     "",
   };
 
-  kbuf.buffer = (unsigned char*)malloc(strlen(in) + 1);
+  kbuf.buffer = (unsigned char*)strdup(in);
   kbuf.size = strlen(in) + 1;
-  *kbuf.buffer = '\0';
 
-  buffer = (unsigned char*)strdup(in);
-  tmp = (unsigned char*)malloc(strlen(in) + 1);
+  for(i = 0; strlen(escape[i]) && strchr(kbuf.buffer,'%');i++)
+    ReplaceSSTPEscape(&kbuf,escape[i]);
 
-  while((chr_ptr = strchr(buffer,'%')) != NULL){
-    for(i = 0; strlen(escape[i]);i++)
-      ReplaceSSTPEscape(buffer,escape[i],&kbuf);
-  }
-  AddBuffer(&kbuf,buffer);
-
-  free(buffer);
-  free(tmp);
   tmp = (unsigned char*)strdup(kbuf.buffer);
   free(kbuf.buffer);
   return tmp;
 }
   
-static void ReplaceSSTPEscape(unsigned char* target,const unsigned char* tag, messageBuffer* kbuf){
+static void ReplaceSSTPEscape(messageBuffer* kbuf,const unsigned char* tag){
   /*
    * SSTP escape message (tag) in target is replaced and add into kbuf
    */
@@ -8518,38 +8561,82 @@ static void ReplaceSSTPEscape(unsigned char* target,const unsigned char* tag, me
   unsigned char* tmp;
   unsigned char* pivot;
   unsigned char* message;
+  messageBuffer tbuf;
 
-  if((pivot = strchr(target,'%')) == NULL)
-    return;
+  if(strstr(kbuf->buffer,tag) == NULL) return;
 
   message = Escape2Message(tag);
-  tmp = (unsigned char*)malloc(strlen(target) + 1);
+  tmp = (unsigned char*)malloc(strlen(kbuf->buffer) + 1);
+  tbuf.buffer = (unsigned char*)malloc(strlen(kbuf->buffer) * 2);
+  tbuf.size = strlen(kbuf->buffer) * 2;
+  *tbuf.buffer = '\0';
   
-  if(!strncasecmp(pivot,tag,strlen(tag))){
-    strncpy(tmp,target,strlen(target) - strlen(pivot));
-    tmp[strlen(target) - strlen(pivot)] = '\0';
-    AddBuffer(kbuf,tmp);
-    AddBuffer(kbuf,message);
-    strcpy(target,pivot + strlen(tag));
-  } else {
-    strncpy(tmp,target,pivot - target);
-    tmp[pivot - target] ='\0';
-    AddBuffer(kbuf,tmp);
-    strcpy(target,pivot + 1);
+  while((pivot = strstr(kbuf->buffer,tag)) != NULL){
+    strncpy(tmp,kbuf->buffer,strlen(kbuf->buffer) - strlen(pivot));
+    tmp[strlen(kbuf->buffer) - strlen(pivot)] = '\0';
+    AddBuffer(&tbuf,tmp,0);
+    AddBuffer(&tbuf,message,0);
+    AddBuffer(&tbuf,pivot + strlen(tag),0);
+    strcpy(kbuf->buffer,pivot + strlen(tag));
   }
+  *(kbuf->buffer) = '\0';
+  AddBuffer(kbuf,tbuf.buffer,0);
   free(tmp);
   free(message);
+  free(tbuf.buffer);
 }
 
 static unsigned char* Escape2Message(const unsigned char* in){
   unsigned char* r;
+  unsigned char* _r;
+  struct tm *tm_now;
+  time_t tval;
 
   /*
    * this function should call KAWARI's routine and decode
    *  SSTP escape message
    */
 
-  r = (unsigned char*)malloc(strlen("USER" + 1));
-  strcpy(r,"USER");
-  return r;
+  time(&tval);
+  tm_now = localtime(&tval);
+
+  if(!strcmp(in,"%username")){
+    return (unsigned char*)strdup(opr.u_name);
+  } else if (!strcmp(in,"%selfname")){
+    return (unsigned char*)strdup(opr.s_name);
+  } else if (!strcmp(in,"%selfname2")){
+    return (unsigned char*)strdup(opr.sn_name);
+  } else if (!strcmp(in,"%keroname")){
+    return (unsigned char*)strdup(opr.k_name);
+  } else if (!strcmp(in,"%month")){
+    r = (unsigned char*)malloc(10);
+    sprintf(r,"%d",tm_now->tm_mon + 1);
+    return r;
+  } else if (!strcmp(in,"%day")){
+    r = (unsigned char*)malloc(10);
+    sprintf(r,"%d",tm_now->tm_mday);
+    return r;
+  } else if (!strcmp(in,"%hour")){
+    r = (unsigned char*)malloc(10);
+    sprintf(r,"%d",tm_now->tm_hour);
+    return r;
+  } else if (!strcmp(in,"%minute")){
+    r = (unsigned char*)malloc(10);
+    sprintf(r,"%d",tm_now->tm_min);
+    return r;
+  } else if (!strcmp(in,"%second")){
+    r = (unsigned char*)malloc(10);
+    sprintf(r,"%d",tm_now->tm_sec);
+    return r;
+  }
+
+#ifdef USE_KAWARI
+  r = DecodeEscapeMessage(opr.kawari_dir,in);
+  _r = SJIS2EUC(r);
+  free(r);
+#else
+  _r = (unsigned char*)malloc(1);
+  *_r = '\0';
+#endif
+  return _r;
 }

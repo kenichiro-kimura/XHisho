@@ -36,7 +36,6 @@ static int ShowGreet = 1;
 
 #ifdef OPTION
 static int UseOption = 1;
-static int SSTP_port;
 #endif
 
 /**
@@ -425,9 +424,6 @@ int main(int argc, char **argv)
    **/
 
   PrintUsage(argc, argv);
-
-  if(UseSSTP)
-    sstpinit(SSTP_port);
 
   /**
    * main windowを生成。class名はxhisho。
