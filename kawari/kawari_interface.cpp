@@ -8,12 +8,13 @@ using namespace std;
 
 extern "C" char* RandomMessage(char* kawari_dir)
 {
-	string sakuraname="sakura";
-	string keroname="unyuu";
-	string friendname="sirone";
-	string datapath="";
+	static string sakuraname="sakura";
+	static string keroname="unyuu";
+	static string friendname="sirone";
+	static string datapath="";
 
-	TNS_KawariANI NS_Shiori;
+	static TNS_KawariANI NS_Shiori;
+	static int virgine = 1;
 
 	if(kawari_dir == NULL || strlen(kawari_dir) < 1){
 	  datapath = "./";
@@ -28,13 +29,18 @@ extern "C" char* RandomMessage(char* kawari_dir)
 	datapath += "/";
 	string dllpath=datapath+"shiori.dll";
 
-	if(!NS_Shiori.Load(datapath)) {
-	  return NULL;
+	if(virgine){
+	  if(!NS_Shiori.Load(datapath)) {
+	    return NULL;
+	  }
+	  virgine = 0;
+
+
+	  NS_Shiori.SetUpNameTable(sakuraname,keroname,friendname);
+
 	}
 
-	NS_Shiori.SetUpNameTable(sakuraname,keroname,friendname);
-
-	string aistr;
+	static string aistr;
 	char* r_str;
 	aistr = NS_Shiori.GetAIStringRandom();
 
