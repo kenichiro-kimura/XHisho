@@ -34,7 +34,7 @@ XHisho.OpenMessage.configFile: $B0';"%G!<%?$N%G!<%?%U%!%$%kL>(B
 
 XHisho.OpenMessage.scheduleDir: $B%9%1%8%e!<%k%U%!%$%k$rCV$$$F$*$/%G%#%l(B
                                 $B%/%H%j!#(B$HOME$B0J2<$r;XDj$9$k!#%G%U%)%k(B
-                                $B%H$O(B.  Schedule/ $B$3$l$G!"<B:]$N%G%#%l(B
+                                $B%H$O(B .Schedule/ $B!#$3$l$G!"<B:]$N%G%#%l(B
                                 $B%/%H%j$O(B$HOME/.Schedule$B$K$J$k!#5/F0%*(B
                                 $B%W%7%g%s(B '-scheddir'$B$G$b;XDj2DG=!#(B
 
@@ -69,14 +69,14 @@ MESSAGE_TAG MESSAGE
 $B$H!"%a%C%;!<%8$N%?%0$N$"$H$K6uGr$r(B1$B$D$"$1$F!"%a%C%;!<%8$r=q$-$^$9!#%?(B
 $B%0$K$O0J2<$N$b$N$,$"$j$^$9!#(B
 
-newmali           $B%a!<%kCe?.$rCN$i$;$k%a%C%;!<%8!#(B
+newmali           $B%a!<%kCe?.$rCN$i$;$k%a%C%;!<%8(B
 nomail            $B1&%\%?%s$G%a!<%k%\%C%/%9$rD4$Y$F!"%a!<%k$,$J$+$C$?$H(B
                   $B$-$N%a%C%;!<%8(B
-open1             $B%9%1%8%e!<%k%a%C%;!<%8(B(1)$B!#(B
-open2             $B%9%1%8%e!<%k%a%C%;!<%8(B(2)$B!#(B
-open3             $B%9%1%8%e!<%k%a%C%;!<%8(B(3)$B!#(B
-alert1            $B$*CN$i$;%a%C%;!<%8(B(4)$B!#(B
-alert2            $B$*CN$i$;%a%C%;!<%8(B(5)$B!#(B
+open1             $B%9%1%8%e!<%k%a%C%;!<%8(B(1)
+open2             $B%9%1%8%e!<%k%a%C%;!<%8(B(2)
+open3             $B%9%1%8%e!<%k%a%C%;!<%8(B(3)
+alert1            $B$*CN$i$;%a%C%;!<%8(B(4)
+alert2            $B$*CN$i$;%a%C%;!<%8(B(5)
 schedule          $B%9%1%8%e!<%k%(%G%#%C%H%a%C%;!<%8(B
 
 $BL58z$J%(%s%H%j$OL5;k$5$l$^$9!#$^$?!"L$Dj5A$N$b$N$O%j%=!<%9$K=>$$$^$9!#(B
@@ -179,11 +179,11 @@ XHisho.OpenMessage.messageArg:    $B%a%C%;!<%8$N%G!<%?$NJB$YJ}(B
 $B!XJ,!Y(B(Minute)$B!W!"!V%$%Y%s%H!W$N(B3$B$D$,$"$j$^$9!#$3$N(B3$B$D$N%G!<%?$r$I$&$$(B
 $B$&=gHV$GJB$Y!"$I$N$h$&$J%a%C%;!<%8$NCf$KKd$a9~$`$+$r%+%9%?%^%$%:$9$k$3(B
 $B$H$,$G$-$^$9!#6qBNE*$K$O%j%=!<%9(BmessageFormat$B$,!V$I$N$h$&$J%a%C%;!<%8(B
-$B$N$I$3$K%G!<%?$rKd$a9~$`$+!W$r!"%j%=!<%9(BmessageArg$B$,(BFormat$B$NCf$N$I$N(B%s
-$B$,$I$N%G!<%?$KBP1~$9$k$+$r7hDj$7$^$9!#(BmessageArg$B$O!V(Bh(hour)$B!"(Bm(minute)$B!"(B
-e(event)$B!W$N$$$E$l$+$+$i$J$kO"B3$7$?J8;zNs$G!"(B4$BJ8;zL\0J9_$O0UL#$r;}$A(B
-$B$^$;$s!#$3$l$G$OJ,$+$j$K$/$$$H;W$$$^$9$N$G!"6qBNE*$KNc$r5s$2$F@bL@$7$^(B
-$B$9!#(B
+$B$N$I$3$K%G!<%?$rKd$a9~$`$+!W$r!"%j%=!<%9(BmessageArg$B$,!V(BFormat$B$NCf$N$I$N(B
+%s$B$,$I$N%G!<%?$KBP1~$9$k$+!W$r7hDj$7$^$9!#(BmessageArg$B$O!V(Bh(hour)$B!"(B
+m(minute)$B!"(Be(event)$B!W$N$$$E$l$+$+$i$J$kO"B3$7$?J8;zNs$G!"(B4$BJ8;zL\0J9_$O(B
+$B0UL#$r;}$A$^$;$s!#$3$l$G$OJ,$+$j$K$/$$$H;W$$$^$9$N$G!"6qBNE*$KNc$r5s$2(B
+$B$F@bL@$7$^$9!#(B
 
 $B$^$:!"I8=`$N>l9g$G$9!#(B
 
@@ -335,11 +335,11 @@ config.tmpl$B$G(B#define USE_SOUND$B$H$7$F%3%s%Q%$%k$9$k$H!"(BFreeBSD$B$H(
 
 $B%a!<%k$,FO$$$?$H$-$KLD$i$9%U%!%$%k$O(B
 
-XHisho.MailAlert.newMailSound: newmail.wav
+XHisho.MailAlert.newMailSound: 
 
 $B$G!"M=Dj$rCN$i$;$k;~$KLD$i$9%U%!%$%k$O(B
 
-XHisho.OpenMessage.scheduleAlertSound: schedule.wav
+XHisho.OpenMessage.scheduleAlertSound: 
 
 $B$G@_Dj$7$^$9!#(B
 
