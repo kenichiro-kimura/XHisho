@@ -113,7 +113,9 @@ static void Wait(Widget w, XEvent * e, String * s, unsigned int *i)
     tm_now = localtime(&now);
     calendarwin = CreateCalendarWindow(toplevel, tm_now->tm_mon, *tm_now);
     menu = CreateMenuWindow(toplevel);
+#ifdef OPTION
     optionwin = CreateOptionWindow(toplevel);
+#endif
 
     /**
      * openwin のポップアップ
@@ -470,7 +472,9 @@ static void PrintUsage(int argc, char **argv)
   "     -pserver [server_name]      : POP3(or IMAP4) server name\n"
   "     -xoff [n]                   : Popup Window X-offset\n"
   "     -yoff [n]                   : Popup Window Y-offset\n"
+#ifdef OPTION
   "     -optioncmd                  : Option Command\n"
+#endif
   "\n";
 
   static char *compile_option =

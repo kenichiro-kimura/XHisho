@@ -128,4 +128,10 @@ AC_ARG_WITH(xadl,
         [with_xadl=yes])
 test "$with_xadl" = "yes" && AC_DEFINE(XADL)
 
+AC_ARG_WITH(option,
+        [  --without-option          compile without 'Something except that with option' ],
+        [with_option=$withval],
+        [with_option=yes])
+test "$with_option" = "yes" && AC_DEFINE(OPTION)
+
 AC_OUTPUT(Makefile apps/Makefile Imakefile image/Imakefile xadl/Imakefile libmhc/Imakefile)
