@@ -31,7 +31,7 @@
   rewindmhc(MHC *mhcp)
 
   int
-  closedir(MHC *mhcp)
+  closemhc(MHC *mhcp)
 
   くらいで足りる?
 

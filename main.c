@@ -103,10 +103,9 @@ static void Wait(Widget w, XEvent * e, String * s, unsigned int *i)
      **/
 
     openwin = CreateEditorWindow(toplevel, 0, *tm_now);
+    editwin = CreateEditorWindow(toplevel, 3, *tm_now);
 
     calendarwin = CreateCalendarWindow(toplevel, tm_now->tm_mon, *tm_now);
-
-    editwin = CreateEditorWindow(toplevel, 3, *tm_now);
 
     menu = CreateMenuWindow(toplevel);
 

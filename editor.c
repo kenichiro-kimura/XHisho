@@ -358,6 +358,7 @@ Widget CreateEditorWindow(Widget w, int Mode, struct tm tm_now)
    * 変数等の初期化。mainの大きさや位置も取得し、Argにセットする
    **/
 
+
   labelargs[5].value = (XtArgVal) POINT_WIDTH + LABEL_OFFSET;
   dargs[7].value = (XtArgVal) POINT_WIDTH + LABEL_OFFSET;
   Longest_sched = 0;
@@ -402,6 +403,7 @@ Widget CreateEditorWindow(Widget w, int Mode, struct tm tm_now)
   if (virgine) {
     virgine = 0;
     schedule = malloc(sizeof(Schedule) * MAX_SCHED_NUM);
+    memset(schedule, 0, sizeof(Schedule) * MAX_SCHED_NUM);
     ReadHoliday();
   }
   for (i = 0; i < NUM_OF_ARRAY(ResName); i++) {
@@ -419,8 +421,6 @@ Widget CreateEditorWindow(Widget w, int Mode, struct tm tm_now)
 				 ,editargs, XtNumber(editargs));
   }
 
-  memset(schedule, 0, sizeof(Schedule) * MAX_SCHED_NUM);
-
   /**
    * read Schedule
    **/
@@ -432,7 +432,7 @@ Widget CreateEditorWindow(Widget w, int Mode, struct tm tm_now)
 
   switch (Mode) {
   case 0:
-    Schedule_num = schedules = CheckSchedule(&omr, schedule, 1, tm_now);
+    schedules = CheckSchedule(&omr, schedule, 1, tm_now);
     break;
   case 1:
     schedules = CheckSchedule(&omr, schedule, 1, tm_now);
@@ -441,12 +441,14 @@ Widget CreateEditorWindow(Widget w, int Mode, struct tm tm_now)
     schedules = CheckSchedule(&omr, schedule, 1, tm_now);
     break;
   case 3:
-    schedules = CheckSchedule(&omr, schedule, 0, tm_now);
+    schedules = CheckSchedule(&omr, schedule, 3, tm_now);
     break;
   case 4:
     schedules = CheckSchedule(&omr, schedule, 2, tm_now);
     break;
   }
+
+  Schedule_num = schedules;
 
   ScheduleSort();
 
@@ -591,6 +593,7 @@ Widget CreateEditorWindow(Widget w, int Mode, struct tm tm_now)
 	 **/
 	if (l <= 1)
 	  schedule[j].is_checked = 0;
+
       }
       labelargs[0].value = (XtArgVal) sched_list[j];
       if (j) {
@@ -1018,15 +1021,16 @@ static int ChangeColorPastSched()
    * 「もうすぐ」なスケジュールの数を返す。
    **/
 
-  int i, j, k;
+  int i, j, k, l;
 
   i = Schedule_num;
 
   k = 0;
   for (j = 0; j < i; j++) {
-    if (CheckIsSchedPast(j, schedule) < 0) {
+    l = CheckIsSchedPast(j, schedule);
+    if (l < 0) {
       XtVaSetValues(list[j], XtNforeground, GetColor(XtDisplay(top), omr.past_c), NULL);
-    } else if (CheckIsSchedPast(j, schedule) <= schedule[j].leave) {
+    } else if (l <= schedule[j].leave) {
       XtVaSetValues(list[j], XtNforeground, GetColor(XtDisplay(top), omr.alert_c), NULL);
       k++;
     } else {
@@ -1199,6 +1203,7 @@ void CheckTimeForSchedule(XtPointer cl, XtIntervalId * id)
     openwin = CreateEditorWindow(cl, 0, *tmp);
     OpenPopup();
   }
+
   if (ChangeColorPastSched()) {
     /**
      * 1つでも「もうすぐ」なスケジュールがあったら通知ウインドをポップアップ
