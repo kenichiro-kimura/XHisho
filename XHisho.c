@@ -311,8 +311,7 @@ static void Realize(Widget w, XtValueMask * valueMask, XSetWindowAttributes * at
 
   xhw->xhisho.i_info->d = XtDisplay(XtParent(w));
   xhw->xhisho.i_info->w = XtWindow(XtParent(w));
-  xhw->xhisho.i_info->filename = (char*)malloc(strlen(BCG) + 1);
-  strcpy(xhw->xhisho.i_info->filename,BCG);
+  xhw->xhisho.i_info->filename = strdup(BCG);
   xhw->xhisho.i_info->is_shape = xhw->xhisho.is_shape;
   xhw->xhisho.i_info->ext_height = clock_height;
 

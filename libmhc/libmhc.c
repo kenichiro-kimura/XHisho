@@ -26,7 +26,8 @@ static int datecmp(char*,char*);
 static int istrcmp(const char*,const char*);
 static int istrncmp(const char*,const char*,size_t);
 
-static _MHCD* _MHCDNew(mhcent* item){
+static _MHCD* _MHCDNew(mhcent* item)
+{
   _MHCD* mhc_ptr;
 
   mhc_ptr = (_MHCD*)malloc(sizeof(_MHCD));
@@ -50,7 +51,8 @@ static MHCD* MHCDNew(mhcent* item){
   return mhc_ptr;
 }
 
-static void MHCDDelete(MHCD* mhc_ptr){
+static void MHCDDelete(MHCD* mhc_ptr)
+{
   if(!mhc_ptr) return;
   if(!*mhc_ptr) return;
 
@@ -64,7 +66,8 @@ static void MHCDDelete(MHCD* mhc_ptr){
   //  free(mhc_ptr);
 }
 
-static mhcent* EntryNew(){
+static mhcent* EntryNew()
+{
   mhcent* mhcent_ptr;
   int i;
 
@@ -79,7 +82,8 @@ static mhcent* EntryNew(){
   return mhcent_ptr;
 }
       
-static void EntryDelete(mhcent* item){
+static void EntryDelete(mhcent* item)
+{
   int i;
 
   if(item == NULL)
@@ -93,7 +97,8 @@ static void EntryDelete(mhcent* item){
   free(item);
 }
 
-static mhcent* ReadEntry(FILE* fp){
+static mhcent* ReadEntry(FILE* fp)
+{
   mhcent* mhcent_ptr;
   char* buffer;
   char* chr_ptr;
@@ -133,13 +138,13 @@ static mhcent* ReadEntry(FILE* fp){
 
     if(tag != -1){
       /*
-       * タグを読みとばす
+       * ignore TAG
        */
       for(chr_ptr = buffer;chr_ptr;chr_ptr++)
 	if(*chr_ptr == ':') break;
 
       /*
-       * タグの後ろのスペースを読み飛ばす
+       * ignore white spaces.
        */
       for(chr_ptr++;chr_ptr;chr_ptr++)
 	if(!isspace((unsigned char)*chr_ptr)) break;
@@ -155,7 +160,8 @@ static mhcent* ReadEntry(FILE* fp){
   return mhcent_ptr;
 }
 
-static MHC* MHCNew(){
+static MHC* MHCNew()
+{
   MHC* mhc_ptr;
   int i;
 
@@ -175,7 +181,8 @@ static MHC* MHCNew(){
   return mhc_ptr;
 }
 
-static entrylist* EntrylistNew(mhcent* item){
+static entrylist* EntrylistNew(mhcent* item)
+{
   entrylist* newlist;
   int i;
 
@@ -207,7 +214,8 @@ static entrylist* EntrylistNew(mhcent* item){
   return newlist;
 }
 
-static int AddEntry(MHC* mhc_ptr,mhcent* ent_ptr,int day){
+static int AddEntry(MHC* mhc_ptr,mhcent* ent_ptr,int day)
+{
   entrylist* newlist;
   entrylist* list_ptr;
 
@@ -231,7 +239,8 @@ static int AddEntry(MHC* mhc_ptr,mhcent* ent_ptr,int day){
   return 0;
 }
       
-static void EntrylistDelete(entrylist* list_ptr){
+static void EntrylistDelete(entrylist* list_ptr)
+{
   if(!list_ptr) return;
 
   if(list_ptr->next != NULL)
@@ -241,7 +250,8 @@ static void EntrylistDelete(entrylist* list_ptr){
   free(list_ptr);
 }
 
-static int CheckSC_Day(char* sc_day,int year,int month,int day){
+static int CheckSC_Day(char* sc_day,int year,int month,int day)
+{
   char* chr_ptr;
   char* yearmonth;
   char* pivot_ptr;
@@ -307,7 +317,8 @@ static int CheckSC_Day(char* sc_day,int year,int month,int day){
 
 }
 
-static int CheckSC_Duration(char* sc_duration,int year,int month,int day){
+static int CheckSC_Duration(char* sc_duration,int year,int month,int day)
+{
   char* duration_begin;
   char* duration_end;
   char* yearmonthday;
@@ -375,7 +386,8 @@ static int CheckSC_Duration(char* sc_duration,int year,int month,int day){
 
 }
 
-static int CheckMonth(char* sc_cond,int month){
+static int CheckMonth(char* sc_cond,int month)
+{
   char CondMonth[][4] = {"Jan","Feb","Mar","Apr","May","Jun","Jul"
       	      ,"Aug","Sep","Oct","Nov","Dec"};
   char* chr_ptr;
@@ -415,7 +427,8 @@ static int CheckMonth(char* sc_cond,int month){
   return -1;
 }
 
-static int CheckOrdinal(char* sc_cond,int year,int month,int day){
+static int CheckOrdinal(char* sc_cond,int year,int month,int day)
+{
   const int wdays[] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
   char Ordinal[][4] = {"1st","2nd","3rd","4th","5th"};
   char* chr_ptr;
@@ -476,7 +489,8 @@ static int CheckOrdinal(char* sc_cond,int year,int month,int day){
   return -1;
 }
 
-static int CheckWeek(char* sc_cond,int year,int month,int day){
+static int CheckWeek(char* sc_cond,int year,int month,int day)
+{
   char CondWeek[][4] = {"Sun","Mon","Tue","Wed","Thu","Fri","Sat"};
 
   char* chr_ptr;
@@ -526,7 +540,8 @@ static int CheckWeek(char* sc_cond,int year,int month,int day){
   return -1;
 }
 
-static int CheckDay(char* sc_cond,int day){
+static int CheckDay(char* sc_cond,int day)
+{
   char* chr_ptr;
   char* pivot_ptr;
   int ret_value = -1;
@@ -563,7 +578,8 @@ static int CheckDay(char* sc_cond,int day){
   return -1;
 }
 
-static int CheckSC_Cond(char* sc_cond,int year,int month,int day){
+static int CheckSC_Cond(char* sc_cond,int year,int month,int day)
+{
   int isOrdinal,isCondDay,isCondMonth,isCondWeek;
   int isCond;
 
@@ -579,64 +595,64 @@ static int CheckSC_Cond(char* sc_cond,int year,int month,int day){
   switch(isCondMonth){
   case 1:
     /*
-     * 月が定義されていて、しかも該当する
+     * month is defined and correspond
      */
     if(isCondDay == 1){
       /*
-       * 該当する日である
+       * correspond to day
        */
       return 1;
     }
     if(isOrdinal == 1 && isCondWeek == 1){
       /*
-       * 序数と曜日が該当する
+       * correspond to week and ordinal
        */
       return 1;
     }
     if(isOrdinal == -1 && isCondWeek == 1){
       /*
-       * 序数が未定義で曜日が該当する
+       * ordinal is not defined and coreespond to week
        */
       return 1;
     }
     if(isCondDay == isOrdinal == isCondWeek == -1){
       /*
-       * 月以外全て見定義
+       * correspond to month, others are not defined.
        */
       return 1;
     }
 
     /*
-     * 月はあっているが、それ以外の条件があっていない
+     * correspond to month, but other conditions don't correspond
      */
     return 0;
     break;
   case 0:
     /*
-     * 月が定義されていて、しかも該当しない
+     * month is defined and don't correspond
      */
 
     return 0;
     break;
   case -1:
     /*
-     * 月が未定義
+     * month is not defined
      */
     if(isCondDay == 1){
       /*
-       * 該当する日である
+       * correspond to day
        */
       return 1;
     }
     if(isOrdinal == 1 && isCondWeek == 1){
       /*
-       * 序数と曜日が該当する
+       * correspond to week and ordinal
        */
       return 1;
     }
     if(isOrdinal == -1 && isCondWeek == 1){
       /*
-       * 序数が未定義で曜日が該当する
+       * ordinal is not defined and correspond to week
        */
       return 1;
     }
@@ -646,7 +662,8 @@ static int CheckSC_Cond(char* sc_cond,int year,int month,int day){
   return -1;
 }
   
-static int datecmp(char* a,char* b){
+static int datecmp(char* a,char* b)
+{
   time_t a_t,b_t;
   struct tm *tm_x;
   char year[5],month[3],day[3];
@@ -694,6 +711,30 @@ static int datecmp(char* a,char* b){
   return diff;
 }
 
+static int istrcmp(const char* s1,const char* s2)
+{
+  while (tolower(*(const unsigned char*)s1) 
+	 == tolower(*(const unsigned char*)s2++))
+    if (*s1++ == 0)
+      return (0);
+  return (*(const unsigned char *)s1 - *(const unsigned char *)(s2 - 1));
+}
+  
+static int istrncmp(const char* s1,const char* s2,size_t n)
+{
+  if (n == 0)
+    return (0);
+  do {
+    if (tolower(*(const unsigned char*)s1) 
+	!= tolower(*(const unsigned char*)s2++))
+      return (*(const unsigned char *)s1 -
+	      *(const unsigned char *)(s2 - 1));
+    if (*s1++ == 0)
+      break;
+  } while (--n != 0);
+  return (0);
+}
+
 /**
  * =================================================================
  *                                                                  
@@ -703,7 +744,17 @@ static int datecmp(char* a,char* b){
  **/
 
 
-MHCD* openmhc(const char* home_dir, const char* year_month){
+MHCD* openmhc(const char* home_dir, const char* year_month)
+{
+  /*
+   * home_dir   : your MHC home directory. 
+   *              for example,"/home/someone/Mail/schedule/".
+   *              '~' is *not* extended automatically.
+   * year_month : "yyyymm"
+   *
+   * open MHC data in "/home/someone/Mail/schedule/yyyymm/"
+   */
+		    
   int i;
   DIR* dirp;
   FILE* fp;
@@ -794,7 +845,12 @@ MHCD* openmhc(const char* home_dir, const char* year_month){
   return mhc_ptr;
 }  
 
-mhcent* readmhc(MHCD* mhc_ptr){
+mhcent* readmhc(MHCD* mhc_ptr)
+{
+  /*
+   *  return MHC entry pointed by mhc_ptr
+   */
+
   mhcent* ent_ptr;
 
   if(!mhc_ptr) return NULL;
@@ -809,7 +865,13 @@ mhcent* readmhc(MHCD* mhc_ptr){
   }
 }
 
-int closemhc(MHCD* mhc_ptr){
+int closemhc(MHCD* mhc_ptr)
+{
+  /*
+   * close MHC handler
+   *
+   * if succeed, return 0. otherwise, return 1.
+   */
   if(!mhc_ptr) return 1;
   if(!*mhc_ptr) return 1;
   rewindmhc(mhc_ptr);
@@ -819,7 +881,11 @@ int closemhc(MHCD* mhc_ptr){
   return 0;
 }
 
-void rewindmhc(MHCD* mhc_ptr){
+void rewindmhc(MHCD* mhc_ptr)
+{
+  /*
+   * reset MHC handler 
+   */
   if(!mhc_ptr) return;
   if(!*mhc_ptr) return;
 
@@ -827,7 +893,11 @@ void rewindmhc(MHCD* mhc_ptr){
     *mhc_ptr = (*mhc_ptr)->prev;
 }
 
-void seekmhc(MHCD* mhc_ptr,int locate){
+void seekmhc(MHCD* mhc_ptr,int locate)
+{
+  /*
+   * set MHC handler to location pointed by 'int locate'.
+   */
   int forward;
 
   if(!mhc_ptr) return;
@@ -842,7 +912,14 @@ void seekmhc(MHCD* mhc_ptr,int locate){
   }
 }
 
-int isschedule(const mhcent* ent_ptr,int year,int month,int day){
+int isschedule(const mhcent* ent_ptr,int year,int month,int day)
+{
+  /*
+   * check whether the MHC entry pointed by ent_ptr is a schedule of
+   * year/month/day .
+   *
+   * If so, return 0. otherwise return -1.
+   */
   int isDay,isCond,isDuration;
 
   isDay = isCond = isDuration = -1;
@@ -850,46 +927,34 @@ int isschedule(const mhcent* ent_ptr,int year,int month,int day){
   if(!ent_ptr) return -1;
 
   /*
-   * まず X-SC-Day のチェック 
+   * Check X-SC-Day
    */
 
   isDay = CheckSC_Day(ent_ptr->Entry[X_SC_Day],year,month,day);
 
   /*
-   * X-SC-Duration のチェック
+   * Check X-SC-Duration 
    */
 
   isDuration = CheckSC_Duration(ent_ptr->Entry[X_SC_Duration],year,month,day);
 
   /*
-   * X-SC-Cond のチェック
+   * Check X-SC-Cond
    */
 
   isCond = CheckSC_Cond(ent_ptr->Entry[X_SC_Cond],year,month,day);
 
   /*
    * is** 
-   *      = -1: 無指定
-   *      =  0: 該当しない
-   *      =  1: 該当する
+   *      = -1: not defined
+   *      =  0: not correspond
+   *      =  1: correspond
    *
-   * isDay は例外的に
-   *      = -1: *その日については* 無指定
-   *      =  0: 列挙してある(!で該当しない)
-   *      =  1: 列挙してある(該当する)
+   * Exceptionally, isDay
+   *      = -1: not defined about year/month/day
+   *      =  0: defined, but not correspond (defined with !)
+   *      =  1: defined and correspond
    */    
-  /*
-  switch(isDay){
-  case -1:
-    if(isCond == 1 && isDuration != 0) return 1;
-    return 0;
-  case 0:
-    return 0;
-  case 1:
-    if(isCond != 0 && isDuration != 0) return 1;
-    return 0;
-  }
-  */
 
   switch(isDay){
   case -1:
@@ -905,7 +970,18 @@ int isschedule(const mhcent* ent_ptr,int year,int month,int day){
   return -1;
 }
     
-MHC* OpenMHC(const char* home_dir, int year,int month){
+MHC* OpenMHC(const char* home_dir, int year,int month)
+{
+  /*
+   * home_dir   : your MHC home directory. 
+   *              for example,"/home/someone/Mail/schedule/".
+   *              '~' is *not* extended automatically.
+   * year_month : "yyyymm"
+   *
+   * open MHC data in "/home/someone/Mail/schedule/yyyy/mm/" and
+   *                  "/home/someone/Mail/schedule/intersect/".
+   */
+
   MHC* mhc_ptr;
   MHCD* mhcd_ptr;
   mhcent* ent_ptr;
@@ -937,12 +1013,23 @@ MHC* OpenMHC(const char* home_dir, int year,int month){
   return mhc_ptr;
 }
 
-void SetMHC(MHC* mhc_ptr,int day){
+void SetMHC(MHC* mhc_ptr,int day)
+{
+  /*
+   * set MHC handler to yyyy/mm/day .
+   *
+   * mhc_ptr is already opened by OpenMHC() for yyyy/mm .
+   */
+
   if(!mhc_ptr || day < 1 || day > 31) return;
   (*mhc_ptr)->ptr = (*mhc_ptr)->table[day];
 }
 
 mhcent* ReadMHC(MHC* mhc_ptr){
+  /*
+   * read MHC entry pointed by mhc_ptr
+   */
+
   mhcent* ent_ptr;
 
   if(!mhc_ptr) return NULL;
@@ -959,7 +1046,12 @@ mhcent* ReadMHC(MHC* mhc_ptr){
   }
 }
 
-void RewindMHC(MHC* mhc_ptr){
+void RewindMHC(MHC* mhc_ptr)
+{
+  /*
+   * reset MHC handler
+   */
+
   if(!mhc_ptr) return;
   if(!*mhc_ptr) return;
   if(!(*mhc_ptr)->ptr) return;
@@ -968,7 +1060,12 @@ void RewindMHC(MHC* mhc_ptr){
     (*mhc_ptr)->ptr = (*mhc_ptr)->ptr->prev;
 }
 
-void SeekMHC(MHC* mhc_ptr,int locate){
+void SeekMHC(MHC* mhc_ptr,int locate)
+{
+  /*
+   * set MHC handler to location pointed by 'int locate'.
+   */
+
   int forward;
 
   if(!mhc_ptr) return;
@@ -985,7 +1082,13 @@ void SeekMHC(MHC* mhc_ptr,int locate){
   }
 }
     
-int CloseMHC(MHC* mhc_ptr){
+int CloseMHC(MHC* mhc_ptr)
+{
+  /*
+   * close MHC handler.
+   * If succeed, return 0. otherwise, return 1.
+   */
+
   int i,rv;
 
   if(!mhc_ptr) return 1;
@@ -1002,11 +1105,19 @@ int CloseMHC(MHC* mhc_ptr){
   return rv;
 }
 
-char* GetSubject(const mhcent* ent_ptr){
+char* GetSubject(const mhcent* ent_ptr)
+{
+  /*
+   * return X-SC-Subject: 
+   */
   return ent_ptr->Entry[X_SC_Subject];
 }
 
-int GetAlarm(const mhcent* ent_ptr){
+int GetAlarm(const mhcent* ent_ptr)
+{
+  /*
+   * return X-SC-Alarm by minutes.
+   */
   char* chr_ptr;
   char* tmp;
   int length,ret_value;
@@ -1037,25 +1148,4 @@ int GetAlarm(const mhcent* ent_ptr){
   return ret_value;
 }
   
-static int istrcmp(const char* s1,const char* s2){
-  while (tolower(*(const unsigned char*)s1) 
-	 == tolower(*(const unsigned char*)s2++))
-    if (*s1++ == 0)
-      return (0);
-  return (*(const unsigned char *)s1 - *(const unsigned char *)(s2 - 1));
-}
-  
-static int istrncmp(const char* s1,const char* s2,size_t n){
-  if (n == 0)
-    return (0);
-  do {
-    if (tolower(*(const unsigned char*)s1) 
-	!= tolower(*(const unsigned char*)s2++))
-      return (*(const unsigned char *)s1 -
-	      *(const unsigned char *)(s2 - 1));
-    if (*s1++ == 0)
-      break;
-  } while (--n != 0);
-  return (0);
-}
 

@@ -30,14 +30,16 @@ static PetnameList *Petname_new(char *pname, char *addr)
   pname_ptr = (PetnameList *) malloc(sizeof(PetnameList));
   if(pname_ptr == NULL) return NULL;
   pname_ptr->next = NULL;
-  /*
   pname_ptr->petname = strdup(pname);
   pname_ptr->mail_address = strdup(addr);
-  */
+  /*
   pname_ptr->petname = malloc(strlen(pname) + 1);
   strcpy(pname_ptr->petname,pname);
   pname_ptr->mail_address = malloc(strlen(addr) + 1);
   strcpy(pname_ptr->mail_address,addr);
+  */
+  if(pname_ptr->petname == NULL || pname_ptr->mail_address == NULL)
+    return NULL;
 
   if(pname_ptr->petname[strlen(pname) - 1] == '\n')
     pname_ptr->petname[strlen(pname) - 1] = '\0';
