@@ -7,6 +7,7 @@
 
 static HolidayList *Hlist[12];
 
+static const int wdays[] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
 static int SafeTimeFormat(Schedule);
 static void ReadHolidayFile(char *);
 static HolidayList *HolidayList_new(int, char *);
@@ -46,7 +47,7 @@ int CheckSchedule(OpenMessageRes * l_omr, Schedule * schedule, int WeeklyCheck, 
 
   FILE *inputfile;
   time_t tval;
-  int i, j;
+  int i, j,is_week,nth_week,uru_adjust;
   char filename[128], day[3], month[4], tdate[5], week[2], year[4];
   unsigned char *tmp1, *tmp2, *tmp3, *tmp4, *leave;
   unsigned char *string_index;
@@ -198,7 +199,24 @@ int CheckSchedule(OpenMessageRes * l_omr, Schedule * schedule, int WeeklyCheck, 
 	schedule[i].leave = atoi(leave);
       }
 
-      if (atoi(week) == atoi(tmp4)) {
+      /**
+       * 該当日かどうかのチェック
+       **/
+
+      is_week = 0;
+      nth_week = (atoi(day) -1) / 7;
+      uru_adjust = ((atoi(year) % 4) == 0 && atoi(month) == 2) ? 1 : 0;
+
+      if(strlen(tmp4) == 1 && atoi(week) == atoi(tmp4)) is_week = 1;
+      if(strlen(tmp4) == 2){
+	if(atoi(tmp4 + 1) == atoi(week)){
+	  if(tmp4[0] - '0' == nth_week && atoi(tmp4 +1) == atoi(day)) is_week = 1;
+	  if(tmp4[0] == '6' && atoi(day) + 7 > wdays[atoi(month) -1] + uru_adjust)
+	    is_week = 1;
+	}
+      }
+
+      if (is_week) {
 	strncpy(tdate, tmp2, sizeof(tdate));
 	strncpy(schedule[i].hour, tdate, sizeof(char) * 2);
 	strncpy(schedule[i].min, tdate + 2, sizeof(char) * 2);
