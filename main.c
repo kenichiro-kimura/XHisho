@@ -29,6 +29,7 @@
 
 static int IsSet = 0;		/** 1回目のExposeでだけ子Widgetを作る **/
 static Widget toplevel;
+static int ShowGreet = 1;
 
 /**
  * local function
@@ -125,8 +126,10 @@ static void Wait(Widget w, XEvent * e, String * s, unsigned int *i)
      * openwin のポップアップ
      **/
 
-    XtVaSetValues(openwin, XtNwindowMode, 0, NULL);
-    XtPopup(XtParent(openwin), XtGrabNone);
+    if(ShowGreet){
+      XtVaSetValues(openwin, XtNwindowMode, 0, NULL);
+      XtPopup(XtParent(openwin), XtGrabNone);
+    }
 
     /**
      * 起動時のスケジュール時間のチェック
@@ -461,6 +464,7 @@ static void PrintUsage(int argc, char **argv)
   "     -imap                       : check IMAP4 for biff\n"
   "     -youbin                     : check youbin for biff\n"
   "     -noclock                    : don't draw clock\n"
+  "     -nogreeting                 : don't show initial greeting window\n"
   "     -focus                      : use Focuswin module\n"
   "     -justify [left/center/rignt]: set Focuswin justify\n"
   "     -ypos [n]                   : Y-position offset for Focuswin\n"
@@ -505,6 +509,15 @@ static void PrintUsage(int argc, char **argv)
 #ifdef ADDRESSBOOK
   "    Use Mew's address book for Petname\n"
 #endif
+#ifdef OPTION
+  "    Use 'Something except that with option'\n"
+#endif
+#ifdef LIBMHC
+  "    Use MHC's data\n"
+#endif
+#ifdef USE_SHARED
+  "    Use own libraries as shared library\n"
+#endif
   "\n\n";
 
   int i, print_usage, j, print_coption;
@@ -530,6 +543,8 @@ static void PrintUsage(int argc, char **argv)
       Biff = IMAP;
     } else if (!strcmp(argv[i], "-nosound")) {
       UseSound = 0;
+    } else if (!strcmp(argv[i], "-nogreeting")) {
+      ShowGreet = 0;
     } else if (*argv[i] == '-') {
       j++;
       printf("unknown option:%s\n", argv[i]);
