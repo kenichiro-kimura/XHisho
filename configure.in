@@ -122,9 +122,7 @@ AC_ARG_ENABLE(libmhc,
         [with_libmhc=no])
 test "$with_libmhc" = "yes" && AC_DEFINE(LIBMHC)
 
-X_CONFIG_DIR=`sed "/^config/!d" $XMKMF`
-AC_SUBST(X_CONFIG_DIR)
 
-AC_OUTPUT(Makefile my_xmkmf apps/Makefile Imakefile image/Imakefile xadl/Imakefile libmhc/Imakefile)
 
-chmod +x my_xmkmf
+
+AC_OUTPUT(Makefile apps/Makefile Imakefile image/Imakefile xadl/Imakefile libmhc/Imakefile)

@@ -9,6 +9,7 @@
 
 static MHCD* MHCDNew(mhcent*);
 static void MHCDDelete(MHCD*);
+static mhcent* EntryNew();
 static void EntryDelete(mhcent*);
 static mhcent* ReadEntry(FILE*);
 static MHC* MHCNew();
@@ -53,6 +54,21 @@ static void MHCDDelete(MHCD* mhc_ptr){
   free(*mhc_ptr);
 }
 
+static mhcent* EntryNew(){
+  mhcent* mhcent_ptr;
+  int i;
+
+  mhcent_ptr = (mhcent*)malloc(sizeof(mhcent));
+  if(!mhcent_ptr)
+    return NULL;
+
+  for(i = 0; i < NUM_OF_ARRAY(mhcent_ptr->Entry);i++)
+    mhcent_ptr->Entry[i] = NULL;
+  mhcent_ptr->filename = NULL;
+
+  return mhcent_ptr;
+}
+      
 static void EntryDelete(mhcent* item){
   int i;
 
@@ -73,7 +89,7 @@ static mhcent* ReadEntry(FILE* fp){
   buffer = (char*)malloc(BUFSIZ);
   if(!buffer) return NULL;
 
-  mhcent_ptr = (mhcent*)malloc(sizeof(mhcent));
+  mhcent_ptr = EntryNew();
   if(!mhcent_ptr){
     free(buffer);
     return NULL;

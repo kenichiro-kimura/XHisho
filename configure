@@ -1461,7 +1461,7 @@ test "$with_libmhc" = "yes" && cat >> confdefs.h <<\EOF
 EOF
 
 
-X_CONFIG_DIR=`sed "/^config/!d" $XMKMF`
+
 
 
 trap '' 1 2 15
@@ -1565,7 +1565,7 @@ done
 ac_given_srcdir=$srcdir
 ac_given_INSTALL="$INSTALL"
 
-trap 'rm -fr `echo "Makefile my_xmkmf apps/Makefile Imakefile image/Imakefile xadl/Imakefile libmhc/Imakefile config.h " | sed "s/:[^ ]*//g"` conftest*; exit 1' 1 2 15
+trap 'rm -fr `echo "Makefile apps/Makefile Imakefile image/Imakefile xadl/Imakefile libmhc/Imakefile config.h " | sed "s/:[^ ]*//g"` conftest*; exit 1' 1 2 15
 EOF
 cat >> $CONFIG_STATUS <<EOF
 
@@ -1604,7 +1604,6 @@ s%@INSTALL_DATA@%$INSTALL_DATA%g
 s%@LEX@%$LEX%g
 s%@LEXLIB@%$LEXLIB%g
 s%@YACC@%$YACC%g
-s%@X_CONFIG_DIR@%$X_CONFIG_DIR%g
 
 CEOF
 EOF
@@ -1646,7 +1645,7 @@ EOF
 
 cat >> $CONFIG_STATUS <<EOF
 
-CONFIG_FILES=\${CONFIG_FILES-"Makefile my_xmkmf apps/Makefile Imakefile image/Imakefile xadl/Imakefile libmhc/Imakefile"}
+CONFIG_FILES=\${CONFIG_FILES-"Makefile apps/Makefile Imakefile image/Imakefile xadl/Imakefile libmhc/Imakefile"}
 EOF
 cat >> $CONFIG_STATUS <<\EOF
 for ac_file in .. $CONFIG_FILES; do if test "x$ac_file" != x..; then
@@ -1824,5 +1823,3 @@ chmod +x $CONFIG_STATUS
 rm -fr confdefs* $ac_clean_files
 test "$no_create" = yes || ${CONFIG_SHELL-/bin/sh} $CONFIG_STATUS || exit 1
 
-
-chmod +x my_xmkmf
