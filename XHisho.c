@@ -162,6 +162,15 @@ static XtResource resources[] = {
     XtRImmediate,
     (XtPointer) False
   },
+  {
+    XtNfocusWinInterval,
+    XtCFocusWinInterval,
+    XtRInt,
+    sizeof(int),
+    XtOffset(XHishoWidget, xhisho.focus_interval),
+    XtRImmediate,
+    (XtPointer) 1
+  },
 };
 
 
@@ -400,9 +409,13 @@ static void FocusInterval(XHishoWidget xhw)
     xhw->xhisho.intervalId = 0;
   }
 
+  if(xhw->xhisho.focus_interval == 0)
+    xhw->xhisho.focus_interval = 1;
+
   xhw->xhisho.focus_intervalId = 
     XtAppAddTimeOut(XtWidgetToApplicationContext((Widget) xhw)
-			   ,1 * 100, (XtTimerCallbackProc) MoveFocusWindow, xhw);
+		    ,100 * xhw->xhisho.focus_interval
+		    , (XtTimerCallbackProc) MoveFocusWindow, xhw);
 }
   
 

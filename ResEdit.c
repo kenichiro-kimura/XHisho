@@ -56,6 +56,15 @@ static XtResource resources[] = {
     (XtPointer) LINES_LABEL
   },
   {
+    XtNresEditLabel4,
+    XtCResEditLabel,
+    XtRString,
+    sizeof(String),
+    XtOffsetOf(ResEditRes, Pref[4].label),
+    XtRImmediate,
+    (XtPointer) FOCUS_LABEL
+  },
+  {
     XtNresEditRes0,
     XtCResEditRes,
     XtRString,
@@ -90,6 +99,15 @@ static XtResource resources[] = {
     XtOffsetOf(ResEditRes, Pref[3].name),
     XtRImmediate,
     (XtPointer) LINES_RES
+  },
+  {
+    XtNresEditRes4,
+    XtCResEditRes,
+    XtRString,
+    sizeof(String),
+    XtOffsetOf(ResEditRes, Pref[4].name),
+    XtRImmediate,
+    (XtPointer) FOCUS_RES
   },
   {
     XtNresEditMax0,
@@ -128,6 +146,15 @@ static XtResource resources[] = {
     (XtPointer) LINES_MAX
   },
   {
+    XtNresEditMax4,
+    XtCResEditMax,
+    XtRFloat,
+    sizeof(float),
+    XtOffsetOf(ResEditRes, Pref[4].max),
+    XtRString,
+    (XtPointer) FOCUS_MAX
+  },
+  {
     XtNresEditOffset0,
     XtCResEditOffset,
     XtRFloat,
@@ -162,6 +189,15 @@ static XtResource resources[] = {
     XtOffsetOf(ResEditRes, Pref[3].offset),
     XtRString,
     (XtPointer) LINES_OFFSET
+  },
+  {
+    XtNresEditOffset4,
+    XtCResEditOffset,
+    XtRFloat,
+    sizeof(float),
+    XtOffsetOf(ResEditRes, Pref[4].offset),
+    XtRString,
+    (XtPointer) FOCUS_OFFSET
   },
 };
 

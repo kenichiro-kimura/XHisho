@@ -42,6 +42,8 @@ typedef struct _XHishoRec *XHishoWidget;
 #define XtCIsShape "IsShape"
 #define XtNpetnameFile "petnameFile"
 #define XtCPetnameFile "PetnameFile"
+#define XtNfocusWinInterval "focusWinInterval"
+#define XtCFocusWinInterval "FocusWinInterval"
 
 
 #define CGFILE "hisho.xpm"

@@ -67,6 +67,7 @@ XHisho.ResEdit.resEditLabel0: mail window timeout(sec.)
 XHisho.ResEdit.resEditLabel1: mail check interval(sec.)
 XHisho.ResEdit.resEditLabel2: message columns
 XHisho.ResEdit.resEditLabel3: message lines
+XHisho.ResEdit.resEditLabel4: focuswin interval(0.1 sec.)
 
 !!
 !! resources for focusWin

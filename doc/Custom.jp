@@ -423,6 +423,7 @@ XHisho.ResEdit.resEditLabel0: タイムアウトのラベル
 XHisho.ResEdit.resEditLabel1: インターバルのラベル
 XHisho.ResEdit.resEditLabel2: メッセージの長さのラベル
 XHisho.ResEdit.resEditLabel3: メッセージの行数のラベル
+XHisho.ResEdit.resEditLabel4: focusWinを調べるインターバルのラベル
 
 ウインドウのラベルはメッセージファイルのタグresourceでも設定可能です。
 

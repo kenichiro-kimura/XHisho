@@ -81,6 +81,7 @@ static void Wait(Widget w, XEvent * e, String * s, unsigned int *i)
   if (!IsSet) {
 
     resedit = CreateResEditWindow(toplevel);
+    XtVaSetValues(xhisho, XtNfocusWinInterval, (int)rer.Pref[4].param, NULL);
 
     about = CreateAboutWindow(toplevel);
 
@@ -355,7 +356,6 @@ int main(int argc, char **argv)
 #ifdef PETNAME
   ReadPetname(petname_f);
 #endif
-
 
   /**
    * Action のセット

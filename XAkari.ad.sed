@@ -74,6 +74,7 @@ XHisho.ResEdit.resEditLabel0: タイムアウト(秒)
 XHisho.ResEdit.resEditLabel1: インターバル(秒)
 XHisho.ResEdit.resEditLabel2: メッセージの長さ
 XHisho.ResEdit.resEditLabel3: メッセージの行数
+XHisho.ResEdit.resEditLabel4: focuswinインターバル(0.1秒)
 
 !!
 !! focusWinのリソース
