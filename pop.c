@@ -447,6 +447,9 @@ static void GetFromandSubject(int sock, char *buffer)
   from = malloc(BUFSIZ);
   who = malloc(BUFSIZ);
   pname = malloc(BUFSIZ);
+  memset(from,0,BUFSIZ);
+  memset(who,0,BUFSIZ);
+  memset(pname,0,BUFSIZ);
 #endif
 
   WritePOPCommand(sock, "TOP 1 0\n");
@@ -459,7 +462,7 @@ static void GetFromandSubject(int sock, char *buffer)
   do {
     ReadPOPMessage(sock, buf, BUFSIZ * 5);
   } while ((strncmp(buf + strlen(buf) - 4, "\n.", 2) != 0) &&
-	   (!strstr(buf, "From:")));
+      	   (!strstr(buf, "From:")));
   tmp2 = strtok(buf, "\n");
 
 
@@ -468,16 +471,9 @@ static void GetFromandSubject(int sock, char *buffer)
   while (tmp2 && (i < mar.mail_lines)) {
     if (!strncmp(tmp2, "From:", 5) || !strncmp(tmp2, "Subject:", 8)) {
       strcpy(tmp3, tmp2);
-
 #ifdef PETNAME
       if (!strncmp(tmp2, "From:", 5)) {
-	sscanf(tmp2, "%s %s", from, who);
-
-	for (j = 0; j < strlen(from); j++)
-	  if (isspace(tmp2[j]))
-	    break;
-
-	strcpy(who, tmp2 + j);
+	strcpy(who, tmp2 + 6);
 
 	if (strchr(who, '@')) {
 	  strcpy(pname, who);
@@ -485,7 +481,8 @@ static void GetFromandSubject(int sock, char *buffer)
 	  if (!strchr(tmp2, '<'))
 	    tmp2 = strtok(NULL, "\n");
 	  if (strchr(tmp2, '<') && strchr(tmp2, '>')){
-	    strcpy(pname, strtok(strchr(tmp2, '<') + 1, ">"));
+	    strncpy(pname, strchr(tmp2, '<') + 1,
+		    strchr(tmp2, '>') - strchr(tmp2, '<') - 1);
 	  } else {
 	    pname[0] = '\0';
 	  }

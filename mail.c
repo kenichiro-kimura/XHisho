@@ -304,6 +304,8 @@ int CheckPOP3(XtPointer cl, XtIntervalId * id)
   }
 
   if (ret_value > 0) {
+    printf("%s\n",buf);
+    XtVaSetValues(from, XtNlabel, buf, NULL);
     MailPopup();
   }
   free(buf);
@@ -531,7 +533,7 @@ static void GetFromandSubject(char *m_file, char *From)
 #endif				/** EXT_FILTER **/
 
 #ifdef PETNAME
-  char *from_who, *who, *pname;
+  char *who, *pname;
 #endif				/** PETNAME **/
 
   *From = '\0';
@@ -545,7 +547,6 @@ static void GetFromandSubject(char *m_file, char *From)
   head2 = malloc(BUFSIZ);
 
 #ifdef PETNAME
-  from_who = malloc(BUFSIZ);
   who = malloc(BUFSIZ);
   pname = malloc(BUFSIZ);
 #endif
@@ -596,14 +597,9 @@ static void GetFromandSubject(char *m_file, char *From)
 #ifdef PETNAME
 	if (!strncmp(buf, "From:", 5)) {
 	  memset(who, 0, BUFSIZ);
-	  sscanf(buf, "%s %s", from_who, who);
 	  strcpy(tmp1, buf);
 
-	  for (j = 0; j < strlen(from_who); j++)
-	    if (isspace(tmp2[j]))
-	      break;
-
-	  strcpy(who, tmp2 + j + 1);
+	  strcpy(who, buf + 6);
 
 	  if (strchr(who, '@')) {
 	    strcpy(pname, who);
@@ -611,7 +607,8 @@ static void GetFromandSubject(char *m_file, char *From)
 	    if (!strchr(buf, '<'))
 	      fgets(buf, BUFSIZ, fp);
 	    if (strchr(buf, '<') && strchr(buf, '>')){
-	      strcpy(pname, strtok(strchr(buf, '<') + 1, ">"));
+	      strncpy(pname, strchr(buf, '<') + 1,
+		      strchr(buf, '>') - strchr(buf, '<') - 1);
 	    } else {
 	      pname[0] = '\0';
 	    }
@@ -643,7 +640,6 @@ static void GetFromandSubject(char *m_file, char *From)
   free(head2);
 
 #ifdef PETNAME
-  free(from_who);
   free(who);
   free(pname);
 #endif
