@@ -681,7 +681,7 @@ Widget CreateEditorWindow(Widget w, int Mode, struct tm tm_now)
 					  ,dargs, XtNumber(dargs));
 
       XtVaSetValues(editlist[j], XtNwrap, XawtextWrapNever, XtNscrollHorizontal
-		    ,XawtextScrollAlways, NULL);
+		    ,XawtextScrollAlways, XtNthickness,2,NULL);
 
       /**
        * leave time 入力用 textWidgetの作成

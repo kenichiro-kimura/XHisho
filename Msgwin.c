@@ -187,7 +187,8 @@ static void Realize(Widget w, XtValueMask * valueMask, XSetWindowAttributes * at
     ShapeWindow(msw);
   DrawFrame(msw);
 
-  XtCreateWindow(w, (unsigned) InputOutput, (Visual *) CopyFromParent, *valueMask, attrs);
+    XtCreateWindow(w, (unsigned) InputOutput, (Visual *) CopyFromParent, *valueMask, attrs);
+
 }
 
 

@@ -20,6 +20,14 @@
 #define XtNaboutLabel "aboutLabel"
 #define XtCAboutLabel "AboutLabel"
 
+#define ABOUT_S "              XHisho Ver.%s\n\
+\n\
+Copyright(c) 1998,1999  Ken'ichirou Kimura\n\
+\n\
+\n\
+XHisho is your private secretary on X Window System.\n\
+It works as biff,scheduler,and so on."
+
 typedef struct {
   String about_s;
 }   AboutRes;

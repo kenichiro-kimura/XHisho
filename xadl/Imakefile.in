@@ -7,15 +7,10 @@ PREFIX = @prefix@
 
 #ifdef PERSONAL
 BINDIR	= $(HOME)/bin
-XHISHODIR = $(HOME)/xhisho
-LOCALEDIR = $(HOME)/$(LANG)/app-defaults
 #endif
 
 #ifdef PREF
 BINDIR	= $(PREFIX)/bin
-XHISHODIR = $(PREFIX)/xhisho
-XAPPLOADDIR = $(PREFIX)/app-defaults
-LOCALEDIR = $(PREFIX)/$(LANG)/app-defaults
 #endif
 
 InstallProgram(xadl,$(BINDIR))
@@ -23,7 +18,7 @@ InstallProgram(xadl,$(BINDIR))
 all:: xadl
 
 xadl: y.tab.o lex.yy.o
-	@CC@ @CFLAGS@ $(DEBUG_FLAGS) -o xadl y.tab.o lex.yy.o -ll -ly 
+	@CC@ @CFLAGS@ $(DEBUG_FLAGS) -o xadl y.tab.o lex.yy.o @LEXLIB@
 
 lex.yy.o: lex.yy.c 
 	@CC@ -c @CFLAGS@ lex.yy.c

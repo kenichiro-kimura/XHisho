@@ -143,6 +143,7 @@ Widget CreateMenuWindow(Widget w)
     {XtNlabel, (XtArgVal) ""},
     {XtNwidth, 10},
     {XtNx, 100},
+    {XtNinternational,TRUE},
   };
 
   /**
@@ -207,6 +208,7 @@ Widget CreateMenuWindow(Widget w)
 				    ,XtNborderWidth, 0
 				,XtNleft, XtChainLeft, XtNright, XtChainLeft
 				    ,XtNvertDistance, 20
+				    ,XtNinternational,TRUE
 				    ,XtNinternalHeight, FONT_OFFSET, NULL);
 
 
@@ -217,14 +219,16 @@ Widget CreateMenuWindow(Widget w)
 				      ,XtNlabel, mres.head
 				,XtNleft, XtChainLeft, XtNright, XtChainLeft
 				      ,XtNborderWidth, 0
+				      ,XtNinternational,TRUE
 				      ,XtNinternalHeight, FONT_OFFSET, NULL);
 
     item[i] = XtVaCreateManagedWidget("menuItem", commandWidgetClass, menu, XtNfromVert
 				      ,item[i - 1]
 				      ,XtNhorizDistance, 2
 				      ,XtNlabel, Menu[i - 1]
-				,XtNleft, XtChainLeft, XtNright, XtChainLeft
+				      ,XtNleft, XtChainLeft, XtNright, XtChainLeft
 				      ,XtNborderWidth, 0
+				      ,XtNinternational,TRUE
 				      ,XtNfromHoriz, head[i]
 				      ,XtNinternalHeight, FONT_OFFSET, NULL);
     if (i == 1) {

@@ -28,7 +28,7 @@ static XtResource resources[] = {
     sizeof(String),
     XtOffsetOf(AboutRes, about_s),
     XtRImmediate,
-    (XtPointer) NULL
+    (XtPointer) ABOUT_S
   },
 };
 
