@@ -734,7 +734,11 @@ Widget CreateEditorWindow(Widget w, int Mode, struct tm tm_now)
 
       memset(leavestring[j], 0, 256);
       if (j < schedules) {
-	sprintf(leavestring[j], "%d", schedule[j].leave);
+	if(schedule[j].leave <= 0){
+	  sprintf(leavestring[j], "*");
+	} else {
+	  sprintf(leavestring[j], "%d", schedule[j].leave);
+	}
       } else {
 	schedule[j].leave = omr.leave_t;
 	sprintf(leavestring[j], "%d", schedule[j].leave);
@@ -938,8 +942,11 @@ static int WriteSchedule(struct tm tm_now)
 	(strlen(dtmp) == 4 || dtmp[0] == '*')) {
       l = atoi(lbuf);
       l = (l > 0 && l < 60 * 24) ? l : omr.leave_t;
-      if (dtmp[0] == '*') l = 0;
-      fprintf(outputfile, "%s %d %s\n", dtmp, l, etmp);
+      if (dtmp[0] == '*'){
+	fprintf(outputfile, "%s * %s\n", dtmp, etmp);
+      } else {
+	fprintf(outputfile, "%s %d %s\n", dtmp, l, etmp);
+      }
     }
   }
 

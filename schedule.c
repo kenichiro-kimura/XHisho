@@ -112,7 +112,11 @@ int CheckSchedule(OpenMessageRes * l_omr, Schedule * schedule, int WeeklyCheck, 
 
 	  if (!atoi(leave)) {
 	    sscanf(tmp1, "%s %s", tmp2, tmp3);
-	    schedule[i].leave = omr.leave_t;
+	    if(!strcmp(leave,"*") || !strcmp(leave,"0")){
+	      schedule[i].leave = -1;
+	    } else {
+	      schedule[i].leave = omr.leave_t;
+	    }
 	  } else {
 	    schedule[i].leave = atoi(leave);
 	  }
