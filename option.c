@@ -107,7 +107,6 @@ static void Destroy(Widget w, XEvent * event, String * params, unsigned int *num
 
 
 Widget CreateOptionWindow(Widget w){
-  Widget ok,cancel;
   static XtPopdownIDRec pdrec;
   XtTranslations trans_table;
 
@@ -140,31 +139,6 @@ Widget CreateOptionWindow(Widget w){
 				  ,XtNautoFill,True
 				  ,NULL);
 
-#ifdef USE_UNYUU
-  utop = XtVaCreatePopupShell("OptionWindow", transientShellWidgetClass
-			     ,w,NULL);
-  ulocal_option = XtVaCreateManagedWidget("option", msgwinWidgetClass, utop
-					  ,XtNxoff,opr.uxoff
-					  ,XtNyoff,opr.uyoff
-					  ,NULL);
-  ulabel = XtVaCreateManagedWidget("optionLabel", asciiTextWidgetClass
-				  ,ulocal_option
-				  ,XtNvertDistance,10
-				  ,XtNhorizDistance, POINT_WIDTH + LABEL_OFFSET
-				  ,XtNvertDistance, 30
-				  ,XtNborderWidth,0
-				  ,XtNwidth,opr.width
-				  ,XtNheight,opr.height
-				  ,XtNleft,XtChainLeft
-				  ,XtNright,XtChainRight
-				  ,XtNdisplayCaret,False
-				  ,XtNsensitive,True
-				  ,XtNjustify,XtJustifyLeft
-				  ,XtNautoFill,True
-				  ,NULL);
-
-#endif
-
   XtAppAddActions(XtWidgetToApplicationContext(label)
 		  ,actionTable, XtNumber(actionTable));
   trans_table = XtParseTranslationTable(defaultTranslations);
@@ -180,27 +154,47 @@ Widget CreateOptionWindow(Widget w){
   trans_table = XtParseTranslationTable(defaultTranslations);
   XtOverrideTranslations(local_option,trans_table);
 
-  /*
-  ok = XtVaCreateManagedWidget("optionOk", commandWidgetClass, local_option
-			       ,XtNfromVert, label
-			       ,XtNhorizDistance, POINT_WIDTH + LABEL_OFFSET
-			       ,XtNlabel, "OK"
-			       ,XtNvertDistance, 20 
-			       ,XtNleft, XtChainLeft, XtNright, XtChainLeft
-			       ,XtNinternalHeight, FONT_OFFSET, NULL);
-  XtAddCallback(ok, XtNcallback, (XtCallbackProc) Destroy, NULL);
+#ifdef USE_UNYUU
+  utop = XtVaCreatePopupShell("UOptionWindow", transientShellWidgetClass
+			     ,w,NULL);
+  XtGetApplicationResources(utop, &uopr, resources, XtNumber(resources), NULL, 0);
+  ulocal_option = XtVaCreateManagedWidget("option", msgwinWidgetClass, utop
+					  ,XtNxoff,uopr.uxoff
+					  ,XtNyoff,uopr.uyoff
+					  ,NULL);
+  ulabel = XtVaCreateManagedWidget("optionLabel", asciiTextWidgetClass
+				   ,ulocal_option
+				   ,XtNvertDistance,10
+				   ,XtNhorizDistance, POINT_WIDTH + LABEL_OFFSET
+				   ,XtNvertDistance, 30
+				   ,XtNborderWidth,0
+				   ,XtNwidth,uopr.width
+				   ,XtNheight,uopr.height
+				   ,XtNleft,XtChainLeft
+				   ,XtNright,XtChainRight
+				   ,XtNdisplayCaret,False
+				   ,XtNsensitive,True
+				   ,XtNjustify,XtJustifyLeft
+				   ,XtNautoFill,True
+				   ,NULL);
 
-  cancel = XtVaCreateManagedWidget("optionCancel", commandWidgetClass
-				   , local_option
-				   ,XtNfromVert, label
-				   ,XtNfromHoriz, ok
-				   ,XtNhorizDistance,10
-				   ,XtNlabel, "Cancel"
-				   ,XtNvertDistance, 20 
-				   ,XtNleft, XtChainLeft, XtNright, XtChainLeft
-				   ,XtNinternalHeight, FONT_OFFSET, NULL);
-  XtAddCallback(cancel, XtNcallback, (XtCallbackProc) Destroy, NULL);
-  */
+  XtAppAddActions(XtWidgetToApplicationContext(ulabel)
+		  ,actionTable, XtNumber(actionTable));
+  trans_table = XtParseTranslationTable(defaultTranslations);
+  XtOverrideTranslations(ulabel,trans_table);
+
+  XtAppAddActions(XtWidgetToApplicationContext(utop)
+		  ,actionTable, XtNumber(actionTable));
+  trans_table = XtParseTranslationTable(defaultTranslations);
+  XtOverrideTranslations(utop,trans_table);
+
+  XtAppAddActions(XtWidgetToApplicationContext(ulocal_option)
+		  ,actionTable, XtNumber(actionTable));
+  trans_table = XtParseTranslationTable(defaultTranslations);
+  XtOverrideTranslations(ulocal_option,trans_table);
+
+#endif
+
   CommandInit();
   return(local_option);
 }
