@@ -926,13 +926,8 @@ mhcent* readmhc(MHCD* mhc_ptr)
 
   if(*mhc_ptr){
     ent_ptr = (*mhc_ptr)->item;
-    /*    if((*mhc_ptr)->next != NULL)*/
       *mhc_ptr = (*mhc_ptr)->next;
     return ent_ptr;
-    /*
-  } else {
-    return NULL;
-    */
   }
   return NULL;
 }
@@ -1081,6 +1076,7 @@ MHC* OpenMHC(const char* home_dir, int year,int month)
   }
 
   free(year_month);
+  (*mhc_ptr)->ptr = (*mhc_ptr)->table[0];
 
   return mhc_ptr;
 }

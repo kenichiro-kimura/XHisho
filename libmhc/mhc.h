@@ -13,46 +13,61 @@
  *
  * MHCD* openmhc(const char *home_dir, const char *year_month);
  *   home_dir/year_month のMHCデータを読み込む準備をする。例えば
+ *
  *   mhcd_ptr = openmhc("/home/kimura/Mail/schedule/","2000/10");
  *
+ *   初期化に失敗したらNULLを返す。
+ *
+ *
  * mhcent* readmhc(MHCD*);
- *   エントリを順次読み出す。
+ *   エントリを順次読み出す。最後まで読んだか,エントリがなければNULLが返る。
+ *
  *
  * void seekmhc(MHCD*,int loc);
- *   次に読むエントリの場所をloc分エントリを進める。loc < 0なら戻る
+ *   次に読むエントリの場所をloc分エントリを進める。loc < 0なら戻る。
+ *   
  *
  * void rewindmhc(MHCD*);
  *   次に読むエントリの場所を初期位置に戻す。
  *
+ *
  * int  closemhc(MHCD*);
- *   終了処理。リソースを解放する。
+ *   終了処理。リソースを解放する。成功で0,失敗で1を返す。
+ *
  *
  * int  isschedule(const mhcent*,int year,int month,int day);
  *   そのエントリがyear/month/dayのスケジュールかどうかチェック。
  *   スケジュールであるならば1を返し、違うなら0を返す。
  *
+ *
  * MHC* OpenMHC(const char* home_dir, int year, int month);
  *   home_dir/year/month に加えてintersectも読み込む。
- *   さらに、dayごとに保持する。
+ *   さらに、dayごとに保持する。読み込みに失敗したらNULLを返す。
  *
  * mhcent* ReadMHC(MHC*);
- *   エントリを順次読む。
+ *   エントリを順次読む。最後まで読んだか、エントリがなければNULLを返す。
+ *  
  *
  * void SetMHC(MHC*,int day);
  *   MHC* をdayに合わせる。これ以降、ReadMHC()で読まれるのはyear/month/day
- *   のエントリ。
+ *   のエントリ。初期状態ではyear/month/1に合わせてある。
+ *
  *
  * void SeekMHC(MHC*,int);
  *   MHC* を進める。
  *
+ *
  * void RewindMHC(MHC*);
  *   MHC* を初期位置に戻す。
+ *
  *
  * int CloseMHC(MHC*);
  *   終了処理。
  *
+ *
  * char* GetSubject(const mhcent*);
  *   X-SC-Subject: を取り出す。
+ *
  *
  * int GetAlarm(const mhcent*);
  *   X-SC-Alarm: の値を分単位で返す。
