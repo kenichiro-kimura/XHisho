@@ -224,6 +224,7 @@ int IsMailChecked(int x)
     isMailChecked = 1;
   }
 
+  MailCount = 0;
   return isMailChecked;
 }
 

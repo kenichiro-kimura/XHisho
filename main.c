@@ -146,6 +146,7 @@ static void CheckMailNow(Widget w, XEvent * event, String * params, unsigned int
   int ret_value = 0;
 
   if (IsPopped(mail) || IsPopped(nomail)) {
+    IsMailChecked(0);
     XtPopdown(XtParent(mail));
     XtPopdown(XtParent(nomail));
     XtVaSetValues(xhisho, XtNanimType, USUAL, NULL);
