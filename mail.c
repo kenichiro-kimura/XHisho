@@ -671,7 +671,7 @@ static void CheckYoubin(Widget w, int *fid, XtInputId * id)
     int i = 0, j;
 
 #ifdef PETNAME
-    char *from_who, *who, *pname, *next_ptr, *left_ptr, *right_ptr;
+    unsigned char *from_who, *who, *pname, *next_ptr, *left_ptr, *right_ptr;
 #endif				/** PETNAME **/
 #ifdef EXT_FILTER
     FILE *in, *t_file;
