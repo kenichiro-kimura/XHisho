@@ -79,8 +79,6 @@ static mhcent* ReadEntry(FILE* fp){
     return NULL;
   }
 
-  memset(mhcent_ptr,0,sizeof(mhcent));
-
   while(fgets(buffer,BUFSIZ,fp) != NULL){
     tag = -1;
 
@@ -225,6 +223,7 @@ static int CheckSC_Day(char* sc_day,int year,int month,int day){
     if(!strncmp(chr_ptr,yearmonth,strlen(yearmonth))){
       chr_ptr += strlen(yearmonth);
       strncpy(pivot_ptr,chr_ptr,strlen("00"));
+      pivot_ptr[2] = '\0';
       if(day == atoi(pivot_ptr)){
 	isDay = 1;
       }else{
@@ -605,13 +604,13 @@ static int datecmp(char* a,char* b){
   if(strlen(a) != strlen("20001020")) return 0;
   if(strlen(b) != strlen("00001020")) return 0;
 
-  memset(year,0,5);
-  memset(month,0,3);
-  memset(day,0,3);
   time(&a_t);
   strncpy(year,a,4);
+  year[4] = '\0';
   strncpy(month,a + 4,2);
+  month[4] = '\0';
   strncpy(day,a + 6,2);
+  day[4] = '\0';
 
   tm_x = localtime(&a_t);
   tm_x->tm_mday = atoi(day);
@@ -619,12 +618,12 @@ static int datecmp(char* a,char* b){
   tm_x->tm_year = atoi(year) - 1900;
   a_t = mktime(tm_x);
 
-  memset(year,0,5);
-  memset(month,0,3);
-  memset(day,0,3);
   strncpy(year,b,4);
   strncpy(month,b + 4,2);
   strncpy(day,b + 6,2);
+  year[4] = '\0';
+  month[4] = '\0';
+  day[4] = '\0';
 
   time(&b_t);
   tm_x = localtime(&b_t);

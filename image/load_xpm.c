@@ -58,10 +58,13 @@ int LoadXpm(ImageInfo * i_info)
     } else {
       unsigned int r,g,b;
       strncpy(col, cptr + 1, l);
+      col[l] = '\0';
       r = (int) strtol(col, (char **) NULL, 16);
       strncpy(col, cptr + 1 + l, l);
+      col[l] = '\0';
       g = (int) strtol(col, (char **) NULL, 16);
       strncpy(col, cptr + 1 + l * 2, l);
+      col[l] = '\0';
       b = (int) strtol(col, (char **) NULL, 16);
       pal_ptr->r = r >> (l - 2);
       pal_ptr->g = g >> (l - 2);

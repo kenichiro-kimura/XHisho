@@ -25,6 +25,7 @@ int LoadAnim(ImageInfo *i_info)
   p_ptr = strrchr(i_info->filename,'/');
   if(p_ptr){
     strncpy(path,i_info->filename, p_ptr - i_info->filename + 1);
+    path[p_ptr - i_info->filename + 1] = '\0';
   } else {
     strcpy(path,"./");
   }

@@ -473,7 +473,8 @@ static void GetFromandSubject(int sock, char *buffer)
 	    tmp2 = strtok(NULL, "\n");
 	  if (strchr(tmp2, '<') && strchr(tmp2, '>')){
 	    strncpy(pname, strchr(tmp2, '<') + 1,
-		    MIN(strchr(tmp2, '>') - strchr(tmp2, '<') - 1,BUFSIZ));
+		    MIN(strchr(tmp2, '>') - strchr(tmp2, '<') - 1,BUFSIZ -1));
+	    pname[MIN(strchr(tmp2, '>') - strchr(tmp2, '<') - 1,BUFSIZ -1)] = '\0';
 	  } else {
 	    pname[0] = '\0';
 	  }

@@ -84,7 +84,9 @@ int CheckSchedule(OpenMessageRes * l_omr, Schedule * schedule, int WeeklyCheck, 
   strftime(year, sizeof(year), "%Y", localtime(&tval));
 
   strncpy(l_omr->month, month, 2);
+  l_omr->month[2] = '\0';
   strncpy(l_omr->day, day, 2);
+  l_omr->day[2] = '\0';
 
   if (l_omr->xcalendar) {
     setlocale(LC_TIME, "C");
@@ -126,11 +128,13 @@ int CheckSchedule(OpenMessageRes * l_omr, Schedule * schedule, int WeeklyCheck, 
 	  schedule[i].leave = atoi(leave);
 	}
 
-	strncpy(tdate, tmp2, sizeof(tdate));
+	strncpy(tdate, tmp2, sizeof(char) * 5);
 	tdate[4] = '\0';
 	strncpy(schedule[i].hour, tdate, sizeof(char) * 2);
+	schedule[i].hour[2] = '\0';
 	strncpy(schedule[i].min, tdate + 2, sizeof(char) * 2);
-	
+	schedule[i].min[2] = '\0';
+
 	/**
 	 * 開始時刻とleaveを読み飛ばす。
 	 **/
@@ -146,7 +150,8 @@ int CheckSchedule(OpenMessageRes * l_omr, Schedule * schedule, int WeeklyCheck, 
 	
 	if (string_index) {
 	  Escape2Return(string_index);
-	  strncpy(schedule[i].ev, string_index, MIN(BUFSIZ, strlen(string_index)));
+	  strncpy(schedule[i].ev, string_index, MIN(BUFSIZ -1, strlen(string_index)));
+	  schedule[i].ev[MIN(BUFSIZ -1, strlen(string_index))] = '\0';
 
 	  if (schedule[i].ev[MIN(BUFSIZ, strlen(string_index)) - 1] == '\n')
 	    schedule[i].ev[MIN(BUFSIZ, strlen(string_index)) - 1] = '\0';
@@ -177,7 +182,8 @@ int CheckSchedule(OpenMessageRes * l_omr, Schedule * schedule, int WeeklyCheck, 
 #ifdef EXT_FILTER
       if ((t_file = fopen(t_filename, "w")) == NULL) {
 	fprintf(stderr, "can't open temporary file,%s\n", t_filename);
-	strncpy(tmp1, ent_ptr->Entry[X_SC_Subject],MIN(strlen(ent_ptr->Entry[X_SC_Subject]),BUFSIZ));
+	strncpy(tmp1, ent_ptr->Entry[X_SC_Subject],MIN(strlen(ent_ptr->Entry[X_SC_Subject]),BUFSIZ - 1));
+	tmp1[MIN(strlen(ent_ptr->Entry[X_SC_Subject]),BUFSIZ - 1)] = '\0';
       } else {
 	fprintf(t_file, "%s\n", ent_ptr->Entry[X_SC_Subject]);
 	fclose(t_file);
@@ -191,12 +197,15 @@ int CheckSchedule(OpenMessageRes * l_omr, Schedule * schedule, int WeeklyCheck, 
 	unlink(t_filename);
       }
 #else
-      strncpy(tmp1, ent_ptr->Entry[X_SC_Subject],MIN(strlen(ent_ptr->Entry[X_SC_Subject]),BUFSIZ));
+      strncpy(tmp1, ent_ptr->Entry[X_SC_Subject],MIN(strlen(ent_ptr->Entry[X_SC_Subject]),BUFSIZ - 1));
+      tmp1[MIN(strlen(ent_ptr->Entry[X_SC_Subject]),BUFSIZ - 1)] = '\0';
 #endif
 
       if(ent_ptr->Entry[X_SC_Time] && strlen(ent_ptr->Entry[X_SC_Time]) >= 4){
 	strncpy(schedule[i].hour, ent_ptr->Entry[X_SC_Time], sizeof(char) * 2);
+	schedule[i].hour[2] = '\0';
 	strncpy(schedule[i].min, ent_ptr->Entry[X_SC_Time] + 3, sizeof(char) * 2);
+	schedule[i].min[2] = '\0';
       } else {
 	strcpy(schedule[i].hour, "*");
       }
@@ -206,7 +215,8 @@ int CheckSchedule(OpenMessageRes * l_omr, Schedule * schedule, int WeeklyCheck, 
       if(schedule[i].leave > 60 * 24 - 1) schedule[i].leave = 0;
 
       Escape2Return(tmp1);
-      strncpy(schedule[i].ev, tmp1, MIN(BUFSIZ, strlen(tmp1)));
+      strncpy(schedule[i].ev, tmp1, MIN(BUFSIZ - 1, strlen(tmp1)));
+      schedule[i].ev[MIN(BUFSIZ - 1, strlen(tmp1))] = '\0';
       if (schedule[i].ev[MIN(BUFSIZ, strlen(tmp1)) - 1] == '\n')
 	schedule[i].ev[MIN(BUFSIZ, strlen(tmp1)) - 1] = '\0';
 
@@ -299,14 +309,17 @@ int CheckSchedule(OpenMessageRes * l_omr, Schedule * schedule, int WeeklyCheck, 
       }
 
       if (is_week) {
-	strncpy(tdate, tmp2, sizeof(tdate));
+	strncpy(tdate, tmp2, sizeof(char) * 5);
+	tdate[4] = '\0';
 	strncpy(schedule[i].hour, tdate, sizeof(char) * 2);
+	schedule[i].hour[2] = '\0';
 	strncpy(schedule[i].min, tdate + 2, sizeof(char) * 2);
-
+	schedule[i].min[2] = '\0';
 
 	if (string_index) {
 	  Escape2Return(string_index);
-	  strncpy(schedule[i].ev, string_index, MIN(BUFSIZ, strlen(string_index)));
+	  strncpy(schedule[i].ev, string_index, MIN(BUFSIZ - 1, strlen(string_index)));
+	  schedule[i].ev[MIN(BUFSIZ - 1, strlen(string_index))] = '\0';
 	  if (schedule[i].ev[MIN(BUFSIZ, strlen(string_index)) - 1] == '\n')
 	    schedule[i].ev[MIN(BUFSIZ, strlen(string_index)) - 1] = '\0';
 	  if (SafeTimeFormat(schedule[i]))
@@ -466,8 +479,10 @@ static void ReadHolidayFile(char *filename)
       strncpy(tdate, tmp2, sizeof(tdate));
       tdate[4] = '\0';
       strncpy(tmp4, tdate, sizeof(char) * 2);
+      tmp4[2] = '\0';
       m = atoi(tmp4) - 1;
       strncpy(tmp4, tdate + 2, sizeof(char) * 2);
+      tmp4[2] = '\0';
       d = atoi(tmp4);
       
       if (m < 0 || m > 11)

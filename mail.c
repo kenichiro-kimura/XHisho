@@ -683,6 +683,7 @@ static void GetFromandSubject(char *m_file, char *From)
     if (isheader) {
       if (!strncmp(buf, "From:", 5) || !strncmp(buf, "Subject:", 8)) {
 	strncpy(tmp2, buf, mar.from_maxlen - (mar.from_maxlen % 2));
+	tmp2[mar.from_maxlen - (mar.from_maxlen % 2)] = '\0';
 
 	length = MIN(strlen(tmp2), mar.from_maxlen);
 	tmp2[length - 1] = '\n';
@@ -702,6 +703,7 @@ static void GetFromandSubject(char *m_file, char *From)
 	    if (strchr(buf, '<') && strchr(buf, '>')){
 	      strncpy(pname, strchr(buf, '<') + 1,
 		      strchr(buf, '>') - strchr(buf, '<') - 1);
+	      pname[strchr(buf, '>') - strchr(buf, '<') - 1] = '\0';
 	    } else {
 	      pname[0] = '\0';
 	    }
@@ -815,7 +817,7 @@ static void CheckYoubin(Widget w, int *fid, XtInputId * id)
   } else if (len == -1) {
     fprintf(stderr, "Can;'t read from Youbin!\n");
   }
-  buf[MIN(len, BUFSIZ)] = '\0';
+  buf[MIN(len, BUFSIZ) - 1] = '\0';
 
   mail_size = (int) strtol(buf, &cp, 10);
   if (*cp != ' ') {
@@ -834,16 +836,14 @@ static void CheckYoubin(Widget w, int *fid, XtInputId * id)
 
   while (tmp1 && i < mar.mail_lines && !(isFrom && isSubject)) {
     if (!strncmp(tmp1, "From:", 5) || !strncmp(tmp1, "Subject:", 8)) {
-      tmp2[0] = '\0';
-
-      if(*tmp1 == 'F')
-	isFrom = 1;
+      *tmp2 = '\0';
 
       if(*tmp1 == 'S')
 	isSubject = 1;
 
 #ifdef PETNAME
-      if (!strncmp(tmp1, "From:", 5)) {
+      if (!strncmp(tmp1, "From:", 5) && !isFrom) {
+	isFrom = 1;
 	next_ptr = tmp1;
 	sscanf(tmp1, "%s %s", from_who, who);
 
@@ -853,7 +853,7 @@ static void CheckYoubin(Widget w, int *fid, XtInputId * id)
 
 	strcpy(who, tmp1 + j);
 	
-	if (strchr(who, '@') != NULL) {
+	if (strchr(who, '@') != NULL && strchr(who,'<') == NULL){
 	  strcpy(pname, who);
 	} else {
 	  if (strchr(tmp1, '<') == NULL)
@@ -861,13 +861,14 @@ static void CheckYoubin(Widget w, int *fid, XtInputId * id)
 	  left_ptr = strchr(next_ptr, '<');
 	  right_ptr = strchr(next_ptr, '>');
 	  if (left_ptr != NULL && right_ptr != NULL){
-	    strncpy(pname, strchr(buf, '<') + 1,
-		    MIN(strchr(buf, '>') - strchr(buf, '<') - 1,BUFSIZ));
+	    strncpy(pname, strchr(next_ptr, '<') + 1,
+		    MIN(right_ptr - left_ptr - 1,BUFSIZ- 1));
+	    pname[MIN(right_ptr - left_ptr - 1,BUFSIZ- 1)] = '\0';
 	  } else {
 	    *pname = '\0';
 	  }
 	}
-	SearchPetname(tmp2, pname);
+	SearchPetname(tmp1, pname);
       }
 #endif
 
@@ -895,26 +896,28 @@ static void CheckYoubin(Widget w, int *fid, XtInputId * id)
 #endif
 
       strncat(From, tmp2, MIN(mar.from_maxlen - 1, strlen(tmp2)));
-      strcat(From,"\n");
+      if(tmp2[MIN(mar.from_maxlen - 1, strlen(tmp2))] != '\0')
+	strcat(From,"\n");
       i++;
     }
     tmp1 = strtok(NULL, "\n");
   }
 
-  i = 1;
-  ReadRcdata("newmail",tmp,BUFSIZ);
-  if(*tmp == '\0')
-    sprintf(message,mar.mail_l,i);
-  else{
-    sprintf(message,tmp,i);
-  }
+  if(*From != '\0') {
+    i = 1;
+    ReadRcdata("newmail",tmp,BUFSIZ);
+    if(*tmp == '\0')
+      sprintf(message,mar.mail_l,i);
+    else{
+      sprintf(message,tmp,i);
+    }
 
-
-  XtVaSetValues(label, XtNlabel, message, NULL);
-  XtVaSetValues(from, XtNlabel, From, NULL);
-  if (!IsPopped(mail)) {
-    isMailChecked = 1;
-    MailPopup();
+    XtVaSetValues(label, XtNlabel, message, NULL);
+    XtVaSetValues(from, XtNlabel, From, NULL);
+    if (!IsPopped(mail)) {
+      isMailChecked = 1;
+      MailPopup();
+    }
   }
 End:
   /**

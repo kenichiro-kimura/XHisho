@@ -33,6 +33,9 @@ static PetnameList *Petname_new(char *pname, char *addr)
   pname_ptr->petname = strdup(pname);
   pname_ptr->mail_address = strdup(addr);
 
+  if(pname_ptr->petname[strlen(pname) - 1] == '\n')
+    pname_ptr->petname[strlen(pname) - 1] = '\0';
+
   return pname_ptr;
 }
 
