@@ -7,10 +7,12 @@
 
 static int RcHash(const char *);
 
-static const char RcName[][256] = {"newmail", "nomail", "open1", "open2", "open3", "alert1"
-  ,"alert2", "alertformat", "schedule", "menul", "menu0"
-  ,"menu1", "menu2", "menu3", "menu4", "menu5", "calendar"
-,"resource", "messagearg"};
+static const char RcName[][256] = {"newmail", "nomail", "open1", "open2",
+				   "open3", "alert1"  ,"alert2", "alertformat",
+				   "schedule", "menul", "menu0",
+				   "menu1", "menu2", "menu3", "menu4", 
+				   "menu5", "calendar","resource", 
+				   "messagearg"};
 
 static char *RcData[NUM_OF_ARRAY(RcName)];
 
@@ -66,6 +68,9 @@ int ReadRcfile(char *filename)
   tmp = malloc(BUFSIZ);
   tmp2 = malloc(BUFSIZ);
   tmp3 = malloc(BUFSIZ);
+  memset(tmp,0,BUFSIZ);
+  memset(tmp2,0,BUFSIZ);
+  memset(tmp3,0,BUFSIZ);
 
   while (fgets(tmp, BUFSIZ, infile) != NULL) {
     sscanf(tmp, "%s %s", tmp2, tmp3);
@@ -77,6 +82,9 @@ int ReadRcfile(char *filename)
       memset(RcData[i], 0, strlen(index) + 1);
       strcpy(RcData[i], index);
     }
+    memset(tmp,0,BUFSIZ);
+    memset(tmp2,0,BUFSIZ);
+    memset(tmp3,0,BUFSIZ);
   }
 
   free(tmp);
@@ -100,13 +108,14 @@ void ReadRcdata(const char *rc_name, char *ret_value, int size)
    **/
   int i;
 
+  if(ret_value == NULL) return;
   memset(ret_value, 0, size);
   if ((i = RcHash(rc_name)) != -1) {
     strncpy(ret_value, RcData[i], MIN(size, strlen(RcData[i])));
-  }
-  if (ret_value[strlen(ret_value) - 1] == '\n')
-    ret_value[strlen(ret_value) - 1] = '\0';
 
+    if (ret_value[strlen(ret_value) - 1] == '\n')
+      ret_value[strlen(ret_value) - 1] = '\0';
+  } 
 }
 
 void Escape2Return(char *ret_value)
@@ -117,7 +126,9 @@ void Escape2Return(char *ret_value)
   char *tmp;
   int i;
 
-  tmp = malloc(strlen(ret_value));
+  if(ret_value == NULL) return;
+  tmp = malloc(strlen(ret_value) + 1);
+  memset(tmp,0, strlen(ret_value) + 1);
   strcpy(tmp, ret_value);
   *ret_value = '\0';
 

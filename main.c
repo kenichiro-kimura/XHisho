@@ -354,7 +354,7 @@ int main(int argc, char **argv)
 
   ReadRcfile(rcfile);
 #ifdef PETNAME
-  ReadPetname(petname_f);
+  if(ReadPetname(petname_f);
 #endif
 
   /**
