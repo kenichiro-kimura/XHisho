@@ -301,16 +301,17 @@ static void ShapeWindow(MsgwinWidget msw)
   mask_arc[0].angle1 = 90 * 64;
 
   mask_arc[1].x = POINT_WIDTH;
-  mask_arc[1].y = mask_height - ARC_WIDTH;
+  mask_arc[1].y = mask_height - ARC_WIDTH - 1;
   mask_arc[1].angle1 = 180 * 64;
 
   mask_arc[2].x = mask_width - POINT_WIDTH - ARC_WIDTH;
-  mask_arc[2].y = mask_height - ARC_WIDTH;
+  mask_arc[2].y = mask_height - ARC_WIDTH - 1;
   mask_arc[2].angle1 = 270 * 64;
 
   mask_arc[3].x = mask_width - POINT_WIDTH - ARC_WIDTH;
   mask_arc[3].y = 0;
   mask_arc[3].angle1 = 0 * 64;
+
 
   window_mask = XCreatePixmap(d, w
 			      ,mask_width + POINT_WIDTH * 2, mask_height, 1);
@@ -353,6 +354,7 @@ static void ShapeWindow(MsgwinWidget msw)
   XSetFillRule(d, mask_gc, WindingRule);
   XFillPolygon(d, window_mask, mask_gc
 	       ,mask_point, 3, Complex, CoordModeOrigin);
+
   XShapeCombineMask(d, XtWindow(XtParent(msw)), ShapeBounding
 		    ,0, 0, window_mask, ShapeSet);
 
@@ -435,8 +437,11 @@ static void DrawFrame(MsgwinWidget msw)
 	    ,mask_rect[1].y + mask_rect[1].height);
   XDrawLine(d, w, gc, mask_rect[0].x, mask_rect[0].y
 	    ,mask_rect[0].x + mask_rect[0].width, mask_rect[0].y);
-  XDrawLine(d, w, gc, mask_rect[0].x, mask_rect[0].y + mask_rect[0].height
-	    ,mask_rect[0].x + mask_rect[0].width, mask_rect[0].y + mask_rect[0].height);
+
+  XDrawLine(d, w, gc, mask_rect[0].x
+	    , mask_rect[0].y + mask_rect[0].height
+	    ,mask_rect[0].x + mask_rect[0].width
+	    , mask_rect[0].y + mask_rect[0].height);
 
   XDrawArcs(d, w, gc, mask_arc, 4);
 
@@ -647,6 +652,9 @@ static void ManageChild(Widget parent)
   Longest_width = (Longest_width > tmp_width) ? Longest_width : tmp_width;
 
   XtResizeWidget(XtParent(msw)
+		 ,Longest_width + (LABEL_OFFSET + POINT_WIDTH)
+		 ,Form_height + 20, 0);
+  XtResizeWidget((Widget)msw
 		 ,Longest_width + (LABEL_OFFSET + POINT_WIDTH)
 		 ,Form_height + 20, 0);
   b_ypos = b_height = 0;

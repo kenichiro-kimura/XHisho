@@ -13,10 +13,17 @@ static XtInputId OptionId;
 static int virgine = 1;
 static char option_command[] = "/home/show/bin/hoge.pl";
 
-static void Destroy(Widget, caddr_t, caddr_t);
+static void Destroy(Widget,XEvent *, String *, unsigned int *);
+
 static void CommandInit();
 static void CheckOption(Widget, int *, XtInputId *);
 static int Option_exit(Display *);
+static char* or2string(char*);
+static void SakuraParser(char*);
+
+static XtActionsRec actionTable[] = {
+  {"Destroy", Destroy},
+};
 
 static XtResource resources[] = {
   {
@@ -48,7 +55,7 @@ static XtResource resources[] = {
   },    
 };
 
-static void Destroy(Widget w, caddr_t client_data, caddr_t call_data)
+static void Destroy(Widget w, XEvent * event, String * params, unsigned int *num_params)
 {
   XtPopdown(top);
 }
@@ -57,6 +64,11 @@ static void Destroy(Widget w, caddr_t client_data, caddr_t call_data)
 Widget CreateOptionWindow(Widget w){
   Widget ok,cancel;
   static XtPopdownIDRec pdrec;
+  XtTranslations trans_table;
+
+  static char defaultTranslations[] = "<Btn1Down> : Destroy()\n\
+                                       <Btn2Down> : Destroy()\n\
+                                       <Btn3Down>: Destroy()";
 
   pdrec.shell_widget = top;
   pdrec.enable_widget = w;
@@ -72,6 +84,7 @@ Widget CreateOptionWindow(Widget w){
 				  ,local_option
 				  ,XtNvertDistance,10
 				  ,XtNhorizDistance, POINT_WIDTH + LABEL_OFFSET
+				  ,XtNvertDistance, 30
 				  ,XtNborderWidth,0
 				  ,XtNwidth,opr.width
 				  ,XtNheight,opr.height
@@ -82,13 +95,18 @@ Widget CreateOptionWindow(Widget w){
 				  ,XtNjustify,XtJustifyLeft
 				  /*
 				  ,XtNresize,XawtextResizeWidth
-				  */
 				  ,XtNscrollHorizontal,XawtextScrollWhenNeeded
+				  */
 				  ,XtNscrollVertical,XawtextScrollWhenNeeded
 				  ,XtNautoFill,True
-				  ,XtNeditType,XawtextAppend
+				  ,XtNeditType,XawtextEdit
 				  ,NULL);
+  XtAppAddActions(XtWidgetToApplicationContext(label)
+		  ,actionTable, XtNumber(actionTable));
+  trans_table = XtParseTranslationTable(defaultTranslations);
+  XtOverrideTranslations(label,trans_table);
 
+  /*
   ok = XtVaCreateManagedWidget("optionOk", commandWidgetClass, local_option
 			       ,XtNfromVert, label
 			       ,XtNhorizDistance, POINT_WIDTH + LABEL_OFFSET
@@ -108,7 +126,7 @@ Widget CreateOptionWindow(Widget w){
 				   ,XtNleft, XtChainLeft, XtNright, XtChainLeft
 				   ,XtNinternalHeight, FONT_OFFSET, NULL);
   XtAddCallback(cancel, XtNcallback, (XtCallbackProc) Destroy, NULL);
-
+  */
   CommandInit();
   return(local_option);
 }
@@ -140,7 +158,7 @@ static void CommandInit()
 
 static void CheckOption(Widget w, int *fid, XtInputId * id)
 {
-  static char message_buffer[BUFSIZ * 20];
+  char message_buffer[BUFSIZ * 20];
   char _buffer[BUFSIZ * 5];
   char buffer[BUFSIZ* 5];
   static int x = 0;
@@ -154,6 +172,8 @@ static void CheckOption(Widget w, int *fid, XtInputId * id)
   Dimension width;
   int sakura;
   int chr_length,dword,pos,mpos;
+  long current,last;
+  XawTextBlock textblock;
 #ifdef EXT_FILTER
   char command[128];
   char t_filename[BUFSIZ];
@@ -173,9 +193,7 @@ static void CheckOption(Widget w, int *fid, XtInputId * id)
 
   _buffer[len] = '\0';
 
-  if(x == 0){
-    memset(message_buffer,'\0',BUFSIZ * 20);
-  }
+  memset(message_buffer,'\0',BUFSIZ * 20);
 
   is_end = 0;
   x = 1;
@@ -265,6 +283,7 @@ static void CheckOption(Widget w, int *fid, XtInputId * id)
   height += 20;
   */
 
+  SakuraParser(chr_ptr);
   max_len = width / log.width - 1;
   chr_length = strlen(chr_ptr);
 
@@ -280,8 +299,21 @@ static void CheckOption(Widget w, int *fid, XtInputId * id)
       dword = 0;
     }
   }
-
   strcat(message_buffer,chr_ptr);
+
+  current = XawTextGetInsertionPoint(XawTextGetSource(label));
+  last = XawTextSourceScan (XawTextGetSource (label),(XawTextPosition) 0,
+			    XawstAll, XawsdRight, 1, TRUE);
+
+  printf("insert into %d\n",current);
+  textblock.firstPos = 0;
+  textblock.length = strlen(message_buffer);
+  textblock.ptr = message_buffer;
+  textblock.format = FMT8BIT;
+  XawTextReplace(label,last,last,&textblock);
+  if (current == last)
+    XawTextSetInsertionPoint(XawTextGetSource(label)
+			     ,last + textblock.length);
 
   /*
   chr_ptr = strtok(message_buffer,"\n");
@@ -301,18 +333,25 @@ static void CheckOption(Widget w, int *fid, XtInputId * id)
 
   printf("%d\n", max_len * log.width);
   width = max_len * log.width;
-  */
+
 
   XtVaSetValues(label
 		,XtNstring,message_buffer
-		,XtNresize,XawtextResizeWidth
-		,XtNautoFill,True
 		,NULL);
-
+  */
   XtPopup(XtParent(local_option), XtGrabNone);
 
   if(is_end){
-    memset(message_buffer,'\0',BUFSIZ * 20);
+    printf("en-e\n");
+    last = XawTextSourceScan (XawTextGetSource (label),(XawTextPosition) 0,
+			      XawstAll, XawsdRight, 1, TRUE);
+    //    last = XawTextGetInsertionPoint(XawTextGetSource(label));
+    textblock.ptr = "";
+    textblock.firstPos = 0;
+    textblock.length = 0;
+    textblock.format = FMT8BIT;
+    XawTextReplace (label, 0, last, &textblock);
+    XawTextSetInsertionPoint(label,0);
   }
 }
 
@@ -323,6 +362,69 @@ static int Option_exit(Display * disp)
    **/
   kill(0, SIGTERM);
   return 0;
+}
+
+void SakuraParser(char* in)
+{
+  char* in_buffer;
+  char* tmp_buffer;
+  char* tmp_string;
+  char* out;
+  char* chr_ptr;
+  char* next_ptr;
+  int len;
+
+  len = strlen(in) + 1;
+  in_buffer = (char*)malloc(len);
+  tmp_buffer = (char*)malloc(len);
+  tmp_string = (char*)malloc(len);
+  memset(in_buffer,'\0',len);
+
+  strcpy(in_buffer,in);
+
+  chr_ptr = strchr(in_buffer,'(');
+  while(chr_ptr != NULL && (next_ptr = strchr(in_buffer,')'))!= NULL){
+    char* back_ptr;
+    memset(tmp_buffer,'\0',len);
+    memset(tmp_string,'\0',len);
+    if(chr_ptr > next_ptr) break;
+    strncpy(tmp_buffer,in_buffer,chr_ptr - in_buffer);
+    strncpy(tmp_string,in_buffer,next_ptr - in_buffer);
+    back_ptr = strrchr(tmp_string,'(');
+    strncat(tmp_buffer,strchr(tmp_string,'(')
+	    ,back_ptr - strchr(tmp_string,'('));
+    strcat(tmp_buffer,or2string(back_ptr));
+    strcat(tmp_buffer,next_ptr+1);
+    strcpy(in_buffer,tmp_buffer);
+    chr_ptr = strchr(in_buffer,'(');
+  }
+
+  strcpy(in,in_buffer);
+  free(tmp_string);
+  free(tmp_buffer);
+}
+      
+static char* or2string(char* in)
+{
+  char* out;
+  char* buffer;
+  char* chr_ptr;
+  char* in_ptr;
+  out = (char*)malloc(strlen(in) + 1);
+  buffer = (char*)malloc(strlen(in) + 1);
+  memset(buffer,'\0',strlen(in) + 1);
+  memset(out,'\0',strlen(in) + 1);
+
+  if((chr_ptr = strchr(in,'(')) != NULL)
+    in_ptr = chr_ptr + 1;
+  else 
+    in_ptr = in;
+
+  if((chr_ptr = strchr(in_ptr,'|')) == NULL)
+    return out;
+
+  strncpy(out,in_ptr,chr_ptr - in_ptr);
+  return out;
 }
 
 
