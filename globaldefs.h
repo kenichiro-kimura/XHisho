@@ -154,7 +154,7 @@ ABOUT_GLOBAL Widget CreateAboutWindow(Widget);
 
 CALENDAR_GLOBAL Widget CreateCalendarWindow(Widget, int, struct tm);
 
-EDITOR_GLOBAL void CheckTimeForSchedule();
+EDITOR_GLOBAL void CheckTimeForSchedule(XtPointer,XtIntervalId*);
 EDITOR_GLOBAL Widget CreateEditorWindow(Widget, int, struct tm);
 EDITOR_GLOBAL unsigned long GetColor(Display *, char *);
 
