@@ -844,6 +844,9 @@ static void _GetBuffer(messageBuffer* buffer,char* ret,int mode)
       switch(*c_ptr){
       case 'w':
       case 's':
+      case 'j':
+      case 'b':
+      case 'i':
 	c_ptr = buffer->buffer + 2;
 	while(isdigit(*c_ptr) || *c_ptr == '\n'){
 	  /*
