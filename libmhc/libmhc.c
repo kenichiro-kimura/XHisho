@@ -21,6 +21,7 @@ static int CheckMonth(char*,int);
 static int CheckOrdinal(char*,int,int,int);
 static int CheckWeek(char*,int,int,int);
 static int CheckDay(char* ,int);
+static int datecmp(char*,char*);
 
 static MHCD* MHCDNew(mhcent* item){
   MHCD* mhc_ptr;
@@ -67,7 +68,7 @@ static mhcent* ReadEntry(FILE* fp){
   mhcent* mhcent_ptr;
   char* buffer;
   char* chr_ptr;
-  int tag,i;
+  int tag;
 
   buffer = (char*)malloc(BUFSIZ);
   if(!buffer) return NULL;
@@ -78,18 +79,15 @@ static mhcent* ReadEntry(FILE* fp){
     return NULL;
   }
 
-  for(i = 0;i < NUM_OF_ARRAY(mhcent_ptr->Entry);i++)
-    mhcent_ptr->Entry[i] = NULL;
+  memset(mhcent_ptr,0,sizeof(mhcent));
 
-  mhcent_ptr->filename = NULL;
-  
   while(fgets(buffer,BUFSIZ,fp) != NULL){
     tag = -1;
 
     if(buffer[strlen(buffer) - 1] == '\n')
       buffer[strlen(buffer) - 1] = '\0';
 
-    if(isspace((int)buffer[strlen(buffer) - 1]))
+    if(isspace(buffer[strlen(buffer) - 1]))
       buffer[strlen(buffer) - 1] = '\0';
 
     if(!strncmp("X-SC-Day:",buffer,strlen("X-SC-Day:"))){
@@ -117,7 +115,7 @@ static mhcent* ReadEntry(FILE* fp){
        * タグの後ろのスペースを読み飛ばす
        */
       for(chr_ptr++;chr_ptr;chr_ptr++)
-	if(!isspace((int)*chr_ptr)) break;
+	if(!isspace(*chr_ptr)) break;
     
       mhcent_ptr->Entry[tag] = (char*)malloc(strlen(chr_ptr) + 1);
       if(mhcent_ptr->Entry[tag] == NULL){
@@ -138,16 +136,17 @@ static MHC* MHCNew(){
 
   mhc_ptr = (MHC*)malloc(sizeof(MHC));
   if(!mhc_ptr) return NULL;
+  memset(mhc_ptr,0,sizeof(MHC));
 
   *mhc_ptr = (_MHC*)malloc(sizeof(_MHC));
   if(!(*mhc_ptr)) return NULL;
-
-  for(i = 0; i < 31;i++)
+  for(i = 0 ; i < 31;i++)
     (*mhc_ptr)->table[i] = NULL;
 
   (*mhc_ptr)->ptr = NULL;
   (*mhc_ptr)->mhcd_ptr = NULL;
   (*mhc_ptr)->intersect_ptr = NULL;
+
   return mhc_ptr;
 }
 
@@ -169,6 +168,7 @@ static int AddEntry(MHC* mhc_ptr,mhcent* ent_ptr,int day){
   entrylist* list_ptr;
 
   if(day < 1 || day > 31) return 1;
+
   newlist = EntrylistNew(ent_ptr);
   if(!newlist) return 1;
   
@@ -220,43 +220,43 @@ static int CheckSC_Day(char* sc_day,int year,int month,int day){
 
   chr_ptr = sc_day;
 
-  while(chr_ptr && *chr_ptr){
+  while(chr_ptr < sc_day + strlen(sc_day)){
     sig = 0;
     if(*chr_ptr == '!'){
       sig = 1;
       chr_ptr++;
     }
 
-    if(!chr_ptr || !*chr_ptr) break;
-
-    if(strncmp(chr_ptr,yearmonth,strlen(yearmonth))) break;
-    chr_ptr += strlen(yearmonth);
-    strncpy(pivot_ptr,chr_ptr,strlen("00"));
-    if(day == atoi(pivot_ptr)){
+    if(!strncmp(chr_ptr,yearmonth,strlen(yearmonth))){
+      chr_ptr += strlen(yearmonth);
+      strncpy(pivot_ptr,chr_ptr,strlen("00"));
+      if(day == atoi(pivot_ptr)){
 	isDay = 1;
-	break;
-    }else{
-      isDay = 0;
+      }else{
+	isDay = 0;
+      }
+      chr_ptr += strlen("00") + 1;
+    } else {
+      chr_ptr += strlen("00") + strlen(yearmonth) + 1;
     }
-    chr_ptr += strlen("00") + 1;
-    while(isspace((int)*chr_ptr))
-      chr_ptr++;
-  }
 
-  switch(isDay){
-  case -1:
-    isDay = -1;
-    break;
-  case 0:
-    if(sig)
-      isDay = 1;
-    break;
-  case 1:
-    if(sig)
-      isDay = 0;
-    break;
-  default:
-    isDay = 0;
+    switch(isDay){
+    case -1:
+      isDay = -1;
+      break;
+    case 0:
+      if(sig)
+	isDay = 1;
+      break;
+    case 1:
+      if(sig)
+	isDay = 0;
+      break;
+    }
+
+    if(chr_ptr >= sc_day + strlen(sc_day) || isDay == 1) break;
+    while(isspace(*chr_ptr))
+      chr_ptr++;
   }
 
   return isDay;
@@ -294,20 +294,20 @@ static int CheckSC_Duration(char* sc_duration,int year,int month,int day){
   }
   sprintf(yearmonthday,"%.4d%.2d%.2d",year,month,day);
 
-
   chr_ptr = sc_duration;
-  while(chr_ptr && *chr_ptr){
-    while(isspace((int)*chr_ptr));
+
+  while(chr_ptr < sc_duration + strlen(sc_duration)){
+    while(isspace(*chr_ptr) && *chr_ptr != '\0');
 
     length = 0;
-    while(chr_ptr && *chr_ptr && *chr_ptr != '-' 
-	  && length < strlen("00000000")){
+    while(chr_ptr < sc_duration + strlen(sc_duration)
+	  && *chr_ptr != '-' && length < strlen("00000000")){
       *(duration_begin + length) = *chr_ptr++;
       length++;
     }
     chr_ptr++;
     length = 0;
-    while(chr_ptr && *chr_ptr && !isspace((int)*chr_ptr)
+    while(chr_ptr < sc_duration + strlen(sc_duration)
 	  && length < strlen("00000000")){
       *(duration_end + length) = *chr_ptr++;
       length++;
@@ -316,8 +316,8 @@ static int CheckSC_Duration(char* sc_duration,int year,int month,int day){
 
     isDuration = 0;
 
-    if(strcmp(duration_begin,yearmonthday) <= 0 
-       && strcmp(yearmonthday,duration_end) <= 0 ){
+    if(datecmp(duration_begin,yearmonthday) <= 0 
+       && datecmp(yearmonthday,duration_end) <= 0 ){
       isDuration = 1;
       break;
     }
@@ -343,9 +343,9 @@ static int CheckMonth(char* sc_cond,int month){
   memset(pivot_ptr,0,strlen("0000") + 1);
 
   chr_ptr = sc_cond;
-  while(chr_ptr && *chr_ptr){
+  while(chr_ptr < sc_cond + strlen(sc_cond)){
     length = 0;
-    while(!isspace((int)*chr_ptr) && length < strlen("0000"))
+    while(!isspace(*chr_ptr) && length < strlen("0000"))
       *(pivot_ptr + length++) = *chr_ptr++;
 
     for(i = 0; i < 12;i++){
@@ -356,7 +356,7 @@ static int CheckMonth(char* sc_cond,int month){
       }
     }
 
-    while(isspace((int)*chr_ptr))
+    while(chr_ptr < sc_cond + strlen(sc_cond) && isspace(*chr_ptr))
       chr_ptr++;
   }
 
@@ -400,9 +400,9 @@ static int CheckOrdinal(char* sc_cond,int year,int month,int day){
   if(day + 7 > wdays[month -1] + uru_adjust) isLast = 1;
 
   chr_ptr = sc_cond;
-  while(chr_ptr && *chr_ptr){
+  while(chr_ptr < sc_cond + strlen(sc_cond)){
     length = 0;
-    while(!isspace((int)*chr_ptr) && length < strlen("0000"))
+    while(chr_ptr < sc_cond + strlen(sc_cond) && !isspace(*chr_ptr) && length < strlen("0000"))
       *(pivot_ptr + length++) = *chr_ptr++;
 
     for(i = 0; i < 4;i++){
@@ -418,7 +418,7 @@ static int CheckOrdinal(char* sc_cond,int year,int month,int day){
       tag = 1;
     }
 
-    while(isspace((int)*chr_ptr))
+    while(chr_ptr < sc_cond + strlen(sc_cond) && isspace(*chr_ptr))
       chr_ptr++;
   }
 
@@ -456,9 +456,9 @@ static int CheckWeek(char* sc_cond,int year,int month,int day){
   sched = mktime(tm_sched);
 
   chr_ptr = sc_cond;
-  while(chr_ptr && *chr_ptr){
+  while(chr_ptr < sc_cond + strlen(sc_cond)){
     length = 0;
-    while(!isspace((int)*chr_ptr) && length < strlen("0000"))
+    while(chr_ptr < sc_cond + strlen(sc_cond) && !isspace(*chr_ptr) && length < strlen("0000"))
       *(pivot_ptr + length++) = *chr_ptr++;
 
     for(i = 0; i < 7;i++){
@@ -469,7 +469,7 @@ static int CheckWeek(char* sc_cond,int year,int month,int day){
       }
     }
 
-    while(isspace((int)*chr_ptr))
+    while(chr_ptr < sc_cond + strlen(sc_cond) && isspace(*chr_ptr))
       chr_ptr++;
   }
 
@@ -496,9 +496,9 @@ static int CheckDay(char* sc_cond,int day){
   memset(pivot_ptr,0,strlen("0000") + 1);
 
   chr_ptr = sc_cond;
-  while(chr_ptr && *chr_ptr){
+  while(chr_ptr < sc_cond + strlen(sc_cond)){
     length = 0;
-    while(!isspace((int)*chr_ptr) && length < strlen("0000"))
+    while(chr_ptr < sc_cond + strlen(sc_cond) && !isspace(*chr_ptr) && length < strlen("0000"))
       *(pivot_ptr + length++) = *chr_ptr++;
 
     if(atoi(pivot_ptr) > 0 && atoi(pivot_ptr) < 32 && strlen(pivot_ptr) == 2){
@@ -507,7 +507,7 @@ static int CheckDay(char* sc_cond,int day){
 	tag = 1;
     }
 
-    while(isspace((int)*chr_ptr))
+    while(chr_ptr < sc_cond + strlen(sc_cond) && isspace(*chr_ptr))
       chr_ptr++;
   }
 
@@ -602,7 +602,53 @@ static int CheckSC_Cond(char* sc_cond,int year,int month,int day){
   return -1;
 }
   
+static int datecmp(char* a,char* b){
+  time_t a_t,b_t;
+  struct tm *tm_x;
+  char year[5],month[3],day[3];
+  int diff;
 
+  if(strlen(a) != strlen("20001020")) return 0;
+  if(strlen(b) != strlen("00001020")) return 0;
+
+  memset(year,0,5);
+  memset(month,0,3);
+  memset(day,0,3);
+  time(&a_t);
+  strncpy(year,a,4);
+  strncpy(month,a + 4,2);
+  strncpy(day,a + 6,2);
+
+  tm_x = localtime(&a_t);
+  tm_x->tm_mday = atoi(day);
+  tm_x->tm_mon = atoi(month) - 1;
+  tm_x->tm_year = atoi(year) - 1900;
+  a_t = mktime(tm_x);
+
+  memset(year,0,5);
+  memset(month,0,3);
+  memset(day,0,3);
+  strncpy(year,b,4);
+  strncpy(month,b + 4,2);
+  strncpy(day,b + 6,2);
+
+  time(&b_t);
+  tm_x = localtime(&b_t);
+  tm_x->tm_mday = atoi(day);
+  tm_x->tm_mon = atoi(month) - 1;
+  tm_x->tm_year = atoi(year) - 1900;
+  b_t = mktime(tm_x);
+ 
+  if(difftime(a_t, b_t) > 0){
+    diff = 1;
+  } else if(difftime(a_t, b_t) == 0){
+    diff = 0;
+  } else {
+    diff = -1;
+  }
+
+  return diff;
+}
 
 /**
  * =================================================================
@@ -708,6 +754,7 @@ int closemhc(MHCD* mhc_ptr){
   MHCDDelete(mhc_ptr);
 
   free(*mhc_ptr);
+  (*mhc_ptr) = NULL;
   return 0;
 }
 
@@ -802,6 +849,7 @@ MHC* OpenMHC(const char* home_dir, int year,int month){
 
     while((ent_ptr = readmhc(mhcd_ptr)) != NULL){
       for(day = 1; day <= 31;day++){
+
 	if(isschedule(ent_ptr,year,month,day))
 	  AddEntry(mhc_ptr,ent_ptr,day);
 
@@ -867,11 +915,14 @@ int CloseMHC(MHC* mhc_ptr){
   if(!mhc_ptr) return 1;
   if(!(*mhc_ptr)) return 1;
 
-  for(i = 0; i < NUM_OF_ARRAY((*mhc_ptr)->table);i++)
+  for(i = 0; i < NUM_OF_ARRAY((*mhc_ptr)->table);i++){
     EntrylistDelete((*mhc_ptr)->table[i]);
+    (*mhc_ptr)->table[i] = NULL;
+  }
 
   rv = closemhc((*mhc_ptr)->mhcd_ptr);
   free(*mhc_ptr);
+  (*mhc_ptr) = NULL;
 
   return rv;
 }
@@ -912,5 +963,3 @@ int GetAlarm(const mhcent* ent_ptr){
 }
   
 
-  
-  

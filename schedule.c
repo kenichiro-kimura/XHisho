@@ -176,8 +176,7 @@ int CheckSchedule(OpenMessageRes * l_omr, Schedule * schedule, int WeeklyCheck, 
 
     t_filename[0] = '\0';
     sprintf(t_filename, "%s", tempnam(Tmp_dir, "xhtmp"));
-    strcpy(home,getenv("HOME"));
-    strcat(home,"/Mail/schedule");
+    sprintf(home,"%s/Mail/schedule/",getenv("HOME"));
     mhc_ptr = OpenMHC(home,atoi(year),atoi(month));
     SetMHC(mhc_ptr,atoi(day));
 
@@ -201,10 +200,10 @@ int CheckSchedule(OpenMessageRes * l_omr, Schedule * schedule, int WeeklyCheck, 
 #else
       strncpy(tmp1, ent_ptr->Entry[X_SC_Subject],MIN(strlen(ent_ptr->Entry[X_SC_Subject],BUFSIZ)));
 #endif
+
       if(ent_ptr->Entry[X_SC_Time] && strlen(ent_ptr->Entry[X_SC_Time]) >= 4){
 	strncpy(schedule[i].hour, ent_ptr->Entry[X_SC_Time], sizeof(char) * 2);
 	strncpy(schedule[i].min, ent_ptr->Entry[X_SC_Time] + 2, sizeof(char) * 2);
-	printf("%s:%s\n",schedule[i].hour,schedule[i].min);
       } else {
 	strcpy(schedule[i].hour, "*");
       }
