@@ -78,10 +78,14 @@ int CheckSchedule(OpenMessageRes * l_omr, Schedule * schedule, int WeeklyCheck, 
    * 今日の日付を取得する。7/20ならdate="0720"になる。
    **/
 
-  strftime(day, sizeof(day), "%d", localtime(&tval));
-  strftime(month, sizeof(month), "%m", localtime(&tval));
-  strftime(week, sizeof(week), "%w", localtime(&tval));
-  strftime(year, sizeof(year), "%Y", localtime(&tval));
+  strftime(day, 2, "%d", localtime(&tval));
+  strftime(month, 2, "%m", localtime(&tval));
+  strftime(week, 1, "%w", localtime(&tval));
+  strftime(year, 4, "%Y", localtime(&tval));
+  week[1] = '\0';
+  year[4] = '\0';
+  day[2] = '\0';
+  month[2] = '\0';
 
   strncpy(l_omr->month, month, 2);
   l_omr->month[2] = '\0';
