@@ -865,6 +865,7 @@ static void CheckYoubin(Widget w, int *fid, XtInputId * id)
   long date;
   int i = 0, j;
   int isFrom = 0, isSubject = 0;
+  int broken_from;
 
 #ifdef PETNAME
   unsigned char *from_who, *who, *pname, *next_ptr, *left_ptr, *right_ptr;
@@ -912,6 +913,7 @@ static void CheckYoubin(Widget w, int *fid, XtInputId * id)
     goto End;
 
   while (tmp1 != NULL && i < mar.mail_lines && !(isFrom && isSubject)) {
+    broken_from = 0;
     ch_ptr = tmp1;
     while(*ch_ptr != '\0' && 
 	  (isdigit((unsigned char)*ch_ptr) 
@@ -944,7 +946,8 @@ static void CheckYoubin(Widget w, int *fid, XtInputId * id)
 		      MIN(right_ptr - left_ptr - 1,BUFSIZ- 1));
 	      pname[MIN(right_ptr - left_ptr - 1,BUFSIZ- 1)] = '\0';
 	    } else {
-	    *pname = '\0';
+	      *pname = '\0';
+	      broken_from = 1;
 	    }
 	  } else {
 	    *pname = '\0';
@@ -987,7 +990,10 @@ static void CheckYoubin(Widget w, int *fid, XtInputId * id)
 	i++;
       }
     }
-    tmp1 = strtok(NULL, "\n");
+    if(broken_from)
+      tmp1 = next_ptr;
+    else
+      tmp1 = strtok(NULL, "\n");
   }
 
   XtVaSetValues(from, XtNlabel, From, NULL);
