@@ -380,7 +380,7 @@ static void PrintUsage(int argc, char **argv)
   "     -version                    : print xhisho's version\n"
   "     -coption                    : show compile option\n"
   "     -cgfile [file_name]         : cg file name(BMP"
-#ifdef WITH_XPM
+#ifdef HAVE_LIBXPM
   ",XPM"
 #endif
 #ifdef HAVE_LIBJPEG
@@ -405,7 +405,7 @@ static void PrintUsage(int argc, char **argv)
 
   static char *compile_option =
   "Compile option:\n"
-#ifdef WITH_XPM
+#ifdef HAVE_LIBXPM
   "    Use XPM file\n"
 #endif
 #ifdef HAVE_LIBJPEG

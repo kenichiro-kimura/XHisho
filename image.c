@@ -15,7 +15,7 @@ extern int LoadBmp(ImageInfo *, char *);
 extern int LoadJpeg(ImageInfo *, char *);
 #endif
 
-#ifdef WITH_XPM
+#ifdef HAVE_LIBXPM
 extern int LoadXpm(ImageInfo *, char *);
 #endif
 
@@ -37,7 +37,7 @@ static struct {
   },
 #endif
 
-#ifdef WITH_XPM
+#ifdef HAVE_LIBXPM
   {
     LoadXpm
   },

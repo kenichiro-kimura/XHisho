@@ -1,8 +1,5 @@
 /* config.h.in.  Generated automatically from configure.in by autoheader.  */
 
-/* Define if you use XPM */
-#undef WITH_XPM
-
 /* Define if you use for personal */
 #undef PERSONAL
 
@@ -20,6 +17,9 @@
 
 /* Define for XAkari :-) */
 #undef AKARI
+
+/* Define if you have the Xpm library (-lXpm).  */
+#undef HAVE_LIBXPM
 
 /* Define if you have the jpeg library (-ljpeg).  */
 #undef HAVE_LIBJPEG

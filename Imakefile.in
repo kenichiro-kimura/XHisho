@@ -11,10 +11,6 @@ XCOMM
 XHISHODIR = $(LIBDIR)/xhisho
 LOCALEDIR = $(LIBDIR)/$(LANG)/app-defaults
 
-#ifdef WITH_XPM
-LIB_XPM = -lXpm 
-#endif
-
 #ifdef PERSONAL
 BINDIR	= $(HOME)/bin
 XHISHODIR = $(HOME)/xhisho
@@ -37,7 +33,7 @@ IXHISHODIR = $(XHISHODIR)/$(LANG)
 
 DEFINES = $(FILTER) $(PET) $(ADD)
 
-EXTRA_LIBRARIES = @LIBS@ $(LIB_XPM)
+EXTRA_LIBRARIES = @LIBS@
 
 DEPLIBS = XawClientDepLibs
 LOCAL_LIBRARIES = XawClientLibs
@@ -52,7 +48,7 @@ PETNAME_OBJS = petname.o
 JPEG_OBJS = load_jpeg.o
 #endif
 
-#ifdef WITH_XPM
+#ifdef HAVE_LIBXPM
 XPM_OBJS = load_xpm.o
 #endif
 
