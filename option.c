@@ -288,20 +288,53 @@ Widget CreateOptionWindow(Widget w){
 
 static void CommandInit()
 {
+  int option_pfp[2];
   static int virgine = 1;
+  char* command;
+  char* chr_ptr;
+  int o_argc = 0;
 
-  if (virgine) {
-    if ((option_fd = popen(opr.o_command,"r")) == NULL){
-      fprintf(stderr, "no such option command, \"%s\"\n", opr.o_command);
-      return ;
+  if((chr_ptr = strchr(opr.o_command,' ')) != NULL){
+    command = (char*)malloc(chr_ptr - opr.o_command + 1);
+    strncpy(command,opr.o_command,chr_ptr - opr.o_command);
+    command[chr_ptr - opr.o_command] = '\0';
+    opr.o_command = chr_ptr;
+  } else {
+    command = (char*)malloc(strlen(opr.o_command) + 1);
+    strcpy(command,opr.o_command);
+  }
+
+  printf("%s %s\n",command,opr.o_command);
+  if(virgine){
+    if(pipe(option_pfp)){
+      perror("option pipe");
+      exit(1);
     }
+    if((option_pid = fork()) < 0){
+      perror("option fork");
+      exit(1);
+      }
+    if(option_pid == 0){
+      close(1);
+      dup(option_pfp[1]);
+      close(option_pfp[1]);
+      execl(command,command,opr.o_command,NULL);
+      exit(1);
+    }
+    close(option_pfp[1]);
     virgine = 0;
   }
 
+  if ((option_fd = fdopen(option_pfp[0], "r")) == NULL) {
+    perror("option fdopen");
+    exit(1);
+  }
+ 
   OptionId = XtAppAddInput(XtWidgetToApplicationContext(top),
 			   fileno(option_fd), (XtPointer) XtInputReadMask,
 			   (XtInputCallbackProc) CheckOption, NULL);
   XSetIOErrorHandler(Option_exit);	/** child process¤ò»¦¤¹ **/
+  free(command);
 }
 
 static void CheckOption(Widget w, int *fid, XtInputId * id)

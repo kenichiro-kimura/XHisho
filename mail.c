@@ -819,23 +819,15 @@ static void YoubinInit()
   sprintf(YoubinFile, "/tmp/xhtmp%s-%d/xhyoubin", getenv("USER"),getpid());
 
   if (virgine) {
-    if((youbin_pid[0] = fork()) < 0){
-      perror("youbin fork");
-      exit(1);
-    }
-    if(youbin_pid[0] == 0){
-      execl(mar.y_command,"youbin","-m",YoubinFile,"-s",mar.y_server,NULL);
-      exit(1);
-    }
     if(pipe(youbin_pfp)){
       perror("youbin pipe");
       exit(1);
     }
-    if((youbin_pid[1] = fork()) < 0){
+    if((youbin_pid = fork()) < 0){
       perror("youbin fork");
       exit(1);
     }
-    if(youbin_pid[1] == 0){
+    if(youbin_pid == 0){
       close(1);
       dup(youbin_pfp[1]);
       close(youbin_pfp[1]);
