@@ -4,7 +4,16 @@ use Socket;
 my ($host, $port, $sockaddr);
 $| = 1;
 $mesg = 'Hello world.';
-$port = 11000;
+
+if(defined $ARGV[0]){
+    $port = $ARGV[0];
+} else {
+    $port = 9801;
+}
+
+if ($port != 9801 && $port != 11000){
+    $port = 9801;
+}
 
 $sockaddr = pack_sockaddr_in($port, INADDR_ANY);
 $proto = getprotobyname('tcp'); 
