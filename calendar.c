@@ -413,7 +413,10 @@ Widget CreateCalendarWindow(Widget w, int Month, struct tm tm_now)
 	 * 予定のある日の色を変える
 	 **/
 
-	exist_schedule = ExistSchedule(Edited_Month,l - 1) + exist_mhc[l - 2];
+	exist_schedule = ExistSchedule(Edited_Month,l - 1);
+#ifdef LIBMHC
+	exist_schedule += exist_mhc[l - 2];
+#endif
 
 	if (exist_schedule)
 	  XtVaSetValues(day[k], XtNbackground, GetColor(XtDisplay(top), cres.color), NULL);

@@ -30,7 +30,7 @@ ac_help="$ac_help
 ac_help="$ac_help
   --enable-akari          for XAkari :-)"
 ac_help="$ac_help
-  --enable-libmhc       use libmhc"
+  --with-libmhc       use libmhc"
 ac_help="$ac_help
   --without-xadl          compile without XADL "
 ac_help="$ac_help
@@ -1454,9 +1454,9 @@ test "$with_akari" = "yes" && cat >> confdefs.h <<\EOF
 EOF
 
 
-# Check whether --enable-libmhc or --disable-libmhc was given.
-if test "${enable_libmhc+set}" = set; then
-  enableval="$enable_libmhc"
+# Check whether --with-libmhc or --without-libmhc was given.
+if test "${with_libmhc+set}" = set; then
+  withval="$with_libmhc"
   with_libmhc=$enableval
 else
   with_libmhc=no
@@ -1485,7 +1485,7 @@ if test "${with_option+set}" = set; then
   withval="$with_option"
   with_option=$withval
 else
-  with_option=yes
+  with_option=no
 fi
 
 test "$with_option" = "yes" && cat >> confdefs.h <<\EOF

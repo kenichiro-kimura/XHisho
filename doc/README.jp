@@ -144,11 +144,13 @@ MHC$B$N%G!<%?$r;H$&$3$H$b$G$-$^$9!#$3$N>l9g!"(BXHisho$B$+$i%(%G%#%C%H$O=PMh(
 
 $B!&(B--enable-personal    : $BA4$F$N%U%!%$%k$r(B$HOME$B0J2<$K%$%s%9%H!<%k$7$^$9(B
 $B!&(B--enable-abook       : Mew$B$N%"%I%l%9D"$r;H$$$^$9(B
-$B!&(B--enable-libmhc      : MHC$B$N%G!<%?$r;H$$$^$9(B
 $B!&(B--disable-i18n       : $B9q:]2=%a%C%;!<%8(B($BF|K\8l$@$1$I(B ^^)$B$r%$%s%9%H!<(B
                          $B%k$7$^$;$s(B
 $B!&(B--disable-ext_filter : $B30It%U%#%k%?$r;H$$$^$;$s(B
 $B!&(B--disable-petname    : Petname$B$r;H$$$^$;$s(B
+$B!&(B--with-libmhc        : MHC$B$N%G!<%?$r;H$$$^$9(B
+$B!&(B--with-shared        : $B%i%$%V%i%j$r(Bshared library$B$H$7$F%$%s%9%H!<%k$7$^$9(B
+$B!&(B--with-option        : $B!V$"$l0J30$N2?$+(Bwith$BG$0U!WBP1~(B
 $B!&(B--without-xpm        : $B2hA|7A<0$H$7$F(Bxpm$B$r;H$$$^$;$s(B
 $B!&(B--without-jpeg       : $B2hA|7A<0$H$7$F(Bjpeg$B$r;H$$$^$;$s(B
 $B!&(B--without-png        : $B2hA|7A<0$H$7$F(Bpng$B$r;H$$$^$;$s(B

@@ -116,8 +116,8 @@ AC_ARG_ENABLE(akari,
         [with_akari=no])
 test "$with_akari" = "yes" && AC_DEFINE(AKARI)
 
-AC_ARG_ENABLE(libmhc,
-        [  --enable-libmhc       use libmhc],
+AC_ARG_WITH(libmhc,
+        [  --with-libmhc       use libmhc],
         [with_libmhc=$enableval],
         [with_libmhc=no])
 test "$with_libmhc" = "yes" && AC_DEFINE(LIBMHC)
@@ -131,7 +131,7 @@ test "$with_xadl" = "yes" && AC_DEFINE(XADL)
 AC_ARG_WITH(option,
         [  --without-option          compile without 'Something except that with option' ],
         [with_option=$withval],
-        [with_option=yes])
+        [with_option=no])
 test "$with_option" = "yes" && AC_DEFINE(OPTION)
 
 AC_ARG_WITH(shared,
