@@ -1,4 +1,4 @@
-.TH XHISHO 1 "7 July 1999" "X Version 11"
+.TH XHISHO 1 "15 July 1999" "X Version 11"
 .SH NAME
 XHisho - X Window System で動く電子秘書
 .SH SYNOPSIS
@@ -141,6 +141,18 @@ YOUBINサーバの名前を指定します。
 .TP 20
 .BI  \-pserver " servername"
 POP3サーバの名前を指定します。
+
+.TP 20
+.BI  \-youbin
+biffでYOUBINを使います。
+
+.TP 20
+.BI  \-pop
+biffでPOPを使います。
+
+.TP 20
+.BI  \-apop
+biffでAPOPを使います。
 
 .SH BUGS
 色々(笑)。見つけたら報告してください。
