@@ -573,6 +573,7 @@ Widget CreateMailAlert(Widget w, int Mode)
      **/
 
     fromargs[1].value = (XtArgVal) label;
+    fromargs[0].value = (XtArgVal) " ";
 
     from = XtCreateManagedWidget("mailFrom", labelWidgetClass, local_mail[Mode]
 				 ,fromargs, XtNumber(fromargs));
@@ -790,7 +791,7 @@ static void YoubinInit()
 static void CheckYoubin(Widget w, int *fid, XtInputId * id)
 {
   int len;
-  char *buf, *tmp1;
+  char *buf, *tmp1 ,*tmp, *message;
   char *cp, *q, *From, *tmp2;
   int mail_size, length;
   static int old_mail_size = 0;
@@ -815,11 +816,17 @@ static void CheckYoubin(Widget w, int *fid, XtInputId * id)
 
   buf = malloc(BUFSIZ);
   memset(buf, '\0', BUFSIZ);
+  tmp = (char*)malloc(BUFSIZ);
+  message = (char*)malloc(BUFSIZ);
+
 
 #ifdef PETNAME
   from_who = malloc(BUFSIZ);
   who = malloc(BUFSIZ);
   pname = malloc(BUFSIZ);
+  memset(from_who, '\0', BUFSIZ);
+  memset(who, '\0', BUFSIZ);
+  memset(pname, '\0', BUFSIZ);
 #endif				/** PETNAME **/
 
 
@@ -874,7 +881,8 @@ static void CheckYoubin(Widget w, int *fid, XtInputId * id)
 	  left_ptr = strchr(next_ptr, '<');
 	  right_ptr = strchr(next_ptr, '>');
 	  if (left_ptr != NULL && right_ptr != NULL){
-	    strcpy(pname, strtok(left_ptr + 1, ">"));
+	    strncpy(pname, strchr(buf, '<') + 1,
+		    strchr(buf, '>') - strchr(buf, '<') - 1);
 	  } else {
 	    pname[0] = '\0';
 	  }
@@ -915,6 +923,14 @@ static void CheckYoubin(Widget w, int *fid, XtInputId * id)
     tmp1 = strtok(NULL, "\n");
   }
 
+  i = 1;
+  ReadRcdata("newmail",tmp,BUFSIZ);
+  if(*tmp == '\0')
+    sprintf(message,mar.mail_l,i);
+  else
+    sprintf(message,tmp,i);
+
+  XtVaSetValues(label, XtNlabel, message, NULL);
   XtVaSetValues(from, XtNlabel, From, NULL);
   if (!IsPopped(mail)) {
     isMailChecked = 1;
@@ -927,6 +943,8 @@ End:
   free(From);
   free(tmp2);
   free(buf);
+  free(tmp);
+  free(message);
 #ifdef PETNAME
   free(from_who);
   free(who);
