@@ -401,6 +401,9 @@ static void PrintUsage(int argc, char **argv)
   ",PNG"
 #endif
   ")\n"
+  "     -pop                        : check POP for biff\n"
+  "     -apop                       : check APOP for biff\n"
+  "     -youbin                     : check youbin for biff\n"
   "     -noclock                    : don't draw clock\n"
   "     -focus                      : use Focuswin module\n"
   "     -justify [left/center/rignt]: set Focuswin justify\n"
@@ -408,8 +411,8 @@ static void PrintUsage(int argc, char **argv)
   "     -shape                      : use transparent background\n"
   "     -message [file_name]        : message file name\n"
   "     -scheddir [dir_name]        : schedule dir name\n"
-  "     -chime                      : use zero-hour chime\n"
-  "     -nochime                    : not use zero-hour chime\n"
+  "     -chime                      : use zero-min chime\n"
+  "     -nochime                    : not use zero-min chime\n"
 #ifdef EXT_FILTER
   "     -filter command             : external filter command\n"
 #endif
