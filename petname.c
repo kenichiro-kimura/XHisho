@@ -96,7 +96,7 @@ static void ReadAddrBook(){
    */
 
   FILE *fp;
-  char *buffer,*pname,*addr;
+  unsigned char *buffer,*pname,*addr;
   char fname[128];
   int i,in_quote,j;
   PetnameList *address_list,*pname_ptr,*ptr;
@@ -202,14 +202,17 @@ static void ReadAddrBook(){
      *                   である)
      */
 
-    for(i++,j = in_quote = 0;i < strlen(buffer);i++){
+    for(i++,j = in_quote = 0;i < strlen(buffer),j < BUFSIZ;i++){
       if(buffer[i] == '"'){
-	if(in_quote) break;
+	if(in_quote == 1) break;
 	in_quote = 1;
       } else {
-	if(!in_quote && isspace(buffer[i])) break;
+	if(in_quote == 0 && isspace(buffer[i])) break;
 	if(buffer[i] == '#') break;
-	if(buffer[i] != '"') pname[j++] = buffer[i];
+	if(buffer[i] != '"'){
+	  pname[j] = buffer[i];
+	  j++;
+	}
       }
     }
 
@@ -261,7 +264,7 @@ void ReadPetname(char* petname_f){
    * 要素を追加していっている。
    */
 
-  char *who,*tmp,*tmp2,*buffer;
+  unsigned char *who,*tmp,*tmp2,*buffer;
   FILE *pfp;
   PetnameList* pname_ptr;
   int i,hashed;
@@ -344,6 +347,7 @@ void SearchPetname(char* ret_value,char* pname){
     }
     plist = plist->next;
   }
+
 
   return;
 }

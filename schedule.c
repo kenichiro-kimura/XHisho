@@ -56,8 +56,8 @@ int CheckSchedule(OpenMessageRes* l_omr,Schedule* schedule,int WeeklyCheck,struc
   time_t tval;
   int i,j;
   char filename[128],day[3],month[4],tdate[5],week[2],year[4];
-  char *tmp1,*tmp2,*tmp3,*tmp4,*leave;
-  char *string_index;
+  unsigned char *tmp1,*tmp2,*tmp3,*tmp4,*leave;
+  unsigned char *string_index;
 
 #ifdef EXT_FILTER
   char command[128];
@@ -337,7 +337,7 @@ static void ReadHolidayFile(char* filename){
    */
 
   FILE *inputfile;
-  char *tmp1,*tmp2,*tmp3,*tmp4,*includefile;
+  unsigned char *tmp1,*tmp2,*tmp3,*tmp4,*includefile;
   char tdate[5];
   HolidayList *tlist;
   int m,d;

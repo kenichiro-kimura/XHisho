@@ -503,7 +503,7 @@ Widget CreateMailAlert(Widget w,int Mode){
   
 static void GetFromandSubject(char* m_file,char* From){
   FILE *fp;
-  char *tmp1,*tmp2,*buf,*head1,*head2;
+  unsigned char *tmp1,*tmp2,*buf,*head1,*head2;
   int i = 0,length,j;
   int isheader = 0;
   int filehead = 1;

@@ -213,7 +213,7 @@ static int playWave(int data_fd, u_int datasize, int dsp_fd){
 int SoundPlay(const char* filename){
   char command[BUFSIZ];
 
-  if(mar.ext_soundcommand){
+  if(SoundCommand){
     return ExtSoundCommand(filename);
   }
 

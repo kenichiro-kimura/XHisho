@@ -422,7 +422,7 @@ static char* MD5Digest(unsigned char *s){
 
 
 static void GetFromandSubject(int sock,char* buffer){
-  char *buf,*tmp,*tmp2,*tmp3;
+  unsigned char *buf,*tmp,*tmp2,*tmp3;
   int i = 0,j;
   int length;
 
