@@ -1,5 +1,5 @@
 ******************************************************************
- XHisho Ver. 1.60 [Lime Release 6] 
+ XHisho Ver. 1.70 [Lime Release 7] 
  Copyright(c) 1998-2000 Ken'ichirou Kimura (kimura@db.is.kyushu-u.ac.jp)
     ******************************************************************
 
@@ -138,6 +138,7 @@ From$B$K$O(BMew$B$HF1$87A<0$N(BPetname$B$rMQ$$$F!V(Bhogeyama@dokka.com$B!
 
 $B!&(B--enable-personal    : $BA4$F$N%U%!%$%k$r(B$HOME$B0J2<$K%$%s%9%H!<%k$7$^$9(B
 $B!&(B--enable-abook       : Mew$B$N%"%I%l%9D"$r;H$$$^$9(B
+$B!&(B--enable-libmhc      : mhc$B$N%G!<%?$r;H$$$^$9(B
 $B!&(B--disable-i18n       : $B9q:]2=%a%C%;!<%8(B($BF|K\8l$@$1$I(B ^^)$B$r%$%s%9%H!<(B
                          $B%k$7$^$;$s(B
 $B!&(B--disable-ext_filter : $B30It%U%#%k%?$r;H$$$^$;$s(B
@@ -181,8 +182,10 @@ JPEG$B%i%$%V%i%j$d(BPNG$B%i%$%V%i%j$,$&$^$/8+$D$+$i$J$$$H$-$O!"(Bconfigure$
 $B$r%$%s%9%H!<%k$7$^$9!#(B
 
 
-$B!V(B--enable-abook$B!W$H$9$k$H(BMew$B$N%"%I%l%9D"$r;H$&$3$H$b$G$-$^$9!#$?$@$7!"(B
-$B%"%I%l%9D"$r;H$&5!G=$O$^$@%F%9%H$,==J,$G$O$J$$$N$G5$$r$D$1$F$/$@$5$$!#(B
+$B!V(B--enable-abook$B!W$H$9$k$H(BMew$B$N%"%I%l%9D"$r;H$&$3$H$b$G$-$^$9!#(B
+
+$B!V(B--enable-libmhc$B!W$H$9$k$H(Bmhc$B$N%G!<%?$r;H$&$3$H$,$G$-$^$9!#C"$7!"(Bmhc
+$B$X$NBP1~$O$^$@%F%9%H$,==J,$G$O$J$$$N$G5$$r$D$1$F$/$@$5$$!#(B
 
 
 $B$^$?!"(Broot$B$K$J$k8"8B$r;}$C$F$$$J$$?M$,<+J,$N4D6-$K%$%s%9%H!<%k$7$?$$>l(B
@@ -516,6 +519,13 @@ Petname$B5!G=$r85$K3+H/$7$^$7$?!#(B
 $B@>LnN4E5$5$s(B(nishino@itakura.nuee.nagoya-u.ac.jp)$B$K$O!"(Bcalendar$B$G5YF|(B
 $B$N?'$rJQ$($k%Q%C%A$rD:$-$^$7$?!#(B
 
+mhc$B$N:n<T$NG5B<G=@.$5$s(B(nom@csce.kyushu-u.ac.jp)$B$K$O!"(Bmhc$BBP1~$X$N$-$C(B
+$B$+$1$H%"%I%P%$%9$r$$$?$@$-$^$7$?!#(Bmhc$B$K$D$$$F$O(B
+http://www.quickhack.net/mhc/ 
+$B$r$4Mw2<$5$$!#(B
+
+
+
 
 
 special thanks to...
@@ -540,6 +550,4 @@ special thanks to...
 $B!&3F<o5!G=$N%b%8%e!<%k2=!#(BXHisho$B$O>r7o$K9g$o$;$F$U$-$@$7$r=P$9$@$1$K$7(B
   $B$F$7$^$&(B
 $B!&(BXHisho server$B2=!#(BWeb$B$d(Bi-mode$B$H$NO"7H!"J#?t4D6-$G$N%9%1%8%e!<%k$N6&M-$J$I(B
-$B!&(Bmhc(http://www.quickhack.net/mhc/)$B$X$NBP1~!#(Bmhc -> XHisho$B$N%3%s%P!<%?(B
-  $B$r:n$C$F$bNI$$$,!"=PMh$l$P(Bnative$B$KBP1~$7$?$$!#(Blibmhc$B$r:n$k(B?($B9=A[Cf(B)
 $B!&M=Dj$N>\:Y>pJs$NI=<(!#(Bmhc$B$G8@$($P(Bbody$B$NItJ,!#(B

@@ -3,7 +3,7 @@ CC = @CC@
 CCOPTIONS = @CFLAGS@ @LDFLAGS@
 STD_INCLUDES = -I../ -I/usr/local/include
 
-OBJS = $(libmhc.o)
+OBJS = libmhc.o
 
 SRCS = $(OBJS:.o=.c)
 

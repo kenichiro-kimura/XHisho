@@ -4,6 +4,9 @@
 #include <ctype.h>
 #include <sys/stat.h>
 #include <X11/Xlocale.h>
+#ifdef LIBMHC
+#include "mhc.h"
+#endif      
 
 static HolidayList *Hlist[12];
 
@@ -55,6 +58,14 @@ int CheckSchedule(OpenMessageRes * l_omr, Schedule * schedule, int WeeklyCheck, 
 #ifdef EXT_FILTER
   char command[128];
 #endif
+#ifdef LIBMHC
+  MHC* mhc_ptr;
+  mhcent* ent_ptr;
+  FILE *t_file;
+  char *t_filename, *Tmp_dir;
+  char home[BUFSIZ];
+#endif      
+
 
   tmp1 = malloc(BUFSIZ);
   tmp2 = malloc(BUFSIZ);
@@ -87,83 +98,139 @@ int CheckSchedule(OpenMessageRes * l_omr, Schedule * schedule, int WeeklyCheck, 
     sprintf(filename, "%s/%sxhs%s%s", getenv("HOME"), l_omr->sched_dir, month, day);
   }
 
-  if (!(WeeklyCheck &2)){
-    if ((inputfile = fopen(filename, "r")) != NULL) {
+  if ((inputfile = fopen(filename, "r")) != NULL) {
 
 #ifdef EXT_FILTER
-      fclose(inputfile);
-      sprintf(command, "%s %s", l_omr->ext_filter, filename);
-      inputfile = popen(command, "r");
+    fclose(inputfile);
+    sprintf(command, "%s %s", l_omr->ext_filter, filename);
+    inputfile = popen(command, "r");
 #endif
 
-      while (fgets(tmp1, BUFSIZ - 1, inputfile) != NULL && (i < MAX_SCHED_NUM)) {
+    while (fgets(tmp1, BUFSIZ - 1, inputfile) != NULL && (i < MAX_SCHED_NUM)) {
 
+      /**
+       * もし # で始まっていたらコメントとみなし、その後1行を無視する。
+       * 空行も同様。
+       **/
+
+      *tmp2 = *tmp3 = *leave = '\0';
+
+      if (tmp1[0] != '#' && tmp1[0] != '\0' && tmp1[0] != '\n' && tmp1[0] != ' ') {
+	sscanf(tmp1, "%s %s %s", tmp2, leave, tmp3);
+
+	if (!atoi(leave)) {
+	  sscanf(tmp1, "%s %s", tmp2, tmp3);
+	  if(!strcmp(leave,"*") || !strcmp(leave,"0")){
+	    schedule[i].leave = -1;
+	  } else {
+	    schedule[i].leave = omr.leave_t;
+	  }
+	} else {
+	  schedule[i].leave = atoi(leave);
+	}
+
+	strncpy(tdate, tmp2, sizeof(tdate));
+	tdate[4] = '\0';
+	strncpy(schedule[i].hour, tdate, sizeof(char) * 2);
+	strncpy(schedule[i].min, tdate + 2, sizeof(char) * 2);
+	
 	/**
-	 * もし # で始まっていたらコメントとみなし、その後1行を無視する。
-	 * 空行も同様。
+	 * 開始時刻とleaveを読み飛ばす。
 	 **/
 
-	*tmp2 = *tmp3 = *leave = '\0';
+	for (j = 0; j < strlen(tmp1); j++)
+	  if (isspace(tmp1[j]))
+	    break;
+	for (j++; j < strlen(tmp1); j++)
+	  if (isspace(tmp1[j]))
+	    break;
 
-	if (tmp1[0] != '#' && tmp1[0] != '\0' && tmp1[0] != '\n' && tmp1[0] != ' ') {
-	  sscanf(tmp1, "%s %s %s", tmp2, leave, tmp3);
+	string_index = tmp1 + j + 1;
+	
+	if (string_index) {
+	  Escape2Return(string_index);
+	  strncpy(schedule[i].ev, string_index, MIN(BUFSIZ, strlen(string_index)));
 
-	  if (!atoi(leave)) {
-	    sscanf(tmp1, "%s %s", tmp2, tmp3);
-	    if(!strcmp(leave,"*") || !strcmp(leave,"0")){
-	      schedule[i].leave = -1;
-	    } else {
-	      schedule[i].leave = omr.leave_t;
-	    }
-	  } else {
-	    schedule[i].leave = atoi(leave);
-	  }
-
-	  strncpy(tdate, tmp2, sizeof(tdate));
-	  tdate[4] = '\0';
-	  strncpy(schedule[i].hour, tdate, sizeof(char) * 2);
-	  strncpy(schedule[i].min, tdate + 2, sizeof(char) * 2);
-
-	  /**
-           * 開始時刻とleaveを読み飛ばす。
-           **/
-
-	  for (j = 0; j < strlen(tmp1); j++)
-	    if (isspace(tmp1[j]))
-	      break;
-	  for (j++; j < strlen(tmp1); j++)
-	    if (isspace(tmp1[j]))
-	      break;
-
-	  string_index = tmp1 + j + 1;
-
-	  if (string_index) {
-	    Escape2Return(string_index);
-	    strncpy(schedule[i].ev, string_index, MIN(BUFSIZ, strlen(string_index)));
-
-	    if (schedule[i].ev[MIN(BUFSIZ, strlen(string_index)) - 1] == '\n')
-	      schedule[i].ev[MIN(BUFSIZ, strlen(string_index)) - 1] = '\0';
-	    if (SafeTimeFormat(schedule[i])) {
-	      i++;
-	    }
+	  if (schedule[i].ev[MIN(BUFSIZ, strlen(string_index)) - 1] == '\n')
+	    schedule[i].ev[MIN(BUFSIZ, strlen(string_index)) - 1] = '\0';
+	  if (SafeTimeFormat(schedule[i])) {
+	    i++;
 	  }
 	}
       }
+    }
 #ifdef EXT_FILTER
-      pclose(inputfile);
+    pclose(inputfile);
 #else
-      fclose(inputfile);
+    fclose(inputfile);
 #endif
-    }
-    if (!WeeklyCheck) {
-      free(tmp1);
-      free(tmp2);
-      free(tmp3);
-      free(tmp4);
-      free(leave);
-      return (i);
-    }
   }
+
+#ifdef LIBMHC
+  if(WeeklyCheck){
+    t_filename = malloc(BUFSIZ * 2);
+    Tmp_dir = malloc(BUFSIZ);
+
+    sprintf(Tmp_dir, "/tmp/xhtmp%s", getenv("USER"));
+    mkdir(Tmp_dir, S_IRWXU);
+
+    t_filename[0] = '\0';
+    sprintf(t_filename, "%s", tempnam(Tmp_dir, "xhtmp"));
+    strcpy(home,getenv("HOME"));
+    strcat(home,"/Mail/schedule");
+    mhc_ptr = OpenMHC(home,atoi(year),atoi(month));
+    SetMHC(mhc_ptr,atoi(day));
+
+    while((ent_ptr = ReadMHC(mhc_ptr)) != NULL && i < MAX_SCHED_NUM){
+#ifdef EXT_FILTER
+      if ((t_file = fopen(t_filename, "w")) == NULL) {
+	fprintf(stderr, "can't open temporary file,%s\n", t_filename);
+	perror("popen");
+	exit(1);
+      }
+      fprintf(t_file, "%s\n", ent_ptr->Entry[X_SC_Subject]);
+      fclose(t_file);
+
+      sprintf(command, "%s %s", FilterCommand, t_filename);
+      inputfile = popen(command, "r");
+
+      fgets(tmp1, BUFSIZ, inputfile);
+
+      pclose(inputfile);
+      unlink(t_filename);
+#else
+      strcpy(tmp1, ent_ptr->Entry[X_SC_Subject]);
+#endif
+      if(ent_ptr->Entry[X_SC_Time] && *ent_ptr->Entry[X_SC_Time]){
+	strncpy(schedule[i].hour, ent_ptr->Entry[X_SC_Time], sizeof(char) * 2);
+	strncpy(schedule[i].min, ent_ptr->Entry[X_SC_Time] + 3, sizeof(char) * 2);
+      } else {
+	strcpy(schedule[i].hour, "*");
+      }
+
+      Escape2Return(tmp1);
+      strncpy(schedule[i].ev, tmp1, MIN(BUFSIZ, strlen(tmp1)));
+      if (schedule[i].ev[MIN(BUFSIZ, strlen(tmp1)) - 1] == '\n')
+	schedule[i].ev[MIN(BUFSIZ, strlen(tmp1)) - 1] = '\0';
+      if (SafeTimeFormat(schedule[i]))
+	i++;
+    }
+
+    CloseMHC(mhc_ptr);
+    free(t_filename);
+    free(Tmp_dir);
+  }
+#endif      
+    
+  if (!WeeklyCheck) {
+    free(tmp1);
+    free(tmp2);
+    free(tmp3);
+    free(tmp4);
+    free(leave);
+    return (i);
+  }
+
   /**
    * Weekly data の取得
    **/
