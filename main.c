@@ -77,7 +77,11 @@ static XrmOptionDescRec options[] = {
   {"-pserver", "*popServer", XrmoptionSepArg, NULL},
   {"-xoff", "*xoff", XrmoptionSepArg, NULL},
   {"-yoff", "*yoff", XrmoptionSepArg, NULL},
+#ifdef OPTION
   {"-optioncmd", "*optionCommand", XrmoptionSepArg, NULL},
+  {"-optionwidth", "*optionWidth", XrmoptionSepArg, "300"},
+  {"-optionheight", "*optionHeight", XrmoptionSepArg, "200"},
+#endif
 };
 
 static void Wait(Widget w, XEvent * e, String * s, unsigned int *i)

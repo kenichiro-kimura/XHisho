@@ -19,9 +19,15 @@
 
 #define XtNoptionCommand "optionCommand"
 #define XtCOptionCommand "OptionCommand"
+#define XtNoptionWidth "optionWidth"
+#define XtCOptionWidth "OptionWidth"
+#define XtNoptionHeight "optionHeight"
+#define XtCOptionHeight "OptionHeight"
 
 typedef struct {
   String o_command;
+  Dimension width;
+  Dimension height;
 } OptionRes;
 
 

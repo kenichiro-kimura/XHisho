@@ -28,6 +28,24 @@ static XtResource resources[] = {
     XtRImmediate,
     (XtPointer) ""
   },
+  {
+    XtNoptionWidth,
+    XtCOptionWidth,
+    XtRDimension,
+    sizeof(Dimension),
+    XtOffsetOf(OptionRes, width),
+    XtRImmediate,
+    (XtPointer)300
+  },    
+  {
+    XtNoptionHeight,
+    XtCOptionHeight,
+    XtRDimension,
+    sizeof(Dimension),
+    XtOffsetOf(OptionRes, height),
+    XtRImmediate,
+    (XtPointer)200
+  },    
 };
 
 static void Destroy(Widget w, caddr_t client_data, caddr_t call_data)
@@ -51,10 +69,20 @@ Widget CreateOptionWindow(Widget w){
   local_option = XtVaCreateManagedWidget("option", msgwinWidgetClass, top
 					 ,NULL);
 
-  label = XtVaCreateManagedWidget("optionLabel", labelWidgetClass,local_option
-				  ,XtNhorizDistance,POINT_WIDTH + LABEL_OFFSET
-				  ,XtNvertDistance,0
-				  ,XtNlabel, "hogehoge",NULL);
+  label = XtVaCreateManagedWidget("optionLabel", asciiTextWidgetClass
+				  ,local_option
+				  ,XtNvertDistance,10
+				  ,XtNhorizDistance, POINT_WIDTH + LABEL_OFFSET
+				  ,XtNborderWidth,0
+				  ,XtNwidth,opr.width
+				  ,XtNheight,opr.height
+				  ,XtNresize,False
+				  ,XtNdisplayCaret,False
+				  ,XtNscrollHorizontal,XawtextScrollWhenNeeded
+				  ,XtNscrollVertical,XawtextScrollWhenNeeded
+				  ,NULL);
+
+  printf("%d x %d\n",opr.width,opr.height);
 
   ok = XtVaCreateManagedWidget("optionOk", commandWidgetClass, local_option
 			       ,XtNfromVert, label
@@ -88,13 +116,13 @@ static void CommandInit()
   command = (char*)malloc(256);
 
   if(strlen(opr.o_command) < 1) return;
-  if (stat(option_command, &Ystat) == -1) {
-    fprintf(stderr, "no such option command, \"%s\"\n", option_command);
+  if (stat(opr.o_command, &Ystat) == -1) {
+    fprintf(stderr, "no such option command, \"%s\"\n", opr.o_command);
     exit(1);
   }
 
   if (virgine) {
-    option_fd = popen(option_command,"r");
+    option_fd = popen(opr.o_command,"r");
     virgine = 0;
   }
 
@@ -107,12 +135,72 @@ static void CommandInit()
 
 static void CheckOption(Widget w, int *fid, XtInputId * id)
 {
-  char buffer[BUFSIZ];
+  static char message_buffer[BUFSIZ];
+  static char buffer[BUFSIZ * 10];
+  static int x = 0;
   int len;
+  char* chr_ptr;
+  char* next_ptr;
+  int is_end;
+  XFontSet fset;
+  XRectangle ink, log;
+
+
   len = read(*fid,buffer,BUFSIZ);
   buffer[len] = '\0';
-  XtVaSetValues(label,XtNlabel,buffer,NULL);
+  if(x == 0)
+    memset(message_buffer,'\0',BUFSIZ * 10);
+
+  is_end = 0;
+  x = 1;
+
+
+  /* here is script decoder .. */
+
+  chr_ptr = buffer;
+  if(len >= strlen("Surface:0")){
+    if(!strncasecmp(buffer,"Surface:",strlen("Surface:"))){
+      int cg_num;
+      char str_num[128];
+
+      next_ptr = chr_ptr = buffer + strlen("Surface:");
+      while(isdigit((unsigned char)(*next_ptr))) next_ptr++;
+      strncpy(str_num,chr_ptr,next_ptr - chr_ptr);
+
+      cg_num = atoi(str_num);
+      XtVaSetValues(xhisho,XtNforceCG,True,XtNcgNumber,cg_num,NULL);
+      chr_ptr = next_ptr;
+    }
+  }
+
+  if(next_ptr = strstr(chr_ptr,"\\e")){
+    is_end = 1;
+    *next_ptr = '\0';
+  }
+
+  /**
+   * fontの大きさを取得し、表示領域の大きさを決める
+   **/
+
+  XtVaGetValues(label, XtNfontSet, &fset, NULL);
+  XmbTextExtents(fset, "a", 1, &ink, &log);
+  /*
+  width = log.width;
+  height = log.height;
+  height += 20;
+  */
+
+  strcat(message_buffer,chr_ptr);
+
+  XtVaSetValues(label,XtNstring,message_buffer
+		,XtNjustify,XtJustifyLeft
+		,XtNborderWidth,0
+		,NULL);
+
   XtPopup(XtParent(local_option), XtGrabNone);
+
+  if(is_end)
+    message_buffer[0] = '\0';
 }
 
 static int Option_exit(Display * disp)

@@ -203,6 +203,24 @@ static XtResource resources[] = {
     XtRImmediate,
     (XtPointer) NULL
   },
+  {
+    XtNcgNumber,
+    XtCCgNumber,
+    XtRInt,
+    sizeof(int),
+    XtOffset(XHishoWidget, xhisho.f_cg_number),
+    XtRImmediate,
+    (XtPointer) 0
+  },
+  {
+    XtNforceCG,
+    XtCForceCG,
+    XtRInt,
+    sizeof(int),
+    XtOffset(XHishoWidget, xhisho.force_cg),
+    XtRImmediate,
+    (XtPointer) False
+  },
 };
 
 
@@ -453,6 +471,17 @@ static Boolean SetValues(Widget current, Widget request, Widget new, ArgList arg
   if (!strcmp(iold->xhisho.clock_text, inew->xhisho.clock_text)) {
     ClockDraw(inew);
   }
+
+  if (inew->xhisho.force_cg){
+    if(inew->xhisho.f_cg_number > inew->xhisho.i_info->num_of_images - 1)
+      inew->xhisho.f_cg_number = 0;
+    
+    inew->xhisho.cg_number = inew->xhisho.f_cg_number;
+    DrawNewCG(inew);
+  } else {
+   inew->xhisho.f_cg_number = iold->xhisho.f_cg_number;
+  }
+    
 
   if (iold->xhisho.anim_type != inew->xhisho.anim_type){
     ChangeAnimType(inew);
