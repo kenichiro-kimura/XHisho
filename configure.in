@@ -10,6 +10,7 @@ AC_SUBST(prefix)
 AC_SUBST(exec_prefix)
 AC_SUBST(bindir)
 
+
 dnl Replace `main' with a function in -lxpg4,-nsl,-lsocket:
 AC_CHECK_LIB(xpg4, main)
 AC_CHECK_LIB(nsl, main)
