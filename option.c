@@ -785,6 +785,9 @@ static void InsertMessage(XtPointer cl,XtIntervalId* id)
    *  1. a command like "\u" , "\w10" , etc.
    *  2. a 1-byte letter, mainly alphabet.
    *  3. a 2-byte letter, mainly Japanese letter.
+   *
+   * if you want to add new Sakura Script Command, see also function
+   *  'AddBuffer()'.
    */
   static XawTextPosition current,last;
   static XawTextBlock textblock;
@@ -813,12 +816,15 @@ static void InsertMessage(XtPointer cl,XtIntervalId* id)
       switch(*chr_ptr){
       case '\\':
 	switch(*(chr_ptr + 1)){
+	case 'f':
+	  /* change font color .. it's bothor to do ^^; */
+	  break;
 	case '0':
-	case 'h':
+	case 'h': /* for backward compatibility */
 	  dest_win = SAKURA;
 	  break;
 	case '1':
-	case 'u':
+	case 'u': /* for backward compatibility */
 	  dest_win = UNYUU;
 	  break;
 	case 'n':
