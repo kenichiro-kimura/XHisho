@@ -260,6 +260,10 @@ static void Initialize(Widget request, Widget new, ArgList args, Cardinal * num_
 
   xhw->xhisho.intervalId = 0;
   CG_NUM = 0;
+
+  for(i = 0; i < NUM_OF_ARRAY(xhw->xhisho.i_info->anim_number);i++)
+    xhw->xhisho.i_info->anim_number[i] = -1;
+
 }
 
 static void Realize(Widget w, XtValueMask * valueMask, XSetWindowAttributes * attrs)

@@ -58,9 +58,6 @@ int LoadAnim(ImageInfo *i_info)
 
   if(!i_info->image) return -1;
   
-  for(i = 0; i < NUM_OF_ARRAY(i_info->anim_number);i++)
-      i_info->anim_number[type] = -1;
-
   i = 0;
   while(fgets(buffer,BUFSIZ,fp) != NULL && i < num_of_images){
     if(buffer[0] == '#') continue;

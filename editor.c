@@ -1169,7 +1169,7 @@ void CheckTimeForSchedule(XtPointer cl, XtIntervalId * id)
 }
 
 static void OpenPopup(){
-  XtVaSetValues(xhisho, XtNanimType, MAIL, NULL);
+  XtVaSetValues(xhisho, XtNanimType, SCHEDULE, NULL);
   XtVaSetValues(openwin, XtNwindowMode, 0, NULL);
   XtPopup(XtParent(openwin), XtGrabNone);
   OpenWindowShown = 1;

@@ -109,6 +109,8 @@ static void Wait(Widget w, XEvent * e, String * s, unsigned int *i)
      * openwin のポップアップ
      **/
 
+    XtVaSetValues(xhisho, XtNanimType, MAIL, NULL);
+    XtVaSetValues(openwin, XtNwindowMode, 0, NULL);
     XtPopup(XtParent(openwin), XtGrabNone);
     OpenWindowShown = 1;
 
@@ -143,6 +145,7 @@ static void CheckMailNow(Widget w, XEvent * event, String * params, unsigned int
     MailWindowShown = 0;
     XtPopdown(XtParent(mail));
     XtPopdown(XtParent(nomail));
+    XtVaSetValues(xhisho, XtNanimType, USUAL, NULL);
     return;
   }
   IsMailChecked(1);
@@ -168,6 +171,7 @@ void ScheduleWindowPopup(Widget w, XEvent * event, String * params, unsigned int
   if (OpenWindowShown) {
     OpenWindowShown = 0;
     XtPopdown(XtParent(openwin));
+    XtVaSetValues(xhisho, XtNanimType, USUAL, NULL);
     return;
   }
   time(&now);
@@ -192,6 +196,7 @@ void OpeningWindowPopup(Widget w, XEvent * event, String * params, unsigned int 
   if (OpenWindowShown) {
     OpenWindowShown = 0;
     XtPopdown(XtParent(openwin));
+    XtVaSetValues(xhisho, XtNanimType, USUAL, NULL);
     return;
   }
   time(&now);
