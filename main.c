@@ -470,7 +470,7 @@ static void PrintUsage(int argc, char **argv)
 
   if (j) {
     printf("\n");
-    fprintf(stderr, "XHisho version:%s[%s] F.D.H Victory memorial version\n\n"
+    fprintf(stderr, "XHisho version:%s[%s] \n\n"
 	    , XHISHO_VERSION, CODE_NAME);
 
     if (print_coption)
