@@ -72,7 +72,7 @@ int ReadRcfile(char *filename)
   while (fgets(tmp, BUFSIZ, infile) != NULL) {
     sscanf(tmp, "%s %s", tmp2, tmp3);
     for(i = 0; i < strlen(tmp2);i++)
-      if(isspace(tmp[i]))
+      if(isspace((unsigned char)tmp[i]))
 	break;
 
     strcpy(tmp3,tmp + i + 1);

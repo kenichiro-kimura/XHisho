@@ -861,7 +861,7 @@ static void CheckYoubin(Widget w, int *fid, XtInputId * id)
 
   while (tmp1 && i < mar.mail_lines && !(isFrom && isSubject)) {
     ch_ptr = tmp1;
-    while(ch_ptr && (isdigit(*ch_ptr) || isspace(*ch_ptr)))
+    while(ch_ptr && (isdigit((unsigned char)*ch_ptr) || isspace((unsigned char)*ch_ptr)))
 	  ch_ptr++;
     if (!strncmp(ch_ptr, "From:", 5) || !strncmp(ch_ptr, "Subject:", 8)) {
       *tmp2 = '\0';
@@ -876,7 +876,7 @@ static void CheckYoubin(Widget w, int *fid, XtInputId * id)
 	sscanf(ch_ptr, "%s %s", from_who, who);
 
 	for (j = 0; j < strlen(from_who); j++)
-	  if (isspace(tmp1[j]))
+	  if (isspace((unsigned char)tmp1[j]))
 	    break;
 
 	strcpy(who, ch_ptr + j);

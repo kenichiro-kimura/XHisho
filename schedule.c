@@ -140,10 +140,10 @@ int CheckSchedule(OpenMessageRes * l_omr, Schedule * schedule, int WeeklyCheck, 
 	 **/
 
 	for (j = 0; j < strlen(tmp1); j++)
-	  if (isspace(tmp1[j]))
+	  if (isspace((unsigned char)tmp1[j]))
 	    break;
 	for (j++; j < strlen(tmp1); j++)
-	  if (isspace(tmp1[j]))
+	  if (isspace((unsigned char)tmp1[j]))
 	    break;
 
 	string_index = tmp1 + j + 1;
@@ -272,20 +272,20 @@ int CheckSchedule(OpenMessageRes * l_omr, Schedule * schedule, int WeeklyCheck, 
     if (tmp1[0] != '#' && tmp1[0] != '\0' && tmp1[0] != '\n') {
       sscanf(tmp1, "%s %s %s %s", tmp4, tmp2, leave, tmp3);
 
-      if (!isdigit(leave[0])) {
+      if (!isdigit((unsigned char)leave[0])) {
 	sscanf(tmp1, "%s %s %s", tmp4, tmp2, tmp3);
 	for ( j = 0; j < strlen(tmp1);j++)
-	  if(isspace(tmp1[j])) break;
+	  if(isspace((unsigned char)tmp1[j])) break;
 	for ( j++; j < strlen(tmp1);j++)
-	  if(isspace(tmp1[j])) break;
+	  if(isspace((unsigned char)tmp1[j])) break;
 	schedule[i].leave = omr.leave_t;
       } else {
 	for ( j = 0; j < strlen(tmp1);j++)
-	  if(isspace(tmp1[j])) break;
+	  if(isspace((unsigned char)tmp1[j])) break;
 	for ( j++; j < strlen(tmp1);j++)
-	  if(isspace(tmp1[j])) break;
+	  if(isspace((unsigned char)tmp1[j])) break;
 	for ( j++; j < strlen(tmp1);j++)
-	  if(isspace(tmp1[j])) break;
+	  if(isspace((unsigned char)tmp1[j])) break;
 	schedule[i].leave = atoi(leave);
       }
 
@@ -350,10 +350,10 @@ static int SafeTimeFormat(Schedule schedule)
    * return 1 if schedule.[hour,min] is safe time format,else return 0
    **/
 
-  if (isdigit(schedule.hour[0]) &&
-      isdigit(schedule.min[0]) &&
-      isdigit(schedule.hour[1]) &&
-      isdigit(schedule.min[1]) &&
+  if (isdigit((unsigned char)schedule.hour[0]) &&
+      isdigit((unsigned char)schedule.min[0]) &&
+      isdigit((unsigned char)schedule.hour[1]) &&
+      isdigit((unsigned char)schedule.min[1]) &&
       atoi(schedule.hour) >= 0 &&
       atoi(schedule.hour) <= 23 &&
       atoi(schedule.min) >= 0 &&

@@ -101,7 +101,7 @@ static mhcent* ReadEntry(FILE* fp){
     if(buffer[strlen(buffer) - 1] == '\n')
       buffer[strlen(buffer) - 1] = '\0';
 
-    if(isspace(buffer[strlen(buffer) - 1]))
+    if(isspace((unsigned char)buffer[strlen(buffer) - 1]))
       buffer[strlen(buffer) - 1] = '\0';
 
     if(!strncmp("X-SC-Day:",buffer,strlen("X-SC-Day:"))){
@@ -129,7 +129,7 @@ static mhcent* ReadEntry(FILE* fp){
        * タグの後ろのスペースを読み飛ばす
        */
       for(chr_ptr++;chr_ptr;chr_ptr++)
-	if(!isspace(*chr_ptr)) break;
+	if(!isspace((unsigned char)*chr_ptr)) break;
     
       mhcent_ptr->Entry[tag] = strdup(chr_ptr);
     }
@@ -264,7 +264,7 @@ static int CheckSC_Day(char* sc_day,int year,int month,int day){
 
     if(chr_ptr >= sc_day + strlen(sc_day)) break;
     if((isDay == 1 && sig == 0) || (isDay == 0 && sig == 1)) break;
-    while(isspace(*chr_ptr))
+    while(isspace((unsigned char)*chr_ptr))
       chr_ptr++;
   }
 
@@ -306,7 +306,7 @@ static int CheckSC_Duration(char* sc_duration,int year,int month,int day){
   chr_ptr = sc_duration;
 
   while(chr_ptr < sc_duration + strlen(sc_duration)){
-    while(isspace(*chr_ptr) && *chr_ptr != '\0');
+    while(isspace((unsigned char)*chr_ptr) && *chr_ptr != '\0');
 
     length = 0;
     while(chr_ptr < sc_duration + strlen(sc_duration)
@@ -354,7 +354,7 @@ static int CheckMonth(char* sc_cond,int month){
   chr_ptr = sc_cond;
   while(chr_ptr < sc_cond + strlen(sc_cond)){
     length = 0;
-    while(!isspace(*chr_ptr) && length < strlen("0000"))
+    while(!isspace((unsigned char)*chr_ptr) && length < strlen("0000"))
       *(pivot_ptr + length++) = *chr_ptr++;
 
     for(i = 0; i < 12;i++){
@@ -365,7 +365,7 @@ static int CheckMonth(char* sc_cond,int month){
       }
     }
 
-    while(chr_ptr < sc_cond + strlen(sc_cond) && isspace(*chr_ptr))
+    while(chr_ptr < sc_cond + strlen(sc_cond) && isspace((unsigned char)*chr_ptr))
       chr_ptr++;
   }
 
@@ -411,7 +411,7 @@ static int CheckOrdinal(char* sc_cond,int year,int month,int day){
   chr_ptr = sc_cond;
   while(chr_ptr < sc_cond + strlen(sc_cond)){
     length = 0;
-    while(chr_ptr < sc_cond + strlen(sc_cond) && !isspace(*chr_ptr) && length < strlen("0000"))
+    while(chr_ptr < sc_cond + strlen(sc_cond) && !isspace((unsigned char)*chr_ptr) && length < strlen("0000"))
       *(pivot_ptr + length++) = *chr_ptr++;
 
     for(i = 0; i < 4;i++){
@@ -427,7 +427,7 @@ static int CheckOrdinal(char* sc_cond,int year,int month,int day){
       tag = 1;
     }
 
-    while(chr_ptr < sc_cond + strlen(sc_cond) && isspace(*chr_ptr))
+    while(chr_ptr < sc_cond + strlen(sc_cond) && isspace((unsigned char)*chr_ptr))
       chr_ptr++;
   }
 
@@ -467,7 +467,7 @@ static int CheckWeek(char* sc_cond,int year,int month,int day){
   chr_ptr = sc_cond;
   while(chr_ptr < sc_cond + strlen(sc_cond)){
     length = 0;
-    while(chr_ptr < sc_cond + strlen(sc_cond) && !isspace(*chr_ptr) && length < strlen("0000"))
+    while(chr_ptr < sc_cond + strlen(sc_cond) && !isspace((unsigned char)*chr_ptr) && length < strlen("0000"))
       *(pivot_ptr + length++) = *chr_ptr++;
 
     for(i = 0; i < 7;i++){
@@ -478,7 +478,7 @@ static int CheckWeek(char* sc_cond,int year,int month,int day){
       }
     }
 
-    while(chr_ptr < sc_cond + strlen(sc_cond) && isspace(*chr_ptr))
+    while(chr_ptr < sc_cond + strlen(sc_cond) && isspace((unsigned char)*chr_ptr))
       chr_ptr++;
   }
 
@@ -507,7 +507,7 @@ static int CheckDay(char* sc_cond,int day){
   chr_ptr = sc_cond;
   while(chr_ptr < sc_cond + strlen(sc_cond)){
     length = 0;
-    while(chr_ptr < sc_cond + strlen(sc_cond) && !isspace(*chr_ptr) && length < strlen("0000"))
+    while(chr_ptr < sc_cond + strlen(sc_cond) && !isspace((unsigned char)*chr_ptr) && length < strlen("0000"))
       *(pivot_ptr + length++) = *chr_ptr++;
 
     if(atoi(pivot_ptr) > 0 && atoi(pivot_ptr) < 32 && strlen(pivot_ptr) == 2){
@@ -516,7 +516,7 @@ static int CheckDay(char* sc_cond,int day){
 	tag = 1;
     }
 
-    while(chr_ptr < sc_cond + strlen(sc_cond) && isspace(*chr_ptr))
+    while(chr_ptr < sc_cond + strlen(sc_cond) && isspace((unsigned char)*chr_ptr))
       chr_ptr++;
   }
 
@@ -950,7 +950,7 @@ int GetAlarm(const mhcent* ent_ptr){
 
   chr_ptr = ent_ptr->Entry[X_SC_Alarm];
   length = ret_value = 0;
-  while(chr_ptr && !isspace(*chr_ptr) && length < 2)
+  while(chr_ptr && !isspace((unsigned char)*chr_ptr) && length < 2)
     *(tmp + length++) = *chr_ptr++;
 
   chr_ptr++;

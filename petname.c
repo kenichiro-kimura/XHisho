@@ -132,7 +132,7 @@ static void ReadAddrBook()
      * short name を読み飛ばす
      **/
     for (i = 0; i < strlen(buffer); i++) {
-      if (isspace(buffer[i]))
+      if (isspace((unsigned char)buffer[i]))
 	break;
       if (buffer[i] == '#')
 	goto End;
@@ -166,13 +166,13 @@ static void ReadAddrBook()
 	}
 	i++;
 	j = 0;
-	while (isspace(buffer[i])) {
+	while (isspace((unsigned char)buffer[i])) {
 	  i++;
 	  if (buffer[i] == '#')
 	    goto End;
 	}
       }
-      if (isspace(buffer[i]))
+      if (isspace((unsigned char)buffer[i]))
 	break;
       if (buffer[i] == '#')
 	goto End;
@@ -207,7 +207,7 @@ static void ReadAddrBook()
 	  break;
 	in_quote = 1;
       } else {
-	if (in_quote == 0 && isspace(buffer[i]))
+	if (in_quote == 0 && isspace((unsigned char)buffer[i]))
 	  break;
 	if (buffer[i] == '#')
 	  break;

@@ -1074,7 +1074,7 @@ static void ParseConfigFile(int now, char *ret_value)
 	sscanf(tmp1, "%s %s", tmp2, tmp3);
 
 	for (i = 0;i < strlen(tmp1);i++)
-	  if (isspace(tmp1[i]))
+	  if (isspace((unsigned char)tmp1[i]))
 	    break;
 	
 	strcpy(tmp3,tmp1 + i + 1);
