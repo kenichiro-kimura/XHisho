@@ -93,6 +93,7 @@ static void EditorWindowPopup(Widget w, caddr_t client_data, caddr_t call_data)
 
   XtDestroyWidget(XtParent(editwin));
   editwin = CreateEditorWindow(XtParent(top), 3, *tm_now);
+  CalendarWindowShown = 0;
   XtPopdown(XtParent(XtParent(w)));
   XtPopup(XtParent(editwin), XtGrabNone);
 }
