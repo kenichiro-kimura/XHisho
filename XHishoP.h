@@ -46,6 +46,7 @@ typedef struct _XHishoPart {
   XtJustify just;
   String ext_soundcommand;
   int focus_interval;
+  String ext_editcommand;
 
   /* private data */
   ImageInfo* i_info;

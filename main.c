@@ -226,7 +226,6 @@ void AboutWindowPopup(Widget w, XEvent * event, String * params, unsigned int *n
 
 void ResEditWindowPopup(Widget w, XEvent * event, String * params, unsigned int *num_params)
 {
-
   if (IsPopped(resedit)) {
     XtPopdown(XtParent(resedit));
     return;
@@ -256,22 +255,36 @@ void CalendarWindowPopup(Widget w, XEvent * event, String * params, unsigned int
 {
   time_t now;
   struct tm *tm_now;
+  int pid,status;
 
-  if(IsPopped(calendarwin)){
-    XtPopdown(XtParent(calendarwin));
-    return;
+  if(EditCommand){
+    if((pid = fork()) == 0){
+      if(fork() == 0){
+	execvp(EditCommand,&EditCommand);
+	exit(0);
+      } else {
+	exit(0);
+      }
+    } else {
+      while(wait(&status) != pid);
+    }
+  } else {
+    if(IsPopped(calendarwin)){
+      XtPopdown(XtParent(calendarwin));
+      return;
+    }
+
+    time(&now);
+    tm_now = localtime(&now);
+
+    XtDestroyWidget(XtParent(calendarwin));
+    calendarwin = CreateCalendarWindow(toplevel, tm_now->tm_mon, *tm_now);
+    /**
+     * Calendar WindowのPopup
+     **/
+    XtVaSetValues(calendarwin, XtNwindowMode, 0, NULL);
+    XtPopup(XtParent(calendarwin), XtGrabNone);
   }
-
-  time(&now);
-  tm_now = localtime(&now);
-
-  XtDestroyWidget(XtParent(calendarwin));
-  calendarwin = CreateCalendarWindow(toplevel, tm_now->tm_mon, *tm_now);
-  /**
-   * Calendar WindowのPopup
-   **/
-  XtVaSetValues(calendarwin, XtNwindowMode, 0, NULL);
-  XtPopup(XtParent(calendarwin), XtGrabNone);
 }
 
 void CloseEditWindow()
@@ -349,6 +362,7 @@ int main(int argc, char **argv)
   XtVaGetValues(xhisho, XtNextFilter, &FilterCommand, NULL);
   XtVaGetValues(xhisho, XtNextSoundCommand, &SoundCommand, NULL);
   XtVaGetValues(xhisho, XtNpetnameFile, &petname_f, NULL);
+  XtVaGetValues(xhisho,XtNextEditCommand,&EditCommand,NULL);
 
   /**
    * rcfileとpetnameを読む

@@ -48,7 +48,8 @@ typedef struct _XHishoRec *XHishoWidget;
 #define XtCAnimType "AnimType"
 #define XtNadjust "adjust"
 #define XtCAdjust "Adjust"
-
+#define XtNextEditCommand "extEditCommand"
+#define XtCExtEditCommand "ExtEditCommand"
 
 
 #define CGFILE "hisho.xpm"

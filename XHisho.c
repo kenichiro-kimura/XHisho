@@ -194,6 +194,15 @@ static XtResource resources[] = {
     XtRImmediate,
     (XtPointer) 0
   },
+  {
+    XtNextEditCommand,
+    XtCExtEditCommand,
+    XtRString,
+    sizeof(String),
+    XtOffset(XHishoWidget, xhisho.ext_editcommand),
+    XtRImmediate,
+    (XtPointer) NULL
+  },
 };
 
 

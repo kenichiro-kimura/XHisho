@@ -190,7 +190,7 @@ SOUND_GLOBAL int SoundPlay(const char *filename);
 MAIN_GLOBAL MailAlertRes mar;
 MAIN_GLOBAL BiffMethod Biff;
 MAIN_GLOBAL int UseSound;
-MAIN_GLOBAL String FilterCommand, SoundCommand;
+MAIN_GLOBAL String FilterCommand, SoundCommand, EditCommand;
 MAIN_GLOBAL Widget mail, openwin, xhisho, about, editwin, calendarwin, menu
                   ,nomail, resedit;
 MAIN_GLOBAL ResEditRes rer;
