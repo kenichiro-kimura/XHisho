@@ -1055,6 +1055,13 @@ static char* GetBuffer(messageBuffer* buffer)
 
 static void SakuraParser(char* in_ptr)
 {
+  /*
+   * Sakura Script parser
+   *
+   * parsed script -> works(sleep,change cg,etc) is done
+   *  in _InsertMessage()
+   */
+
   messageBuffer kbuf;
   unsigned char* buffer;
   unsigned char* chr_ptr;
@@ -1144,7 +1151,7 @@ static void SakuraParser(char* in_ptr)
  END:
   free(buffer);
 
-  sprintf(in_ptr,"%s\n",kbuf.buffer);
+  printf("%s\n",kbuf.buffer);
   free(kbuf.buffer);
   return ;
 }
