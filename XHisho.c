@@ -289,7 +289,9 @@ static void Redraw(Widget w, XEvent * event, Region region)
     MoveFocusWindow(xhw);
   }
 
-  ClockDraw(xhw);
+  if (xhw->xhisho.c_draw){
+    ClockDraw(xhw);
+  }
 }
 
 static void ClockDraw(XHishoWidget xhw)
@@ -397,6 +399,7 @@ static void FocusInterval(XHishoWidget xhw)
     XtRemoveTimeOut(xhw->xhisho.focus_intervalId);
     xhw->xhisho.intervalId = 0;
   }
+
   xhw->xhisho.focus_intervalId = 
     XtAppAddTimeOut(XtWidgetToApplicationContext((Widget) xhw)
 			   ,1 * 100, (XtTimerCallbackProc) MoveFocusWindow, xhw);
