@@ -197,6 +197,7 @@ SCHEDULE_GLOBAL void ReadHoliday();
 SOUND_GLOBAL int SoundPlay(const char *filename);
 
 OPTION_GLOBAL Widget CreateOptionWindow(Widget);
+OPTION_GLOBAL void sstpinit(int);
 
 /**
  * global variables define
@@ -207,6 +208,7 @@ MAIN_GLOBAL OptionRes uopr;
 MAIN_GLOBAL MailAlertRes mar;
 MAIN_GLOBAL BiffMethod Biff;
 MAIN_GLOBAL int UseSound;
+MAIN_GLOBAL int UseSSTP;
 MAIN_GLOBAL int BeforeAnimatonMode;
 MAIN_GLOBAL String FilterCommand, SoundCommand, EditCommand;
 MAIN_GLOBAL Widget mail, openwin, xhisho, about, editwin, calendarwin, menu
@@ -220,5 +222,6 @@ MAIN_GLOBAL pid_t youbin_pid;
 MAIN_GLOBAL FILE* youbin_fd;
 MAIN_GLOBAL pid_t option_pid;
 MAIN_GLOBAL FILE* option_fd;
+MAIN_GLOBAL pid_t* sstp_pid;
 
 #endif

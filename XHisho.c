@@ -605,7 +605,7 @@ static Boolean SetValues(Widget current, Widget request, Widget new, ArgList arg
 
     if(iold->xhisho.cg_number != inew->xhisho.f_cg_number 
        && inew->xhisho.f_cg_number != -1){
-      if(inew->xhisho.f_cg_number > inew->xhisho.i_info->num_of_images
+      if(inew->xhisho.f_cg_number >= inew->xhisho.i_info->num_of_images
 	 || inew->xhisho.f_cg_number < 0)
 	inew->xhisho.f_cg_number = 0;
 

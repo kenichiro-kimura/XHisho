@@ -9,6 +9,8 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <netdb.h>
+#include <sys/mman.h>
+#include <errno.h>
 
 #ifndef ENABLE_EUC_HANKAKU_KANA
 #define ENABLE_EUC_HANKAKU_KANA 0
@@ -20,11 +22,13 @@ static XtInputId OptionId;
 static XtIntervalId OptionTimeoutId = 0;
 static XtIntervalId MessageWaitId = 0;
 static messageBuffer mbuf;
+static int sstp_fd;
 
 #ifdef USE_KAWARI
 static XtIntervalId KAWARITimeoutId = 0;
 #endif
 
+static char BufferFileName[] = "_xhisho_sstp_buffer";
 
 static void Destroy(Widget,XEvent *, String *, unsigned int *);
 static void CommandInit();
@@ -47,6 +51,7 @@ static char* SJIS2EUC(char*);
 static int IsKinsoku(char*);
 static unsigned char* UTF82EUC(unsigned char*);
 static unsigned int UNICODE2EUC(unsigned int);
+static void sstp(int);
 
 
 #ifdef USE_KAWARI
@@ -185,7 +190,7 @@ Widget CreateOptionWindow(Widget w){
   pdrec.shell_widget = top;
   pdrec.enable_widget = w;
 
-  if(virgine){
+  if(!UseSSTP){
     mbuf.buffer = (unsigned char*)malloc(BUFSIZ * 10);
     mbuf.size = BUFSIZ * 10;
     *mbuf.buffer = '\0';
@@ -880,12 +885,38 @@ static void AddBuffer(messageBuffer* buffer,char* message)
 
   size_t newsize;
   char* b;
+  unsigned char* _b_ptr;
+  int _i = 0;
 
   newsize = strlen(buffer->buffer) + strlen(message) + 1;
 
   if(newsize > buffer->size){
     b = strdup(buffer->buffer);
-    buffer->buffer = (char*)realloc(buffer->buffer,newsize);
+    if(UseSSTP){
+      char* file;
+
+      file = (char*)malloc(strlen("/tmp/") + strlen(BufferFileName) + 10);
+
+      sprintf(file,"/tmp/%s.%d",BufferFileName,getpid());
+      sstp_fd = open(file,O_RDWR|O_CREAT,0666);
+      if(sstp_fd <= 0){
+	printf("error open sstp file\n");
+	exit(1);
+      }
+
+      _b_ptr = (unsigned char*)mmap(NULL,newsize + sizeof(pid_t)
+				    ,PROT_WRITE|PROT_READ
+				    ,MAP_SHARED,sstp_fd,(off_t)0);
+      lseek(sstp_fd, newsize + sizeof(pid_t),  0L);
+      write(sstp_fd,&_i,sizeof(int));
+
+      buffer->buffer = _b_ptr + sizeof(pid_t);
+      close(sstp_fd);
+      unlink(file);
+      free(file);
+    } else {
+      buffer->buffer = (unsigned char*)realloc(buffer->buffer,newsize);
+    }
     strcpy(buffer->buffer,b);
     free(b);
     buffer->size = newsize;
@@ -8111,3 +8142,130 @@ static unsigned int UNICODE2EUC(unsigned int ucode)
 
   return 0;
 }
+
+void sstpinit(int port)
+{
+  int pid,status;
+  pid_t spid;
+  int _i = 0;
+  char* file;
+  unsigned char* _b_ptr;
+
+  file = (char*)malloc(strlen("/tmp/") + strlen(BufferFileName) + 10);
+
+  sprintf(file,"/tmp/%s.%d",BufferFileName,getpid());
+  sstp_fd = open(file,O_RDWR|O_CREAT,0666);
+  if(sstp_fd <= 0){
+    printf("error open sstp file\n");
+    exit(1);
+  }
+
+  _b_ptr = (unsigned char*)mmap(NULL,BUFSIZ * 10 + sizeof(pid_t)
+				,PROT_WRITE|PROT_READ
+				,MAP_SHARED,sstp_fd,(off_t)0);
+
+  mbuf.buffer = _b_ptr + sizeof(pid_t);
+  sstp_pid = (pid_t*)(_b_ptr);
+  lseek(sstp_fd, BUFSIZ * 10 + sizeof(pid_t),  0L);
+  write(sstp_fd,&_i,sizeof(int));
+  close(sstp_fd);
+  unlink(file);
+  free(file);
+
+  mbuf.size = BUFSIZ * 10;
+  mbuf.buffer[0] = '\0';
+
+  if((pid = fork()) == 0){
+    if((spid = fork()) == 0){
+      sstp(port);
+      exit(0);
+    } else {
+      *sstp_pid = spid;
+      exit(0);
+    }
+  } else {
+    while(wait(&status) != pid);
+  }
+
+  return;
+}
+
+static void sstp(int port)
+{
+  int accept_desc;
+  int sockdesc;
+  int fromlen;
+  struct hostent *hent;
+  struct sockaddr_in sockadd;
+  struct sockaddr_in fromadd;
+  unsigned char* buffer;
+  unsigned char* chr_ptr;
+  int is_script;
+  messageBuffer kbuf;
+
+  if((sockdesc = socket(PF_INET, SOCK_STREAM, 0)) < 0){
+    perror("fail create socket\n");
+    exit(1);
+  }
+
+  sockadd.sin_addr.s_addr = htonl(INADDR_ANY);
+  sockadd.sin_family = AF_INET;
+  sockadd.sin_port = htons(port);
+  if(bind(sockdesc, (struct sockaddr*)&sockadd, sizeof(sockadd)) < 0){
+    fprintf(stderr,"fail bind port %d\n",port);
+    exit(2);
+  }
+
+  buffer = (unsigned char*)malloc(BUFSIZ * 10);
+  kbuf.buffer = (unsigned char*)malloc(BUFSIZ * 10);
+  kbuf.size = BUFSIZ * 10;
+  *kbuf.buffer = '\0';
+
+  listen(sockdesc, 1);
+  while(1){
+    accept_desc = accept(sockdesc, (struct sockaddr*)&fromadd, &fromlen);
+    if(accept_desc != -1){
+      write(accept_desc,"200 OK\r\n",strlen("200 OK\r\n"));
+      is_script = 0;
+      while(1){
+	do{
+	  fromlen = read(accept_desc,buffer,BUFSIZ * 10);
+	} while(fromlen < 1);
+	buffer[fromlen] = '\0';
+	while((chr_ptr = strstr(buffer,"\r")) != NULL){
+	  strcpy(chr_ptr,chr_ptr + 1);
+	}
+
+	if(strstr(buffer,"Script:")){
+	  is_script = 1;
+	  AddBuffer(&kbuf,strstr(buffer,"Script:") + strlen("Script:"));
+	} else if(is_script){
+	  AddBuffer(&kbuf,buffer);
+	}
+	
+	if(strncmp(buffer,"\n",2) == 0 || strstr(buffer,"\n\n")) break;
+      }
+      /*    write(accept_desc,"200 OK\r\n",strlen("200 OK\r\n"));*/
+      close(accept_desc);
+
+      /*
+	SSTPParser(kbuf.buffer);
+      */
+
+      chr_ptr = SJIS2EUC(kbuf.buffer);
+      *kbuf.buffer = '\0';
+      AddBuffer(&kbuf,chr_ptr);
+      free(chr_ptr);
+      chr_ptr = ChangeBadKanjiCode(kbuf.buffer);
+      AddBuffer(&mbuf,chr_ptr);
+      free(chr_ptr);
+      *kbuf.buffer = '\0';
+
+      if(strstr(buffer,"\\e") == NULL)
+	AddBuffer(&mbuf,"\\e");
+    }
+  }
+  free(buffer);
+  free(kbuf.buffer);
+}
+

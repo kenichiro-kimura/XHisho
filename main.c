@@ -24,6 +24,8 @@
 #include "Msgwin.h"
 #include "config.h"
 
+extern void sstpinit(int);
+
 /**
  * local variable
  **/
@@ -34,6 +36,7 @@ static int ShowGreet = 1;
 
 #ifdef OPTION
 static int UseOption = 1;
+static int SSTP_port;
 #endif
 
 /**
@@ -173,18 +176,26 @@ void Quit(Widget w, XEvent * event, String * params, unsigned int *num_params)
   if(Biff == YOUBIN)
     unlink(YoubinFile);
 
-  while((i = rmdir(Tmp_dir)) < 0);
+  rmdir(Tmp_dir);
 
-  if(Biff == YOUBIN && youbin_fd && youbin_pid > 0){
-    fclose(youbin_fd);
-    kill(youbin_pid,SIGTERM);
+  if(Biff == YOUBIN){
+    if(youbin_fd)
+      fclose(youbin_fd);
+    if(youbin_pid > 0)
+      kill(youbin_pid,SIGTERM);
   }
 
 #ifdef OPTION
-  if(option_fd && option_pid > 0){
+  if(option_fd)
     fclose(option_fd);
+
+  if(option_pid > 0)
     kill(option_pid,SIGTERM);
-  }
+
+  if(UseSSTP)
+    if(*sstp_pid > 0 )
+      kill(*sstp_pid,SIGTERM);
+
 #endif
   exit(0);
 }
@@ -390,6 +401,8 @@ int main(int argc, char **argv)
   Biff = LOCAL;
   IsMailChecked(0);
   UseSound = 1;
+  UseSSTP = 0;
+  SSTP_port = 9801;
   ExistMailNum = HaveSchedule = 0;
 
   youbin_pid = option_pid = -1;
@@ -412,6 +425,9 @@ int main(int argc, char **argv)
    **/
 
   PrintUsage(argc, argv);
+
+  if(UseSSTP)
+    sstpinit(SSTP_port);
 
   /**
    * main windowを生成。class名はxhisho。
@@ -510,13 +526,14 @@ static void PrintUsage(int argc, char **argv)
   "     -optionheight               : height of Option window\n"
   "     -optiontimeout              : Option window timeout\n"
   "     -wait                       : Option message wait\n"
-#endif
   "     -unyuu                      : use UNYUU Window \n"
   "     -uxoff                      : UNYUU Window X-offset\n"
   "     -uyoff                      : UNYUU Window Y-offset\n"
   "     -uwidth                     : UNYUU Window Width\n"
   "     -uheight                    : UNYUU Window Height\n"
   "     -ucgoff                     : UNYUU CG X-offset\n"
+  "     -sstp                       : use SSTP module\n"
+#endif
 #ifdef USE_KAWARI
   "     -kwait                      : KAWARI wait\n"
 #endif
@@ -556,36 +573,54 @@ static void PrintUsage(int argc, char **argv)
 #endif
   "\n\n";
 
-  int i, print_usage, j, print_coption;
+  int i, print_usage, j, print_coption, port;
 
   print_usage = 1;
-  j = print_coption = 0;
+  j = print_coption = port = 0;
 
   for (i = 1; i < argc; i++) {
     if (!strcmp(argv[i], "-version")) {
       print_usage = 0;
       j++;
+      port = 0;
     } else if (!strcmp(argv[i], "-coption")) {
       print_coption = 1;
       print_usage = 0;
+      port = 0;
       j++;
     } else if (!strcmp(argv[i], "-youbin")) {
+      port = 0;
       Biff = YOUBIN;
     } else if (!strcmp(argv[i], "-pop")) {
+      port = 0;
       Biff = POP;
+      port = 0;
     } else if (!strcmp(argv[i], "-apop")) {
+      port = 0;
       Biff = APOP;
+      port = 0;
     } else if (!strcmp(argv[i], "-imap")) {
+      port = 0;
       Biff = IMAP;
     } else if (!strcmp(argv[i], "-nosound")) {
+      port = 0;
       UseSound = 0;
     } else if (!strcmp(argv[i], "-nogreeting")) {
+      port = 0;
       ShowGreet = 0;
 #ifdef OPTION
     } else if (!strcmp(argv[i], "-nooption")) {
+      port = 0;
       UseOption = 0;
+    } else if (!strcmp(argv[i], "-sstp")) {
+      port = 1;
+      UseSSTP = 1;
+    } else if (port) {
+      port = 0;
+      SSTP_port = atoi(argv[i]);
 #endif
     } else if (*argv[i] == '-') {
+      port = 0;
       j++;
       printf("unknown option:%s\n", argv[i]);
     }
