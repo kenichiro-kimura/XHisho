@@ -447,6 +447,7 @@ static void PrintUsage(int argc, char **argv)
       j++;
     } else if (!strcmp(argv[i], "-coption")) {
       print_coption = 1;
+      print_usage = 0;
       j++;
     } else if (!strcmp(argv[i], "-youbin")) {
       Biff = YOUBIN;
