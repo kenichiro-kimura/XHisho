@@ -266,16 +266,7 @@ int CheckMail(XtPointer cl, XtIntervalId * id)
       XtPopup(XtParent(mail[0]), XtGrabNone);
 
       if (mar.sound_f  && UseSound) {
-	if ((pid = fork()) == 0) {
-	  SoundPlay(mar.sound_f);
-	  exit(1);
-	} else {
-#ifdef HAVE_WAITPID
-	  waitpid(pid,&status,0);
-#else
-	  wait(&status);
-#endif
-	}
+	SoundPlay(mar.sound_f);
       }
       MailWindowShown = 1;
     }
@@ -326,16 +317,7 @@ int CheckPOP3(XtPointer cl, XtIntervalId * id)
 
   if (ret_value > 0) {
     if (mar.sound_f && UseSound) {
-      if ((pid = fork()) == 0) {
-	SoundPlay(mar.sound_f);
-	exit(0);
-      } else {
-#ifdef HAVE_WAITPID
-	waitpid(pid,&status,0);
-#else
-	  wait(&status);
-#endif
-      }
+      SoundPlay(mar.sound_f);
     }
     MailWindowShown = 1;
     XtVaSetValues(from, XtNlabel, buf, NULL);
@@ -800,8 +782,6 @@ static void CheckYoubin(Widget w, int *fid, XtInputId * id)
 #endif
 
 #ifdef EXT_FILTER
-      t_filename[0] = '\0';
-
       strcpy(t_filename, tempnam(Tmp_dir, "xhtmp"));
       if ((t_file = fopen(t_filename, "w")) == NULL) {
 	fprintf(stderr, "can't open temporary file,%s\n", t_filename);
@@ -842,16 +822,7 @@ static void CheckYoubin(Widget w, int *fid, XtInputId * id)
     XtPopup(XtParent(mail[0]), XtGrabNone);
 
     if (mar.sound_f && UseSound) {
-      if ((pid= fork()) == 0) {
-	SoundPlay(mar.sound_f);
-	exit(0);
-      } else {
-#ifdef HAVE_WAITPID
-	waitpid(pid,&status,0);
-#else
-	  wait(&status);
-#endif
-      }
+      SoundPlay(mar.sound_f);
     }
   }
 End:

@@ -7,10 +7,7 @@
  * 定された(XtNfontSet)フォントと同じ高さの余白を作り、そこに時計を表
  * 示する。時計の表示フォーマットはリソースXtNclockFormatで指定できる。
  * また、リソースXtNfocusWinをTrueにすると、フォーカスの当っているウイ
- * ンドウのタイトルに「おすわり」するようになる。focusWinへの追随は時
- * 計の書き換えと同時(つまり1秒毎)に行っているので、やや反応が鈍い。速
- * くすることも可能だが、負荷をあげてまでこの反応をあげることに意味を
- * 見いだせない。
+ * ンドウのタイトルに「おすわり」するようになる。
  **/
 
 #include <stdio.h>
@@ -40,10 +37,12 @@ static void Initialize(Widget, Widget, ArgList, Cardinal *);
 static void Realize(Widget, XtValueMask *, XSetWindowAttributes *);
 static void Redraw(Widget, XEvent *, Region);
 static void ClockDraw(XHishoWidget);
+static void MoveFocusWindow(XHishoWidget);
 static void Destroy(Widget);
 static void ClassInit();
 static Boolean SetValues(Widget, Widget, Widget, ArgList, Cardinal *);
 static void NewInterval(XHishoWidget);
+static void FocusInterval(XHishoWidget);
 
 extern int LoadImage(ImageInfo *);
 
@@ -288,6 +287,10 @@ static void Redraw(Widget w, XEvent * event, Region region)
 
   XCopyArea(DISPLAY, PIXMAP, WINDOW, XH_GC, 0, 0, WIDTH, HEIGHT, 0, 0);
 
+  if (xhw->xhisho.focuswin) {
+    MoveFocusWindow(xhw);
+  }
+
   ClockDraw(xhw);
 }
 
@@ -349,58 +352,7 @@ static void ClockDraw(XHishoWidget xhw)
     XmbDrawString(DISPLAY, WINDOW, xhw->label.fontset, XH_GC
 		,x, HEIGHT + xhw->label.label_height, clock, strlen(clock));
   }
-  if (xhw->xhisho.focuswin) {
-    /**
-     * move to focus window ..
-     **/
 
-    Window focus, root, child, work;
-    Widget tmp, tmp2;
-    int dummy;
-
-    XGetInputFocus(DISPLAY, &focus, &dummy);
-
-    work = focus;
-    tmp = XtWindowToWidget(DISPLAY, focus);
-
-    while (tmp != NULL) {
-      if (XtWindow(tmp) == XtWindow(XtParent(xhw)))
-	focus = None;
-      tmp2 = XtParent(tmp);
-      tmp = tmp2;
-    }
-
-    if (focus == None || focus == PointerRoot || focus == XtWindow(XtParent(xhw)))
-      focus = xhw->xhisho.focus;
-
-    if (focus != None) {
-      XGetGeometry(DISPLAY, focus, &root, &x, &y, &width, &height
-		   ,&dummy, &dummy);
-      XTranslateCoordinates(DISPLAY, focus, root, 0, 0, &x, &y, &child);
-
-      switch (xhw->xhisho.just) {
-      case XtJustifyLeft:
-	break;
-      case XtJustifyCenter:
-	x += (width / 2 - xhw->core.width / 2);
-	break;
-      case XtJustifyRight:
-	x += (width - xhw->core.width);
-	break;
-      }
-      y -= xhw->core.height;
-      y += xhw->xhisho.yoff;
-
-      if (xhw->xhisho.old_x != x || xhw->xhisho.old_y != y) {
-	XtMoveWidget(XtParent(xhw), x, y);
-	xhw->core.x = x;
-	xhw->core.y = y;
-      }
-      xhw->xhisho.old_x = x;
-      xhw->xhisho.old_y = y;
-    }
-    xhw->xhisho.focus = focus;
-  }
   NewInterval(xhw);
 }
 
@@ -433,11 +385,75 @@ static Boolean SetValues(Widget current, Widget request, Widget new, ArgList arg
 
 static void NewInterval(XHishoWidget xhw)
 {
-
   if (xhw->xhisho.intervalId) {
     XtRemoveTimeOut(xhw->xhisho.intervalId);
     xhw->xhisho.intervalId = 0;
   }
   xhw->xhisho.intervalId = XtAppAddTimeOut(XtWidgetToApplicationContext((Widget) xhw)
 			   ,1 * 1000, (XtTimerCallbackProc) ClockDraw, xhw);
+}
+
+static void FocusInterval(XHishoWidget xhw)
+{
+  if (xhw->xhisho.focus_intervalId) {
+    XtRemoveTimeOut(xhw->xhisho.focus_intervalId);
+    xhw->xhisho.intervalId = 0;
+  }
+  xhw->xhisho.focus_intervalId = 
+    XtAppAddTimeOut(XtWidgetToApplicationContext((Widget) xhw)
+			   ,1 * 100, (XtTimerCallbackProc) MoveFocusWindow, xhw);
+}
+  
+
+static void MoveFocusWindow(XHishoWidget xhw)
+{
+  int width, x, i, height, y;
+  Window focus, root, child, work;
+  Widget tmp, tmp2;
+  int dummy;
+
+  XGetInputFocus(DISPLAY, &focus, &dummy);
+
+  work = focus;
+  tmp = XtWindowToWidget(DISPLAY, focus);
+  
+  while (tmp != NULL) {
+    if (XtWindow(tmp) == XtWindow(XtParent(xhw)))
+      focus = None;
+    tmp2 = XtParent(tmp);
+    tmp = tmp2;
+  }
+  
+  if (focus == None || focus == PointerRoot || focus == XtWindow(XtParent(xhw)))
+    focus = xhw->xhisho.focus;
+  
+  if (focus != None) {
+    XGetGeometry(DISPLAY, focus, &root, &x, &y, &width, &height
+		 ,&dummy, &dummy);
+    XTranslateCoordinates(DISPLAY, focus, root, 0, 0, &x, &y, &child);
+    
+    switch (xhw->xhisho.just) {
+    case XtJustifyLeft:
+      break;
+    case XtJustifyCenter:
+      x += (width / 2 - xhw->core.width / 2);
+      break;
+    case XtJustifyRight:
+      x += (width - xhw->core.width);
+      break;
+    }
+    y -= xhw->core.height;
+    y += xhw->xhisho.yoff;
+    
+    if (xhw->xhisho.old_x != x || xhw->xhisho.old_y != y) {
+      XtMoveWidget(XtParent(xhw), x, y);
+      xhw->core.x = x;
+      xhw->core.y = y;
+    }
+    xhw->xhisho.old_x = x;
+    xhw->xhisho.old_y = y;
+  }
+  xhw->xhisho.focus = focus;
+
+  FocusInterval(xhw);
 }

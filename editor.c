@@ -1183,16 +1183,7 @@ void CheckTimeForSchedule(XtPointer cl, XtIntervalId * id)
       OpenWindowShown = 1;
 
       if (omr.sound_f && UseSound) {
-	if ((pid = fork()) == 0) {
-	  SoundPlay(omr.sound_f);
-	  exit(0);
-	} else {
-#ifdef HAVE_WAITPID
-	  waitpid(pid,&status,0);
-#else
-	  wait(&status);
-#endif
-	}
+	SoundPlay(omr.sound_f);
       }
     }
   }

@@ -2,7 +2,6 @@
  * 画像張り付け & 時計表示 Widget 「XHisho Widget」 パブリックヘッダファイル
  * 
  * copyright(c) 1998,1999  Ken'ichirou Kimura(kimura@db.is.kyushu-u.ac.jp)
- * 
  **/
 
 

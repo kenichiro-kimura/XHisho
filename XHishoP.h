@@ -35,6 +35,7 @@ typedef struct _XHishoPart {
   String clock_text;
   String petname_f;
   XtIntervalId intervalId;
+  XtIntervalId focus_intervalId;
   String clock_f;
   String clock_arg;
   Boolean c_draw;

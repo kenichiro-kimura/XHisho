@@ -40,6 +40,8 @@ extern String SoundCommand;
 int SoundPlay(const char *filename);
 int ExtSoundCommand(const char *filename);
 
+static int _SoundPlay(const char *filename);
+
 #ifdef NORMAL_SOUND_PLAY
 static int readWaveFile(int fd, PWAVEFORMAT pwavefmt, u_int * datasize);
 static int openDSP(const char *devname, PWAVEFORMAT pwf);
@@ -48,7 +50,7 @@ static int playWave(int data_fd, u_int datasize, int dsp_fd);
 static size_t bsize = DEFAULT_BUFFERSIZE;
 static char *dsp_fname = DEFAULT_DSP;
 
-int SoundPlay(const char *filename)
+static int _SoundPlay(const char *filename)
 {
   int in_fd;
   int out_fd;
@@ -218,7 +220,7 @@ static int playWave(int data_fd, u_int datasize, int dsp_fd)
 }
 
 #else
-int SoundPlay(const char *filename)
+static int _SoundPlay(const char *filename)
 {
   char command[BUFSIZ];
 
@@ -229,6 +231,28 @@ int SoundPlay(const char *filename)
 }
 
 #endif
+
+int SoundPlay(const char *filename)
+{
+  /**
+   * 音を鳴らす実体は_SoudPlay()。ここではforkするだけ
+   **/
+
+  int pid,status;
+
+  if((pid = fork()) == 0){
+    if(fork() == 0){
+      _SoundPlay(filename);
+      exit(0);
+    } else {
+      exit(0);
+    }
+  } else {
+    while(wait(&status) != pid);
+  }
+    
+  return 0;
+}
 
 int ExtSoundCommand(const char *filename)
 {
