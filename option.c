@@ -807,12 +807,17 @@ static void InsertMessage(XtPointer cl,XtIntervalId* id)
 
     if(*chr_ptr){
       GetBuffer(&mbuf,chr_ptr);
+#ifdef DEBUG
+      printf("%s",chr_ptr);
+#endif
       switch(*chr_ptr){
       case '\\':
 	switch(*(chr_ptr + 1)){
+	case '0':
 	case 'h':
 	  dest_win = SAKURA;
 	  break;
+	case '1':
 	case 'u':
 	  dest_win = UNYUU;
 	  break;
@@ -946,7 +951,7 @@ static void InsertMessage(XtPointer cl,XtIntervalId* id)
 static void AddBuffer(messageBuffer* buffer,const char* message,int use_file)
 {
   /*
-   * add message int message buffer.
+   * add message into message buffer.
    * if buffer is too small to add message,
    *  make larger buffer automatically.
    */
