@@ -8395,11 +8395,12 @@ static void sstp(int port)
 	 chr_ptr = ChangeBadKanjiCode(kbuf.buffer);
 	 */
 	AddBuffer(&mbuf,chr_ptr);
+
+	if(strstr(chr_ptr,"\\e") == NULL)
+	  AddBuffer(&mbuf,"\\e");
+
 	free(chr_ptr);
 	*kbuf.buffer = '\0';
-
-	if(strstr(buffer,"\\e") == NULL)
-	  AddBuffer(&mbuf,"\\e");
       }
     }
   }
