@@ -104,6 +104,15 @@ static XtResource resources[] = {
     XtRImmediate,
     0,
   },
+  {
+    XtNforceMode,
+    XtCForceMode,
+    XtRBoolean,
+    sizeof(Boolean),
+    XtOffset(MsgwinWidget, msgwin.force_m),
+    XtRImmediate,
+    False,
+  },
 };
 
 
@@ -385,7 +394,8 @@ static void Redraw(Widget w, XEvent * event, Region region)
    * Redraw 毎にWindowModeをチェック
    **/
 
-  SetWindowLocate(msw);
+  if(!msw->msgwin.force_m)
+    SetWindowLocate(msw);
 
   /**
    * WindowModeが変っていたりすればShapeしなおす
@@ -486,7 +496,8 @@ static Boolean SetValues(Widget current, Widget request, Widget new, ArgList arg
    * is_shapedをFALSEにする
    **/
 
-  SetWindowLocate(mswnew);
+  if(!mswnew->msgwin.force_m)
+    SetWindowLocate(mswnew);
 
   if (mswold->msgwin.WindowMode != mswnew->msgwin.WindowMode) {
     mswnew->msgwin.is_shaped = FALSE;
@@ -544,9 +555,7 @@ static void SetWindowLocate(MsgwinWidget msw)
   while (XtParent(top))
     top = XtParent(top);
 
-
   XtVaGetValues(top, XtNx, &get_x, XtNy, &get_y, XtNwidth, &main_width, XtNheight, &main_height, NULL);
-
 
   main_x = get_x;
   main_y = get_y;
@@ -678,7 +687,8 @@ static void ManageChild(Widget parent)
       }
     }
   }
-  SetWindowLocate(msw);
+  if(!msw->msgwin.force_m)
+    SetWindowLocate(msw);
 }
 
 static void SwapFrameInfo(Dimension * a, Dimension * b)

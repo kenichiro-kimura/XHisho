@@ -32,6 +32,8 @@ typedef struct _MsgwinRec *MsgwinWidget;
 #define XtCYoff "Yoff"
 #define XtNxoff "xoff"
 #define XtCXoff "Xoff"
+#define XtNforceMode "forceMode"
+#define XtCForceMode "ForceMode"
 
 enum {
   /**

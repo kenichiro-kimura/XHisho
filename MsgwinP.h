@@ -39,6 +39,7 @@ typedef struct _MsgwinPart {
   int FrameMode;
   int yoff;
   int xoff;
+  Boolean force_m;
 }   MsgwinPart;
 
 typedef struct _MsgwinRec {
