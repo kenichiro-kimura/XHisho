@@ -5,7 +5,6 @@
 #include <string.h>
 #include <sys/stat.h>
 
-
 int LoadAnim(ImageInfo *i_info)
 {
   int num_of_images,i,loop;
@@ -21,6 +20,7 @@ int LoadAnim(ImageInfo *i_info)
 
   num_of_images = 0;
   type = 0;
+  Loaded_files = NULL;
 
   /**
    * ファイルのpathを取得する
@@ -117,4 +117,30 @@ int LoadAnim(ImageInfo *i_info)
   i_info->anim_number[0] = 0;
   fclose(fp);
   return 0;
+}
+
+void Add_files(char *name,int i)
+{
+  files *tmp;
+
+  tmp = (files*)malloc(sizeof(files));
+  tmp->filename = malloc(strlen(name) + 1);
+  strcpy(tmp->filename,name);
+  tmp->number = i;
+
+  tmp->next = Loaded_files;
+  Loaded_files = tmp;
+}
+
+int Search_files(char *name)
+{
+  files *f_p;
+
+  for(f_p = Loaded_files;f_p;){
+    if(!strcmp(f_p->filename,name)) return f_p->number;
+    
+    f_p = f_p->next;
+  }
+
+  return -1;
 }

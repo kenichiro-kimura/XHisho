@@ -263,6 +263,7 @@ int LoadImage(ImageInfo* i_info)
   unsigned long pixel_value[256];
   int cells;
   unsigned long trans_pix;
+  int loaded_num;
 
   i_info->trans_pix = -1;
   d = i_info->d;
@@ -295,10 +296,19 @@ int LoadImage(ImageInfo* i_info)
       continue;
     }
 
+    if((loaded_num = Search_files(i_info->filename)) != -1){
+      printf("%d to %d\n",loaded_num,i_info->loaded_images);
+      memcpy(i_info->image + i_info->loaded_images
+	     ,i_info->image + loaded_num,sizeof(AnimImage));
+      i_info->loaded_images++;
+      continue;
+    }
+
     if (ExecLoader(i_info) == -1){
       printf("no supported format:%s\n",i_info->filename);
       return -1;
     }
+    
     width = i_info->width;
     height = i_info->height;
     colorsuu = i_info->colorsuu;
@@ -484,6 +494,7 @@ int LoadImage(ImageInfo* i_info)
     i_info->ImageData = NULL;
     i_info->ImagePalette = NULL;
     pal = NULL;
+    Add_files(i_info->filename,i_info->loaded_images);
     i_info->loaded_images++;
   }
     

@@ -104,6 +104,12 @@ typedef struct _ImageInfo {
   char* filename;
 } ImageInfo;
 
+typedef struct _files{
+  char* filename;
+  int number;
+  struct _files *next;
+} files;
+
 /**
  * 関数定義。関数本体を定義するところ以外ではexternになるように細工し
  * ているので、imageまわりの関数を使うプログラムは、このファイルを
@@ -127,5 +133,9 @@ PNG_GLOBAL int LoadPng(ImageInfo *);
 #endif
 
 ANIM_GLOBAL int LoadAnim(ImageInfo *);
+ANIM_GLOBAL void Add_files(char*,int);
+ANIM_GLOBAL int Search_files(char*);
+ANIM_GLOBAL files *Loaded_files;
 
 #endif
+
