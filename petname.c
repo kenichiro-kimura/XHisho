@@ -328,7 +328,6 @@ void ReadPetname(char *petname_f)
       hashed = StrHash(who);
 
       pname_ptr = Petname_new(tmp2, who);
-
       if (Petname[hashed] != NULL) {
 	pname_ptr->next = Petname[hashed];
       }

@@ -982,7 +982,7 @@ static void CheckYoubin(Widget w, int *fid, XtInputId * id)
 	if(*tmp2 == 'S') isSubject = 1;
 	if(*tmp2 == 'F') isFrom = 1;
 	strncat(From, tmp2, MIN(mar.from_maxlen - 1, strlen(tmp2)));
-	if(tmp2[MIN(mar.from_maxlen - 1, strlen(tmp2))] != '\0')
+	if(From[strlen(From) - 1] != '\n')
 	  strcat(From,"\n");
 	i++;
       }
