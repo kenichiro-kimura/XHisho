@@ -83,4 +83,4 @@ test "$with_akari" = "yes" && AC_DEFINE(AKARI)
 
 
 
-AC_OUTPUT(makefile apps/Makefile Imakefile)
+AC_OUTPUT(makefile apps/Makefile Imakefile image/Imakefile)

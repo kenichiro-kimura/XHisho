@@ -1,0 +1,21 @@
+#include "../config.h"
+CC = @CC@
+CCOPTIONS = @CFLAGS@
+STD_INCLUDES = -I../
+
+BASE_OBJS = image.o load_bmp.o
+
+#ifdef HAVE_LIBJPEG
+JPEG_OBJS = load_jpeg.o
+#endif
+
+#ifdef HAVE_LIBXPM
+XPM_OBJS = load_xpm.o
+#endif
+
+OBJS = $(BASE_OBJS) $(JPEG_OBJS) $(XPM_OBJS)
+
+SRCS = $(OBJS:.o=.c)
+
+NormalLibraryTarget(image,$(OBJS))
+

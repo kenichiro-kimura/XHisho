@@ -1,8 +1,9 @@
 all: Makefile
 	make -f Makefile
 
-Makefile: makefile Imakefile config.h
+Makefile: makefile Imakefile config.h image/Imakefile
 	xmkmf
+	cd image;xmkmf
 
 makefile: makefile.in
 	./configure
@@ -11,6 +12,9 @@ config.h: config.h.in
 	./configure
 
 Imakefile: Imakefile.in
+	./configure
+
+image/Imakefile: image/Imakefile.in
 	./configure
 
 clean: Makefile
