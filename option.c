@@ -11,7 +11,6 @@
 static Widget top,label,local_option;
 static XtInputId OptionId;
 static int virgine = 1;
-static char option_command[] = "/home/show/bin/hoge.pl";
 
 static void Destroy(Widget,XEvent *, String *, unsigned int *);
 static void CommandInit();
@@ -23,6 +22,7 @@ static char * nstrncpy(char*,const char*,size_t);
 static messageStack* messageStack_new(char*);
 static messageStack* messageStack_pop(messageStack**);
 static void messageStack_push(messageStack**,char*);
+static void ChangeBadKanjiCode(char *);
 
 static XtActionsRec actionTable[] = {
   {"Destroy", Destroy},
@@ -99,15 +99,24 @@ Widget CreateOptionWindow(Widget w){
 				  /*
 				  ,XtNresize,XawtextResizeWidth
 				  ,XtNscrollHorizontal,XawtextScrollWhenNeeded
-				  */
 				  ,XtNscrollVertical,XawtextScrollAlways
+				  */
 				  ,XtNautoFill,True
-				  ,XtNeditType,XawtextEdit
 				  ,NULL);
   XtAppAddActions(XtWidgetToApplicationContext(label)
 		  ,actionTable, XtNumber(actionTable));
   trans_table = XtParseTranslationTable(defaultTranslations);
   XtOverrideTranslations(label,trans_table);
+
+  XtAppAddActions(XtWidgetToApplicationContext(top)
+		  ,actionTable, XtNumber(actionTable));
+  trans_table = XtParseTranslationTable(defaultTranslations);
+  XtOverrideTranslations(top,trans_table);
+
+  XtAppAddActions(XtWidgetToApplicationContext(local_option)
+		  ,actionTable, XtNumber(actionTable));
+  trans_table = XtParseTranslationTable(defaultTranslations);
+  XtOverrideTranslations(local_option,trans_table);
 
   /*
   ok = XtVaCreateManagedWidget("optionOk", commandWidgetClass, local_option
@@ -233,7 +242,11 @@ static void CheckOption(Widget w, int *fid, XtInputId * id)
     textblock.firstPos = 0;
     textblock.length = 0;
     textblock.format = FMT8BIT;
+
+    XtVaSetValues(label,XtNeditType,XawtextEdit,NULL);
     XawTextReplace (label, 0, last, &textblock);
+    XtVaSetValues(label,XtNeditType,XawtextRead,NULL);
+
     XawTextSetInsertionPoint(label,0);
     is_end = 0;
   }
@@ -284,6 +297,7 @@ static void CheckOption(Widget w, int *fid, XtInputId * id)
   }
   
   chr_ptr = buffer;
+  ChangeBadKanjiCode(buffer);
 
   if(next_ptr = strstr(chr_ptr,"\\e")){
     is_end = 1;
@@ -333,7 +347,9 @@ static void CheckOption(Widget w, int *fid, XtInputId * id)
   textblock.length = strlen(message_buffer);
   textblock.ptr = message_buffer;
   textblock.format = FMT8BIT;
+  XtVaSetValues(label,XtNeditType,XawtextEdit,NULL);
   XawTextReplace(label,last,last,&textblock);
+  XtVaSetValues(label,XtNeditType,XawtextRead,NULL);
   if (current == last)
     XawTextSetInsertionPoint(label
 			     , last + textblock.length);
@@ -409,7 +425,6 @@ static char* or2string(char* in)
 
   out = (char*)malloc(strlen(in) + 1);
   buffer = (char*)malloc(strlen(in) + 1);
-  memset(buffer,'\0',strlen(in) + 1);
   memset(out,'\0',strlen(in) + 1);
   num_of_item = pos = 0;
 
@@ -424,6 +439,7 @@ static char* or2string(char* in)
   top = NULL;
 
   while((chr_ptr = strchr(in_ptr,'|')) != NULL){
+    memset(buffer,'\0',strlen(in) + 1);
     nstrncpy(buffer,in_ptr,chr_ptr - in_ptr);
     in_ptr = chr_ptr + 1;
     messageStack_push(&top,buffer);
@@ -491,4 +507,62 @@ static void messageStack_push(messageStack** t,char* s)
   n = messageStack_new(s);
   n->next = *t;
   *t = n;
+}
+
+static void ChangeBadKanjiCode(char *source)
+{
+    int i,chnum = 0;
+    unsigned char tmp[4];
+    unsigned char first_byte, second_byte;
+    char *result;
+
+    result = (char*)malloc(strlen(source) * 2);
+    if(result == NULL) return;
+    memset(result,'\0',strlen(source) * 2);
+
+    for (i = 0; i < strlen(source); i++) {
+	/* first byte */
+	first_byte = *(source + i);
+
+	if ((first_byte >= 0xa1 && first_byte <= 0xfe) ||
+	    (first_byte == 0x8e) ||
+	    (first_byte == 0x8f)) {
+
+	    /* this is EUC kanji code.... */
+
+	    if (++i > strlen(source)) {
+		/* lack EUC kanji code's 2nd byte ? */
+		perror("broken kanji code exist");
+		return 1;
+	    }
+	    second_byte = *(source + i);
+
+	    /* change undefined kanji code and X0201 Kana to '#' */
+
+	    if ((first_byte >= 0xa9 && first_byte <= 0xaf) ||
+		(first_byte >= 0xf5) ||
+		(first_byte == 0x8e)) {
+	      first_byte = 0xa1;
+	      second_byte = 0xf4;
+	      chnum++;
+	    }
+	    sprintf(tmp, "%c%c", first_byte, second_byte);
+
+	    if (first_byte == 0x8f) {
+		/* this is hojo-kanji */
+		if (++i > strlen(source)) {
+		    /* lack EUC kanji code's 3rd byte ? */
+		  break;
+		}
+		sprintf(tmp, "%c%c%c", first_byte, second_byte, *(source + i));
+	    }
+	} else {
+	    /* this is perhaps ASCII code... */
+	    sprintf(tmp, "%c", first_byte);
+	}
+	strcat(result, tmp);
+    }
+
+    strcpy(source,result);
+    return;
 }
