@@ -4,7 +4,9 @@ PROGS    = countdown sstp
 all: $(PROGS)
 
 countdown: countdown.c
-	gcc -g -O2 countdown.c -o $@
+	@CC@ -g -O2 countdown.c -o $@
 
 sstp: sstp.c
-	gcc -g -O2 sstp.c -o $@
+	@CC@ -g -O2 sstp.c -o $@
+
+install:

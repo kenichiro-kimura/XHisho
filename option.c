@@ -710,6 +710,7 @@ static void InsertMessage(XtPointer cl,XtIntervalId* id)
       case 'e':
 	is_end = 1;
 	pos[0] = pos[1] = 0;
+	dest_win = SAKURA;
 	if(opr.timeout > 0){
 	  OptionTimeoutId = XtAppAddTimeOut(XtWidgetToApplicationContext(local_option)
 					    , opr.timeout * 1000
@@ -722,8 +723,8 @@ static void InsertMessage(XtPointer cl,XtIntervalId* id)
 	  KAWARITimeoutId = 0;
 	}
 
-  if(opr.k_wait > 0)
-	KAWARITimeoutId = XtAppAddTimeOut(XtWidgetToApplicationContext(local_option)
+	if(opr.k_wait > 0)
+	  KAWARITimeoutId = XtAppAddTimeOut(XtWidgetToApplicationContext(local_option)
 					  , opr.k_wait * 1000
 					  , (XtTimerCallbackProc) GetMessageFromKawari
 					  , NULL

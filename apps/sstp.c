@@ -54,13 +54,16 @@ int main(int argc, char** argv)
       }
       if(strstr(buffer,"Script:")){
 	printf("%s\n",strstr(buffer,"Script:") + strlen("Script:"));
-	fflush(stdout);
       }
 	
       if(strncmp(buffer,"\n",2) == 0 || strstr(buffer,"\n\n")) break;
     }
     write(accept_desc,"200 OK\r\n",strlen("200 OK\r\n"));
     close(accept_desc);
+
+    if(strstr(buffer,"\\e") == NULL)
+      printf("\\e\n");
+    fflush(stdout);
   }
   free(buffer);
 }
