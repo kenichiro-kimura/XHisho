@@ -8209,6 +8209,7 @@ static void sstp(int port)
   unsigned char* buffer;
   unsigned char* chr_ptr;
   int is_script,i;
+  int status;
   messageBuffer kbuf;
   FILE* stream;
   unsigned char* (*conv)(unsigned char*);
@@ -8240,8 +8241,9 @@ static void sstp(int port)
   listen(sockdesc, 1);
   while(1){
     accept_desc = accept(sockdesc, (struct sockaddr*)&fromadd, &fromlen);
+    status = 0;
     if(accept_desc != -1){
-      write(accept_desc,"200 OK\r\n",strlen("200 OK\r\n"));
+      /*      write(accept_desc,"200 OK\r\n",strlen("200 OK\r\n"));*/
       is_script = 0;
       stream = fdopen(accept_desc,"rw");
       while(1){
@@ -8258,10 +8260,13 @@ static void sstp(int port)
 
 	if(!strncmp(buffer,"Script:",strlen("Script:"))){
 	  is_script = 1;
+	  status++;
 	  AddBuffer(&kbuf,buffer + strlen("Script:"));
 	} else if(!strncmp(buffer,"SEND SSTP/1.1",strlen("SEND SSTP/1.1"))){
+	  status = 1;
 	  /* NULL */
 	} else if(!strncmp(buffer,"Sender:",strlen("Sender:"))){
+	  status++;
 	  /* NULL */
 	} else if(!strncmp(buffer,"Option:",strlen("Option:"))){
 	  /* NULL */
@@ -8296,13 +8301,22 @@ static void sstp(int port)
 	  }
 	} else if(!strncmp(buffer,"EXECUTE",strlen("EXECUTE"))){
 	  /*
-	    not supported
-	  */
+	   *  not supported
+	   */
+	  status = -1;
 	  break;
 	} else if(!strncmp(buffer,"GIVE",strlen("GIVE"))){
 	  /*
-	    not supported
-	  */
+	   *  not supported
+	   */
+	  status = -1;
+	  break;
+	} else if(!strncmp(buffer,"SEND",strlen("SEND"))){
+	  /*
+	   *  this is SEND/ 1.2 , 1.3 , 1.4
+	   *  not supported
+	   */
+	  status = -1;
 	  break;
 	} else if(is_script){
 	  AddBuffer(&kbuf,buffer);
@@ -8310,26 +8324,45 @@ static void sstp(int port)
 	
 	if(strncmp(buffer,"\n",2) == 0 || strstr(buffer,"\n\n")) break;
       }
-      /*    write(accept_desc,"200 OK\r\n",strlen("200 OK\r\n"));*/
+
+      switch(status){
+      case -1:
+	fprintf(stream,"501 Not Implemented\r\n");
+	break;
+      case 0:
+      case 1:
+      case 2:
+	fprintf(stream,"400 Bad Request\r\n");
+	break;
+      case 3:
+	fprintf(stream,"200 OK\r\n");
+	break;
+      default:
+	fprintf(stream,"501 Not Implemented\r\n");
+	break;
+      }
+
       fclose(stream);
 
-      /*
-	SSTPParser(kbuf.buffer);
-      */
+      if(status == 3){
+	/*
+	 * SSTPParser(kbuf.buffer);
+	 */
 
-      chr_ptr = conv(kbuf.buffer);
-      /*
-      *kbuf.buffer = '\0';
-      AddBuffer(&kbuf,chr_ptr);
-      free(chr_ptr);
-      chr_ptr = ChangeBadKanjiCode(kbuf.buffer);
-      */
-      AddBuffer(&mbuf,chr_ptr);
-      free(chr_ptr);
-      *kbuf.buffer = '\0';
+	chr_ptr = conv(kbuf.buffer);
+	/*
+	 *kbuf.buffer = '\0';
+	 AddBuffer(&kbuf,chr_ptr);
+	 free(chr_ptr);
+	 chr_ptr = ChangeBadKanjiCode(kbuf.buffer);
+	 */
+	AddBuffer(&mbuf,chr_ptr);
+	free(chr_ptr);
+	*kbuf.buffer = '\0';
 
-      if(strstr(buffer,"\\e") == NULL)
-	AddBuffer(&mbuf,"\\e");
+	if(strstr(buffer,"\\e") == NULL)
+	  AddBuffer(&mbuf,"\\e");
+      }
     }
   }
   free(buffer);
