@@ -37,7 +37,7 @@ static Widget toplevel;
 static void Wait(Widget, XEvent *, String *, unsigned int *);
 static void CheckMailNow(Widget, XEvent *, String *, unsigned int *);
 static void PrintUsage(int, char **);
-static int RmTmpDir(Display *);
+static void SigChild(int);
 
 /**
  * action table
@@ -88,7 +88,6 @@ static void Wait(Widget w, XEvent * e, String * s, unsigned int *i)
   tm_now = localtime(&now);
 
   if (!IsSet) {
-    XSetIOErrorHandler(RmTmpDir);
     resedit = CreateResEditWindow(toplevel);
     XtVaSetValues(xhisho, XtNfocusWinInterval, (int)rer.Pref[4].param, NULL);
 
@@ -141,15 +140,16 @@ void Quit(Widget w, XEvent * event, String * params, unsigned int *num_params)
 
   WritePrefFile();
   XCloseDisplay(XtDisplay(top));
-  if(Biff == YOUBIN)
-    unlink(YoubinFile);
-
-  while((i = rmdir(Tmp_dir)) < 0);
 
   if(Biff == YOUBIN){
     kill(youbin_pid[0], SIGTERM);
     kill(youbin_pid[1], SIGTERM);
   }
+
+  if(Biff == YOUBIN)
+    unlink(YoubinFile);
+
+  while((i = rmdir(Tmp_dir)) < 0);
 
   exit(0);
 }
@@ -355,6 +355,7 @@ int main(int argc, char **argv)
   IsMailChecked(0);
   UseSound = 1;
   ExistMailNum = HaveSchedule = 0;
+  signal(SIGCHLD,SigChild);
 
   if(!IsSet)
     BeforeAnimatonMode = USUAL;
@@ -525,7 +526,10 @@ static void PrintUsage(int argc, char **argv)
   }
 }
 
-static int RmTmpDir(Display *d){
-  return rmdir(Tmp_dir);
+static void SigChild(int x){
+  int status;
+  wait(&status);
+
+  signal(SIGCHLD,SigChild);
 }
 

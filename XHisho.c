@@ -667,7 +667,7 @@ static void ChangeAnimType(XHishoWidget xhw)
    * のはラベルの処理のため。
    **/
 
-  printf("%d\n",xhw->xhisho.anim_type);
+  /*printf("%d\n",xhw->xhisho.anim_type);*/
   Animation(xhw,1);
 }
 

@@ -275,32 +275,32 @@ static int CheckSC_Day(char* sc_day,int year,int month,int day){
       pivot_ptr[2] = '\0';
       if(day == atoi(pivot_ptr)){
 	isDay = 1;
-      }else{
-	isDay = 0;
+	break;
       }
       chr_ptr += strlen("00");
     } else {
-      isDay = 0;
       chr_ptr += strlen("00") + strlen(yearmonth);
     }
-    
-    switch(isDay){
-    case 0:
-      if(sig)
-	isDay = 1;
-      break;
-    case 1:
-      if(sig)
-	isDay = 0;
-      break;
-    }
 
-    if(chr_ptr >= sc_day + strlen(sc_day)) break;
-    if((isDay == 1 && sig == 0) || (isDay == 0 && sig == 1)) break;
+    if(chr_ptr > sc_day + strlen(sc_day)) break;
+
     while(isspace((unsigned char)*chr_ptr))
       chr_ptr++;
   }
 
+  switch(isDay){
+  case 0:
+    if(sig == 1)
+      isDay = 1;
+    break;
+  case 1:
+    if(sig == 1)
+      isDay = 0;
+    break;
+  }
+
+  free(yearmonth);
+  free(pivot_ptr);
   return isDay;
 
 }
@@ -657,9 +657,9 @@ static int datecmp(char* a,char* b){
   strncpy(year,a,4);
   year[4] = '\0';
   strncpy(month,a + 4,2);
-  month[4] = '\0';
+  month[2] = '\0';
   strncpy(day,a + 6,2);
-  day[4] = '\0';
+  day[2] = '\0';
 
   tm_x = localtime(&a_t);
   tm_x->tm_mday = atoi(day);
@@ -671,8 +671,8 @@ static int datecmp(char* a,char* b){
   strncpy(month,b + 4,2);
   strncpy(day,b + 6,2);
   year[4] = '\0';
-  month[4] = '\0';
-  day[4] = '\0';
+  month[2] = '\0';
+  day[2] = '\0';
 
   time(&b_t);
   tm_x = localtime(&b_t);
@@ -853,9 +853,14 @@ int isschedule(const mhcent* ent_ptr,int year,int month,int day){
    * is** 
    *      = -1: 無指定
    *      =  0: 該当しない
-   *      +  1: 該当する
+   *      =  1: 該当する
+   *
+   * isDay は例外的に
+   *      = -1: *その日については* 無指定
+   *      =  0: 列挙してある(!で該当しない)
+   *      =  1: 列挙してある(該当する)
    */    
-
+  /*
   switch(isDay){
   case -1:
     if(isCond == 1 && isDuration != 0) return 1;
@@ -866,7 +871,19 @@ int isschedule(const mhcent* ent_ptr,int year,int month,int day){
     if(isCond != 0 && isDuration != 0) return 1;
     return 0;
   }
+  */
 
+  switch(isDay){
+  case -1:
+    if(isCond == -1) return 0;
+    if(isCond == 1 && isDuration != 0) return 1;
+    return 0;
+  case 0:
+    return 0;
+  case 1:
+    if(isDuration != 0) return 1;
+    return 0;
+  }
   return -1;
 }
     
