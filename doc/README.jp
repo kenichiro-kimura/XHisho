@@ -149,8 +149,10 @@ MHC$B$N%G!<%?$r;H$&$3$H$b$G$-$^$9!#$3$N>l9g!"(BXHisho$B$+$i%(%G%#%C%H$O=PMh(
 $B!&(B--disable-ext_filter : $B30It%U%#%k%?$r;H$$$^$;$s(B
 $B!&(B--disable-petname    : Petname$B$r;H$$$^$;$s(B
 $B!&(B--with-libmhc        : MHC$B$N%G!<%?$r;H$$$^$9(B
-$B!&(B--with-shared        : $B%i%$%V%i%j$r(Bshared library$B$H$7$F%$%s%9%H!<%k$7$^$9(B
+$B!&(B--with-shared        : $B%i%$%V%i%j$r(Bshared library$B$H$7$F%$%s%9%H!<%k(B
+                         $B$7$^$9(B
 $B!&(B--with-option        : $B!V$"$l0J30$N2?$+(Bwith$BG$0U!WBP1~(B
+$B!&(B--with-unyuu         : $B$&$K$e$&BP1~(B
 $B!&(B--without-xpm        : $B2hA|7A<0$H$7$F(Bxpm$B$r;H$$$^$;$s(B
 $B!&(B--without-jpeg       : $B2hA|7A<0$H$7$F(Bjpeg$B$r;H$$$^$;$s(B
 $B!&(B--without-png        : $B2hA|7A<0$H$7$F(Bpng$B$r;H$$$^$;$s(B
@@ -194,7 +196,16 @@ JPEG$B%i%$%V%i%j$d(BPNG$B%i%$%V%i%j$,$&$^$/8+$D$+$i$J$$$H$-$O!"(Bconfigure$
 
 $B!V(B--enable-abook$B!W$H$9$k$H(BMew$B$N%"%I%l%9D"$r;H$&$3$H$b$G$-$^$9!#(B
 
-$B!V(B--enable-libmhc$B!W$H$9$k$H(BMHC$B$N%G!<%?$r;H$&$3$H$,$G$-$^$9!#(B
+$B!V(B--with-libmhc$B!W$H$9$k$H(BMHC$B$N%G!<%?$r;H$&$3$H$,$G$-$^$9!#(B
+
+$B!V(B--with-shared$B!W$H$9$k$H!"%i%$%V%i%j$r(Bshared library$B$H$7$F%$%s%9%H!<(B
+$B%k$7$^$9!#(B
+
+$B!V(B--with-option$B!W$H$9$k$H!"!V$"$l0J30$N2?$+(Bwith$BG$0U!W$N(BGUI$B%$%s%?!<%U%'!<(B
+$B%9$H$7$F$N5!G=$r;}$A$^$9!#(B
+
+$B!V(B--with-unyuu$B!W$H$9$k$H!"!V$"$l0J30$N2?$+(Bwith$BG$0U!W$N$&$K$e$&BP1~$K$J(B
+$B$j$^$9!#(B
 
 
 $B$^$?!"(Broot$B$K$J$k8"8B$r;}$C$F$$$J$$?M$,<+J,$N4D6-$K%$%s%9%H!<%k$7$?$$>l(B
@@ -259,6 +270,8 @@ xhs.holiday$B$H$$$&%U%!%$%k$rCV$$$F$/$@$5$$!#=q<0$O%5%s%W%k$r8+$F$/$@$5(B
 $B$O$"$j$^$;$s!#(B
 
 
+$B!V$"$l0J30$N2?$+(Bwith$BG$0U!W$r;H$&$H$-$N%+%9%?%`>pJs$O(BREADME.option$B$r$4(B
+$BMw2<$5$$!#(B
 
 
 
@@ -285,6 +298,8 @@ xhs.holiday$B$H$$$&%U%!%$%k$rCV$$$F$/$@$5$$!#=q<0$O%5%s%W%k$r8+$F$/$@$5(B
          [-pop]
          [-apop]
          [-imap]
+         [-xoff [n]]
+         [-yoff [n]]
          [-version]
          [-coption]
 
@@ -343,6 +358,8 @@ xhs.holiday$B$H$$$&%U%!%$%k$rCV$$$F$/$@$5$$!#=q<0$O%5%s%W%k$r8+$F$/$@$5(B
 $B!&(B-pop       $B!D(B biff$B$K(BPOP$B$r;H$&(B
 $B!&(B-apop      $B!D(B biff$B$K(BAPOP$B$r;H$&(B
 $B!&(B-imap      $B!D(B biff$B$K(BIMAP4$B$r;H$&(B
+$B!&(B-xoff      $B!D(B $B$U$-$@$7$N0LCVJd@5(B(X$BJ}8~(B)
+$B!&(B-yoff      $B!D(B $B$U$-$@$7$N0LCVJd@5(B(Y$BJ}8~(B)
 $B!&(B-version   $B!D(B $B%P!<%8%g%s$rI=<($9$k(B
 $B!&(B-coption   $B!D(B $B%3%s%Q%$%k%*%W%7%g%s$rI=<($9$k(B
 

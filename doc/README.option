@@ -61,6 +61,7 @@ http://meister-d-i.hoops.ne.jp/
 
 
 
+
 5. 使い方
 
 起動時に、-optioncmd オプションで外部コマンドを指定します。例えば
@@ -75,10 +76,12 @@ http://meister-d-i.hoops.ne.jp/
 %xhisho -optioncmd /usr/local/bin/nisesakura -cgfile mayura.anim \
         -shape -noclock
 
-とかやるとそれっぽくなります。ふきだしの位置が気にくわないときは
--xoff オプションと -yoff オプションで適当に調整してください。
-わたしが試した感じだと
+とかやるとそれっぽくなります。うにゅうを使うときは、うにゅうのCGは12行
+目以降に書いてください(11行目まではさくらのsurfaceかダミーのファイル名
+を記述。ただし、ダミーのファイルもCGファイルの必要あり)。
 
+ふきだしの位置が気にくわないときは-xoff オプションと -yoff オプション
+で適当に調整してください。わたしが試した感じだと
 
 %xhisho -optioncmd /usr/local/bin/nisesakura -cgfile mayura.anim \
         -shape -noclock -xoff '-70' -yoff 10
@@ -88,18 +91,43 @@ http://meister-d-i.hoops.ne.jp/
 ころでクリックしてください。
 
 
-以下に、with任意のカスタムに役立つオプションを列挙します。
+以下に、with任意のカスタムに役立つオプションを列挙します。これらを適当
+に組み合わせてください。対応するリソースも列挙しますので、毎回起動オプ
+ションに指定するのが面倒な場合はリソースファイルで設定してください。
+
 
 ・-xoff             : ふきだしの位置補正(x方向)
+  (リソース: XHisho*option*xoff)
+
 ・-yoff             : ふきだしの位置補正(y方向)
-・-optionheight     : "任意"のふきだしの幅
+  (リソース: XHisho*option*yoff)
+
+・-optionwidth      : "任意"のふきだしの幅
+  (リソース: XHisho*OptionWindow*optionWidth)
+
 ・-optionheight     : "任意"のふきだしの高さ
-・-nogreeting       : 起動時に挨拶を出さない
+  (リソース: XHisho*OptionWindow*optionHeight)
+
 ・-uxoff            : うにゅうのふきだしの位置補正(x方向)
+  (リソース: XHisho*uXOffset)
+
 ・-uyoff            : うにゅうのふきだしの位置補正(y方向)
+  (リソース: XHisho*uYOffset)
+
 ・-uwidth           : うにゅうのふきだしの幅
+  (リソース: XHisho*UOptionWindow*optionWidth)
+
 ・-uheight          : うにゅうのふきだしの高さ
+  (リソース: XHisho*UOptionWindow*optionHeight)
+
+・-ucgoff           : うにゅうのCGの位置補正(x方向)
+  (リソース: XHisho*uCGoff)
+
 ・-optiontimeout    : "任意"のふきだしの自動Popdownまでの時間
+  (リソース: XHisho*optionTimeout)
+
+・-nogreeting       : 起動時に挨拶を出さない
+
 
 
 
