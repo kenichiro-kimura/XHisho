@@ -23,7 +23,7 @@ static void Destroy(Widget,XEvent *, String *, unsigned int *);
 static void CommandInit();
 static void CheckOption(Widget, int *, XtInputId *);
 #ifdef USE_KAWARI
-static void GetMessageFromKawari();
+static void GetMessageFromKawari(Widget, int *, XtInputId *);
 #endif
 static int Option_exit(Display *);
 static char* or2string(char*);
@@ -243,9 +243,11 @@ Widget CreateOptionWindow(Widget w){
   trans_table = XtParseTranslationTable(defaultTranslations);
   XtOverrideTranslations(ulocal_option,trans_table);
 
-  CommandInit();
+  if(strlen(opr.o_command) > 0)
+    CommandInit();
+
 #ifdef USE_KAWARI
-  GetMessageFromKawari();
+  GetMessageFromKawari(local_option,NULL,NULL);
 #endif
 
   MessageWaitId = XtAppAddTimeOut(XtWidgetToApplicationContext(local_option)
@@ -257,8 +259,6 @@ Widget CreateOptionWindow(Widget w){
 
 static void CommandInit()
 {
-  if(strlen(opr.o_command) < 1) return;
-
   if (virgine) {
     if ((option_fd = popen(opr.o_command,"r")) == NULL){
       fprintf(stderr, "no such option command, \"%s\"\n", opr.o_command);
@@ -323,7 +323,7 @@ static void CheckOption(Widget w, int *fid, XtInputId * id)
 
 }
 
-static void GetMessageFromKawari(){
+static void GetMessageFromKawari(Widget w, int * i, XtInputId * id){
   static unsigned char *_buffer;
   static int x = 0;
   int len;
@@ -370,7 +370,7 @@ static void GetMessageFromKawari(){
 
   KAWARITimeoutId = XtAppAddTimeOut(XtWidgetToApplicationContext(local_option)
 				    , opr.k_wait * 1000
-				    , (XtTimerCallbackProc) CheckOption
+				    , (XtTimerCallbackProc) GetMessageFromKawari
 				    , NULL
 				    );
 }
