@@ -328,13 +328,12 @@ void ReadPetname(char* petname_f){
 void SearchPetname(char* ret_value,char* pname){
   /* 
    * リストを検索して該当するPetnameが無いか探す。もしあったらret_valueに
-   * 「From:Petname」の形で入れて返す。無ければret_valueはNULL。
+   * 「From:Petname」の形で入れて返す。無ければret_valueはそのまま。
    */
 
   PetnameList* plist;
   int hashed;
 
-  *ret_value = '\0';
   hashed = StrHash(pname);
   plist = Petname[hashed];
 

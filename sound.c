@@ -57,6 +57,8 @@ int SoundPlay(const char* filename){
     return ExtSoundCommand(filename);
   }
 
+  if(filename[0] == '\0') return 0;
+
   if ((in_fd = open(filename, O_RDONLY)) == -1){
     fprintf(stderr, "%s - ", filename);
     perror("open");

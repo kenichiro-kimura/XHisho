@@ -494,7 +494,6 @@ static void GetFromandSubject(int sock,char* buffer){
 	    strcpy(pname, strtok(strchr(tmp2,'<') + 1,">"));
 	}
 	SearchPetname(tmp3,pname);
-	if(tmp3[0] == '\0') strcpy(tmp3,tmp2);
       }
 #endif
 

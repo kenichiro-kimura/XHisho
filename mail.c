@@ -573,11 +573,12 @@ static void GetFromandSubject(char* m_file,char* From){
 	if(!strncmp(buf,"From:",5)){
 	  memset(who,0,BUFSIZ);
 	  sscanf(buf,"%s %s",from_who,who);
+	  strcpy(tmp1,buf);
 
 	  for(j = 0; j < strlen(from_who);j++)
 	    if(isspace(tmp2[j])) break;
 
-	  strcpy(who,tmp2 + j);
+	  strcpy(who,tmp2 + j + 1);
 
 	  if(strchr(who,'@')){
 	    strcpy(pname,who);
@@ -587,11 +588,10 @@ static void GetFromandSubject(char* m_file,char* From){
 	      strcpy(pname, strtok(strchr(buf,'<') + 1,">"));
 	  }
 	  SearchPetname(tmp1,pname);
-	  if(tmp1[0] == NULL){
-	    strcat(From,tmp2);
-	  } else {
-	    strcat(From,tmp1);
-	  }
+	  length = MIN(strlen(tmp1),mar.from_maxlen);
+	  tmp1[length - 1] = '\n';
+	  tmp1[length] = '\0';
+	  strcat(From,tmp1);
 	} else {
 	  strcat(From,tmp2);
 	}
