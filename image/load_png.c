@@ -35,7 +35,6 @@ int LoadPng(ImageInfo * i_info)
       buf [5] != 0x0a ||
       buf [6] != 0x1a ||
       buf [7] != 0x0a){
-    printf("not PNG file:%s\n",i_info->filename);
     return -1;
   }
 
