@@ -71,7 +71,7 @@ int LoadPng(ImageInfo * i_info)
 
   png_init_io(png_ptr, fp);
   png_read_info(png_ptr, info_ptr);
-  png_get_IHDR(png_ptr,info_ptr, &width,&height,&bit_depth,&color_type,&interlace_type
+  png_get_IHDR(png_ptr,info_ptr, (png_uint_32*)&width,(png_uint_32*)&height,&bit_depth,&color_type,&interlace_type
 	       ,NULL,NULL);
 
   i_info->width = width;
