@@ -593,15 +593,19 @@ static char* or2string(char* in)
     num_of_item++;
   }
 
+  messageStack_push(&top,in_ptr);
+  num_of_item++;
+  
   pos = rand() % num_of_item;
   do{
     if((item = messageStack_pop(&top)) == NULL) break;
 
-    if(pos-- == 0)
+    if(pos == 0)
       strcpy(out,item->message);
 
     free(item->message);
     free(item);
+    pos--;
   } while(top);
 
   return out;
