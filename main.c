@@ -44,6 +44,7 @@ static XtActionsRec actionTable[] = {
   {"CalendarWindowPopup", CalendarWindowPopup},
   {"AboutWindowPopup", AboutWindowPopup},
   {"MenuWindowPopup", MenuWindowPopup},
+  {"OpeningWindowPopup", OpeningWindowPopup},
   {"CheckMailNow", CheckMailNow},
   {"Expose", Wait},
 };
