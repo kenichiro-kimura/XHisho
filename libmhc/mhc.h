@@ -57,5 +57,6 @@ void RewindMHC(MHC*);
 int CloseMHC(MHC*);
 
 char* GetSubject(const mhcent*);
+int GetAlarm(const mhcent*);
 
 #endif

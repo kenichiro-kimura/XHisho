@@ -167,7 +167,7 @@ int CheckSchedule(OpenMessageRes * l_omr, Schedule * schedule, int WeeklyCheck, 
   }
 
 #ifdef LIBMHC
-  if(WeeklyCheck){
+  if(1){ /*WeeklyCheck){*/
     t_filename = malloc(BUFSIZ * 2);
     Tmp_dir = malloc(BUFSIZ);
 
@@ -207,6 +207,10 @@ int CheckSchedule(OpenMessageRes * l_omr, Schedule * schedule, int WeeklyCheck, 
       } else {
 	strcpy(schedule[i].hour, "*");
       }
+
+      schedule[i].leave = GetAlarm(ent_ptr);
+      if(schedule[i].leave <= 0) schedule[i].leave = 0;
+      if(schedule[i].leave > 60 * 24 - 1) schedule[i].leave = 0;
 
       Escape2Return(tmp1);
       strncpy(schedule[i].ev, tmp1, MIN(BUFSIZ, strlen(tmp1)));

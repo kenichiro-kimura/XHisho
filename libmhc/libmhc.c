@@ -879,3 +879,38 @@ int CloseMHC(MHC* mhc_ptr){
 char* GetSubject(const mhcent* ent_ptr){
   return ent_ptr->Entry[X_SC_Subject];
 }
+
+int GetAlarm(const mhcent* ent_ptr){
+  char* chr_ptr;
+  char* tmp;
+  int length,ret_value;
+
+  if(!ent_ptr) return -1;
+
+  if(!ent_ptr->Entry[X_SC_Alarm]) return 0;
+
+  tmp = (char*)malloc(strlen("00") + 1);
+  if(!tmp) return -1;
+
+  chr_ptr = ent_ptr->Entry[X_SC_Alarm];
+  length = ret_value = 0;
+  while(chr_ptr && !isspace(*chr_ptr) && length < 2)
+    *(tmp + length++) = *chr_ptr++;
+
+  chr_ptr++;
+
+  if(!strcmp(chr_ptr,"minute")){
+    ret_value = atoi(tmp);
+  } else if (!strcmp(chr_ptr,"hour")){
+    ret_value = atoi(tmp) * 60;
+  } else if (!strcmp(chr_ptr,"day")){
+    ret_value = atoi(tmp) * 60 * 24;
+  }
+
+  free(tmp);
+  return ret_value;
+}
+  
+
+  
+  
