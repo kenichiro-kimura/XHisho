@@ -12,21 +12,21 @@ ac_help=
 ac_default_prefix=/usr/local
 # Any additions from configure.in:
 ac_help="$ac_help
-  --with-xpm        compile for personal"
+  --without-xpm           compile without XPM library"
 ac_help="$ac_help
-  --with-jpeg        compile for personal"
+  --without-jpeg          compile without JPEG library"
 ac_help="$ac_help
-  --enable-personal        compile for personal"
+  --enable-personal       compile for personal"
 ac_help="$ac_help
-  --disable-ext_filter     don't use external filter"
+  --disable-ext_filter    don't use external filter"
 ac_help="$ac_help
-  --disable-petname     don't use petname"
+  --disable-petname       don't use petname"
 ac_help="$ac_help
-  --disable-i18n     don't use I18N messages"
+  --disable-i18n          don't use I18N messages"
 ac_help="$ac_help
-  --enable-abook     use address book"
+  --enable-abook          use address book"
 ac_help="$ac_help
-  --enable-akari     for XAkari :-)"
+  --enable-akari          for XAkari :-)"
 
 # Initialize some variables set by options.
 # The variables have the same names as the options, with
@@ -986,8 +986,6 @@ fi
 
 test "$with_xpm" = "yes"
 
-
-
 if test "$with_xpm" = "yes";
 then
   XMKMF=`which xmkmf`
@@ -999,7 +997,7 @@ then
   fi
   LDFLAGS="$LDFLAGS -L${XDIR}lib"
   echo $ac_n "checking for main in -lX11""... $ac_c" 1>&6
-echo "configure:1003: checking for main in -lX11" >&5
+echo "configure:1001: checking for main in -lX11" >&5
 ac_lib_var=`echo X11'_'main | sed 'y%./+-%__p_%'`
 if eval "test \"`echo '$''{'ac_cv_lib_$ac_lib_var'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
@@ -1007,14 +1005,14 @@ else
   ac_save_LIBS="$LIBS"
 LIBS="-lX11  $LIBS"
 cat > conftest.$ac_ext <<EOF
-#line 1011 "configure"
+#line 1009 "configure"
 #include "confdefs.h"
 
 int main() {
 main()
 ; return 0; }
 EOF
-if { (eval echo configure:1018: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
+if { (eval echo configure:1016: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
   rm -rf conftest*
   eval "ac_cv_lib_$ac_lib_var=yes"
 else
@@ -1042,7 +1040,7 @@ else
 fi
 
   echo $ac_n "checking for main in -lXpm""... $ac_c" 1>&6
-echo "configure:1046: checking for main in -lXpm" >&5
+echo "configure:1044: checking for main in -lXpm" >&5
 ac_lib_var=`echo Xpm'_'main | sed 'y%./+-%__p_%'`
 if eval "test \"`echo '$''{'ac_cv_lib_$ac_lib_var'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
@@ -1050,14 +1048,14 @@ else
   ac_save_LIBS="$LIBS"
 LIBS="-lXpm  $LIBS"
 cat > conftest.$ac_ext <<EOF
-#line 1054 "configure"
+#line 1052 "configure"
 #include "confdefs.h"
 
 int main() {
 main()
 ; return 0; }
 EOF
-if { (eval echo configure:1061: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
+if { (eval echo configure:1059: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
   rm -rf conftest*
   eval "ac_cv_lib_$ac_lib_var=yes"
 else
@@ -1087,7 +1085,6 @@ fi
 fi
 
 
-
 # Check whether --with-jpeg or --without-jpeg was given.
 if test "${with_jpeg+set}" = set; then
   withval="$with_jpeg"
@@ -1101,7 +1098,7 @@ test "$with_jpeg" = "yes"
 if test "$with_jpeg" = "yes";
 then
 echo $ac_n "checking for main in -ljpeg""... $ac_c" 1>&6
-echo "configure:1105: checking for main in -ljpeg" >&5
+echo "configure:1102: checking for main in -ljpeg" >&5
 ac_lib_var=`echo jpeg'_'main | sed 'y%./+-%__p_%'`
 if eval "test \"`echo '$''{'ac_cv_lib_$ac_lib_var'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
@@ -1109,14 +1106,14 @@ else
   ac_save_LIBS="$LIBS"
 LIBS="-ljpeg  $LIBS"
 cat > conftest.$ac_ext <<EOF
-#line 1113 "configure"
+#line 1110 "configure"
 #include "confdefs.h"
 
 int main() {
 main()
 ; return 0; }
 EOF
-if { (eval echo configure:1120: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
+if { (eval echo configure:1117: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest${ac_exeext}; then
   rm -rf conftest*
   eval "ac_cv_lib_$ac_lib_var=yes"
 else

@@ -18,6 +18,9 @@
 /* Define for XAkari :-) */
 #undef AKARI
 
+/* Define if you have the X11 library (-lX11).  */
+#undef HAVE_LIBX11
+
 /* Define if you have the Xpm library (-lXpm).  */
 #undef HAVE_LIBXPM
 

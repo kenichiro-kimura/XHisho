@@ -145,21 +145,22 @@ From$B$K$O(BMew$B$HF1$87A<0$N(BPetname$B$rMQ$$$F!V(Bhogeyama@dokka.com$B!
 $B!&(B--without-jpeg       : $B2hA|7A<0$H$7$F(Bjpeg$B$r;H$$$^$;$s(B
 
 
-$B!V(B--without-xpm($B$b$7$/$O(B--with-xpm=no)$B!W$r;XDj$7$J$$>l9g$O(BXPM$B%i%$%V%i(B
-$B%j(B(*1)$B$,I,MW$G$9$N$GA0;}$C$FF~$l$F$*$$$F$/$@$5$$!#(BFreeBSD$B$J$i(Bport$B$d(B
-package$B$K$"$j$^$9!#(B
+XPM$B%i%$%V%i%j(B(*1)$B5Z$S(BJPEG$B%i%$%V%i%j(B(*2)$B$,%$%s%9%H!<%k$5$l$F$$$k$H!"(B
+configure$B$,$=$l$r8+$D$1$F(BXPM$B$H(BJPEG$B$r;H$($k$h$&$K%3%s%Q%$%k$7$^$9!#(B
+$B%i%$%V%i%j$O%$%s%9%H!<%k$7$F$$$k$,!"2hA|7A<0$H$7$F;H$$$?$/$J$$>l9g$O(B
+$B!V(B--without-xx$B!W$r;XDj$7$F$/$@$5$$!#(B
+
 XPM$B%i%$%V%i%j$,$&$^$/8+$D$+$i$J$$$H$-$O!"(Bconfigure$B$N%*%W%7%g%s$G(B
 $B!V(B--x-libraries$B!W$r;XDj$7$F$_$F$/$@$5$$!#Nc$($P(B/usr/X11R6/lib$B$K$"$k$N(B
 $B$J$i!V(B./configure --x-libraries=/usr/X11R6/lib$B!W$G$9!#(B
 
+$B$$$:$l$N%i%$%V%i%j$b(BFreeBSD$B$J$i(Bport$B$d(Bpackage$B$K$"$j$^$9!#(B
 
-$B!V(B--without-jpeg($B$b$7$/$O(B--with-jpeg=no)$B!W$r;XDj$7$J$$>l9g$O(BJPEG$B%i%$%V(B
-$B%i%j(B(*2)$B$,I,MW$G$9$N$GA0;}$C$FF~$l$F$*$$$F$/$@$5$$!#(BFreeBSD$B$J$i(Bport$B$d(B
-package$B$K$"$j$^$9!#(B
 
 
    *1)XPM$B%i%$%V%i%j(B   ftp://avahi.inria.fr/pub/xpm/
    *2)JPEG$B%i%$%V%i%j(B  ftp://ftp.uu.net/graphics/jpeg/
+
 
 
 $B!V(B--disable-ext_filter$B!W$r;XDj$7$J$1$l$P!"%a%C%;!<%8$NI=<($K30It%U%#%k(B
