@@ -127,12 +127,12 @@ A9.256色Pseudo-color環境で、他に色を多く使うアプリケーション(AfterStep
 Q10.各種メッセージが化けるんですが....
 
 A10.リソースファイルはEUCで書いていますか？また、環境変数LANGは
-    ja_JP.EUC(FreeBSD、Linux)やjapanese(Solaris)になっていますか？メー
-    ルのFromやSubject、Petname、メッセージファイルの文字などなら、フィ
-    ルタコマンドを有効にしているか、そのフィルタの出力がEUCになってい
-    るかをチェックしてください。外部フィルタを有効にするには
-    config.tmpl中で#define EXT_FILTERしてください。フィルタコマンドは
-    リソース
+    ja_JP.EUC(FreeBSD)やja_JP.ujis(Linux)やjapanese(Solaris)になってい
+    ますか？メールのFromやSubject、Petname、メッセージファイルの文字な
+    どなら、フィルタコマンドを有効にしているか、そのフィルタの出力が
+    EUCになっているかをチェックしてください。
+
+    フィルタコマンドはリソース
 
     XHisho*extFilter: nkf -e -m
 
