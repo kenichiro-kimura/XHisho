@@ -372,7 +372,14 @@ static void ReadHolidayFile(char *filename)
       if (tmp1[0] != '#' && tmp1[0] != '\0' && tmp1[0] != '\n' && tmp1[0] != ' ') {
 	sscanf(tmp1, "%s %s", tmp2, tmp3);
 
+	/**
+	 * %include行の処理
+	 **/
 	if (!strcmp(tmp2, "%include")) {
+
+	  /**
+	   * もしファイル名が <>で囲まれていたら,sched_dirを展開する
+	   **/
 	  if (*tmp3 == '<' && strchr(tmp3, '>') != NULL) {
 	    sprintf(includefile, "%s/%s/", getenv("HOME"), omr.sched_dir);
 	    strcpy(tmp4, strtok(strchr(tmp3, '<') + 1, ">"));
@@ -380,6 +387,11 @@ static void ReadHolidayFile(char *filename)
 	  } else {
 	    strcpy(includefile, tmp3);
 	  }
+	  /**
+	   * 単に再帰的に読んでるだけなので、includeが入れ子になったらはまる。
+	   * Cのプリプロセッサのようにifdefなんかが使えるといいけど、そこまで
+	   * やる気はない。
+	   **/
 	  ReadHolidayFile(includefile);
 	}
 	strncpy(tdate, tmp2, sizeof(tdate));
@@ -415,7 +427,7 @@ int ExistHoliday(int Year, int Month, int Day)
    * リストを検索して、指定日が休みであれば1を返す。違えば0。
    * Month + 1 月 Day 日 を調べる。
    *
-   * 春分の日、秋分の日は計算して求める。故にYearが引数で必要。
+   * 春分の日、秋分の日、成人の日、体育の日は計算して求める。故にYearが引数で必要。
    * Yearは4桁の西暦(1999など)で与える。
    **/
 
@@ -443,11 +455,17 @@ int ExistHoliday(int Year, int Month, int Day)
    **/
 
   switch (Month) {
+#ifdef I18N
+    /**
+     * 成人の日と体育の日は日本にしかないからね ^^;
+     * # I18NといいつつJapanizeだったといういい見本(苦笑)
+     **/
   case 0:
   case 9:
     if(tm_now->tm_wday == 1 && tm_now->tm_mday >= 8 && tm_now->tm_mday <= 14)
       return 1;
     return 0;
+#endif
   case 2:
     day = (int) (20.8431 + 0.242194 * (Year - 1980) - (int) ((Year - 1980) / 4));
     if (day == Day)
