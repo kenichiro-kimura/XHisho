@@ -31,7 +31,7 @@ static int IsSet = 0;		/** 1回目のExposeでだけ子Widgetを作る **/
 static Widget toplevel;
 
 #ifdef USE_UNYUU
-static Widget unyu,form;
+static Widget unyuu,form;
 #endif
 
 /**
@@ -93,9 +93,29 @@ static void Wait(Widget w, XEvent * e, String * s, unsigned int *i)
 {
   time_t now;
   struct tm *tm_now;
+  Dimension x,y,width,height;
+  Pixmap window_mask;
+  GC mask_gc;
+  Display *d;
+  Window w;
 
   time(&now);
   tm_now = localtime(&now);
+  /*
+  d = XtDisplay(toplevel);
+  w = XtWindow(toplevel);
+  window_mask = XCreatePixmap(d, w ,300,500, 1);
+  mask_gc = XCreateGC(d, window_mask, 0, NULL);
+  XSetGraphicsExposures(d, mask_gc, FALSE);
+  XSetForeground(d, mask_gc, 0);
+  XFillRectangle(d, window_mask, mask_gc, 0, 0, 300,500);
+  XSetForeground(d, mask_gc, 1);
+  XFillRectangle(d,window_mask,mask_gc,150,0,300,500);
+  XShapeCombineMask(d, XtWindow(form), ShapeBounding
+		    ,0, 0, window_mask, ShapeSet);
+  XShapeCombineMask(d, w, ShapeBounding
+		    ,0, 0, window_mask, ShapeSet);
+  */
 
   if (!IsSet) {
     resedit = CreateResEditWindow(toplevel);
@@ -383,7 +403,8 @@ int main(int argc, char **argv)
   XtSetLanguageProc(NULL, NULL, NULL);
 
   toplevel = XtVaOpenApplication(&app, "XHisho", options, XtNumber(options)
-			       , &argc, argv, NULL, sessionShellWidgetClass,NULL);
+				 , &argc, argv, NULL
+				 , sessionShellWidgetClass,NULL);
   /**
    * Usageの表示
    **/
@@ -399,24 +420,26 @@ int main(int argc, char **argv)
 				 ,NULL);
 #endif
 
-  xhisho = XtVaCreateManagedWidget("xhisho",xHishoWidgetClass
 #ifdef USE_UNYUU
+  unyuu = XtVaCreateManagedWidget("unyuu",xHishoWidgetClass
 				   ,form
-#else
-				   ,toplevel
-#endif
 				   ,XtNwidth,150
 				   ,XtNheight,200
 				   ,XtNvertDistance,100
 				   ,XtNhorizDistance,0
 				   ,NULL);
+#endif
+
+  xhisho = XtVaCreateManagedWidget("xhisho",xHishoWidgetClass
 #ifdef USE_UNYUU
-  unyu = XtVaCreateManagedWidget("xhisho",xHishoWidgetClass,form
+				   ,form
 				   ,XtNwidth,150
 				   ,XtNheight,300
-				 ,XtNfromHoriz,xhisho
-				 ,NULL);
+				   ,XtNfromHoriz,unyuu
+#else
+				   ,toplevel
 #endif
+				   ,NULL);
   /**
    * rcfileとfilter commandとpetname fileをセット
    **/

@@ -308,6 +308,7 @@ static void Realize(Widget w, XtValueMask * valueMask, XSetWindowAttributes * at
 {
   XHishoWidget xhw = (XHishoWidget) w;
   int clock_height;
+  Dimension x,y;
 
   (labelClassRec.core_class.realize) (w, valueMask, attrs);
 
@@ -338,7 +339,13 @@ static void Realize(Widget w, XtValueMask * valueMask, XSetWindowAttributes * at
   }
 
   if (xhw->xhisho.i_info->is_shape){
-    XShapeCombineMask(DISPLAY, XtWindow(XtParent(xhw)), ShapeBounding, 0, 0
+    XShapeCombineMask(DISPLAY
+#ifdef USE_UNYUU
+		      , WINDOW
+#else
+		      , XtWindow(XtParent(xhw))
+#endif
+		      , ShapeBounding, 0, 0
 		      ,((xhw->xhisho.i_info->image) + CG_NUM)->mask, ShapeSet);
   }
 
@@ -374,7 +381,6 @@ static void Redraw(Widget w, XEvent * event, Region region)
       top = XtParent(top);
 
     XtVaGetValues(top,XtNx,&x,XtNy,&y,NULL);
-
 
     x = MIN(x,DisplayWidth(XtDisplay(xhw),0) - WIDTH);
     x = MAX(x,0);
@@ -725,3 +731,4 @@ static void DrawNewCG(XHishoWidget xhw)
   }
   XFlush(DISPLAY);
 }
+
