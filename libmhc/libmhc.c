@@ -177,10 +177,10 @@ static mhcent* ReadEntry(FILE* fp)
 
       if(tag != CONTINUED_LINE){
 	b_tag = tag;
-	for(;chr_ptr;chr_ptr++)
+	for(;*chr_ptr != '\0';chr_ptr++)
 	  if(*chr_ptr == ':') break;
       }
-      for(chr_ptr++;chr_ptr;chr_ptr++)
+      for(chr_ptr++;*chr_ptr != '\0';chr_ptr++)
 	if(!isspace((unsigned char)*chr_ptr)) break;
 
       if(tag == CONTINUED_LINE && b_tag != NO_TAG ){
@@ -217,7 +217,7 @@ static MHC* MHCNew()
 
   *mhc_ptr = (_MHC*)malloc(sizeof(_MHC));
   if(!(*mhc_ptr)) return NULL;
-  for(i = 0 ; i < 32;i++)
+  for(i = 0 ; i <= 31;i++)
     (*mhc_ptr)->table[i] = NULL;
 
   (*mhc_ptr)->ptr = NULL;
