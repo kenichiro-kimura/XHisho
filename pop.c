@@ -84,6 +84,9 @@ static int ReadPOPMessage(int sock, char *buffer, int size)
   }
 
 End:
+#ifdef DEBUG
+  printf("POP:%s",comm_buffer);
+#endif
   free(comm_buffer);
   return ret_value;
 }
@@ -94,6 +97,9 @@ static int WritePOPCommand(int sock, char *command)
    * POP3の,サーバへのコマンド送信
    **/
 
+#ifdef DEBUG
+  printf("POP:%s",command);
+#endif
   return write(sock, command, strlen(command));
 }
 
