@@ -821,14 +821,10 @@ static void YoubinInit()
     }
     if(youbin_pid[0] != 0){
       execl(mar.y_command, "youbin", "-m", YoubinFile, "-s", mar.y_server, (char *) NULL);
-      perror("youbin_init:execlp");
+      perror("youbin_init:execl");
       exit(1);
     }
 
-    if(pipe(youbin_pfp)){
-      fprintf(stderr, "can't open youbin pipe\n");
-      exit(1);
-    }
     if((youbin_pid[1] = fork()) < 0){
       fprintf(stderr,"can't fork\n");
       exit(1);
@@ -838,7 +834,7 @@ static void YoubinInit()
       dup(youbin_pfp[1]);
       close(youbin_pfp[1]);
       execl(mar.y_command, "youbin", "-b", "-s", mar.y_server, (char *) NULL);
-      perror("youbin_init:execlp");
+      perror("youbin_init:execl");
       exit(1);
     }
     close(youbin_pfp[1]);
