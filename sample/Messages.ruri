@@ -3,6 +3,7 @@ nomail 別に何も来てないですけど....
 open1 艦長、今日(%s/%s)の予定は
 open2 です。
 open3 何もないです。暇なんですね...
+view 艦長、%s/%sの予定は
 alert1 艦長、もうすぐ
 alert2 の時間です。
 alertformat %s時%s分から%s

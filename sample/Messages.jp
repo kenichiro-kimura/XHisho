@@ -3,6 +3,7 @@ nomail 新しいメールはございません。
 open1 %s月%s日です。本日の予定は
 open2 となっております。
 open3 何もございません。
+view %s月%s日の予定は
 alert1 まもなく
 alert2 の時間でございます。
 alertformat %s時%s分より%s

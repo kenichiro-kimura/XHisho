@@ -3,6 +3,7 @@ nomail 新しいメールは来てないです。
 open1 %s月%s日です。今日は
 open2 です。がんばりましょう。
 open3 何もないみたいですね。
+view %s月%s日の予定は
 alert1 もうすぐ
 alert2 の時間ですよ。
 alertformat %s時%s分より%s

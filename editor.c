@@ -16,7 +16,7 @@ static int Edited_Month, Edited_Day;
 static XtIntervalId LeaveWindowID = 0;
 static XtIntervalId TimeoutID = 0;
 static const char ResName[][128] = {"open1", "open2", "open3", "alert1", "alert2"
-,"alertformat", "schedule", "messagearg"};
+,"alertformat", "schedule", "messagearg", "view"};
 
 /**
  * function definition
@@ -83,6 +83,15 @@ static XtResource resources[] = {
     XtOffsetOf(OpenMessageRes, alert_l),
     XtRImmediate,
     (XtPointer) ALERTL
+  },
+  {
+    XtNviewMessage,
+    XtCAlertMessage,
+    XtRString,
+    sizeof(String),
+    XtOffsetOf(OpenMessageRes, view_m),
+    XtRImmediate,
+    (XtPointer) VIEWM
   },
   {
     XtNmessageFormat,
@@ -319,6 +328,7 @@ Widget CreateEditorWindow(Widget w, int Mode, struct tm tm_now)
    *  Mode = 2 ... Schedule Alert (メッセージ通知用。必要なスケジュールのみ)
    *  Mode = 3 ... Schedule Editor (通常スケジュール)
    *  Mode = 4 ... Schedule Editor (曜日スケジュール:未実装)
+   *  Mode = 5 ... Viewer(1とほぼ同じ)
    **/
 
   Widget ok, label_f, label_e, cancel, dismiss;
@@ -452,6 +462,7 @@ Widget CreateEditorWindow(Widget w, int Mode, struct tm tm_now)
     schedules = CheckSchedule(&omr, schedule, 1, tm_now);
     break;
   case 1:
+  case 5:
     schedules = CheckSchedule(&omr, schedule, 1, tm_now);
     break;
   case 2:
@@ -509,6 +520,13 @@ Widget CreateEditorWindow(Widget w, int Mode, struct tm tm_now)
     strcat(string_f, "\n");
     sprintf(tmpstring, omr.edit_w, tm_now.tm_wday);
     break;
+  case 5:
+    if (*messages[8] != '\0') {
+      sprintf(tmpstring, messages[8], omr.month, omr.day);
+    } else {
+      sprintf(tmpstring, omr.view_m, omr.month, omr.day);
+    }
+    break;
   }
 
   strcat(string_f, tmpstring);
@@ -532,7 +550,7 @@ Widget CreateEditorWindow(Widget w, int Mode, struct tm tm_now)
    * asciiTextWidgetを作る。
    **/
 
-  i = (Mode == 0 || Mode == 1 || Mode == 2) ? schedules : MAX_SCHED_NUM;
+  i = (Mode == 0 || Mode == 1 || Mode == 2 || Mode == 5) ? schedules : MAX_SCHED_NUM;
 
 
   for (j = 0; j < i; j++) {
@@ -556,7 +574,7 @@ Widget CreateEditorWindow(Widget w, int Mode, struct tm tm_now)
     else
       mesarg = omr.message_arg;
 
-    if (Mode == 0 || Mode == 1 || Mode == 2) {
+    if (Mode == 0 || Mode == 1 || Mode == 2 || Mode == 5) {
       for (k = 0; k < strlen(mesarg) && k < 4; k++) {
 	switch (mesarg[k]) {
 	case 'h':
@@ -781,7 +799,7 @@ Widget CreateEditorWindow(Widget w, int Mode, struct tm tm_now)
    * Mode ==0,1,2ならスケジュールのラベル(最後の奴)を作る
    **/
 
-  if (Mode == 0 || Mode == 1 || Mode == 2) {
+  if (Mode == 0 || Mode == 1 || Mode == 2 || Mode == 5) {
     string_e[0] = '\0';
     if (schedules) {
       if (Mode == 2) {

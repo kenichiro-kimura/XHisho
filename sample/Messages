@@ -5,6 +5,7 @@ open2 .
 open3 no schedule.
 alert1 Master,now the time for
 alert2 .
+view Your schedule of %s/%s is
 alertformat %s,from %s:%s
 messagearg ehm
 schedule What is your schedule at %s/%s ?

@@ -3,6 +3,7 @@ nomail YOUR_NAMEちゃん、新しいメールはないみたいだよ。
 open1 YOUR_NAMEちゃん、今日(%s/%s)の予定は
 open2 だよ。忘れないでね。
 open3 何もないみたい。
+view YOUR_NAMEちゃん、%s/%sの予定は
 alert1 YOUR_NAMEちゃん、もうすぐ
 alert2 の時間だよ。
 alertformat %s時%s分から%s

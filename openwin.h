@@ -25,6 +25,7 @@
 #define XtNalertMessageF "alertMessageF"
 #define XtNalertMessageL "alertMessageL"
 #define XtCAlertMessage "AlertMessage"
+#define XtNviewMessage "viewMessage"
 #define XtNmessageFormat "messageFormat"
 #define XtNmessageArg "messageArg"
 #define XtCOpenMessage  "Openmessage"
@@ -73,10 +74,11 @@
 #define OPENF "Today is %s/%s. Your schedule is"
 #define OPENL "."
 #define OPENN "no schedule."
+#define VIEWM "Your schedule of %s/%s is"
 #define FORMAT "%s,from %s:%s"
 #define ALERTF "Master,now the time for"
 #define ALERTL "."
-#define EDIT_M "What's your schedule at %s/%s ?"
+#define EDIT_M "What's your schedule of %s/%s ?"
 #define SCHED_SEP ",from "
 #define ARG "ehm"
 
@@ -97,6 +99,7 @@ typedef struct {
   String alert_f;
   String alert_l;
   String message_f;
+  String view_m;
   String message_arg;
   String past_c;
   String alert_c;

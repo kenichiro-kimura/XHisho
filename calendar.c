@@ -94,7 +94,7 @@ static void EditorWindowPopup(Widget w, caddr_t client_data, caddr_t call_data)
     XtDestroyWidget(XtParent(editwin));
 
   if(cres.view)
-    editwin = CreateEditorWindow(XtParent(top), 1, *tm_now);
+    editwin = CreateEditorWindow(XtParent(top), 5, *tm_now);
   else
     editwin = CreateEditorWindow(XtParent(top), 3, *tm_now);
 
