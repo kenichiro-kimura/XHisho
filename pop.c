@@ -112,6 +112,7 @@ static int ReadUserFile(UserData * user)
     ret_value = ERR;
   }
 
+  fclose(fp);
   free(buffer);
   return ret_value;
 }
@@ -171,7 +172,7 @@ int pop3(AuthMethod method, char *server, char *From)
   if (NULL == (hent = gethostbyname(server))) {
     fprintf(stderr, "can't resolv pop3 server:%s\n", server);
     ret_value = 0;
-    goto POPQUIT;
+    goto POPQUITCLOSE;
   }
   memcpy(&sockadd.sin_addr, hent->h_addr, hent->h_length);
   sockadd.sin_port = htons(110);
@@ -180,7 +181,7 @@ int pop3(AuthMethod method, char *server, char *From)
     if (10 < loop) {
       fprintf(stderr, "can't connect pop3 server:%s\n", server);
       ret_value = 0;
-      goto POPQUIT;
+      goto POPQUITCLOSE;
     }
     sleep(1);
   }
@@ -204,9 +205,7 @@ int pop3(AuthMethod method, char *server, char *From)
   if (ret_value == ERR) {
     sprintf(From, "Fail POP authorization:\n %s@%s\n", user.name, user.server);
     ret_value = 1;
-    WritePOPCommand(sockdsc, "QUIT\n");
-    close(sockdsc);
-    goto POPQUIT;
+    goto POPQUITEND;
   }
   /**
    * スプールの状態の取得
@@ -221,9 +220,7 @@ int pop3(AuthMethod method, char *server, char *From)
   } else {
     fprintf(stderr, "Fail Read POP Message:STAT\n%s\n", comm_buffer);
     ret_value = 0;
-    WritePOPCommand(sockdsc, "QUIT\n");
-    close(sockdsc);
-    goto POPQUIT;
+    goto POPQUITEND;
   }
 
 #ifdef DEBUG
@@ -234,7 +231,9 @@ int pop3(AuthMethod method, char *server, char *From)
     From[0] = '\0';
     GetFromandSubject(sockdsc, From);
   }
+POPQUITEND:
   WritePOPCommand(sockdsc, "QUIT\n");
+POPQUITCLOSE:
   close(sockdsc);
 
   /**
