@@ -96,12 +96,13 @@ XHisho Animation File
 1.bmp
 MAIL
 2.bmp
+GOTO 3
 SCHEDULE
 3.bmp 10
 4.bmp 20
-GOTO 5
+GOTO 6
 
-  この時、例えば最後の行の「GOTO 5」を忘れるとスケジュール通知時に
+  この時、例えば最後の行の「GOTO 6」を忘れるとスケジュール通知時に
   3.bmp → 4.bmp と表示したあと、続けて1.bmpを表示してしまいますので気
   をつけてください。
 
