@@ -374,7 +374,7 @@ static void ClockDraw(XHishoWidget xhw)
   time_t now;
   struct tm *tmp;
   char year[5], month[3], day[3], hour[3], min[3], sec[3], clock[64];
-  int width, x, i, height, y;
+  int width, x, i;
   char *argarray[6];
 
   if (xhw->xhisho.c_draw) {
@@ -492,7 +492,7 @@ static void FocusInterval(XHishoWidget xhw)
 
 static void MoveFocusWindow(XHishoWidget xhw)
 {
-  int width, x, i, height, y;
+  int width, x, height, y;
   Window focus, root, child, work;
   Widget tmp, tmp2;
   int dummy;
@@ -567,21 +567,24 @@ void Animation(XHishoWidget xhw,int force)
   unsigned int change;
   
   change = 0;
-  if(xhw->xhisho.cg_sec == -1) return;
-  if(--xhw->xhisho.cg_sec <= 0){
-    /**
-     * 規定の時間が過ぎたらCG変更
-     **/
-    CG_NUM = CG_NUM + 1;
-    if(CG_NUM >= xhw->xhisho.i_info->num_of_images) CG_NUM = 0;
-    change = 1;
+
+  if(force != 1){
+    if(xhw->xhisho.cg_sec == -1) return;
+    if(--xhw->xhisho.cg_sec <= 0){
+      /**
+       * 規定の時間が過ぎたらCG変更
+       **/
+      CG_NUM = CG_NUM + 1;
+      if(CG_NUM >= xhw->xhisho.i_info->num_of_images) CG_NUM = 0;
+      change = 1;
+    }
   }
 
   /**
    * ラベルの処理。ラベルは単純に読み飛ばす
    **/
 
-  if(!strcmp(((xhw->xhisho.i_info->image) + CG_NUM)->filename,"SCHEDULE")||
+    if(!strcmp(((xhw->xhisho.i_info->image) + CG_NUM)->filename,"SCHEDULE")||
      !strcmp(((xhw->xhisho.i_info->image) + CG_NUM)->filename,"MAIL")){
     CG_NUM = CG_NUM + 1;
     if(CG_NUM >= xhw->xhisho.i_info->num_of_images) CG_NUM = 0;
@@ -656,14 +659,15 @@ static void ChangeAnimType(XHishoWidget xhw)
    * cg_sec = 2 にするのは、「規定時間を過ぎた」チェックに引っ掛かって 
    * CG_NUM++されないようにするため
    **/
-
-  xhw->xhisho.cg_sec = 2;
-
+  /*
+    xhw->xhisho.cg_sec = 2;
+  */
   /**
    * DrawNewCG()ではなく、Animation(xhw,1) (つまり、強制書き換え)を呼ぶ
    * のはラベルの処理のため。
    **/
 
+  printf("%d\n",xhw->xhisho.anim_type);
   Animation(xhw,1);
 }
 

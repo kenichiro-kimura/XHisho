@@ -1170,7 +1170,7 @@ void CheckTimeForSchedule(XtPointer cl, XtIntervalId * id)
 {
   time_t now;
   struct tm *tmp;
-  int i, check = 1, pid, status;
+  int i, check = 1;
 
   if (LeaveWindowID) {
     XtRemoveTimeOut(LeaveWindowID);

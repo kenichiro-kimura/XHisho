@@ -414,7 +414,7 @@ static char *MD5Digest(unsigned char *s)
 static void GetFromandSubject(int sock, char *buffer)
 {
   unsigned char *buf, *tmp, *tmp2, *tmp3;
-  int i = 0, j;
+  int i = 0;
   int length;
 
 #ifdef PETNAME

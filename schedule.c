@@ -367,7 +367,6 @@ static int SafeTimeFormat(Schedule schedule)
 
 int ExistSchedule(int Month, int Day)
 {
-  FILE *inputfile;
   int i;
   time_t tval = 0;
   struct tm *tm_now;

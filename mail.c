@@ -22,7 +22,6 @@ static const char ResName[][256] = {"newmail", "nomail"};
 static XtInputId YoubinId;
 static int virgine = 1;
 static int isMailChecked;
-static char YoubinFile[256];
 static int MailCount = 0;
 
 /**
@@ -419,13 +418,10 @@ int CheckYoubinNow(int mode){
    *      = 1: popup with sound(for youbin check)
    *      = 2: popup with no sound(for right click checker)
    */
-  static int OldSize = 0;
   int num_of_mail = 0;
-  int i;
   FILE *fp;
   char* tmp;
   char* message;
-  struct stat MailStat;
 
   tmp = (char*)malloc(BUFSIZ);
   message = (char*)malloc(BUFSIZ);
@@ -657,7 +653,7 @@ static void GetFromandSubject(char *m_file, char *From)
 {
   FILE *fp;
   unsigned char *tmp1, *tmp2, *buf, *head1, *head2;
-  int i = 0, length, j;
+  int i = 0, length;
   int isheader = 0;
   int filehead = 1;
 
@@ -778,9 +774,8 @@ static void YoubinInit()
 {
   char *command;
   struct stat Ystat;
-  static FILE *pfp;
-  static FILE *pfp2;
-  int pid,status;
+  static FILE* pfp;
+  int youbin_pfp[2];
 
   command = (char*)malloc(256);
 
@@ -792,21 +787,38 @@ static void YoubinInit()
   sprintf(YoubinFile, "/tmp/xhtmp%s-%d/xhyoubin", getenv("USER"),getpid());
 
   if (virgine) {
-    sprintf(command, "exec %s -m %s -s %s", mar.y_command
-	    , YoubinFile,mar.y_server);
-
-    if ((pfp2 = popen(command, "r")) == NULL) {
-      fprintf(stderr, "can't exec youbin\n");
-      perror("popen");
+    if((youbin_pid[0] = fork()) < 0){
+      fprintf(stderr,"can't fork\n");
+      exit(1);
+    }
+    if(youbin_pid[0] != 0){
+      execl(mar.y_command, "youbin", "-m", YoubinFile, "-s", mar.y_server, (char *) NULL);
+      perror("youbin_init:execlp");
       exit(1);
     }
 
-    sprintf(command, "exec %s -b -s %s", mar.y_command, mar.y_server);
-    if ((pfp = popen(command, "r")) == NULL) {
-      fprintf(stderr, "can't exec youbin\n");
-      perror("popen");
+    if(pipe(youbin_pfp)){
+      fprintf(stderr, "can't open youbin pipe\n");
       exit(1);
     }
+    if((youbin_pid[1] = fork()) < 0){
+      fprintf(stderr,"can't fork\n");
+      exit(1);
+    }
+    if(youbin_pid[1] != 0){
+      close(1);
+      dup(youbin_pfp[1]);
+      close(youbin_pfp[1]);
+      execl(mar.y_command, "youbin", "-b", "-s", mar.y_server, (char *) NULL);
+      perror("youbin_init:execlp");
+      exit(1);
+    }
+    close(youbin_pfp[1]);
+    if((pfp = fdopen(youbin_pfp[0], "r")) == NULL) {
+      perror("youbin_init:fdopen");
+      exit(1);
+    }
+    
     virgine = 0;
   }
   YoubinId = XtAppAddInput(XtWidgetToApplicationContext(top[0]),
@@ -820,7 +832,7 @@ static void CheckYoubin(Widget w, int *fid, XtInputId * id)
   int len;
   char *buf, *tmp1 ,*tmp, *message;
   char *cp, *q, *From, *tmp2,*ch_ptr;
-  int mail_size, length;
+  int mail_size;
   static int old_mail_size = 0;
   long date;
   int i = 0, j;
@@ -988,13 +1000,12 @@ End:
 
 static int Youbin_exit(Display * disp)
 {
-  int i;
   /**
    * kill all the children
    **/
   kill(0, SIGTERM);
   unlink(YoubinFile);
-  return rmdir(Tmp_dir);
+  return 0;
 }
 
 void MailPopup(int mode,int sound){

@@ -13,6 +13,8 @@
 #include <sys/types.h>
 #include <sys/time.h>
 #include <unistd.h>
+#include <sys/wait.h>
+#include <signal.h>
 
 #include <X11/Xaw/Label.h>
 
@@ -131,6 +133,7 @@ static void Wait(Widget w, XEvent * e, String * s, unsigned int *i)
 void Quit(Widget w, XEvent * event, String * params, unsigned int *num_params)
 {
   Widget top;
+  int i = 1;
 
   top = w;
   while (XtParent(top) != NULL)
@@ -138,6 +141,15 @@ void Quit(Widget w, XEvent * event, String * params, unsigned int *num_params)
 
   WritePrefFile();
   XCloseDisplay(XtDisplay(top));
+  if(Biff == YOUBIN)
+    unlink(YoubinFile);
+
+  while((i = rmdir(Tmp_dir)) < 0);
+
+  if(Biff == YOUBIN){
+    kill(youbin_pid[0], SIGTERM);
+    kill(youbin_pid[1], SIGTERM);
+  }
   exit(0);
 }
 
@@ -515,3 +527,4 @@ static void PrintUsage(int argc, char **argv)
 static int RmTmpDir(Display *d){
   return rmdir(Tmp_dir);
 }
+

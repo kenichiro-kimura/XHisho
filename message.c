@@ -40,7 +40,6 @@ int ReadRcfile(char *filename)
 
   FILE *infile;
   char *tmp, *tmp2, *tmp3;
-  char *index;
   int i;
 #ifdef EXT_FILTER
   char pcommand[128];
