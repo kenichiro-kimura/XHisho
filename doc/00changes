@@ -1,17 +1,17 @@
 				<Change Log>
 
-1.60 [lime Release 6]
+1.60 [Lime Release 6]
 
 ・POP3使用時にFrom:とSubject:がうまく取得できないバグの修正。同様に、
   Petnameもうまく表示できなかったのを修正。
+・Window Popupの管理方法を変更
 
 
 
 
 
 
-
-1.50[lime Release 5]
+1.50[Lime Release 5]
 
 ・Translationに"OpeningWindowPopup"を追加
 ・CG全体が画面に収まらない位置にウインドが来た場合、CGが画面に収まるよ
