@@ -200,6 +200,7 @@ static void Destroy(Widget w, XEvent * event, String * params, unsigned int *num
     XtRemoveTimeOut(OptionTimeoutId);
     OptionTimeoutId = 0;
   }
+
   XtPopdown(top);
   XtPopdown(utop);
 
@@ -829,6 +830,7 @@ static void InsertMessage(XtPointer cl,XtIntervalId* id)
 	  is_end = 1;
 	  pos[0] = pos[1] = 0;
 	  dest_win = SAKURA;
+	  pause_message = 0;
 	  if(opr.timeout > 0){
 	    OptionTimeoutId = XtAppAddTimeOut(XtWidgetToApplicationContext(local_option)
 					      , opr.timeout * 1000
