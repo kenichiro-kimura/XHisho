@@ -692,7 +692,6 @@ MHCD* openmhc(const char* home_dir, const char* year_month){
   MHCD* mhc_ptr = NULL;
   _MHCD* tmp_ptr;
 
-  /*  GC_find_leak = 1;*/
   filename = NULL;
   i = (home_dir[strlen(home_dir) - 1] == '/')? 1:2;
   i = (year_month[strlen(year_month) - 1] == '/')? i:i+1;
@@ -746,6 +745,10 @@ MHCD* openmhc(const char* home_dir, const char* year_month){
   }
   closedir(dirp);
 
+  tmp_ptr->next = _MHCDNew(NULL);
+  tmp_ptr->next->prev = tmp_ptr;
+  tmp_ptr = tmp_ptr->next;
+
   free(dirname);
   free(filename);
   return mhc_ptr;
@@ -758,8 +761,8 @@ mhcent* readmhc(MHCD* mhc_ptr){
 
   if(*mhc_ptr){
     ent_ptr = (*mhc_ptr)->item;
-    *mhc_ptr = (*mhc_ptr)->next;
-
+    if((*mhc_ptr)->next != NULL)
+      *mhc_ptr = (*mhc_ptr)->next;
     return ent_ptr;
   } else {
     return NULL;
@@ -780,7 +783,7 @@ void rewindmhc(MHCD* mhc_ptr){
   if(!mhc_ptr) return;
   if(!*mhc_ptr) return;
 
-  while((*mhc_ptr)->prev)
+  while((*mhc_ptr)->prev != NULL)
     *mhc_ptr = (*mhc_ptr)->prev;
 }
 
@@ -869,12 +872,9 @@ MHC* OpenMHC(const char* home_dir, int year,int month){
 	if(isschedule(ent_ptr,year,month,day))
 	  AddEntry(mhc_ptr,ent_ptr,day);
       }
-      EntryDelete(ent_ptr);
     }
-    closemhc(mhcd_ptr);
   }
 
-  /*  CHECK_LEAKS();*/
   free(year_month);
 
   return mhc_ptr;
