@@ -11,6 +11,7 @@
 #include <X11/Xlocale.h>
 #include <X11/Xmu/Editres.h>
 #include <ctype.h>
+#include <time.h>
 #include "config.h"
 #include "Msgwin.h"
 #include "XHisho.h"
