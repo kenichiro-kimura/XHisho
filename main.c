@@ -225,7 +225,7 @@ static void MenuWindowPopup(Widget w,XEvent *event,String *params,unsigned int *
   }
 
   /* Menu Window¤ÎPopup */
-  XtVaSetValues(menu,XtNwindowMode,0);
+  XtVaSetValues(menu,XtNwindowMode,0,NULL);
   XtPopup(XtParent(menu),XtGrabNone);
   MenuWindowShown = 1;
 }
