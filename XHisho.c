@@ -30,7 +30,8 @@
 #define BCG     (xhw->xhisho.cg_file)
 #define WIDTH  (xhw->xhisho.i_info->width)
 #define HEIGHT  (xhw->xhisho.i_info->height)
-#define PIXMAP  (xhw->xhisho.i_info->pixmap)
+#define PIXMAP(n)  (((xhw->xhisho.i_info->image) + n)->pixmap)
+#define CG_NUM (xhw->xhisho.cg_number)
 #define FRAME_WIDTH 1
 
 static void Initialize(Widget, Widget, ArgList, Cardinal *);
@@ -43,6 +44,8 @@ static void ClassInit();
 static Boolean SetValues(Widget, Widget, Widget, ArgList, Cardinal *);
 static void NewInterval(XHishoWidget);
 static void FocusInterval(XHishoWidget);
+static void SetSize(XHishoWidget);
+static void Animation(XHishoWidget);
 
 static XtResource resources[] = {
   {
@@ -245,6 +248,7 @@ static void Initialize(Widget request, Widget new, ArgList args, Cardinal * num_
   XH_GC = XCreateGC(XtDisplay(xhw), RootWindowOfScreen(XtScreen(xhw)), (unsigned long) NULL, NULL);
 
   xhw->xhisho.intervalId = 0;
+  CG_NUM = 0;
 }
 
 static void Realize(Widget w, XtValueMask * valueMask, XSetWindowAttributes * attrs)
@@ -282,6 +286,14 @@ static void Realize(Widget w, XtValueMask * valueMask, XSetWindowAttributes * at
     exit(1);
   }
 
+  if (xhw->xhisho.i_info->is_shape){
+    XShapeCombineMask(DISPLAY, XtWindow(XtParent(xhw)), ShapeBounding, 0, 0
+		      ,((xhw->xhisho.i_info->image) + CG_NUM)->mask, ShapeSet);
+  }
+
+  if(xhw->xhisho.i_info->num_of_images > 1)
+    xhw->xhisho.cg_sec = ((xhw->xhisho.i_info->image) + CG_NUM)->secs;
+  SetSize(xhw);
   XtResizeWidget(XtParent(xhw), WIDTH, HEIGHT + clock_height, FRAME_WIDTH);
   XtResizeWidget((Widget) xhw, WIDTH, HEIGHT + clock_height
 		 ,FRAME_WIDTH);
@@ -292,9 +304,9 @@ static void Redraw(Widget w, XEvent * event, Region region)
 {
   XHishoWidget xhw = (XHishoWidget) w;
 
-  XCopyArea(DISPLAY, PIXMAP, WINDOW, XH_GC, 0, 0, WIDTH, HEIGHT, 0, 0);
+  XCopyArea(DISPLAY, PIXMAP(CG_NUM), WINDOW, XH_GC, 0, 0, WIDTH, HEIGHT, 0, 0);
 
-  if (xhw->xhisho.focuswin) {
+  if (xhw->xhisho.focuswin || xhw->xhisho.i_info->num_of_images > 1) {
     MoveFocusWindow(xhw);
   }
 
@@ -426,48 +438,101 @@ static void MoveFocusWindow(XHishoWidget xhw)
   Widget tmp, tmp2;
   int dummy;
 
-  XGetInputFocus(DISPLAY, &focus, &dummy);
+  if(xhw->xhisho.focuswin){
 
-  work = focus;
-  tmp = XtWindowToWidget(DISPLAY, focus);
-  
-  while (tmp != NULL) {
-    if (XtWindow(tmp) == XtWindow(XtParent(xhw)))
-      focus = None;
-    tmp2 = XtParent(tmp);
-    tmp = tmp2;
-  }
-  
-  if (focus == None || focus == PointerRoot || focus == XtWindow(XtParent(xhw)))
-    focus = xhw->xhisho.focus;
-  
-  if (focus != None) {
-    XGetGeometry(DISPLAY, focus, &root, &x, &y, &width, &height
-		 ,&dummy, &dummy);
-    XTranslateCoordinates(DISPLAY, focus, root, 0, 0, &x, &y, &child);
+    XGetInputFocus(DISPLAY, &focus, &dummy);
+    work = focus;
+    tmp = XtWindowToWidget(DISPLAY, focus);
     
-    switch (xhw->xhisho.just) {
-    case XtJustifyLeft:
-      break;
-    case XtJustifyCenter:
-      x += (width / 2 - xhw->core.width / 2);
-      break;
-    case XtJustifyRight:
-      x += (width - xhw->core.width);
-      break;
+    while (tmp != NULL) {
+      if (XtWindow(tmp) == XtWindow(XtParent(xhw)))
+	focus = None;
+      tmp2 = XtParent(tmp);
+      tmp = tmp2;
     }
-    y -= xhw->core.height;
-    y += xhw->xhisho.yoff;
     
-    if (xhw->xhisho.old_x != x || xhw->xhisho.old_y != y) {
-      XtMoveWidget(XtParent(xhw), x, y);
-      xhw->core.x = x;
-      xhw->core.y = y;
+    if (focus == None || focus == PointerRoot || focus == XtWindow(XtParent(xhw)))
+      focus = xhw->xhisho.focus;
+    
+    if (focus != None) {
+      XGetGeometry(DISPLAY, focus, &root, &x, &y, &width, &height
+		   ,&dummy, &dummy);
+      XTranslateCoordinates(DISPLAY, focus, root, 0, 0, &x, &y, &child);
+      
+      switch (xhw->xhisho.just) {
+      case XtJustifyLeft:
+	break;
+      case XtJustifyCenter:
+	x += (width / 2 - xhw->core.width / 2);
+	break;
+      case XtJustifyRight:
+	x += (width - xhw->core.width);
+	break;
+      }
+      y -= xhw->core.height;
+      y += xhw->xhisho.yoff;
+      
+      if (xhw->xhisho.old_x != x || xhw->xhisho.old_y != y) {
+	XtMoveWidget(XtParent(xhw), x, y);
+	xhw->core.x = x;
+	xhw->core.y = y;
+      }
+      xhw->xhisho.old_x = x;
+      xhw->xhisho.old_y = y;
     }
-    xhw->xhisho.old_x = x;
-    xhw->xhisho.old_y = y;
+    xhw->xhisho.focus = focus;
   }
-  xhw->xhisho.focus = focus;
+
+  if(xhw->xhisho.i_info->num_of_images > 1){
+    Animation(xhw);
+  }
 
   FocusInterval(xhw);
+}
+  
+void SetSize(XHishoWidget xhw)
+{
+  if(xhw->xhisho.i_info->num_of_images > 1){
+    WIDTH = (((xhw->xhisho.i_info->image) + CG_NUM)->width);
+    HEIGHT = (((xhw->xhisho.i_info->image) + CG_NUM)->height);
+  }
+}
+
+void Animation(XHishoWidget xhw)
+{
+  unsigned int old;
+  int clock_height;
+
+  old = CG_NUM;
+
+  if(--xhw->xhisho.cg_sec <= 0){
+    CG_NUM = CG_NUM + 1;
+    if(CG_NUM >= xhw->xhisho.i_info->num_of_images) CG_NUM = 0;
+  }
+
+  while(!strcmp(((xhw->xhisho.i_info->image) + CG_NUM)->filename,"GOTO")){
+    CG_NUM = ((xhw->xhisho.i_info->image) + CG_NUM)->secs;
+    if(CG_NUM >= xhw->xhisho.i_info->num_of_images - 1) CG_NUM = 0;
+  }
+
+  if(old != CG_NUM){
+    if (!xhw->xhisho.c_draw) {
+      xhw->label.label_height = 0;
+      clock_height = 0;
+    } else {
+      clock_height = xhw->label.label_height + 4;
+    }
+
+    xhw->xhisho.cg_sec = ((xhw->xhisho.i_info->image) + CG_NUM)->secs;
+    SetSize(xhw);
+    XtResizeWidget(XtParent(xhw), WIDTH, HEIGHT + clock_height, FRAME_WIDTH);
+    XtResizeWidget((Widget) xhw, WIDTH, HEIGHT + clock_height
+		 ,FRAME_WIDTH);
+    XCopyArea(DISPLAY, PIXMAP(CG_NUM), WINDOW, XH_GC, 0, 0, WIDTH, HEIGHT, 0, 0);
+    if (xhw->xhisho.i_info->is_shape){
+      XShapeCombineMask(DISPLAY, XtWindow(XtParent(xhw)), ShapeBounding, 0, 0
+			,((xhw->xhisho.i_info->image) + CG_NUM)->mask, ShapeSet);
+    }
+    XFlush(DISPLAY);
+  }
 }

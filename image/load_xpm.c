@@ -1,10 +1,10 @@
 #define _XPM_GLOBAL
+#include "image.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <X11/xpm.h>
 
-#include "image.h"
 
 int LoadXpm(ImageInfo * i_info)
 {

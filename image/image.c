@@ -37,6 +37,9 @@ static struct {
     LoadXpm
   },
 #endif
+  {
+    LoadAnim
+  },
 };
 
 static inline int highbit(unsigned long mask)
@@ -253,7 +256,6 @@ int LoadImage(ImageInfo* i_info)
   Visual *vis;
   XWindowAttributes attr;
   XImage *mask_image;
-  Pixmap mask;
   GC  mask_gc;
   struct palette *pal;
   int i,j, depth, matched;
@@ -271,182 +273,219 @@ int LoadImage(ImageInfo* i_info)
   vinfo.screen = DefaultScreen(d);
   i = j = height = trans_pix = 0;
   i_info->ImagePalette = (struct palette *) malloc(sizeof(struct palette));
+  i_info->image = (AnimImage *) malloc(sizeof(AnimImage));
+  if(!i_info->image) return -1;
+    
   pal = (struct palette *) malloc(sizeof(struct palette));
+  i_info->num_of_images = 1;
+  i_info->loaded_images = 0;
+  i_info->anim = 0;
 
   /**
    * ローダを呼び出す
    **/
+  while(i_info->num_of_images > i_info->loaded_images){
+    if(i_info->anim == 2){
+      strcpy(i_info->filename,(i_info->image + i_info->loaded_images)->filename);
+    }
 
-  if (ExecLoader(i_info) == -1)
-    return -1;
+    if(!strcmp(i_info->filename,"GOTO")){
+      i_info->loaded_images++;
+      continue;
+    }
 
-  width = i_info->width;
-  height = i_info->height;
-  colorsuu = i_info->colorsuu;
+    if (ExecLoader(i_info) == -1){
+      printf("no supported format\n");
+      return -1;
+    }
+    width = i_info->width;
+    height = i_info->height;
+    colorsuu = i_info->colorsuu;
+    
+    if(i_info->anim == 2){
+      (i_info->image + i_info->loaded_images)->width = width;
+      (i_info->image + i_info->loaded_images)->height = height;
+    }
 
-  /**
-   * VisualInfoを取得し、最適なものを選択する。
-   **/
+    if(i_info->anim == 1){
+      realloc(i_info->filename
+	      ,strlen((i_info->image + i_info->loaded_images)->filename));
+      strcpy(i_info->filename,(i_info->image + i_info->loaded_images)->filename);
+      i_info->anim = 2;
+      continue;
+    }
 
-  XGetWindowAttributes(d, w, &attr);
-  vinfo.visualid = XVisualIDFromVisual(attr.visual);
-  vinfolist = XGetVisualInfo(d, VisualIDMask, &vinfo, &matched);
-  if (!matched) {
-    fprintf(stderr, "can't get visual info.");
-    return -1;
-  }
-  vinfo = vinfolist[0];
-  XFree(vinfolist);
-
-  cells = vinfo.colormap_size;	/** size of colormap **/
-
-  i_info->pixmap = XCreatePixmap(d, w, width, height, depth);
-  image = XGetImage(d, i_info->pixmap, 0, 0, width, height, AllPlanes, ZPixmap);
-
-  if (i_info->is_shape) {
-    mask = XCreatePixmap(d, w, width, height + i_info->ext_height, 1);
-    mask_image = XGetImage(d, mask, 0, 0, width, height + i_info->ext_height, 1, ZPixmap);
-  }
-  switch (i_info->BitCount) {
-  case 1:
-  case 4:
-  case 8:
-    if (vinfo.class == TrueColor) {
-      int i;
-
-      for (i = 0; i < colorsuu; i++)
-	pixel_value[i] = GetPixelFromRGB(i_info->ImagePalette + i, vinfo);
-
-      for (; i < 256; i++)
-	pixel_value[i] = 0L;
-
-      /**
-       * i_info->trans_pixがセットされていればそちらを透明色として使う。
-       * セットされていなければ、左上隅の色を透明色として使う。
-       *
-       * i_info->trans_pixはXPMの"None"で指定される。もしGIFローダを実
-       * 装したら、GIFの透明色(のパレット番号)をセットする。
-       **/
-
-      if (i_info->trans_pix != -1) {
-	trans_pix = pixel_value[i_info->trans_pix];
-      } else {
-	trans_pix = pixel_value[i_info->ImageData[0]];
-      }
-
-      for (i = 0; i < height; i++) {
-	for (j = 0; j < width; j++) {
-	  XPutPixel(image, j, i, pixel_value[i_info->ImageData[i * width + j]]);
-	  if (i_info->is_shape) {
-	    if (pixel_value[i_info->ImageData[i * width + j]] == trans_pix)
-	      XPutPixel(mask_image, j, i, 0);
-	    else
-	      XPutPixel(mask_image, j, i, 1);
-	  }
+    /**
+     * VisualInfoを取得し、最適なものを選択する。
+     **/
+    
+    XGetWindowAttributes(d, w, &attr);
+    vinfo.visualid = XVisualIDFromVisual(attr.visual);
+    vinfolist = XGetVisualInfo(d, VisualIDMask, &vinfo, &matched);
+    if (!matched) {
+      fprintf(stderr, "can't get visual info.");
+      return -1;
+    }
+    vinfo = vinfolist[0];
+    XFree(vinfolist);
+    
+    cells = vinfo.colormap_size;	/** size of colormap **/
+    
+    (i_info->image + i_info->loaded_images)->pixmap 
+      = XCreatePixmap(d, w, width, height, depth);
+    image = XGetImage(d, (i_info->image + i_info->loaded_images)->pixmap, 0, 0, width, height, AllPlanes, ZPixmap);
+    
+    if (i_info->is_shape) {
+      (i_info->image + i_info->loaded_images)->mask
+	= XCreatePixmap(d, w, width, height + i_info->ext_height, 1);
+      mask_image = XGetImage(d, (i_info->image + i_info->loaded_images)->mask
+			     , 0, 0, width, height + i_info->ext_height, 1, ZPixmap);
+    }
+    switch (i_info->BitCount) {
+    case 1:
+    case 4:
+    case 8:
+      if (vinfo.class == TrueColor) {
+	int i;
+	
+	for (i = 0; i < colorsuu; i++)
+	  pixel_value[i] = GetPixelFromRGB(i_info->ImagePalette + i, vinfo);
+	
+	for (; i < 256; i++)
+	  pixel_value[i] = 0L;
+	
+	/**
+	 * i_info->trans_pixがセットされていればそちらを透明色として使う。
+	 * セットされていなければ、左上隅の色を透明色として使う。
+	 *
+	 * i_info->trans_pixはXPMの"None"で指定される。もしGIFローダを実
+	 * 装したら、GIFの透明色(のパレット番号)をセットする。
+	 **/
+	
+	if (i_info->trans_pix != -1) {
+	  trans_pix = pixel_value[i_info->trans_pix];
+	} else {
+	  trans_pix = pixel_value[i_info->ImageData[0]];
 	}
-      }
-
-      if (i_info->is_shape) {
-	for (i = height; i < height + i_info->ext_height; i++)
-	  for (j = 0; j < width; j++)
-	    XPutPixel(mask_image, j, i, 1);
-      }
-    } else {
-      /**
-       * for 8-bit pseudo colors
-       **/
-
-      cm = DefaultColormap(d, 0);
-
-      GetPseudoPixelFromRGB(d, cm, i_info->ImagePalette, pixel_value, colorsuu, cells);
-
-      /**
-       * change pixels to matched color index
-       **/
-
-      if (i_info->trans_pix != -1) {
-	trans_pix = pixel_value[i];
-      } else {
-	trans_pix = pixel_value[i_info->ImageData[0]];
-      }
-
-      for (i = 0; i < height; i++)
-	for (j = 0; j < width; j++) {
-	  XPutPixel(image, j, i, pixel_value[i_info->ImageData[i * width + j]]);
-
-	  if (i_info->is_shape) {
-	    if (pixel_value[i_info->ImageData[i * width + j]] == trans_pix) {
-	      XPutPixel(mask_image, j, i, 0);
-	    } else {
-	      XPutPixel(mask_image, j, i, 1);
+	
+	for (i = 0; i < height; i++) {
+	  for (j = 0; j < width; j++) {
+	    XPutPixel(image, j, i, pixel_value[i_info->ImageData[i * width + j]]);
+	    if (i_info->is_shape) {
+	      if (pixel_value[i_info->ImageData[i * width + j]] == trans_pix)
+		XPutPixel(mask_image, j, i, 0);
+	      else
+		XPutPixel(mask_image, j, i, 1);
 	    }
 	  }
 	}
-
+	
+	if (i_info->is_shape) {
+	  for (i = height; i < height + i_info->ext_height; i++)
+	    for (j = 0; j < width; j++)
+	      XPutPixel(mask_image, j, i, 1);
+	}
+      } else {
+	/**
+	 * for 8-bit pseudo colors
+	 **/
+	
+	cm = DefaultColormap(d, 0);
+	
+	GetPseudoPixelFromRGB(d, cm, i_info->ImagePalette, pixel_value, colorsuu, cells);
+	
+	/**
+	 * change pixels to matched color index
+	 **/
+	
+	if (i_info->trans_pix != -1) {
+	  trans_pix = pixel_value[i];
+	} else {
+	  trans_pix = pixel_value[i_info->ImageData[0]];
+	}
+	
+	for (i = 0; i < height; i++)
+	  for (j = 0; j < width; j++) {
+	    XPutPixel(image, j, i, pixel_value[i_info->ImageData[i * width + j]]);
+	    
+	    if (i_info->is_shape) {
+	      if (pixel_value[i_info->ImageData[i * width + j]] == trans_pix) {
+		XPutPixel(mask_image, j, i, 0);
+	      } else {
+		XPutPixel(mask_image, j, i, 1);
+	      }
+	    }
+	  }
+	
+	if (i_info->is_shape) {
+	  for (i = height; i < height + i_info->ext_height; i++)
+	    for (j = 0; j < width; j++)
+	      XPutPixel(mask_image, j, i, 1);
+	}
+      }
+      break;
+    case 24:
+      if (vinfo.class != TrueColor) {
+	fprintf(stderr, "no supported mode...\n");
+	return -1;
+      }
+      for (i = 0; i < height; i++) {
+	char *ptr;
+	
+	ptr = (char *) i_info->ImageData + (height - i - 1) * width * 3;
+	
+	for (j = 0; j < width; j++) {
+	  pal->r = (unsigned char) ptr[0];
+	  pal->g = (unsigned char) ptr[1];
+	  pal->b = (unsigned char) ptr[2];
+	  
+	  ptr += 3;
+	  pixel_value[0] = GetPixelFromRGB(pal, vinfo);
+	  
+	  if (i == 0 && j == 0)
+	    trans_pix = pixel_value[0];
+	  
+	  if (i_info->is_shape) {
+	    if (pixel_value[0] == trans_pix)
+	      XPutPixel(mask_image, j, height - i - 1, 0);
+	    else
+	      XPutPixel(mask_image, j, height - i - 1, 1);
+	  }
+	  XPutPixel(image, j, height - i - 1, pixel_value[0]);
+	}
+      }
       if (i_info->is_shape) {
 	for (i = height; i < height + i_info->ext_height; i++)
 	  for (j = 0; j < width; j++)
 	    XPutPixel(mask_image, j, i, 1);
       }
-    }
-    break;
-  case 24:
-    if (vinfo.class != TrueColor) {
-      fprintf(stderr, "no supported mode...\n");
+      break;
+    default:
+      fprintf(stderr, "not supported format\n");
       return -1;
     }
-    for (i = 0; i < height; i++) {
-      char *ptr;
-
-      ptr = (char *) i_info->ImageData + (height - i - 1) * width * 3;
-
-      for (j = 0; j < width; j++) {
-	pal->r = (unsigned char) ptr[0];
-	pal->g = (unsigned char) ptr[1];
-	pal->b = (unsigned char) ptr[2];
-
-	ptr += 3;
-	pixel_value[0] = GetPixelFromRGB(pal, vinfo);
-
-	if (i == 0 && j == 0)
-	  trans_pix = pixel_value[0];
-
-	if (i_info->is_shape) {
-	  if (pixel_value[0] == trans_pix)
-	    XPutPixel(mask_image, j, height - i - 1, 0);
-	  else
-	    XPutPixel(mask_image, j, height - i - 1, 1);
-	}
-	XPutPixel(image, j, height - i - 1, pixel_value[0]);
-      }
-    }
+    
+    XFreeGC(d, i_info->gc);
+    i_info->gc = XCreateGC(d, (i_info->image + i_info->loaded_images)->pixmap, 0, NULL);
+    
+    XPutImage(d, (i_info->image + i_info->loaded_images)->pixmap
+	      , i_info->gc, image, 0, 0, 0, 0, width, height);
+    
     if (i_info->is_shape) {
-      for (i = height; i < height + i_info->ext_height; i++)
-	for (j = 0; j < width; j++)
-	  XPutPixel(mask_image, j, i, 1);
+      mask_gc = XCreateGC(d, (i_info->image + i_info->loaded_images)->mask, 0, NULL);
+      XPutImage(d, (i_info->image + i_info->loaded_images)->mask, mask_gc
+		, mask_image, 0, 0, 0, 0, width, height + i_info->ext_height);
+      XFreeGC(d, mask_gc);
     }
-    break;
-  default:
-    fprintf(stderr, "not supported format\n");
-    return -1;
+    free(i_info->ImageData);
+    free(i_info->ImagePalette);
+    free(pal);
+    i_info->ImageData = NULL;
+    i_info->ImagePalette = NULL;
+    pal = NULL;
+    i_info->loaded_images++;
   }
-
-  XFreeGC(d, i_info->gc);
-  i_info->gc = XCreateGC(d, i_info->pixmap, 0, NULL);
-
-  XPutImage(d, i_info->pixmap, i_info->gc, image, 0, 0, 0, 0, width, height);
-
-  if (i_info->is_shape) {
-    mask_gc = XCreateGC(d, mask, 0, NULL);
-    XPutImage(d, mask, mask_gc, mask_image, 0, 0, 0, 0, width, height + i_info->ext_height);
-    XShapeCombineMask(d, w, ShapeBounding, 0, 0, mask, ShapeSet);
-    XFreePixmap(d, mask);
-    XFreeGC(d, mask_gc);
-  }
-  free(i_info->ImageData);
-
-  free(i_info->ImagePalette);
-  free(pal);
-
+    
   return 0;
 }
+  

@@ -31,6 +31,12 @@
 #define PNG_GLOBAL extern
 #endif
 
+#ifdef _ANIM_GLOBAL
+#define ANIM_GLOBAL
+#else
+#define ANIM_GLOBAL extern
+#endif
+
 #include <X11/Xlib.h>
 #include "../config.h"
 
@@ -56,6 +62,16 @@ struct palette {
   unsigned char r, g, b, pad;
 };
 
+typedef struct _AnimImage {
+  /**
+   * アニメーション用 Image データ。 Pixmap + 表示時間
+   **/
+  char *filename;
+  Pixmap pixmap,mask;
+  unsigned int secs;
+  unsigned int width, height;  
+} AnimImage;
+
 typedef struct _ImageInfo {
   /**
    * 画像データ受け渡し用
@@ -64,10 +80,13 @@ typedef struct _ImageInfo {
   Display *d;
   Window w;
   GC  gc;
-  Pixmap pixmap;
+  AnimImage* image;
   unsigned char *ImageData;
   struct palette *ImagePalette;
   int colorsuu;
+  int num_of_images;
+  int loaded_images;
+  int anim;
   unsigned int width, height;
   short BitCount;
   int trans_pix;
@@ -97,5 +116,7 @@ XPM_GLOBAL int LoadXpm(ImageInfo *);
 #ifdef HAVE_LIBPNG
 PNG_GLOBAL int LoadPng(ImageInfo *);
 #endif
+
+ANIM_GLOBAL int LoadAnim(ImageInfo *);
 
 #endif
