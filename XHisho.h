@@ -21,6 +21,8 @@ typedef struct _XHishoRec *XHishoWidget;
 #define XtCCgFile "CgFile"
 #define XtNmessageFile "messageFile"
 #define XtCMessageFile "MessageFile"
+#define XtNextFilter "extFilter"
+#define XtCExtFilter "ExtFilter"
 #define XtNclockText "clockText"
 #define XtCClockText "ClockText"
 #define XtNclockFormat "clockFormat"
@@ -37,10 +39,14 @@ typedef struct _XHishoRec *XHishoWidget;
 #define XtCFocusYoff "FocusYoff"
 #define XtNisShape "isShape"
 #define XtCIsShape "IsShape"
+#define XtNpetnameFile "petnameFile"
+#define XtCPetnameFile "PetnameFile"
+#define PETNAME_F "Petname"
 
 
 #define CGFILE "hisho.xpm"
 #define RCFILE "Messages"
+#define FILTER "nkf -e -m"
 
 #endif
 

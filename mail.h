@@ -27,14 +27,10 @@
 #define XtCMailLabel "MailLabel"
 #define XtNnoMailLabel "noMailLabel"
 #define XtCNoMailLabel "NoMailLabel"
-#define XtNextFilter "extFilter"
-#define XtCExtFilter "ExtFilter"
 #define XtNmaxLines "maxLines"
 #define XtNfromMaxLen "fromMaxLen"
 #define XtCMaxLines "MaxLines"
 #define XtCFromMaxLen "FromMaxLen"
-#define XtNpetnameFile "petnameFile"
-#define XtCPetnameFile "PetnameFile"
 #define XtNnewMailSound "newMailSound"
 #define XtCNewMailSound "NewMailSound"
 #define XtNyoubinServer "youbinServer"
@@ -48,10 +44,8 @@
 
 #define MAILBOX "/var/mail/"
 #define CFGFILE "xakari.cfg"
-#define FILTER "nkf -e -m"
 #define MAIL_LINES 2
 #define FROM_MAXLEN 50
-#define PETNAME_F "Petname"
 #define SOUND_F "newmail.wav"
 #define Y_SERVER "localhost"
 #define Y_COMMAND "/usr/local/bin/youbin"
@@ -65,10 +59,8 @@ typedef struct {
   String mailbox;
   String mail_l;
   String no_l;
-  String ext_filter;
   int mail_lines;
   int from_maxlen;
-  String petname_f;
   String sound_f;
   String y_server;
   String y_command;

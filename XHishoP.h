@@ -29,7 +29,9 @@ extern XHishoClassRec xHishoClassRec;
 typedef struct _XHishoPart{
   String cg_file;
   String m_file;  
+  String ext_filter;
   String clock_text;
+  String petname_f;
   XtIntervalId intervalId;
   String clock_f;
   String clock_arg;

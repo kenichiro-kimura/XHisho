@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <X11/Intrinsic.h>
 
 static int RcHash(const char*);
 void Escape2Return(char*);
@@ -16,6 +17,8 @@ static const char RcName[][256] = {"newmail","nomail","open1","open2","open3","a
 				   ,"resource"};
 
 static char* RcData[MAX_MESSAGE_NUM];
+
+extern String FilterCommand;
 
 static int RcHash(const char* name){
   /*
@@ -40,16 +43,29 @@ int ReadRcfile(char* filename){
   char *tmp,*tmp2,*tmp3;
   char* index;
   int i;
+#ifdef EXT_FILTER
+  char pcommand[128];
+#endif
+
 
   for(i = 0; i < MAX_MESSAGE_NUM;i++){
     RcData[i] = malloc(1);
     *RcData[i] = '\0';
   }
 
+#ifdef EXT_FILTER
+  
+  sprintf(pcommand,"%s %s",FilterCommand,filename);
+  if((infile = popen(pcommand,"r")) == NULL){
+    fprintf(stderr,"no filter command:%s\n",pcommand);
+    return -1;
+  }
+#else
   if((infile = fopen(filename,"r")) == NULL){
     fprintf(stderr,"no such Message file:%s\n",filename);
     return -1;
   }
+#endif
 
   tmp = malloc(BUFSIZ);
   tmp2 = malloc(BUFSIZ);
@@ -71,7 +87,11 @@ int ReadRcfile(char* filename){
   free(tmp2);
   free(tmp3);
 
+#ifdef EXT_FILTER
+  pclose(infile);
+#else
   fclose(infile);
+#endif
 
   return 0;
 }

@@ -27,6 +27,7 @@ static int IsSet = 0; /* 1回目のExposeでだけ子Widgetを作る */
 Widget mail,openwin,xhisho,about,editwin,calendarwin,menu,nomail,resedit; 
 int MailWindowShown,OpenWindowShown,MenuWindowShown,AboutWindowShown;
 BiffMethod Biff = LOCAL;
+String FilterCommand;
 
 /* external variable */
 
@@ -51,7 +52,7 @@ extern int CheckMail(XtPointer, XtIntervalId*);
 extern int CheckPOP3(XtPointer, XtIntervalId*);
 
 #ifdef PETNAME
-extern void ReadPetname(); /* in petname.c */
+extern void ReadPetname(char*); /* in petname.c */
 #endif
 extern Widget CreateAboutWindow(Widget);   /* in about.c  */
 extern Widget CreateEditorWindow(Widget,int,struct tm);   /* in editor.c  */
@@ -115,10 +116,6 @@ static void Wait(Widget w,XEvent* e,String* s,unsigned int* i){
 
     nomail = CreateMailAlert(toplevel,1);
     mail = CreateMailAlert(toplevel,0);
-
-#ifdef PETNAME
-    ReadPetname();
-#endif
 
     /* OpenMessage Windowを生成し、Opening messageを表示する */
     
@@ -274,7 +271,7 @@ int main(int argc,char** argv){
     {XtNlabel,(XtArgVal)""},
   };
 
-  String rcfile;
+  String rcfile,petname_f;
 
   /*  Localeをセットする */
 
@@ -296,9 +293,20 @@ int main(int argc,char** argv){
   xhisho = XtCreateManagedWidget("xhisho",xHishoWidgetClass,toplevel
 				 ,args,XtNumber(args));
 
-  XtVaGetValues(xhisho,XtNmessageFile,&rcfile,NULL);
-  ReadRcfile(rcfile);
+  /* rcfileとfilter commandとpetname fileをセット */
 
+  XtVaGetValues(xhisho,XtNmessageFile,&rcfile,NULL);
+  XtVaGetValues(xhisho,XtNextFilter,&FilterCommand,NULL);
+  XtVaGetValues(xhisho,XtNpetnameFile,&petname_f,NULL);
+
+  /* rcfileとpetnameを読む */
+  ReadRcfile(rcfile);
+#ifdef PETNAME
+  ReadPetname(petname_f);
+#endif
+
+
+  /* Action のセット */
   XtAddActions(actionTable,XtNumber(actionTable));
 
   /*  WidgetのRealize */

@@ -22,8 +22,8 @@ static void GetFromandSubject(int,char*);
 
 int pop3(AuthMethod,char*,char*);
 
+extern String FilterCommand;
 extern MailAlertRes mar;
-
 
 static int ReadPOPMessage(int sock,char* buffer,int size){
 
@@ -508,7 +508,7 @@ static void GetFromandSubject(int sock,char* buffer){
       fprintf(t_file,"%s\n",tmp3);
       fclose(t_file);
       
-      sprintf(command,"%s %s",mar.ext_filter,t_filename);
+      sprintf(command,"%s %s",FilterCommand,t_filename);
       in = popen(command,"r");
 
       fgets(tmp,BUFSIZ,in);

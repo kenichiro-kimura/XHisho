@@ -119,10 +119,11 @@ Q10.各種メッセージが化けるんですが....
 
 A10.リソースファイルはEUCで書いていますか？また、環境変数LANGは
     ja_JP.EUC(FreeBSD、Linux)やjapanese(Solaris)になっていますか？メー
-    ルのFromやSubjectなら、フィルタコマンドを有効にしているか、そのフィ
-    ルタの出力がEUCになっているかをチェックしてください。外部フィルタを
-    有効にするにはconfig.tmpl中で#define EXT_FILTERしてください。フィル
-    タコマンドはリソース
+    ルのFromやSubject、Petname、メッセージファイルの文字などなら、フィ
+    ルタコマンドを有効にしているか、そのフィルタの出力がEUCになってい
+    るかをチェックしてください。外部フィルタを有効にするには
+    config.tmpl中で#define EXT_FILTERしてください。フィルタコマンドは
+    リソース
 
     XHisho*extFilter: nkf -e -m
 

@@ -14,7 +14,7 @@ XHisho.MailAlert.m_timeout: 8
 XHisho.MailAlert.m_check: 10
 XHisho.MailAlert.fromMaxLen: 30
 XHisho.MailAlert.maxLines: 4
-XHisho.MailAlert.petnameFile: XHISHODIR/Petname
+XHisho*petnameFile: XHISHODIR/Petname
 XHisho.MailAlert.youbinServer: localhost
 XHisho.MailAlert.youbinCommand: /usr/local/bin/youbin
 XHisho.MailAlert.popServer: localhost

@@ -11,7 +11,7 @@
  */
 static PetnameList* Petname[HASH_KEY];
 
-extern MailAlertRes mar;
+extern String FilterCommand;
 
 
 static int StrHash(char*);
@@ -21,7 +21,7 @@ static void Petname_delete(PetnameList*);
 static void ReadAddrBook();
 #endif
 
-void ReadPetname();
+void ReadPetname(char*);
 void SearchPetname(char*,char*);
 
 
@@ -108,7 +108,7 @@ static void ReadAddrBook(){
 
 #ifdef EXT_FILTER
   
-  sprintf(pcommand,"%s %s",mar.ext_filter,fname);
+  sprintf(pcommand,"%s %s",FilterCommand,fname);
   if((fp = popen(pcommand,"r")) == NULL){
     fprintf(stderr,"no filter command:%s\n",pcommand);
     return;
@@ -252,7 +252,7 @@ static void ReadAddrBook(){
 }
 #endif
 
-void ReadPetname(){
+void ReadPetname(char* petname_f){
   /*
    * Petnameをファイルから読み、Hashリストで保持する。mailアドレスを
    * StrHash()にかけ、テーブルの該当ヶ所にエントリを挿入する。Hash値が
@@ -279,15 +279,15 @@ void ReadPetname(){
   }
   memset(tmp2,0,BUFSIZ);
   
-  if((pfp = fopen(mar.petname_f,"r")) == NULL){
-    fprintf(stderr,"no petname file:%s\n",mar.petname_f);
+  if((pfp = fopen(petname_f,"r")) == NULL){
+    fprintf(stderr,"no petname file:%s\n",petname_f);
     return;
   }
 	    
 #ifdef EXT_FILTER
 	    
   fclose(pfp);
-  sprintf(pcommand,"%s %s",mar.ext_filter,mar.petname_f);
+  sprintf(pcommand,"%s %s",FilterCommand,petname_f);
   if((pfp = popen(pcommand,"r")) == NULL){  /* reopen as pipe */
     fprintf(stderr,"no filter command:%s\n",pcommand);
     return;

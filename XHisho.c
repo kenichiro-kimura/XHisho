@@ -69,6 +69,24 @@ static XtResource resources[] = {
     RCFILE,
   },
   {
+    XtNextFilter,
+    XtCExtFilter,
+    XtRString,
+    sizeof(String),
+    XtOffset(XHishoWidget,xhisho.ext_filter),
+    XtRImmediate,
+    (XtPointer)FILTER
+  },
+  {
+    XtNpetnameFile,
+    XtCPetnameFile,
+    XtRString,
+    sizeof(String),
+    XtOffset(XHishoWidget,xhisho.petname_f),
+    XtRImmediate,
+    (XtPointer)PETNAME_F
+  },
+  {
     XtNclockText,
     XtCClockText,
     XtRString,

@@ -8,10 +8,10 @@
 張り付けるCGのファイル名やメールをチェックするインターバルを設定します。
 以下のリソースがあります。
 
-XHisho.messageFile:            メッセージファイル。起動オプション 
+XHisho*messageFile:            メッセージファイル。起動オプション 
                                '-message'でも指定可能。
 
-XHisho.cgfile:                 張り付けるCGファイル名。起動オプション 
+XHisho*cgfile:                 張り付けるCGファイル名。起動オプション 
                                '-cgfile'でも指定可能。
 
 XHisho.MailAlert.m_timeout:    メールが来たときの通知ウインドを何秒で
@@ -27,8 +27,6 @@ XHisho.MailAlert.m_check:      メールをチェックする間隔。メールのチェッ
                                字は1分に置き換えられます(サーバに負荷
                                をかけすぎないようにするため)。起動オプ
                                ション'-mailcheck'でも指定可能。
-
-XHisho.MailAlert.petnameFile:  Petnameファイル
 
 XHisho.OpenMessage.configFile: 挨拶データのデータファイル名
 
@@ -310,7 +308,7 @@ XHisho*extFilter: nkf -e -m
 そして、Fromの表示にMew(see http://www.mew.org/)のPetnameを使うことが
 できます。Petnameは次のリソースで設定します。
 
-XHisho.MailAlert.petnameFile: 
+XHisho*petnameFile: 
 
 
 Mewで使っているPetnameファイルをそのまま使えます。ところが、Mewで使う

@@ -36,6 +36,7 @@ MailAlertRes mar;
 extern ResEditRes rer;  /* in ResEdit.c */
 extern int MailWindowShown; /* in main.c */
 extern BiffMethod Biff;
+extern String FilterCommand;
 
 /* function definition */
 
@@ -114,15 +115,6 @@ static XtResource resources[] = {
     (XtPointer)NOLABEL
   },
   {
-    XtNextFilter,
-    XtCExtFilter,
-    XtRString,
-    sizeof(String),
-    XtOffsetOf(MailAlertRes,ext_filter),
-    XtRImmediate,
-    (XtPointer)FILTER
-  },
-  {
     XtNmaxLines,
     XtCMaxLines,
     XtRInt,
@@ -139,15 +131,6 @@ static XtResource resources[] = {
     XtOffsetOf(MailAlertRes,from_maxlen),
     XtRImmediate,
     (XtPointer)FROM_MAXLEN
-  },
-  {
-    XtNpetnameFile,
-    XtCPetnameFile,
-    XtRString,
-    sizeof(String),
-    XtOffsetOf(MailAlertRes,petname_f),
-    XtRImmediate,
-    (XtPointer)PETNAME_F
   },
   {
     XtNnewMailSound,
@@ -568,7 +551,7 @@ static void GetFromandSubject(char* m_file,char* From){
   
 #ifdef EXT_FILTER
   fclose(fp);
-  sprintf(command,"%s %s",mar.ext_filter,m_file);
+  sprintf(command,"%s %s",FilterCommand,m_file);
   fp = popen(command,"r");
 #endif /* EXT_FILTER */
   
@@ -801,7 +784,7 @@ static void CheckYoubin(Widget w,int *fid,XtInputId *id){
       fprintf(t_file,"%s\n",tmp1);
       fclose(t_file);
 
-      sprintf(command,"%s %s",mar.ext_filter,t_filename);
+      sprintf(command,"%s %s",FilterCommand,t_filename);
       if((in = popen(command,"r")) == NULL){
 	fprintf(stderr,"no such filter command:%s\n",command);
 	exit(1);
