@@ -260,6 +260,7 @@ static void Initialize(Widget request, Widget new, ArgList args, Cardinal * num_
   XH_GC = XCreateGC(XtDisplay(xhw), RootWindowOfScreen(XtScreen(xhw)), (unsigned long) NULL, NULL);
 
   xhw->xhisho.intervalId = 0;
+  xhw->xhisho.focus_intervalId = 0;
   CG_NUM = 0;
 
   for(i = 0; i < NUM_OF_ARRAY(xhw->xhisho.i_info->anim_number);i++)
