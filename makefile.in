@@ -1,8 +1,7 @@
 all: Makefile
 	make -f Makefile
 
-Makefile: makefile Imakefile config.h
-	csh -c 'echo "CC = @CC@" > config.tmpl'
+Makefile: makefile Imakefile config.h config.tmpl
 	xmkmf
 
 makefile:
@@ -19,3 +18,6 @@ install: Makefile
 
 install.man: Makefile
 	make -f Makefile install.man
+
+config.tmpl:
+	csh -c 'echo "CC = @CC@" > config.tmpl'
