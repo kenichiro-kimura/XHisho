@@ -749,7 +749,7 @@ MHCD* openmhc(const char* home_dir, const char* year_month)
   /*
    * home_dir   : your MHC home directory. 
    *              for example,"/home/someone/Mail/schedule/".
-   *              '~' is *not* extended automatically.
+   *              '~' is *not* expanded automatically.
    * year_month : "yyyymm"
    *
    * open MHC data in "/home/someone/Mail/schedule/yyyymm/"
