@@ -8186,6 +8186,7 @@ static unsigned char* JIS2EUC(unsigned char* in)
 
     if(mode){
       *out_ptr++ = (*in_ptr++ | 0x80);
+      if(*out_ptr) break;
       *out_ptr++ = (*in_ptr | 0x80);
     } else {
       *out_ptr++ = *in_ptr;
@@ -8193,9 +8194,12 @@ static unsigned char* JIS2EUC(unsigned char* in)
   }
   *out_ptr = '\0';
 
-  ret = (unsigned char*)malloc(strlen(out) + 1);
-  strcpy(ret,out);
+  out_ptr = ChangeBadKanjiCode(out);
+  ret = (unsigned char*)malloc(strlen(out_ptr) + 1);
+  strcpy(ret,out_ptr);
   free(out);
+  free(out_ptr);
+
   return ret;
 }
 
