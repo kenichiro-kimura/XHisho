@@ -23,11 +23,14 @@
 #define XtCOptionWidth "OptionWidth"
 #define XtNoptionHeight "optionHeight"
 #define XtCOptionHeight "OptionHeight"
+#define XtNoptionTimeout "optionTimeout"
+#define XtCOptionTimeout "OptionTimeout"
 
 typedef struct {
   String o_command;
   Dimension width;
   Dimension height;
+  int timeout;
 } OptionRes;
 
 typedef struct _messagestack{

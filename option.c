@@ -11,6 +11,7 @@
 static Widget top,label,local_option;
 static XtInputId OptionId;
 static int virgine = 1;
+static XtIntervalId OptionTimeoutId = 0;
 
 static void Destroy(Widget,XEvent *, String *, unsigned int *);
 static void CommandInit();
@@ -56,10 +57,23 @@ static XtResource resources[] = {
     XtRImmediate,
     (XtPointer)200
   },    
+  {
+    XtNoptionTimeout,
+    XtCOptionTimeout,
+    XtRInt,
+    sizeof(int),
+    XtOffsetOf(OptionRes, timeout),
+    XtRImmediate,
+    (XtPointer)5
+  },    
 };
 
 static void Destroy(Widget w, XEvent * event, String * params, unsigned int *num_params)
 {
+  if(OptionTimeoutId){
+    XtRemoveTimeOut(OptionTimeoutId);
+    OptionTimeoutId = 0;
+  }
   XtPopdown(top);
 }
 
@@ -170,13 +184,13 @@ static void CommandInit()
 
 static void CheckOption(Widget w, int *fid, XtInputId * id)
 {
-  char *message_buffer;
-  char *_buffer;
-  char *buffer;
+  static unsigned char *message_buffer;
+  static unsigned char *_buffer;
+  static unsigned char *buffer;
   static int x = 0;
   int len;
-  char* chr_ptr;
-  char* next_ptr;
+  unsigned char* chr_ptr;
+  unsigned char* next_ptr;
   static int is_end = 0;
   XFontSet fset;
   XRectangle ink, log;
@@ -187,29 +201,23 @@ static void CheckOption(Widget w, int *fid, XtInputId * id)
   XawTextPosition current,last;
   XawTextBlock textblock;
   int cg_num = -1;
-  char str_num[128];
+  int u_cg_num = -1;
+  unsigned char str_num[128];
 
 #ifdef EXT_FILTER
   char command[128];
   char t_filename[BUFSIZ];
-  char d_buffer[BUFSIZ * 3];
+  char d_buffer[BUFSIZ * 5];
   FILE* t_file;
   FILE* in;
 #endif			
 
-  message_buffer = (char *)malloc(BUFSIZ * 20);
-  if(message_buffer == NULL) return;
-  _buffer = (char *)malloc(BUFSIZ * 5);
-  if(_buffer == NULL){
-    free(message_buffer);
-    return;
+  if(x == 0){
+    message_buffer = (char *)malloc(BUFSIZ * 20);
+    _buffer = (char *)malloc(BUFSIZ * 5);
+    buffer = (char *)malloc(BUFSIZ * 5);
   }
-  buffer = (char *)malloc(BUFSIZ * 5);
-  if(buffer == NULL){
-    free(_buffer);
-    free(message_buffer);
-    return;
-  }
+  x = 1;
 
   memset(message_buffer,'\0',BUFSIZ * 20);
   memset(_buffer,'\0',BUFSIZ * 5);
@@ -221,9 +229,6 @@ static void CheckOption(Widget w, int *fid, XtInputId * id)
     fprintf(stderr, "option command died!\n");
     XtDestroyWidget(optionwin);
     optionwin = CreateOptionWindow(XtParent(xhisho));
-    free(buffer);
-    free(_buffer);
-    free(message_buffer);
     return;
   } else if (len == -1) {
     fprintf(stderr, "Can't read from option command!\n");
@@ -231,8 +236,6 @@ static void CheckOption(Widget w, int *fid, XtInputId * id)
 
   _buffer[len] = '\0';
 
-
-  x = 1;
 
   if(is_end){
     last = XawTextSourceScan (XawTextGetSource (label),(XawTextPosition) 0,
@@ -252,6 +255,7 @@ static void CheckOption(Widget w, int *fid, XtInputId * id)
   }
 
 #ifdef EXT_FILTER
+
   strcpy(t_filename, tempnam(Tmp_dir, "xhtmp"));
   if ((t_file = fopen(t_filename, "w")) == NULL) {
     fprintf(stderr, "can't open temporary file,%s\n", t_filename);
@@ -264,20 +268,40 @@ static void CheckOption(Widget w, int *fid, XtInputId * id)
       fprintf(stderr, "no such filter command:%s\n", command);
       exit(1);
     }
-    buffer[0] = '\0';
-    while((fgets(d_buffer, BUFSIZ * 3, in)) != NULL){
+
+    while((fgets(d_buffer, BUFSIZ * 5, in)) != NULL){
       strcat(buffer,d_buffer);
     }
     pclose(in);
     unlink(t_filename);
   }
+  
 #else
   strcpy(buffer, _buffer);
 #endif
 
   /* here is script decoder .. */
 
-  if(strstr(buffer,"sakura"))
+  while((chr_ptr = strstr(buffer,"(Surface:")) != NULL){
+    if(*(chr_ptr - 2) == 'a')
+      sakura = 1;
+    else 
+      sakura = 0;
+
+    next_ptr = chr_ptr + strlen("(Surface:");
+    while(isdigit((unsigned char)(*next_ptr))) next_ptr++;
+    strncpy(str_num,chr_ptr + strlen("(Surface:")
+	    ,next_ptr - chr_ptr - strlen("(Surface:"));
+    if(sakura)
+      cg_num = atoi(str_num);
+    else 
+      u_cg_num = atoi(str_num) + 10;
+    strcpy(_buffer,next_ptr + 1);
+    strcpy(strstr(buffer,"(Surface:"),_buffer);
+  }
+
+  /*
+  if(strstr(buffer,"sakura(Surface:"))
     sakura = 1;
   else 
     sakura = 0;
@@ -295,7 +319,8 @@ static void CheckOption(Widget w, int *fid, XtInputId * id)
       strcpy(strchr(buffer,'('),_buffer);
     }
   }
-  
+  */
+
   chr_ptr = buffer;
   ChangeBadKanjiCode(buffer);
 
@@ -309,11 +334,20 @@ static void CheckOption(Widget w, int *fid, XtInputId * id)
 
   SakuraParser(chr_ptr);
 
-  max_len = width / log.width - 1;
+  max_len = width / log.width - 2;
   chr_length = strlen(chr_ptr);
+  /*
+  printf("#%s\n",chr_ptr);
+  */
+  memset(message_buffer,'\0',BUFSIZ * 20);
+  for(pos = 0;pos < chr_length;pos++){
+    unsigned char first_byte;
 
-  for(dword = pos = 0;pos < chr_length;pos++){
-    if(((signed char)chr_ptr[pos]) < 0) dword ++;
+    first_byte = chr_ptr[pos];
+    if ((first_byte >= 0xa1 && first_byte <= 0xfe) ||
+	(first_byte == 0x8e) || (first_byte == 0x8f))
+      pos += 2;
+
     if(chr_ptr[pos] == '\n'){
       if(pos > 0){
 	strncat(message_buffer,chr_ptr, pos);
@@ -323,22 +357,25 @@ static void CheckOption(Widget w, int *fid, XtInputId * id)
       } else{
 	chr_ptr++;
 	chr_length--;
-      strcat(message_buffer,"\n");
+	strcat(message_buffer,"\n");
       }
       pos = -1;
-      dword = 0;
-    } else if(pos >= max_len && dword % 2 == 0){
-      strncat(message_buffer,chr_ptr, pos - 1);
+    } else if(pos >= max_len){
+      strncat(message_buffer,chr_ptr, pos);
       strcat(message_buffer,"\n");
       chr_ptr += pos;
-      chr_ptr--;
       chr_length -= pos;
       pos = -1;
-      dword = 0;
+    } else {
+      if ((first_byte >= 0xa1 && first_byte <= 0xfe) ||
+	  (first_byte == 0x8e) || (first_byte == 0x8f))
+	pos--;
     }
   }
   strcat(message_buffer,chr_ptr);
-
+  /*
+  printf("*%s\n",message_buffer);
+  */
   current = XawTextGetInsertionPoint(label);
   last = XawTextSourceScan (XawTextGetSource (label),(XawTextPosition) 0,
 			    XawstAll, XawsdRight, 1, TRUE);
@@ -358,9 +395,21 @@ static void CheckOption(Widget w, int *fid, XtInputId * id)
   if(sakura && cg_num != -1)
     XtVaSetValues(xhisho,XtNforceCG,True,XtNcgNumber,cg_num,NULL);
 
+  if(is_end){
+    if(OptionTimeoutId){
+      XtRemoveTimeOut(OptionTimeoutId);
+      OptionTimeoutId = 0;
+    }
+    OptionTimeoutId = XtAppAddTimeOut(XtWidgetToApplicationContext(local_option)
+				      , opr.timeout * 1000
+				      , (XtTimerCallbackProc) Destroy
+				      , NULL);
+  }
+  /*
   free(buffer);
   free(_buffer);
   free(message_buffer);
+  */
 }
 
 static int Option_exit(Display * disp)
@@ -533,7 +582,7 @@ static void ChangeBadKanjiCode(char *source)
 	    if (++i > strlen(source)) {
 		/* lack EUC kanji code's 2nd byte ? */
 		perror("broken kanji code exist");
-		return 1;
+		break;
 	    }
 	    second_byte = *(source + i);
 

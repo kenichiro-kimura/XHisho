@@ -81,6 +81,7 @@ static XrmOptionDescRec options[] = {
   {"-optioncmd", "*optionCommand", XrmoptionSepArg, NULL},
   {"-optionwidth", "*optionWidth", XrmoptionSepArg, "300"},
   {"-optionheight", "*optionHeight", XrmoptionSepArg, "200"},
+  {"-optiontimeout", "*optionTimeout", XrmoptionSepArg, "5"},
 #endif
 };
 
@@ -478,6 +479,9 @@ static void PrintUsage(int argc, char **argv)
   "     -yoff [n]                   : Popup Window Y-offset\n"
 #ifdef OPTION
   "     -optioncmd                  : Option Command\n"
+  "     -optionwidth                : width of Option window\n"
+  "     -optionheight               : height of Option window\n"
+  "     -optiontimeout              : Option window timeout\n"
 #endif
   "\n";
 

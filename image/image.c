@@ -488,16 +488,16 @@ int LoadImage(ImageInfo* i_info)
 		, mask_image, 0, 0, 0, 0, width, height + i_info->ext_height);
       XFreeGC(d, mask_gc);
     }
-    free(i_info->ImageData);
-    free(i_info->ImagePalette);
-    free(pal);
-    i_info->ImageData = NULL;
-    i_info->ImagePalette = NULL;
-    pal = NULL;
     Add_files(i_info->filename,i_info->loaded_images);
     i_info->loaded_images++;
   }
     
+  free(i_info->ImageData);
+  free(i_info->ImagePalette);
+  free(pal);
+  i_info->ImageData = NULL;
+  i_info->ImagePalette = NULL;
+  pal = NULL;
   return 0;
 }
   
