@@ -9,4 +9,6 @@ countdown: countdown.c
 sstp: sstp.c
 	@CC@ -g -O2 sstp.c -o $@
 
+clean:
+	rm -rf *.o $(PROGS)
 install:
