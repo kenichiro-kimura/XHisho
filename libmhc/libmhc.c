@@ -119,6 +119,7 @@ static mhcent* ReadEntry(FILE* fp)
   }
 
   mhcent_ptr = EntryNew();
+
   if(!mhcent_ptr){
     free(buffer);
     free(b_buffer);
@@ -167,6 +168,8 @@ static mhcent* ReadEntry(FILE* fp)
        * in this case, this line should be append before line.
        */
       tag = CONTINUED_LINE;
+    } else {
+      b_tag = NO_TAG;
     }
 
     if(tag != NO_TAG){
@@ -176,19 +179,18 @@ static mhcent* ReadEntry(FILE* fp)
 	b_tag = tag;
 	for(;chr_ptr;chr_ptr++)
 	  if(*chr_ptr == ':') break;
-      } 
-
+      }
       for(chr_ptr++;chr_ptr;chr_ptr++)
 	if(!isspace((unsigned char)*chr_ptr)) break;
 
-      if(tag == CONTINUED_LINE){
+      if(tag == CONTINUED_LINE && b_tag != NO_TAG ){
 	strcpy(b_buffer,mhcent_ptr->Entry[b_tag]);
 	free(mhcent_ptr->Entry[b_tag]);
 	mhcent_ptr->Entry[b_tag] = 
 	  (char*)malloc(strlen(b_buffer) + strlen(chr_ptr) + 1);
 	strcpy(mhcent_ptr->Entry[b_tag],b_buffer);
 	strcat(mhcent_ptr->Entry[b_tag],chr_ptr);
-      } else {
+      } else if(tag != CONTINUED_LINE){
 	mhcent_ptr->Entry[tag] = strdup(chr_ptr);
       /*
 	mhcent_ptr->Entry[tag] = (char*)malloc(strlen(chr_ptr) + 1);
@@ -832,7 +834,7 @@ MHCD* openmhc(const char* home_dir, const char* year_month)
   home_length = strlen(home_dir);
   yearmonth_length = strlen(year_month);
   i = (home_dir[home_length - 1] == '/')? 1:2;
-  i = (year_month[yearmonth_length - 1] == '/')? i:i+1;
+  i += ((year_month[yearmonth_length - 1] == '/')? 0:1);
   dirname = (char*)malloc(home_length + yearmonth_length + i);
   if(!dirname) return NULL;
 
@@ -869,14 +871,15 @@ MHCD* openmhc(const char* home_dir, const char* year_month)
       }
       filename_length++;
     }
-     
+    
     if(!is_mhcfile) continue;
+
 
     strcpy(filename,dirname);
     strcat(filename,dp->d_name);
-    fp = fopen(filename,"r");
 
-    if(fp){
+    fp = fopen(filename,"r");
+    if(fp != NULL){
       entry = ReadEntry(fp);
       if(entry){
 	entry->filename = strdup(filename);
@@ -884,8 +887,8 @@ MHCD* openmhc(const char* home_dir, const char* year_month)
 	  entry->filename = (char*)malloc(strlen(filename) + 1);
 	  strcpy(entry->filename,filename);
 	*/
-	  
-	if(!mhc_ptr){
+
+	if(mhc_ptr == NULL){
 	  mhc_ptr = MHCDNew(entry);
 	  tmp_ptr = *mhc_ptr;
 	} else {
@@ -893,7 +896,7 @@ MHCD* openmhc(const char* home_dir, const char* year_month)
 	  tmp_ptr->next->prev = tmp_ptr;
 	  tmp_ptr = tmp_ptr->next;
 	}
-	
+
       }
       fclose(fp);
     }
@@ -923,12 +926,15 @@ mhcent* readmhc(MHCD* mhc_ptr)
 
   if(*mhc_ptr){
     ent_ptr = (*mhc_ptr)->item;
-    if((*mhc_ptr)->next != NULL)
+    /*    if((*mhc_ptr)->next != NULL)*/
       *mhc_ptr = (*mhc_ptr)->next;
     return ent_ptr;
+    /*
   } else {
     return NULL;
+    */
   }
+  return NULL;
 }
 
 int closemhc(MHCD* mhc_ptr)
