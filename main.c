@@ -177,10 +177,7 @@ void Quit(Widget w, XEvent * event, String * params, unsigned int *num_params)
 
   if(Biff == YOUBIN){
     fclose(youbin_fd);
-    kill(youbin_pid[1],SIGTERM);
-    /*while(wait(&i) != youbin_pid[1]);*/
-    kill(youbin_pid[0],SIGTERM);
-    /*while(wait(&i) != youbin_pid[0]);*/
+    kill(youbin_pid,SIGTERM);
   }
 
 #ifdef OPTION
