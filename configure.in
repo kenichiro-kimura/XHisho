@@ -117,7 +117,7 @@ AC_ARG_ENABLE(akari,
         [with_akari=no])
 test "$with_akari" = "yes" && AC_DEFINE(AKARI)
 
-AC_ARG_WITH(libmhc,
+AC_ARG_ENABLE(libmhc,
         [  --enable-libmhc         use libmhc],
         [with_libmhc=$enableval],
         [with_libmhc=no])

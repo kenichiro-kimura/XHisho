@@ -1601,9 +1601,9 @@ test "$with_akari" = "yes" && cat >> confdefs.h <<\EOF
 EOF
 
 
-# Check whether --with-libmhc or --without-libmhc was given.
-if test "${with_libmhc+set}" = set; then
-  withval="$with_libmhc"
+# Check whether --enable-libmhc or --disable-libmhc was given.
+if test "${enable_libmhc+set}" = set; then
+  enableval="$enable_libmhc"
   with_libmhc=$enableval
 else
   with_libmhc=no
