@@ -515,7 +515,7 @@ Widget CreateEditorWindow(Widget w, int Mode, struct tm tm_now)
       mesarg = omr.message_arg;
 
     if (Mode == 0 || Mode == 1 || Mode == 2) {
-      for (k = 0; k < strlen(omr.message_arg) && k < 4; k++) {
+      for (k = 0; k < strlen(mesarg) && k < 4; k++) {
 	switch (mesarg[k]) {
 	case 'h':
 	  argarray[k] = schedule[j].hour;
