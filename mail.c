@@ -16,7 +16,7 @@ static int MailCount = 0;
 static char m_filename[256];
 static int TimeoutInterval = 1 * 1000;
 static int MailTimeout;
-static XtIntervalId MailTimeoutId;
+static XtIntervalId MailTimeoutId,MailCheckId;
 static int MailCheckInterval;
 static const char ResName[][256] = {"newmail", "nomail"};
 
@@ -185,6 +185,11 @@ static void TimerCheck(XtPointer cl, XtIntervalId * id)
       XtPopdown(top[0]);
     }
   }
+  if(MailTimeoutId){
+    XtRemoveTimeOut(MailTimeoutId);
+    MailTimeoutId = 0;
+  }
+    
   MailTimeoutId = XtAppAddTimeOut(XtWidgetToApplicationContext(top[0])
 			  ,TimeoutInterval, TimerCheck, (XtPointer) top[0]);
 }
@@ -227,14 +232,11 @@ int IsMailChecked(int x)
 
 int CheckMail(XtPointer cl, XtIntervalId * id)
 {
-  int i,pid,status;
-#ifndef YOUBIN
+  int i;
   char *buf;
 
   buf = malloc(mar.from_maxlen * mar.mail_lines + 1);
   memset(buf, 0, mar.from_maxlen * mar.mail_lines + 1);
-#endif
-
 
   i = isMail();
 
@@ -245,10 +247,8 @@ int CheckMail(XtPointer cl, XtIntervalId * id)
     if (!MailWindowShown) {
       isMailChecked = 1;
       MailWindowShown = 1;
-#ifndef YOUBIN
       GetFromandSubject(m_filename, buf);
       XtVaSetValues(from, XtNlabel, buf, NULL);
-#endif
       MailWindowShown = 1;
       XtVaSetValues(local_mail[0], XtNwindowMode, 0, NULL);
       XtPopup(XtParent(local_mail[0]), XtGrabNone);
@@ -275,19 +275,25 @@ int CheckMail(XtPointer cl, XtIntervalId * id)
 
     break;
   }
-  XtAppAddTimeOut(XtWidgetToApplicationContext(local_mail[0])
-  ,MailCheckInterval, (XtTimerCallbackProc) CheckMail, (XtPointer) local_mail[0]);
 
-#ifndef YOUBIN
+  if(MailCheckId){
+    XtRemoveTimeOut(MailCheckId);
+    MailTimeoutId = 0;
+  }
+    
+  MailCheckId = XtAppAddTimeOut(XtWidgetToApplicationContext(local_mail[0])
+				,MailCheckInterval
+				, (XtTimerCallbackProc) CheckMail
+				, (XtPointer) local_mail[0]);
+
   free(buf);
-#endif
 
   return i;
 }
 
 int CheckPOP3(XtPointer cl, XtIntervalId * id)
 {
-  int ret_value = 0,pid,status;
+  int ret_value = 0;
   char *buf;
 
   buf = malloc(mar.from_maxlen * mar.mail_lines + 1);
@@ -317,8 +323,15 @@ int CheckPOP3(XtPointer cl, XtIntervalId * id)
   if (MailCheckInterval < 60 * 1000)
     MailCheckInterval = 60 * 1000;
 
-  XtAppAddTimeOut(XtWidgetToApplicationContext(local_mail[0])
-  ,MailCheckInterval, (XtTimerCallbackProc) CheckPOP3, (XtPointer) local_mail[0]);
+  if(MailCheckId){
+    XtRemoveTimeOut(MailCheckId);
+    MailTimeoutId = 0;
+  }
+    
+  MailCheckId = XtAppAddTimeOut(XtWidgetToApplicationContext(local_mail[0])
+				,MailCheckInterval
+				, (XtTimerCallbackProc) CheckPOP3
+				, (XtPointer) local_mail[0]);
   return ret_value;
 }
 
@@ -688,7 +701,7 @@ static void CheckYoubin(Widget w, int *fid, XtInputId * id)
   int mail_size, length;
   static int old_mail_size = 0;
   long date;
-  int i = 0, j,pid,status;
+  int i = 0, j;
 
 #ifdef PETNAME
   unsigned char *from_who, *who, *pname, *next_ptr, *left_ptr, *right_ptr;

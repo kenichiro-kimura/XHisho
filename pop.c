@@ -29,9 +29,9 @@ static int ReadPOPMessage(int sock, char *buffer, int size)
 
   *buffer = '\0';
   comm_buffer = malloc(size + 1);
-  memset(comm_buffer, 0, size + 1);
 
   do {
+    memset(comm_buffer, 0, size + 1);
     i = recv(sock, comm_buffer, size, 0);
     comm_buffer[i] = '\0';
     if (i + strlen(buffer) >= size) {
@@ -41,7 +41,10 @@ static int ReadPOPMessage(int sock, char *buffer, int size)
     strcat(buffer, comm_buffer);
   } while (!strstr(comm_buffer, "\n"));
 
-  if (strncmp(buffer, "+OK", strlen("+ok")) == 0) {
+  if (strncmp(buffer, "+OK", strlen("+ok")) == 0 ||
+      strncmp(buffer, "+ok", strlen("+ok")) == 0 ||
+      strncmp(buffer, "+Ok", strlen("+ok")) == 0 ||
+      strncmp(buffer, "+oK", strlen("+ok")) == 0 ) {
     ret_value = OK;
   } else {
     ret_value = ERR;
@@ -204,7 +207,7 @@ int pop3(AuthMethod method, char *server, char *From)
   if (ret_value == ERR) {
     sprintf(From, "Fail POP authorization:\n %s@%s\n", user.name, user.server);
     ret_value = 1;
-    write(sockdsc, "QUIT\n", 5);
+    WritePOPCommand(sockdsc, "QUIT\n");
     close(sockdsc);
     goto POPQUIT;
   }
@@ -221,16 +224,20 @@ int pop3(AuthMethod method, char *server, char *From)
   } else {
     fprintf(stderr, "Fail Read POP Message:STAT\n%s\n", comm_buffer);
     ret_value = 0;
-    write(sockdsc, "QUIT", 5);
+    WritePOPCommand(sockdsc, "QUIT\n");
     close(sockdsc);
     goto POPQUIT;
   }
+
+#ifdef DEBUG
+  printf("%s\n",comm_buffer);
+#endif
 
   if (ret_value > 0) {
     From[0] = '\0';
     GetFromandSubject(sockdsc, From);
   }
-  write(sockdsc, "QUIT\n", 5);
+  WritePOPCommand(sockdsc, "QUIT\n");
   close(sockdsc);
 
   /**
@@ -257,7 +264,7 @@ static int Auth(int sock, UserData user)
     ret_value = ERR;
     goto End;
   }
-  sprintf(comm_buffer, "%s %s\n", "USER", user.name);
+  sprintf(comm_buffer, "USER %s\n", user.name);
   WritePOPCommand(sock, comm_buffer);
 
   if (ERR == ReadPOPMessage(sock, comm_buffer, BUFSIZ)) {
@@ -268,7 +275,7 @@ static int Auth(int sock, UserData user)
     ret_value = ERR;
     goto End;
   }
-  sprintf(comm_buffer, "%s %s\n", "PASS", user.pass);
+  sprintf(comm_buffer, "PASS %s\n", user.pass);
   WritePOPCommand(sock, comm_buffer);
 
   if (ERR == ReadPOPMessage(sock, comm_buffer, BUFSIZ)) {
