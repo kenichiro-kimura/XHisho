@@ -28,10 +28,9 @@ static int ReadPOPMessage(int sock, char *buffer, int size)
   char *comm_buffer;
 
   *buffer = '\0';
-  comm_buffer = malloc(size + 1);
+  comm_buffer = (char*)malloc(size + 1);
 
   do {
-    memset(comm_buffer, '\0', size + 1);
     i = recv(sock, comm_buffer, size, 0);
     comm_buffer[i] = '\0';
     if (i + strlen(buffer) >= size) {
@@ -86,7 +85,7 @@ static int ReadUserFile(UserData * user)
   }
   *(user->name) = *(user->pass) = '\0';
 
-  buffer = malloc(BUFSIZ);
+  buffer = (char*)malloc(BUFSIZ);
 
   while (fgets(buffer, BUFSIZ, fp) != NULL) {
     if (!strncasecmp(buffer, "USER:", 5)) {
@@ -137,7 +136,7 @@ int pop3(AuthMethod method, char *server, char *From)
   struct sockaddr_in sockadd;
 
   ret_value = ReadUserFile(&user);
-  comm_buffer = malloc(BUFSIZ);
+  comm_buffer = (char*)malloc(BUFSIZ);
 
   switch (ret_value) {
   case ERR:
@@ -254,7 +253,7 @@ static int Auth(int sock, UserData user)
   char *comm_buffer;
   int ret_value;
 
-  comm_buffer = malloc(BUFSIZ);
+  comm_buffer = (char*)malloc(BUFSIZ);
 
   if (ERR == ReadPOPMessage(sock, comm_buffer, BUFSIZ)) {
     ret_value = ERR;
@@ -302,9 +301,9 @@ static int ApopAuth(int sock, UserData user)
   char *digest;
   int i, ret_value;
 
-  comm_buffer = malloc(BUFSIZ);
-  apop_message = malloc(BUFSIZ);
-  digest = malloc(BUFSIZ);
+  comm_buffer = (char*)malloc(BUFSIZ);
+  apop_message = (char*)malloc(BUFSIZ);
+  digest = (char*)malloc(BUFSIZ);
 
   *apop_message = '\0';
 
@@ -362,7 +361,7 @@ static int RpopAuth(int sock, UserData user)
   char *comm_buffer;
   int ret_value;
 
-  comm_buffer = malloc(BUFSIZ);
+  comm_buffer = (char*)malloc(BUFSIZ);
 
   if (ERR == ReadPOPMessage(sock, comm_buffer, BUFSIZ)) {
     ret_value = ERR;
@@ -425,38 +424,33 @@ static void GetFromandSubject(int sock, char *buffer)
   FILE *in, *t_file;
   char *command, *t_filename, *Tmp_dir;
 
-  command = malloc(BUFSIZ * 3);
-  t_filename = malloc(BUFSIZ * 2);
-  Tmp_dir = malloc(BUFSIZ);
+  command = (char*)malloc(BUFSIZ * 3);
+  t_filename = (char*)malloc(BUFSIZ * 2);
+  Tmp_dir = (char*)malloc(BUFSIZ);
 
-  sprintf(Tmp_dir, "/tmp/xhtmp%s", getenv("USER"));
+  sprintf(Tmp_dir, "/tmp/xhtmp%s-%d", getenv("USER"),getpid());
   mkdir(Tmp_dir, S_IRWXU);
 
   t_filename[0] = '\0';
   sprintf(t_filename, "%s", tempnam(Tmp_dir, "xhtmp"));
 #endif
 
-  buf = malloc(BUFSIZ * 5);
-  memset(buf, '\0', BUFSIZ * 5);
-  tmp = malloc(BUFSIZ * 5);
-  tmp3 = malloc(BUFSIZ * 5);
-  memset(tmp, '\0', BUFSIZ * 5);
+  buf = (char*)malloc(BUFSIZ * 5);
+  tmp = (char*)malloc(BUFSIZ * 5);
+  tmp3 = (char*)malloc(BUFSIZ * 5);
 
 #ifdef PETNAME
-  from = malloc(BUFSIZ);
-  who = malloc(BUFSIZ);
-  pname = malloc(BUFSIZ);
-  memset(from,'\0',BUFSIZ);
-  memset(who,'\0',BUFSIZ);
-  memset(pname,'\0',BUFSIZ);
+  from = (char*)malloc(BUFSIZ);
+  who = (char*)malloc(BUFSIZ);
+  pname = (char*)malloc(BUFSIZ);
 #endif
 
+  *buffer = '\0';
   WritePOPCommand(sock, "TOP 1 0\n");
   if (ERR == ReadPOPMessage(sock, buf, BUFSIZ)) {
     fprintf(stderr, "fail pop command: TOP\n");
     goto End;
   }
-  memset(buf, '\0', BUFSIZ * 5);
 
   do {
     ReadPOPMessage(sock, buf, BUFSIZ * 5);
@@ -482,7 +476,7 @@ static void GetFromandSubject(int sock, char *buffer)
 	    tmp2 = strtok(NULL, "\n");
 	  if (strchr(tmp2, '<') && strchr(tmp2, '>')){
 	    strncpy(pname, strchr(tmp2, '<') + 1,
-		    strchr(tmp2, '>') - strchr(tmp2, '<') - 1);
+		    MIN(strchr(tmp2, '>') - strchr(tmp2, '<') - 1,BUFSIZ));
 	  } else {
 	    pname[0] = '\0';
 	  }
@@ -521,7 +515,6 @@ static void GetFromandSubject(int sock, char *buffer)
       }
 
       strncat(buffer, tmp, mar.from_maxlen);
-      memset(tmp, '\0', BUFSIZ * 5);
       i++;
     }
     tmp2 = strtok(NULL, "\n");

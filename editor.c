@@ -368,20 +368,16 @@ Widget CreateEditorWindow(Widget w, int Mode, struct tm tm_now)
   Edited_Month = tm_now.tm_mon;
   Edited_Day = tm_now.tm_mday;
 
-  string_f = malloc(BUFSIZ * 2);
-  string_e = malloc(256);
-  tmpstring = malloc(BUFSIZ * 2);
-
-  memset(string_f, '\0', BUFSIZ * 2);
-  memset(tmpstring, '\0', BUFSIZ * 2);
-  memset(string_e, '\0', 256);
+  string_f = (char*)malloc(BUFSIZ * 2);
+  string_e = (char*)malloc(256);
+  tmpstring = (char*)malloc(BUFSIZ * 2);
 
 
   for (i = 0; i < MAX_SCHED_NUM; i++) {
-    sched_list[i] = malloc(BUFSIZ * 3);
-    since_minutes[i] = malloc(BUFSIZ);
-    memset(sched_list[i], '\0', BUFSIZ * 3);
-    memset(since_minutes[i], '\0', BUFSIZ);
+    sched_list[i] = (char*)malloc(BUFSIZ * 3);
+    *sched_list[i] = '\0';
+    since_minutes[i] = (char*)malloc(BUFSIZ);
+    *since_minutes[i] = '\0';
   }
 
   /**
@@ -403,13 +399,11 @@ Widget CreateEditorWindow(Widget w, int Mode, struct tm tm_now)
 
   if (virgine) {
     virgine = 0;
-    schedule = malloc(sizeof(Schedule) * MAX_SCHED_NUM);
-    memset(schedule, '\0', sizeof(Schedule) * MAX_SCHED_NUM);
+    schedule = (Schedule*)malloc(sizeof(Schedule) * MAX_SCHED_NUM);
     ReadHoliday();
   }
   for (i = 0; i < NUM_OF_ARRAY(ResName); i++) {
-    messages[i] = malloc(BUFSIZ);
-    memset(messages[i], '\0', BUFSIZ);
+    messages[i] = (char*)malloc(BUFSIZ);
     ReadRcdata(ResName[i], messages[i], BUFSIZ);
   }
 
@@ -461,21 +455,21 @@ Widget CreateEditorWindow(Widget w, int Mode, struct tm tm_now)
   case 0:
     ParseConfigFile(tm_now.tm_hour, string_f);
     strcat(string_f, "\n\n");
-    if (*messages[0]) {
+    if (*messages[0] != '\0') {
       sprintf(tmpstring, messages[0], omr.month, omr.day);
     } else {
       sprintf(tmpstring, omr.open_f, omr.month, omr.day);
     }
     break;
   case 1:
-    if (*messages[0]) {
+    if (*messages[0] != '\0') {
       sprintf(tmpstring, messages[0], omr.month, omr.day);
     } else {
       sprintf(tmpstring, omr.open_f, omr.month, omr.day);
     }
     break;
   case 2:
-    if (*messages[3]) {
+    if (*messages[3] != '\0') {
       sprintf(tmpstring, messages[3], omr.month, omr.day);
     } else {
       sprintf(tmpstring, omr.alert_f, omr.month, omr.day);
@@ -520,7 +514,6 @@ Widget CreateEditorWindow(Widget w, int Mode, struct tm tm_now)
 
 
   for (j = 0; j < i; j++) {
-    memset(tmpstring, '\0', BUFSIZ * 2);
     if (j < schedules) {
       /**
        * もしスケジュールがあるならそっちの幅優先
@@ -530,7 +523,7 @@ Widget CreateEditorWindow(Widget w, int Mode, struct tm tm_now)
       strcpy(tmpstring, "12345678901234567890");
     }
 
-    labelargs[0].value = (XtArgVal) tmpstring;
+    labelargs[0].value = (XtArgVal)tmpstring;
 
     /**
      * Mode =0,1,2ならそのままlabelWidgetを作ってしまう
@@ -629,10 +622,8 @@ Widget CreateEditorWindow(Widget w, int Mode, struct tm tm_now)
        * 開始時間表示textWidgetの作成
        **/
 
-      memset(tmpstring, '\0', BUFSIZ * 2);
       strcpy(tmpstring, "00000");
-      memset(daystring[j], '\0', 256);
-      daystring[j][0] = '*';
+      strcpy(daystring[j],"*");
 
       XmbTextExtents(fset, tmpstring, strlen(tmpstring), &ink, &log);
 
@@ -733,7 +724,6 @@ Widget CreateEditorWindow(Widget w, int Mode, struct tm tm_now)
        * 取得した大きさを元にdayなるtextWidgetを作る
        **/
 
-      memset(leavestring[j], '\0', 256);
       if (j < schedules) {
 	if(schedule[j].leave <= 0){
 	  sprintf(leavestring[j], "*");
@@ -916,10 +906,8 @@ static int WriteSchedule(struct tm tm_now)
   if ((outputfile = fopen(filename, "w")) == NULL) {
     return 1;
   }
-  dtmp = malloc(BUFSIZ);
-  etmp = malloc(BUFSIZ);
-  memset(dtmp, '\0', BUFSIZ);
-  memset(etmp, '\0', BUFSIZ);
+  dtmp = (char*)malloc(BUFSIZ);
+  etmp = (char*)malloc(BUFSIZ);
 
   XtSetArg(darg[n], XtNstring, &dbuf);
   XtSetArg(earg[n], XtNstring, &ebuf);
@@ -1058,9 +1046,9 @@ static void ParseConfigFile(int now, char *ret_value)
   char command[128];
 #endif
 
-  tmp1 = malloc(BUFSIZ);
-  tmp2 = malloc(BUFSIZ);
-  tmp3 = malloc(BUFSIZ);
+  tmp1 = (char*)malloc(BUFSIZ);
+  tmp2 = (char*)malloc(BUFSIZ);
+  tmp3 = (char*)malloc(BUFSIZ);
 
   *ret_value = '\0';
   return_size = 0;

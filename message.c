@@ -47,7 +47,7 @@ int ReadRcfile(char *filename)
 #endif
 
   for (i = 0; i < NUM_OF_ARRAY(RcName); i++) {
-    RcData[i] = malloc(1);
+    RcData[i] = (char*)malloc(1);
     *RcData[i] = '\0';
   }
 
@@ -65,12 +65,9 @@ int ReadRcfile(char *filename)
   }
 #endif
 
-  tmp = malloc(BUFSIZ);
-  tmp2 = malloc(BUFSIZ);
-  tmp3 = malloc(BUFSIZ);
-  memset(tmp,'\0',BUFSIZ);
-  memset(tmp2,'\0',BUFSIZ);
-  memset(tmp3,'\0',BUFSIZ);
+  tmp = (char*)malloc(BUFSIZ);
+  tmp2 = (char*)malloc(BUFSIZ);
+  tmp3 = (char*)malloc(BUFSIZ);
 
   while (fgets(tmp, BUFSIZ, infile) != NULL) {
     sscanf(tmp, "%s %s", tmp2, tmp3);
@@ -85,9 +82,6 @@ int ReadRcfile(char *filename)
       Escape2Return(tmp3);
       RcData[i] = strdup(tmp3);
     }
-    memset(tmp,'\0',BUFSIZ);
-    memset(tmp2,'\0',BUFSIZ);
-    memset(tmp3,'\0',BUFSIZ);
   }
 
   free(tmp);
@@ -112,9 +106,9 @@ void ReadRcdata(const char *rc_name, char *ret_value, int size)
   int i;
 
   if(ret_value == NULL) return;
-  memset(ret_value, '\0', size);
+  *ret_value = '\0';
   if ((i = RcHash(rc_name)) != -1) {
-    strncpy(ret_value, RcData[i], MIN(size, strlen(RcData[i])));
+    strcpy(ret_value, RcData[i]);
 
     if (ret_value[strlen(ret_value) - 1] == '\n')
       ret_value[strlen(ret_value) - 1] = '\0';

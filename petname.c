@@ -114,12 +114,11 @@ static void ReadAddrBook()
   }
 #endif
 
-  buffer = malloc(BUFSIZ);
-  pname = malloc(BUFSIZ);
-  addr = malloc(BUFSIZ);
+  buffer = (char*)malloc(BUFSIZ);
+  pname = (char*)malloc(BUFSIZ);
+  addr = (char*)malloc(BUFSIZ);
 
   while (fgets(buffer, BUFSIZ, fp) != NULL) {
-    memset(pname, '\0', BUFSIZ);
     j = 0;
     address_list = NULL;
 
@@ -292,11 +291,10 @@ void ReadPetname(char *petname_f)
   }
 #endif				/** EXT_FILTER **/
 
-  who = malloc(BUFSIZ);
-  tmp = malloc(BUFSIZ);
-  tmp2 = malloc(BUFSIZ);
-  buffer = malloc(BUFSIZ);
-  memset(tmp2, '\0', BUFSIZ);
+  who = (char*)malloc(BUFSIZ);
+  tmp = (char*)malloc(BUFSIZ);
+  tmp2 = (char*)malloc(BUFSIZ);
+  buffer = (char*)malloc(BUFSIZ);
 
   while (fgets(buffer, BUFSIZ, pfp) != NULL) {
     sscanf(buffer, "%s %s", who, tmp);

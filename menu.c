@@ -152,7 +152,7 @@ Widget CreateMenuWindow(Widget w)
   pdrec.enable_widget = w;
 
   for (i = 0; i < NUM_OF_ARRAY(ResName); i++) {
-    messages[i] = malloc(BUFSIZ);
+    messages[i] = (char*)malloc(BUFSIZ);
     ReadRcdata(ResName[i], messages[i], BUFSIZ);
   }
 

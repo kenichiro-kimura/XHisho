@@ -108,7 +108,7 @@ static int readWaveFile(int fd, PWAVEFORMAT pwavefmt, u_int * datasize)
 	fprintf(stderr, "Error: Illegal header!\n");
 	return 3;
       }
-      buff = malloc((size_t) size);
+      buff = (char*)malloc((size_t) size);
       read(fd, buff, size);
       memcpy((void *) pwavefmt, (void *) buff, sizeof(WAVEFORMAT));
       free(buff);

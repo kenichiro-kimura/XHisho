@@ -74,7 +74,8 @@ test "$with_png" = "yes"
 
 if test "$with_png" = "yes";
 then
-AC_CHECK_LIB(png, png_create_read_struct)
+    LDFLAGS="$LDFLAGS -lm"
+    AC_CHECK_LIB(png, png_create_read_struct)
 fi
 
 AC_ARG_ENABLE(personal,

@@ -216,7 +216,7 @@ Widget CreateCalendarWindow(Widget w, int Month, struct tm tm_now)
   Edited_Month = Month;
   Edited_Year = tm_now.tm_year;
 
-  message = malloc(BUFSIZ);
+  message = (char*)malloc(BUFSIZ);
 
   /**
    * 指定された月の初日の曜日を取得する

@@ -243,7 +243,6 @@ int CheckMail(XtPointer cl, XtIntervalId * id)
   NewSize = (stat(m_filename, &MailStat) == 0) ? MailStat.st_size : 0;
 
   buf = (char*)malloc(BUFSIZ);
-  memset(buf, '\0', BUFSIZ);
   tmp = (char*)malloc(BUFSIZ);
   message = (char*)malloc(BUFSIZ);
 
@@ -311,10 +310,8 @@ int CheckPOP3(XtPointer cl, XtIntervalId * id)
   char *tmp;
 
   buf = (char*)malloc(BUFSIZ);
-  memset(buf, '\0', BUFSIZ);
   message = (char*)malloc(BUFSIZ);
   tmp = (char*)malloc(BUFSIZ);
-  memset(tmp, '\0', BUFSIZ);
 
   switch (Biff) {
   case APOP:
@@ -365,15 +362,16 @@ int CheckYoubinNow(XtPointer cl, XtIntervalId * id){
   FILE *fp;
   char* tmp;
   char* message;
+  struct stat MailStat;
 
   tmp = (char*)malloc(BUFSIZ);
   message = (char*)malloc(BUFSIZ);
 
   if((fp = fopen(YoubinFile,"r")) != NULL){
-
     while(fgets(tmp,BUFSIZ,fp) != NULL)
       num_of_mail++;
 
+    fclose(fp);
   }
 
   ReadRcdata("newmail",tmp,BUFSIZ);
@@ -504,7 +502,7 @@ Widget CreateMailAlert(Widget w, int Mode)
   }
 
   for (i = 0; i < NUM_OF_ARRAY(ResName); i++) {
-    messages[i] = malloc(BUFSIZ);
+    messages[i] = (char*)malloc(BUFSIZ);
     ReadRcdata(ResName[i], messages[i], BUFSIZ);
   }
 
@@ -626,18 +624,16 @@ static void GetFromandSubject(char *m_file, char *From)
 #endif				/** PETNAME **/
 
   *From = '\0';
-  tmp2 = malloc(BUFSIZ);
-  tmp1 = malloc(BUFSIZ);
+  tmp2 = (char*)malloc(BUFSIZ);
+  tmp1 = (char*)malloc(BUFSIZ);
 
-  memset(tmp1, '\0', BUFSIZ);
-  memset(tmp2, '\0', BUFSIZ);
-  buf = malloc(BUFSIZ);
-  head1 = malloc(BUFSIZ);
-  head2 = malloc(BUFSIZ);
+  buf = (char*)malloc(BUFSIZ);
+  head1 = (char*)malloc(BUFSIZ);
+  head2 = (char*)malloc(BUFSIZ);
 
 #ifdef PETNAME
-  who = malloc(BUFSIZ);
-  pname = malloc(BUFSIZ);
+  who = (char*)malloc(BUFSIZ);
+  pname = (char*)malloc(BUFSIZ);
 #endif
 
   if ((fp = fopen(m_file, "r")) == NULL) {
@@ -685,7 +681,6 @@ static void GetFromandSubject(char *m_file, char *From)
 
 #ifdef PETNAME
 	if (!strncmp(buf, "From:", 5)) {
-	  memset(who, '\0', BUFSIZ);
 	  strcpy(tmp1, buf);
 
 	  strcpy(who, buf + 6);
@@ -703,15 +698,12 @@ static void GetFromandSubject(char *m_file, char *From)
 	    }
 	  }
 	  SearchPetname(tmp1, pname);
-	  length = MIN(strlen(tmp1), mar.from_maxlen);
-	  tmp1[length - 1] = '\n';
-	  tmp1[length] = '\0';
-	  strcat(From, tmp1);
+	  strncat(From, tmp1, MIN(strlen(tmp1), mar.from_maxlen));
 	} else {
-	  strcat(From, tmp2);
+	  strncat(From, tmp2,MIN(strlen(tmp2), mar.from_maxlen));
 	}
 #else
-	strcat(From, tmp2);
+	strncat(From, tmp2, MIN(strlen(tmp2), mar.from_maxlen));
 #endif
 	i++;
       }
@@ -742,14 +734,14 @@ static void YoubinInit()
   static FILE *pfp2;
   int pid,status;
 
-  command = malloc(256);
+  command = (char*)malloc(256);
 
   if (stat(mar.y_command, &Ystat) == -1) {
     fprintf(stderr, "no such youbin command, \"%s\"\n", mar.y_command);
     exit(1);
   }
 
-  sprintf(Tmp_dir, "/tmp/xhtmp%s", getenv("USER"));
+  sprintf(Tmp_dir, "/tmp/xhtmp%s-%d", getenv("USER"),getpid());
   sprintf(YoubinFile, "/tmp/xhtmp%s/xhyoubin", getenv("USER"));
 
   mkdir(Tmp_dir, S_IRWXU);
@@ -798,25 +790,17 @@ static void CheckYoubin(Widget w, int *fid, XtInputId * id)
 #endif
 
 
-  From = malloc(BUFSIZ);
-  memset(From, '\0', BUFSIZ);
-
-  tmp2 = malloc(BUFSIZ);
-  memset(tmp2, '\0', BUFSIZ);
-
-  buf = malloc(BUFSIZ);
-  memset(buf, '\0', BUFSIZ);
+  From = (char*)malloc(BUFSIZ * 5);
+  *From = '\0';
+  tmp2 = (char*)malloc(BUFSIZ);
+  buf = (char*)malloc(BUFSIZ);
   tmp = (char*)malloc(BUFSIZ);
   message = (char*)malloc(BUFSIZ);
 
-
 #ifdef PETNAME
-  from_who = malloc(BUFSIZ);
-  who = malloc(BUFSIZ);
-  pname = malloc(BUFSIZ);
-  memset(from_who, '\0', BUFSIZ);
-  memset(who, '\0', BUFSIZ);
-  memset(pname, '\0', BUFSIZ);
+  from_who = (char*)malloc(BUFSIZ);
+  who = (char*)malloc(BUFSIZ);
+  pname = (char*)malloc(BUFSIZ);
 #endif				/** PETNAME **/
 
 
@@ -872,9 +856,9 @@ static void CheckYoubin(Widget w, int *fid, XtInputId * id)
 	  right_ptr = strchr(next_ptr, '>');
 	  if (left_ptr != NULL && right_ptr != NULL){
 	    strncpy(pname, strchr(buf, '<') + 1,
-		    strchr(buf, '>') - strchr(buf, '<') - 1);
+		    MIN(strchr(buf, '>') - strchr(buf, '<') - 1,BUFSIZ));
 	  } else {
-	    pname[0] = '\0';
+	    *pname = '\0';
 	  }
 	}
 	SearchPetname(tmp2, pname);
@@ -904,10 +888,8 @@ static void CheckYoubin(Widget w, int *fid, XtInputId * id)
 	strcpy(tmp2, tmp1);
 #endif
 
-      length = MIN(mar.from_maxlen, strlen(tmp2));
-      tmp2[length - 1] = '\n';
-      tmp2[length] = '\0';
-      strncat(From, tmp2, mar.from_maxlen);
+      strncat(From, tmp2, MIN(mar.from_maxlen - 1, strlen(tmp2)));
+      strcat(From,"\n");
       i++;
     }
     tmp1 = strtok(NULL, "\n");
@@ -917,8 +899,10 @@ static void CheckYoubin(Widget w, int *fid, XtInputId * id)
   ReadRcdata("newmail",tmp,BUFSIZ);
   if(*tmp == '\0')
     sprintf(message,mar.mail_l,i);
-  else
+  else{
     sprintf(message,tmp,i);
+  }
+
 
   XtVaSetValues(label, XtNlabel, message, NULL);
   XtVaSetValues(from, XtNlabel, From, NULL);

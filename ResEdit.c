@@ -218,7 +218,7 @@ void ChangeBar(Widget w, caddr_t cdata, int p)
 {
   char *tmp_string;
 
-  tmp_string = malloc(20);
+  tmp_string = (char*)malloc(20);
 
   sprintf(tmp_string, "%3d", (int) (*(float *) p * rer.Pref[(int) cdata].max
 				    + rer.Pref[(int) cdata].offset));
@@ -264,8 +264,7 @@ Widget CreateResEditWindow(Widget w)
   };
 
   Longest_label = 0;
-  message = malloc(BUFSIZ);
-  memset(message,'\0',BUFSIZ);
+  message = (char*)malloc(BUFSIZ);
   ReadRcdata("resource", message, BUFSIZ);
 
   /**
@@ -397,10 +396,10 @@ void ReadPrefFile()
   FILE *fp;
   int i;
 
-  filename = malloc(BUFSIZ);
-  buf = malloc(BUFSIZ);
-  tmp1 = malloc(BUFSIZ);
-  tmp2 = malloc(BUFSIZ);
+  filename = (char*)malloc(BUFSIZ);
+  buf = (char*)malloc(BUFSIZ);
+  tmp1 = (char*)malloc(BUFSIZ);
+  tmp2 = (char*)malloc(BUFSIZ);
 
   for (i = 0; i < MAX_PREF_NUM; i++) {
     rer.Pref[i].is_set = 0;

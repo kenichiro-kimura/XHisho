@@ -64,11 +64,11 @@ int CheckSchedule(OpenMessageRes * l_omr, Schedule * schedule, int WeeklyCheck, 
 #endif      
 
 
-  tmp1 = malloc(BUFSIZ);
-  tmp2 = malloc(BUFSIZ);
-  tmp3 = malloc(BUFSIZ);
-  tmp4 = malloc(BUFSIZ);
-  leave = malloc(BUFSIZ);
+  tmp1 = (char*)malloc(BUFSIZ);
+  tmp2 = (char*)malloc(BUFSIZ);
+  tmp3 = (char*)malloc(BUFSIZ);
+  tmp4 = (char*)malloc(BUFSIZ);
+  leave = (char*)malloc(BUFSIZ);
 
   i = 0;
 
@@ -165,8 +165,8 @@ int CheckSchedule(OpenMessageRes * l_omr, Schedule * schedule, int WeeklyCheck, 
 
 #ifdef LIBMHC
   if(WeeklyCheck){
-    t_filename = malloc(BUFSIZ * 2);
-    Tmp_dir = malloc(BUFSIZ);
+    t_filename = (char*)malloc(BUFSIZ * 2);
+    Tmp_dir = (char*)malloc(BUFSIZ);
 
     sprintf(Tmp_dir, "/tmp/xhtmp%s", getenv("USER"));
     mkdir(Tmp_dir, S_IRWXU);
@@ -194,7 +194,7 @@ int CheckSchedule(OpenMessageRes * l_omr, Schedule * schedule, int WeeklyCheck, 
 	unlink(t_filename);
       }
 #else
-      strncpy(tmp1, ent_ptr->Entry[X_SC_Subject],MIN(strlen(ent_ptr->Entry[X_SC_Subject],BUFSIZ)));
+      strncpy(tmp1, ent_ptr->Entry[X_SC_Subject],MIN(strlen(ent_ptr->Entry[X_SC_Subject]),BUFSIZ));
 #endif
 
       if(ent_ptr->Entry[X_SC_Time] && strlen(ent_ptr->Entry[X_SC_Time]) >= 4){
@@ -428,11 +428,11 @@ static void ReadHolidayFile(char *filename)
   HolidayList *tlist;
   int m, d;
 
-  tmp1 = malloc(BUFSIZ);
-  tmp2 = malloc(BUFSIZ);
-  tmp3 = malloc(BUFSIZ);
-  tmp4 = malloc(BUFSIZ);
-  includefile = malloc(BUFSIZ);
+  tmp1 = (char*)malloc(BUFSIZ);
+  tmp2 = (char*)malloc(BUFSIZ);
+  tmp3 = (char*)malloc(BUFSIZ);
+  tmp4 = (char*)malloc(BUFSIZ);
+  includefile = (char*)malloc(BUFSIZ);
 
   if ((inputfile = fopen(filename, "r")) != NULL) {
     while (fgets(tmp1, BUFSIZ - 1, inputfile) != NULL) {
