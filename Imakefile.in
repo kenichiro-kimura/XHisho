@@ -80,13 +80,14 @@ STD_INCLUDES = -I$(IMAGELIBDIR) -I/usr/local/include -I$(MHCLIBDIR)
 EXTRA_LDOPTIONS = -L/usr/local/lib
 
 #ifdef USE_KAWARI
-KAWARI_OBJ = kawari/kawari.o kawari/kawari_crypt.o kawari/base64.o
+KAWARIDIR = kawari
+KAWARI_OBJ = $(KAWARIDIR)/$(KAWARIDIR).o $(KAWARIDIR)/$(KAWARIDIR)_crypt.o $(KAWARIDIR)/base64.o
 KAWARI_LIB = -lstdc++
 #endif
 
 #define IHaveSubdirs
 
-SUBDIRS = $(IMAGELIBDIR) $(MHCLIBDIR) $(XADLDIR)
+SUBDIRS = $(IMAGELIBDIR) $(MHCLIBDIR) $(XADLDIR) $(KAWARIDIR)
 
 #define PassCDebugFlags
 
@@ -109,6 +110,7 @@ OPTION_OBJS = option.o
 OBJS = $(BASE_OBJS) $(PETNAME_OBJS) $(OPTION_OBJS) $(KAWARI_OBJ)
 
 SRCS = $(OBJS:.o=.c)
+
 
 #ifdef AKARI
 ComplexProgramTarget(xakari)
