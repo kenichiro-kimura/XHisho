@@ -9,4 +9,6 @@ makefile:
 
 clean: Makefile
 	make -f Makefile clean
-	
+
+install: Makefile
+	make -f Makefile install
