@@ -200,17 +200,7 @@ JPEG$B%i%$%V%i%j$d(BPNG$B%i%$%V%i%j$,$&$^$/8+$D$+$i$J$$$H$-$O!"(Bconfigure$
 #make install
 
 (--enable-personal$B$J$i(Bsu$B$OITMW(B)
-$B$G=*$j$G$9!#$b$7!"(Bmake$B$,$&$^$/$$$+$J$+$C$?$i(Bconfigure$B$N$"$H$K(B
-
-%xmkmf;make -f Makefile
-
-$B$b$7$/$O(B
-
-%make -f makefile Makefile;make -f Makefile
-
-$B$H$7$F$_$F$/$@$5$$!#(B
-
-
+$B$G=*$j$G$9!#(B
 
 $B$^$?!"GX7J$KD%$jIU$1$k3($N%G!<%?$OI,?\$G$9!#L5$$$H5/F0$7$^$;$s!#%5%]!<(B
 $B%H$7$F$$$k2hA|7A<0$O8=:_$N$H$3$m(BXPM$B!"(BBMP$B!"(BJPEG$B!"(BPNG$B$G$9$N$G!"$3$l0J30(B
@@ -395,11 +385,23 @@ $HOME/.Schedule/xhs.holiday$B$H$$$&%U%!%$%k$K5YF|$r5-=R$9$k$H!"%+%l%s%@!<(B
 $B$r$=$N$^$^;H$($k(B)$B$3$H$b$G$-$^$9!#$=$N>l9g!"%j%=!<%9$r0J2<$N$h$&$K%;%C(B
 $B%H$7$^$9!#(B
 
-
 XHisho.OpenMessage.scheduleDir: Calendar/
 XHisho.OpenMessage.xcalendarCompatible: TRUE
 
 $B$?$@$7!"%U%!%$%k$N=q<0$O(Bxhs****$B$K=`$8$F=q$$$F$/$@$5$$!#(B
+
+
+$B$^$?!"(Bmhc$B$r;H$o$l$F$$$kJ}$OM=Dj$N%(%G%#%C%H$K(Bgemcal$B$r;H$$$?$$$H$$$&$3(B
+$B$H$b$"$k$H;W$$$^$9!#$=$N>l9g$O!"%j%=!<%9$r0J2<$N$h$&$K%;%C%H$7$^$9!#(B
+
+XHisho*extEditCommand: gemcal
+
+$B$3$l$G!"%9%1%8%e!<%k%(%G%#%C%?$NBe$j$K(Bgemcal$B$,5/F0$7$^$9!#$b$A$m$s!"B>(B
+$B$N%3%^%s%I$rEPO?$9$k$3$H$b2DG=$G$9!#Nc$($P(Bxcalendar$B$r;H$&$J$i(B
+
+XHisho*extEditCommand: xcalendar
+
+$B$H$9$k$HNI$$$G$7$g$&!#(B
 
 
 
