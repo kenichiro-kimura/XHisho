@@ -681,6 +681,7 @@ static void InsertMessage(XtPointer cl,XtIntervalId* id)
   XRectangle ink, log;
   int max_len;
   Dimension width;
+
   static int pos = 0;
   int is_display = 0;
   static int is_end = 0;
@@ -743,8 +744,8 @@ static void InsertMessage(XtPointer cl,XtIntervalId* id)
       }
 
       XtVaGetValues(w, XtNfontSet, &fset, XtNwidth,&width,NULL);
-      XmbTextExtents(fset, "a", 1, &ink, &log);
-      max_len = width / log.width - 2;
+      XmbTextExtents(fset, chr_ptr, strlen(chr_ptr), &ink, &log);
+      max_len = width - 2;
 
       if(!IsPopped(XtParent(w)))
 	XtPopup(XtParent(XtParent(w)), XtGrabNone);
@@ -757,8 +758,8 @@ static void InsertMessage(XtPointer cl,XtIntervalId* id)
       if(is_display == 2){
 	strcpy(buffer,"\n");
       } else {
-	if((pos += strlen(chr_ptr)) > max_len){
-	  pos = strlen(chr_ptr);
+	if((pos += log.width) > max_len){
+	  pos = log.width;
 	  sprintf(buffer,"\n%s",chr_ptr);
 	} else {
 	  strcpy(buffer,chr_ptr);
