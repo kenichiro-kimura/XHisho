@@ -75,8 +75,8 @@ http://meister-d-i.hoops.ne.jp/
 
 5. SSTP
 
-SSTPのSEND(のスクリプト)だけ受け付ける、いい加減なモジュールが内蔵され
-てます。起動オプションで
+SSTPのSEND/1.1とEXECUTE/1.0だけ受け付ける、いい加減なモジュールが内蔵
+されてます。起動オプションで
 
 xhisho -sstp
 
@@ -84,7 +84,8 @@ xhisho -sstp
 
 xhisho -sstp 11000
 
-とします。
+とします。ちなみに、あまりちゃんと作ってないので「２秒以内に反応が..」
+といった細かい部分の動作は期待しないでください(ぉぃ
 
 うまく動かないときは、同等の働きをする外部コマンドをapps/sstpとし
 て入れてます。デフォルトでポート9801を見張るので、11000を見張りたいと
@@ -100,7 +101,9 @@ xhisho -optioncmd "sstp 11000"
 
 6. 使い方
 
-起動時に、-optioncmd オプションで外部コマンドを指定します。例えば
+
+外部コマンドを使うときは、起動時に-optioncmd オプションで外部コマンド
+を指定します。例えば
 
 %xhisho -optioncmd /usr/local/bin/nisesakura
 
@@ -179,7 +182,10 @@ xhisho -optioncmd "sstp 11000"
                       AIメッセージを表示しません。
   (リソース: XHisho*kawariWait (整数値)) 
 
-・kawaridir         : 「華和梨」の辞書のあるディレクトリ
+・kawaridir         : 「華和梨」の辞書のあるディレクトリ。「/」か「.」
+                      以外で始まるディレクトリ名は、ホーム以下のものと
+                      見なされます。例えば、「mayura」とすると、実際に
+                      は「~/mayura/」として扱われます。
   (リソース: XHisho*kawariDir (文字列)) 
 
 

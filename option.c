@@ -8243,7 +8243,7 @@ static void sstp(int port)
     accept_desc = accept(sockdesc, (struct sockaddr*)&fromadd, &fromlen);
     status = 0;
     if(accept_desc != -1){
-      write(accept_desc,"200 OK\r\n",strlen("200 OK\r\n"));
+      /*      write(accept_desc,"200 OK\r\n",strlen("200 OK\r\n")); */
       is_script = is_command = 0;
       stream = fdopen(accept_desc,"rw");
       while(1){
@@ -8365,12 +8365,14 @@ static void sstp(int port)
 	fprintf(stream,"400 Bad Request\r\n");
 	break;
       case 3:
-	if(is_script)
+	if(is_script){
 	  fprintf(stream,"204 No Connect\r\n");
-	else if (is_command)
+	} else if (is_command){
 	  fprintf(stream,"XHisho with option\r\n");
-	else
+	  fprintf(stream,"200 OK\r\n");
+	} else {
 	  fprintf(stream,"204 No Connect\r\n");
+	}
 	break;
       default:
 	fprintf(stream,"501 Not Implemented\r\n");
