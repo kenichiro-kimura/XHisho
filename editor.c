@@ -1058,6 +1058,7 @@ static void ParseConfigFile(int now, char *ret_value)
   if ((inputfile = fopen(omr.cfg_file, "r")) != NULL) {
 
 #ifdef EXT_FILTER
+    fclose(inputfile);
     sprintf(command, "%s %s", omr.ext_filter, omr.cfg_file);
     inputfile = popen(command, "r");
 #endif

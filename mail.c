@@ -645,13 +645,13 @@ static void GetFromandSubject(char *m_file, char *From)
   pname = (char*)malloc(BUFSIZ);
 #endif
 
+#ifdef EXT_FILTER
+  sprintf(command, "%s %s", FilterCommand, m_file);
+  fp = popen(command, "r");
+#else
   if ((fp = fopen(m_file, "r")) == NULL) {
     return;
   }
-#ifdef EXT_FILTER
-  fclose(fp);
-  sprintf(command, "%s %s", FilterCommand, m_file);
-  fp = popen(command, "r");
 #endif				/** EXT_FILTER **/
 
   while (fgets(buf, BUFSIZ, fp) != NULL && i < mar.mail_lines) {

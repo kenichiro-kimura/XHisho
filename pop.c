@@ -81,6 +81,7 @@ static int ReadUserFile(UserData * user)
   stat(filename, &sb);
   if ((sb.st_mode) & (S_IRGRP | S_IWGRP | S_IXGRP | S_IROTH | S_IWOTH | S_IXOTH)) {
     fprintf(stderr, "check your password file's permission,%s\n", filename);
+    fclose(fp);
     return INVALID_PERMISSION;
   }
   *(user->name) = *(user->pass) = '\0';
@@ -484,6 +485,7 @@ static void GetFromandSubject(int sock, char *buffer)
 #ifdef EXT_FILTER
       if ((t_file = fopen(t_filename, "w")) == NULL) {
 	fprintf(stderr, "can't open temporary file,%s\n", t_filename);
+	strcpy(tmp, tmp3);
       } else {
 	fprintf(t_file, "%s\n", tmp3);
 	fclose(t_file);

@@ -177,6 +177,7 @@ int CheckSchedule(OpenMessageRes * l_omr, Schedule * schedule, int WeeklyCheck, 
 #ifdef EXT_FILTER
       if ((t_file = fopen(t_filename, "w")) == NULL) {
 	fprintf(stderr, "can't open temporary file,%s\n", t_filename);
+	strncpy(tmp1, ent_ptr->Entry[X_SC_Subject],MIN(strlen(ent_ptr->Entry[X_SC_Subject]),BUFSIZ));
       } else {
 	fprintf(t_file, "%s\n", ent_ptr->Entry[X_SC_Subject]);
 	fclose(t_file);
@@ -221,7 +222,7 @@ int CheckSchedule(OpenMessageRes * l_omr, Schedule * schedule, int WeeklyCheck, 
     CloseMHC(mhc_ptr);
     free(t_filename);
   }
-#endif      
+#endif      /* ifdef LIBMHC */
     
   if (!WeeklyCheck) {
     free(tmp1);
@@ -248,6 +249,7 @@ int CheckSchedule(OpenMessageRes * l_omr, Schedule * schedule, int WeeklyCheck, 
   }
 #ifdef EXT_FILTER
   sprintf(command, "%s %s", l_omr->ext_filter, filename);
+  fclose(inputfile);
   inputfile = popen(command, "r");
 #endif
 
@@ -387,11 +389,7 @@ int ExistSchedule(int Month, int Day)
 
   i = (stat(filename, &S_stat) == 0) ? S_stat.st_size : 0;
 
-  if ((inputfile = fopen(filename, "r")) != NULL && i) {
-    fclose(inputfile);
-    return (1);
-  }
-  return (0);
+  return (i);
 }
 
 void ReadHoliday()
@@ -423,71 +421,74 @@ static void ReadHolidayFile(char *filename)
   HolidayList *tlist;
   int m, d;
 
+  if ((inputfile = fopen(filename, "r")) == NULL)
+    return;
+
   tmp1 = (char*)malloc(BUFSIZ);
   tmp2 = (char*)malloc(BUFSIZ);
   tmp3 = (char*)malloc(BUFSIZ);
   tmp4 = (char*)malloc(BUFSIZ);
   includefile = (char*)malloc(BUFSIZ);
 
-  if ((inputfile = fopen(filename, "r")) != NULL) {
-    while (fgets(tmp1, BUFSIZ - 1, inputfile) != NULL) {
+  while (fgets(tmp1, BUFSIZ - 1, inputfile) != NULL) {
+
+    /**
+     * もし # で始まっていたらコメントとみなし、その後1行を無視する。
+     * 空行も同様。
+     **/
+    *tmp2 = *tmp3 = *tmp4 = '\0';
+
+    if (tmp1[0] != '#' && tmp1[0] != '\0' && tmp1[0] != '\n' && tmp1[0] != ' ') {
+      sscanf(tmp1, "%s %s", tmp2, tmp3);
 
       /**
-       * もし # で始まっていたらコメントとみなし、その後1行を無視する。
-       * 空行も同様。
+       * %include行の処理
        **/
-      *tmp2 = *tmp3 = *tmp4 = '\0';
-
-      if (tmp1[0] != '#' && tmp1[0] != '\0' && tmp1[0] != '\n' && tmp1[0] != ' ') {
-	sscanf(tmp1, "%s %s", tmp2, tmp3);
+      if (!strcmp(tmp2, "%include")) {
 
 	/**
-	 * %include行の処理
+	 * もしファイル名が <>で囲まれていたら,sched_dirを展開する
 	 **/
-	if (!strcmp(tmp2, "%include")) {
-
-	  /**
-	   * もしファイル名が <>で囲まれていたら,sched_dirを展開する
-	   **/
-	  if (*tmp3 == '<' && strchr(tmp3, '>') != NULL) {
-	    sprintf(includefile, "%s/%s/", getenv("HOME"), omr.sched_dir);
-	    strcpy(tmp4, strtok(strchr(tmp3, '<') + 1, ">"));
-	    strcat(includefile, tmp4);
-	  } else {
-	    strcpy(includefile, tmp3);
-	  }
-	  /**
-	   * 単に再帰的に読んでるだけなので、includeが入れ子になったらはまる。
-	   * Cのプリプロセッサのようにifdefなんかが使えるといいけど、そこまで
-	   * やる気はない。
-	   **/
-	  ReadHolidayFile(includefile);
-	}
-	strncpy(tdate, tmp2, sizeof(tdate));
-	tdate[4] = '\0';
-	strncpy(tmp4, tdate, sizeof(char) * 2);
-	m = atoi(tmp4) - 1;
-	strncpy(tmp4, tdate + 2, sizeof(char) * 2);
-	d = atoi(tmp4);
-
-	if (m < 0 || m > 11)
-	  continue;
-
-	if (Hlist[m] == NULL) {
-	  Hlist[m] = HolidayList_new(d, tmp3);
+	if (*tmp3 == '<' && strchr(tmp3, '>') != NULL) {
+	  sprintf(includefile, "%s/%s/", getenv("HOME"), omr.sched_dir);
+	  strcpy(tmp4, strtok(strchr(tmp3, '<') + 1, ">"));
+	  strcat(includefile, tmp4);
 	} else {
-	  tlist = HolidayList_new(d, tmp3);
-	  tlist->next = Hlist[m];
-	  Hlist[m] = tlist;
+	  strcpy(includefile, tmp3);
 	}
+	/**
+	 * 単に再帰的に読んでるだけなので、includeが入れ子になったらはまる。
+	 * Cのプリプロセッサのようにifdefなんかが使えるといいけど、そこまで
+	 * やる気はない。
+	 **/
+	ReadHolidayFile(includefile);
+      }
+      strncpy(tdate, tmp2, sizeof(tdate));
+      tdate[4] = '\0';
+      strncpy(tmp4, tdate, sizeof(char) * 2);
+      m = atoi(tmp4) - 1;
+      strncpy(tmp4, tdate + 2, sizeof(char) * 2);
+      d = atoi(tmp4);
+      
+      if (m < 0 || m > 11)
+	continue;
+      
+      if (Hlist[m] == NULL) {
+	Hlist[m] = HolidayList_new(d, tmp3);
+      } else {
+	tlist = HolidayList_new(d, tmp3);
+	tlist->next = Hlist[m];
+	Hlist[m] = tlist;
       }
     }
   }
+
   free(tmp1);
   free(tmp2);
   free(tmp3);
   free(tmp4);
   free(includefile);
+  fclose(inputfile);
 }
 
 int ExistHoliday(int Year, int Month, int Day)

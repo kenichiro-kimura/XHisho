@@ -277,16 +277,15 @@ void ReadPetname(char *petname_f)
     Petname[i] = NULL;
   }
 
-  if ((pfp = fopen(petname_f, "r")) == NULL) {
-    fprintf(stderr, "no petname file:%s\n", petname_f);
-    return;
-  }
 #ifdef EXT_FILTER
-
-  fclose(pfp);
   sprintf(pcommand, "%s %s", FilterCommand, petname_f);
   if ((pfp = popen(pcommand, "r")) == NULL) {	/** reopen as pipe **/
     fprintf(stderr, "no filter command:%s\n", pcommand);
+    return;
+  }
+#else
+  if ((pfp = fopen(petname_f, "r")) == NULL) {
+    fprintf(stderr, "no petname file:%s\n", petname_f);
     return;
   }
 #endif				/** EXT_FILTER **/
