@@ -9,11 +9,11 @@ makefile: Imakefile config.h image/Imakefile xadl/Imakefile libmhc/Imakefile
 	mv makefile _makefile
 
 clean:
-	make -f makefile clean
-	rm -f makefile */makefile
+	make -f _makefile clean
+	rm -f _makefile */makefile
 
 install:
-	make -f makefile install
+	make -f _makefile install
 
 install.man:
-	make -f makefile install.man
+	make -f _makefile install.man
