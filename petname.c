@@ -104,6 +104,7 @@ static void ReadAddrBook()
 #endif
 
   sprintf(fname, "%s/.im/Addrbook", getenv("HOME"));
+  address_list = pname_ptr = NULL;
 
 #ifdef EXT_FILTER
 
@@ -122,7 +123,6 @@ static void ReadAddrBook()
   buffer = malloc(BUFSIZ);
   pname = malloc(BUFSIZ);
   addr = malloc(BUFSIZ);
-  address_list = pname_ptr = NULL;
 
   while (fgets(buffer, BUFSIZ, fp) != NULL) {
     memset(pname, 0, BUFSIZ);
@@ -198,10 +198,10 @@ static void ReadAddrBook()
       address_list = pname_ptr;
     }
     /**
-     * Petname の読み込み。" で囲まれた文字列中の空白文字はPetnameの1
-     * 部。" で囲まれていない空白文字はPetnameの区切り文字。
+     * Petname の読み込み。"" で囲まれた文字列中の空白文字はPetnameの1
+     * 部。"" で囲まれていない空白文字はPetnameの区切り文字。
      *
-     * int in_quote = 1 (現在呼んでいる文字は " で囲まれた文字列の一部
+     * int in_quote = 1 (現在呼んでいる文字は "" で囲まれた文字列の一部
      *                   である)
      **/
 
@@ -280,15 +280,9 @@ void ReadPetname(char *petname_f)
   char pcommand[128];
 #endif				/** EXT_FILTER **/
 
-  who = malloc(BUFSIZ);
-  tmp = malloc(BUFSIZ);
-  tmp2 = malloc(BUFSIZ);
-  buffer = malloc(BUFSIZ);
-
   for (i = 0; i < HASH_KEY; i++) {
     Petname[i] = NULL;
   }
-  memset(tmp2, 0, BUFSIZ);
 
   if ((pfp = fopen(petname_f, "r")) == NULL) {
     fprintf(stderr, "no petname file:%s\n", petname_f);
@@ -303,6 +297,12 @@ void ReadPetname(char *petname_f)
     return;
   }
 #endif				/** EXT_FILTER **/
+
+  who = malloc(BUFSIZ);
+  tmp = malloc(BUFSIZ);
+  tmp2 = malloc(BUFSIZ);
+  buffer = malloc(BUFSIZ);
+  memset(tmp2, 0, BUFSIZ);
 
   while (fgets(buffer, BUFSIZ, pfp) != NULL) {
     sscanf(buffer, "%s %s", who, tmp);
