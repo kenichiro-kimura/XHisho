@@ -22,23 +22,22 @@ static struct {
   {
     LoadBmp
   },
+#ifdef HAVE_LIBPNG
+  {
+    LoadPng
+  },
+#endif
+#ifdef HAVE_LIBXPM
+  {
+    LoadXpm
+  },
+#endif
 #ifdef HAVE_LIBJPEG
   {
     LoadJpeg
   },
 #endif
 
-#ifdef HAVE_LIBPNG
-  {
-    LoadPng
-  },
-#endif
-
-#ifdef HAVE_LIBXPM
-  {
-    LoadXpm
-  },
-#endif
 };
 
 static inline int highbit(unsigned long mask)
@@ -264,6 +263,7 @@ int LoadImage(ImageInfo* i_info)
   int cells;
   unsigned long trans_pix;
   int loaded_num;
+  unsigned int trans_index;
 
   i_info->trans_pix = -1;
   d = i_info->d;
@@ -271,7 +271,7 @@ int LoadImage(ImageInfo* i_info)
   vis = DefaultVisual(d, 0);
   depth = DefaultDepth(d, 0);
   vinfo.screen = DefaultScreen(d);
-  i = j = height = trans_pix = 0;
+  i = j = height = trans_pix = trans_index = 0;
   i_info->ImagePalette = (struct palette *) malloc(sizeof(struct palette));
   i_info->image = (AnimImage *) malloc(sizeof(AnimImage));
   if(!i_info->image) return -1;
@@ -286,6 +286,8 @@ int LoadImage(ImageInfo* i_info)
    **/
   while(i_info->num_of_images > i_info->loaded_images){
     if(i_info->anim == 2){
+	i_info->filename 
+	  = malloc(strlen((i_info->image + i_info->loaded_images)->filename) + 1);	
       strcpy(i_info->filename,(i_info->image + i_info->loaded_images)->filename);
     }
 
@@ -297,7 +299,6 @@ int LoadImage(ImageInfo* i_info)
     }
 
     if((loaded_num = Search_files(i_info->filename)) != -1){
-      printf("%d to %d\n",loaded_num,i_info->loaded_images);
       memcpy(i_info->image + i_info->loaded_images
 	     ,i_info->image + loaded_num,sizeof(AnimImage));
       i_info->loaded_images++;
@@ -374,16 +375,16 @@ int LoadImage(ImageInfo* i_info)
 	 **/
 	
 	if (i_info->trans_pix != -1) {
-	  trans_pix = pixel_value[i_info->trans_pix];
+	  trans_index = i_info->trans_pix;
 	} else {
-	  trans_pix = pixel_value[i_info->ImageData[0]];
+	  trans_index = i_info->ImageData[0];
 	}
 	
 	for (i = 0; i < height; i++) {
 	  for (j = 0; j < width; j++) {
 	    XPutPixel(image, j, i, pixel_value[i_info->ImageData[i * width + j]]);
 	    if (i_info->is_shape) {
-	      if (pixel_value[i_info->ImageData[i * width + j]] == trans_pix)
+	      if (i_info->ImageData[i * width + j] == trans_index)
 		XPutPixel(mask_image, j, i, 0);
 	      else
 		XPutPixel(mask_image, j, i, 1);
@@ -410,9 +411,9 @@ int LoadImage(ImageInfo* i_info)
 	 **/
 	
 	if (i_info->trans_pix != -1) {
-	  trans_pix = pixel_value[i];
+	  trans_index = i_info->trans_pix;
 	} else {
-	  trans_pix = pixel_value[i_info->ImageData[0]];
+	  trans_index = i_info->ImageData[0];
 	}
 	
 	for (i = 0; i < height; i++)
@@ -420,7 +421,7 @@ int LoadImage(ImageInfo* i_info)
 	    XPutPixel(image, j, i, pixel_value[i_info->ImageData[i * width + j]]);
 	    
 	    if (i_info->is_shape) {
-	      if (pixel_value[i_info->ImageData[i * width + j]] == trans_pix) {
+	      if (i_info->ImageData[i * width + j] == trans_index) {
 		XPutPixel(mask_image, j, i, 0);
 	      } else {
 		XPutPixel(mask_image, j, i, 1);

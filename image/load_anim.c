@@ -18,10 +18,6 @@ int LoadAnim(ImageInfo *i_info)
     return -1;
   }
 
-  num_of_images = 0;
-  type = 0;
-  Loaded_files = NULL;
-
   /**
    * ファイルのpathを取得する
    **/
@@ -45,6 +41,11 @@ int LoadAnim(ImageInfo *i_info)
   /**
    * コマンドの個数の取得
    **/
+
+  num_of_images = 0;
+  type = 0;
+  Loaded_files = NULL;
+  
   while(fgets(buffer,BUFSIZ,fp) != NULL){
     if(buffer[0] == '#') continue;
     num_of_images++;
@@ -138,7 +139,7 @@ int Search_files(char *name)
 
   for(f_p = Loaded_files;f_p;){
     if(!strcmp(f_p->filename,name)) return f_p->number;
-    
+
     f_p = f_p->next;
   }
 
