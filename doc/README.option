@@ -13,75 +13,59 @@
 
 
 
-2. コンパイル
+2. 動作原理
+
+「なにか」のスクリプトを受け取り、適当に解釈してふきだしに表示します。
+このスクリプトの受け取り方には2通りあります。
+
+ その1:
+	適当なタイミングでスクリプトを標準出力に吐く外部アプリケーショ
+	ンを使う。
+ その2:
+	Merister氏が作られている「華和梨」を組み込む。この場合、
+	configureのオプションに「--with-kawari」を指定することで、「華
+	和梨」を組み込んで動作します。但し、コンパイルにはgcc-2.9x以降
+	が必要だと思います。
+
+
+
+
+
+3. コンパイル
 
 configureのオプションで、
 
 %./configure --with-option
 
 とすると、「あれ以外の何かwith任意」対応になります。
-さらに、
+外部コマンドに頼らずに「華和梨」を使う場合は
 
-%./configure --with-option --with-unyuu
+%./configure --with-option --with-kawari
 
-とすると、うにゅうにも対応しますが、まゆらでしか試してませんので変な動
-きをするかもしれません。
-
-さらに、外部コマンドに頼らずに「華和梨」を使う場合は
-
-%./configure --with-option --with-unyuu --with-kawari
-
-としてください。もしくは、
-
-%./configure --enable-mayura
-
-でも一緒です :-)
-
-
-
-
-3. 動作原理
-
-実は、「あれ以外の何かwith任意」にnativeに対応してません(手抜き)。
-XHishoは外部コマンドとして適当なコマンドを動かします。そのコマンドが以
-下の条件を満していれば、そのメッセージを表示可能なだけです。
-
-・適当なタイミングでメッセージを標準出力に出す
-・メッセージに(Surface:n)という出力があれば、CGをn番に変更する
-・\eを含んだメッセージを出力すると、次の出力を表示する前にふきだしの中
-  をクリアする。
-
-つまり、「shiori.dll + αをやって、メッセージを出力するコンソールアプ
-リ」があればいいことになります。もちろん、適当なものを作れば「あれ以外
-の何かwith任意」以外の色々なものに対応できる可能性を秘めてます。
-
-
-但し、shiori.dllとして、Merister氏が作られている「華和梨」を使う場合は
-この限りではありません。configureのオプションに「--with-kawari」を指定
-することで、「華和梨」を組み込んで動作します。但し、コンパイルには
-gcc-2.9x以降が必要だと思います。
+としてください。
 
 
 
 
 
-
-4. じゃあ何を使えばいいの?
+4. 外部コマンドには何を使えばいいの?
 
 外部コマンドには、Merister氏が作られている「華和梨」と「非A for
-Linux/Wine」(*1)が使えます。
+Linux/Wine」(*1)にちょびっと手を加えた(*2)ものが使えます。
 というか、この「非A」を元に作りましたんで ^^;
 
 「Wineが動かないよ〜」という人のために、gcc-2.9x以降であればnativeにコ
 ンパイルできるように修正を施したものもあります。
 
-もしくは、configureのオプションに「--with-kawari」を指定して、nativeに
-「華和梨」を使うこともできます。
+他にも色々ありそうな気配がしますが、あまり調べてません ^^;
 
 
 
 (*1)
 http://meister-d-i.hoops.ne.jp/
+
+(*2)
+メッセージ表示でDecode()という関数を呼ばないようにするだけ
 
 
 
@@ -99,7 +83,7 @@ http://meister-d-i.hoops.ne.jp/
 アニメーションファイルにまゆらのSurfaceを並べて記述し、
 
 %xhisho -optioncmd /usr/local/bin/nisesakura -cgfile mayura.anim \
-        -shape -noclock
+        -shape -noclock -unyuu
 
 とかやるとそれっぽくなります。うにゅうを使うときは、うにゅうのCGは12行
 目以降に書いてください(11行目まではさくらのsurfaceかダミーのファイル名
@@ -112,7 +96,7 @@ http://meister-d-i.hoops.ne.jp/
 で適当に調整してください。わたしが試した感じだと
 
 %xhisho -optioncmd /usr/local/bin/nisesakura -cgfile mayura.anim \
-        -shape -noclock -xoff '-70' -yoff 10
+        -shape -noclock -xoff '-70' -yoff 10 -unyuu
 
 くらいがいい感じです。
 ふきだしは、右/中/左クリックいずれでも閉じます。ふきだしの上の適当なと
@@ -125,47 +109,49 @@ http://meister-d-i.hoops.ne.jp/
 
 
 
-
+・-unyuu            : うにゅうを表示する
+  (リソース: XHisho*UseUnyuu (bool値))
 ・-xoff             : ふきだしの位置補正(x方向)
-  (リソース: XHisho*option*xoff)
+  (リソース: XHisho*option*xoff (整数値))
 
 ・-yoff             : ふきだしの位置補正(y方向)
-  (リソース: XHisho*option*yoff)
+  (リソース: XHisho*option*yoff (整数値))
 
 ・-optionwidth      : "任意"のふきだしの幅
-  (リソース: XHisho*OptionWindow*optionWidth)
+  (リソース: XHisho*OptionWindow*optionWidth (整数値))
 
 ・-optionheight     : "任意"のふきだしの高さ
-  (リソース: XHisho*OptionWindow*optionHeight)
+  (リソース: XHisho*OptionWindow*optionHeight (整数値))
 
 ・-uxoff            : うにゅうのふきだしの位置補正(x方向)
-  (リソース: XHisho*uXOffset)
+  (リソース: XHisho*uXOffset (整数値))
 
 ・-uyoff            : うにゅうのふきだしの位置補正(y方向)
-  (リソース: XHisho*uYOffset)
+  (リソース: XHisho*uYOffset (整数値))
 
 ・-uwidth           : うにゅうのふきだしの幅
-  (リソース: XHisho*UOptionWindow*optionWidth)
+  (リソース: XHisho*UOptionWindow*optionWidth (整数値))
 
 ・-uheight          : うにゅうのふきだしの高さ
-  (リソース: XHisho*UOptionWindow*optionHeight)
+  (リソース: XHisho*UOptionWindow*optionHeight (整数値))
 
 ・-ucgoff           : うにゅうのCGの位置補正(x方向)
-  (リソース: XHisho*uCGoff)
+  (リソース: XHisho*uCGoff (整数値))
 
 ・-optiontimeout    : "任意"のふきだしの自動Popdownまでの時間
-  (リソース: XHisho*optionTimeout)
+  (リソース: XHisho*optionTimeout (整数値))
 
 ・-wait             : "任意"のメッセージのウエイト
-  (リソース: XHisho*messageWait)
+  (リソース: XHisho*messageWait (整数値))
 
 ・-nogreeting       : 起動時に挨拶を出さない
 
 ・kwait             : 「華和梨」のメッセージ頻度(秒単位)
-  (リソース: XHisho*kawariWait) 
+  (リソース: XHisho*kawariWait (整数値)) 
 
 ・kawaridir         : 「華和梨」の辞書のあるディレクトリ
-  (リソース: XHisho*kawariDir) 
+  (リソース: XHisho*kawariDir (文字列)) 
+
 
 
 
@@ -175,15 +161,13 @@ http://meister-d-i.hoops.ne.jp/
 ・結構メモリを食います。
 ・外部コマンドが不意に死ぬとひどいことになります。XHishoを再起動してく
   ださい。
-・外部コマンドを使う場合、さくらのメッセージは行頭が「sakura:」で、う
-  にゅうのメッセージは行頭が「unyuu:」でないとダメです。
-・さくらのCG変更メッセージは「sakura:(Surface:n)」で、うにゅうのCG変更
-  メッセージは「unyuu:(Surface:n)」のみです。
 ・選択肢を選ぶことはできません。
-・メッセージに「$」が含まれると困ります。
 ・まゆらのおしゃべりにはSJISの機種依存文字が含まれてます。これらは、
   「＃」に置き換えられます。たまに失敗して表示が崩れるかも知れません。
+・「華和梨」と外部コマンドを同時に使用すると、タイミングによってはごく
+  稀に変なことになるかも知れません。
 ・たまに表示が変でも笑って許してください。
+
 
 
 
@@ -207,12 +191,14 @@ XHishoのライセンスに従います。
 
 
 
-8. 謝辞
 
+8. 謝辞
 
 「華和梨」の作者のMeisterさん。そもそも「華和梨」が無ければこの機能は
 実現できませんでした。また、再配布を快く承諾して頂きありがとうございま
 した。
+
+
 
 
 
@@ -224,7 +210,6 @@ XHishoのライセンスに従います。
 だれかコンソールアプリ作ってくれたらそれで終りですし、「『あれ』のX版」
 の開発が第一目標ではないので。この機能はあくまでオマケです。SSTPくらい
 はそのうちやるかもしれません。
-
 
 ただ、しつこくメールを送り続けるとそのうち根負してやるかもしれませんの
 で、是非欲しいという人はメールを下さい :-)

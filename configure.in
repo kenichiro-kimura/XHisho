@@ -141,12 +141,6 @@ AC_ARG_WITH(shared,
         [with_shared=no])
 test "$with_shared" = "yes" && AC_DEFINE(USE_SHARED)
 
-AC_ARG_WITH(unyuu,
-        [  --with-unyuu          compile with unyuu module],
-        [with_unyuu=$withval],
-        [with_unyuu=no])
-test "$with_unyuu" = "yes" && AC_DEFINE(USE_UNYUU)
-
 AC_ARG_WITH(kawari,
         [  --with-kawari          compile with KAWARI module],
         [with_kawari=$withval],
@@ -154,12 +148,11 @@ AC_ARG_WITH(kawari,
 test "$with_kawari" = "yes" && AC_DEFINE(USE_KAWARI)
 
 AC_ARG_ENABLE(mayura,
-        [  --enable-mayura          for Mayura :-) (is equal to --with-option --with-unyuu --with-kawari)],
+        [  --enable-mayura          for Mayura :-) (is equal to --with-option --with-kawari)],
         [with_mayura=$enableval],
         [with_mayura=no])
 if test "$with_mayura" = "yes";
 then
-	AC_DEFINE(USE_UNYUU)
 	AC_DEFINE(OPTION)
 	AC_DEFINE(USE_KAWARI)
 fi

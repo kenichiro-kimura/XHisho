@@ -152,10 +152,9 @@ MHC$B$N%G!<%?$r;H$&$3$H$b$G$-$^$9!#$3$N>l9g!"(BXHisho$B$+$i%(%G%#%C%H$O=PMh(
 $B!&(B--with-shared        : $B%i%$%V%i%j$r(Bshared library$B$H$7$F%$%s%9%H!<%k(B
                          $B$7$^$9(B
 $B!&(B--with-option        : $B!V$"$l0J30$N2?$+(Bwith$BG$0U!WBP1~(B
-$B!&(B--with-unyuu         : $B$&$K$e$&BP1~(B
 $B!&(B--with-kawari        : $B!V$"$l0J30$N2?$+(Bwith$BG$0U!W$N%b%8%e!<%k$H$7$F(B
                          $B!V2ZOBM|!W$r;H$$$^$9(B
-$B!&(B--enable-mayura      : --with-option --with-unyuu --with-kawari$B$HF1Ey(B
+$B!&(B--enable-mayura      : --with-option --with-kawari$B$HF1Ey(B
 $B!&(B--without-xpm        : $B2hA|7A<0$H$7$F(Bxpm$B$r;H$$$^$;$s(B
 $B!&(B--without-jpeg       : $B2hA|7A<0$H$7$F(Bjpeg$B$r;H$$$^$;$s(B
 $B!&(B--without-png        : $B2hA|7A<0$H$7$F(Bpng$B$r;H$$$^$;$s(B
@@ -206,9 +205,6 @@ JPEG$B%i%$%V%i%j$d(BPNG$B%i%$%V%i%j$,$&$^$/8+$D$+$i$J$$$H$-$O!"(Bconfigure$
 
 $B!V(B--with-option$B!W$H$9$k$H!"!V$"$l0J30$N2?$+(Bwith$BG$0U!W$N(BGUI$B%$%s%?!<%U%'!<(B
 $B%9$H$7$F$N5!G=$r;}$A$^$9!#(B
-
-$B!V(B--with-unyuu$B!W$H$9$k$H!"!V$"$l0J30$N2?$+(Bwith$BG$0U!W$N$&$K$e$&BP1~$K$J(B
-$B$j$^$9!#(B
 
 $B!V(B--with-kawari$B!W$H$9$k$H!"!V$"$l0J30$N2?$+(Bwith$BG$0U!W$N%b%8%e!<%k$H$7(B
 $B$F!V2ZOBM|!W$r;H$$$^$9!#$3$N%*%W%7%g%s$,$J$$>l9g!"!V$"$l0J30$N2?$+(Bwith
@@ -509,6 +505,8 @@ PASS:$B%Q%9%o!<%I(B
 $B!&K\%=%U%H%&%'%"$NCx:n8"$OLZB<7r0lO:(B(kimura@db.is.kyushu-u.ac.jp)$B$,J](B
   $BM-$7$^$9!#%=!<%9Cf!"%5%&%s%I$^$o$j$N%=!<%9(B(sound.c$B$*$h$S(Bsound.h)$B$NCx(B
   $B:n8"$O1`ED5H1Q(B(ysonoda@dontaku.csce.kyushu-u.ac.jp)$B$,J]M-$7$^$9!#(B
+$B!&%G%#%l%/%H%j(B"kawari"$B0J2<$N%U%!%$%k$NCx:n8"$K4X$7$F$O!"(B
+  doc/README.option $B$r;2>H$7$F$/$@$5$$!#(B
 $B!&K\%=%U%H%&%'%"$r>&MQMxMQ$7$F6bA,E*Mx1W$rF@$k9T0Y$O6X;_$7$^$9!#(B
 $B!&K\%=%U%H%&%'%"$OL5J]>Z$G$"$j!"$3$N;HMQ$K$h$C$F@8$8$?$$$+$J$kB;32$N@U(B
   $B$b!"Cx:n8"<T$OIi$o$J$$$b$N$H$7$^$9!#$3$l$K9g0U$G$-$J$$>l9g$O!"K\%=%U(B

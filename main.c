@@ -90,14 +90,12 @@ static XrmOptionDescRec options[] = {
   {"-optiontimeout", "*optionTimeout", XrmoptionSepArg, "5"},
   {"-wait", "*messageWait", XrmoptionSepArg, "0"},
 #endif
-#ifdef USE_UNYUU
   {"-unyuu", "*UseUnyuu", XrmoptionNoArg, "True"},
   {"-uxoff", "*uXOffset", XrmoptionSepArg, "300"},
   {"-uyoff", "*uYOffset", XrmoptionSepArg, "0"},
   {"-uwidth", "*UOptionWindow*optionWidth", XrmoptionSepArg, "300"},
   {"-uheight", "*UOptionWindow*optionHeight", XrmoptionSepArg, "200"},
   {"-ucgoff", "*uCGoff", XrmoptionSepArg, "0"},
-#endif
 #ifdef USE_KAWARI
   {"-kawaridir", "*kawariDir", XrmoptionSepArg, "xhisho"},
   {"-kwait", "*kawariWait", XrmoptionSepArg, "60"},
@@ -507,14 +505,12 @@ static void PrintUsage(int argc, char **argv)
   "     -optiontimeout              : Option window timeout\n"
   "     -wait                       : Option message wait\n"
 #endif
-#ifdef USE_UNYUU
   "     -unyuu                      : use UNYUU Window \n"
   "     -uxoff                      : UNYUU Window X-offset\n"
   "     -uyoff                      : UNYUU Window Y-offset\n"
   "     -uwidth                     : UNYUU Window Width\n"
   "     -uheight                    : UNYUU Window Height\n"
   "     -ucgoff                     : UNYUU CG X-offset\n"
-#endif
 #ifdef USE_KAWARI
   "     -kwait                      : KAWARI wait\n"
 #endif
@@ -542,9 +538,6 @@ static void PrintUsage(int argc, char **argv)
 #endif
 #ifdef OPTION
   "    Use 'Something except that with option'\n"
-#endif
-#ifdef USE_UNYUU
-  "    Use UNYUU module for 'Something except that with option'\n"
 #endif
 #ifdef LIBMHC
   "    Use MHC's data\n"

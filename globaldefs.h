@@ -203,9 +203,7 @@ OPTION_GLOBAL Widget CreateOptionWindow(Widget);
  **/
 
 MAIN_GLOBAL OptionRes opr;
-#ifdef USE_UNYUU
 MAIN_GLOBAL OptionRes uopr;
-#endif
 MAIN_GLOBAL MailAlertRes mar;
 MAIN_GLOBAL BiffMethod Biff;
 MAIN_GLOBAL int UseSound;

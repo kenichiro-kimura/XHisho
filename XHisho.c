@@ -372,17 +372,14 @@ static void Realize(Widget w, XtValueMask * valueMask, XSetWindowAttributes * at
 
   if(xhw->xhisho.i_info->num_of_images < 10) xhw->xhisho.use_unyuu = False;
 
-#ifdef USE_UNYUU
   if(xhw->xhisho.use_unyuu && xhw->xhisho.i_info->is_shape){
     MGC = XCreateGC(DISPLAY
 		    , ((xhw->xhisho.i_info->image) + CG_NUM)->mask
 		    , 0, NULL);
     XSetFunction(DISPLAY,MGC,GXor);
   }
-#endif
 
   if (xhw->xhisho.i_info->is_shape){
-#ifdef USE_UNYUU
     if(xhw->xhisho.use_unyuu){
       WIDTH = (((xhw->xhisho.i_info->image) + CG_NUM)->width);
       WIDTH += (((xhw->xhisho.i_info->image) + UCG_NUM)->width);
@@ -431,12 +428,6 @@ static void Realize(Widget w, XtValueMask * valueMask, XSetWindowAttributes * at
 			, ShapeBounding, 0, 0
 			,((xhw->xhisho.i_info->image) + CG_NUM)->mask, ShapeSet);
     }
-#else
-    XShapeCombineMask(DISPLAY
-		      , XtWindow(XtParent(xhw))
-		      , ShapeBounding, 0, 0
-		      ,((xhw->xhisho.i_info->image) + CG_NUM)->mask, ShapeSet);
-#endif
   }
 
   if(xhw->xhisho.i_info->num_of_images > 1)
@@ -456,7 +447,6 @@ static void Redraw(Widget w, XEvent * event, Region region)
   XHishoWidget xhw = (XHishoWidget) w;
   Pixmap p;
 
-#ifdef USE_UNYUU
   if(xhw->xhisho.use_unyuu){
     WIDTH = (((xhw->xhisho.i_info->image) + CG_NUM)->width);
     WIDTH += (((xhw->xhisho.i_info->image) + UCG_NUM)->width);
@@ -493,9 +483,7 @@ static void Redraw(Widget w, XEvent * event, Region region)
   } else {
     XCopyArea(DISPLAY, PIXMAP(CG_NUM), WINDOW, XH_GC, 0, 0, WIDTH, HEIGHT, 0, 0);
   }
-#else
-  XCopyArea(DISPLAY, PIXMAP(CG_NUM), WINDOW, XH_GC, 0, 0, WIDTH, HEIGHT, 0, 0);
-#endif
+
   XFlush(DISPLAY);
   if (xhw->xhisho.focuswin || xhw->xhisho.i_info->num_of_images > 1) {
     MoveFocusWindow(xhw);
@@ -737,12 +725,10 @@ void SetSize(XHishoWidget xhw)
 {
   if(xhw->xhisho.i_info->num_of_images > 1){
     WIDTH = (((xhw->xhisho.i_info->image) + CG_NUM)->width);
-#ifdef USE_UNYUU
     if(xhw->xhisho.use_unyuu){
       WIDTH += (((xhw->xhisho.i_info->image) + UCG_NUM)->width);
       WIDTH += xhw->xhisho.ucg_off;
     }
-#endif
     HEIGHT = (((xhw->xhisho.i_info->image) + CG_NUM)->height);
   }
 }
@@ -881,7 +867,6 @@ static void DrawNewCG(XHishoWidget xhw)
   XtResizeWidget((Widget) xhw, WIDTH, HEIGHT + clock_height
 		 ,FRAME_WIDTH);
 
-#ifdef USE_UNYUU
   if(xhw->xhisho.use_unyuu){
     p = XCreatePixmap(DISPLAY, WINDOW, WIDTH, HEIGHT, DefaultDepth(DISPLAY, 0));
     XCopyArea(DISPLAY, PIXMAP(CG_NUM), p, XH_GC
@@ -913,12 +898,8 @@ static void DrawNewCG(XHishoWidget xhw)
   } else {
     XCopyArea(DISPLAY, PIXMAP(CG_NUM), WINDOW, XH_GC, 0, 0, WIDTH, HEIGHT, 0, 0);
   }
-#else
-  XCopyArea(DISPLAY, PIXMAP(CG_NUM), WINDOW, XH_GC, 0, 0, WIDTH, HEIGHT, 0, 0);
-#endif
 
   if (xhw->xhisho.i_info->is_shape){
-#ifdef USE_UNYUU
     if(xhw->xhisho.use_unyuu){
       p = XCreatePixmap(DISPLAY, WINDOW, WIDTH, HEIGHT, 1);
       XSetForeground(DISPLAY, MGC, 0);
@@ -953,27 +934,10 @@ static void DrawNewCG(XHishoWidget xhw)
       XShapeCombineMask(DISPLAY, XtWindow(XtParent(xhw)), ShapeBounding, 0, 0
 			,p, ShapeSet);
       XFreePixmap(DISPLAY,p);
-#if 0
-      XShapeCombineMask(DISPLAY, XtWindow(XtParent(xhw)), ShapeBounding
-			, (((xhw->xhisho.i_info->image) + UCG_NUM)->width)
-			, 0
-			, ((xhw->xhisho.i_info->image) + CG_NUM)->mask
-			, ShapeSet);
-      XShapeCombineMask(DISPLAY, XtWindow(XtParent(xhw)), ShapeBounding
-			, 0 + xhw->xhisho.ucg_off
-			, HEIGHT
-			- (((xhw->xhisho.i_info->image) + UCG_NUM)->height)
-			, ((xhw->xhisho.i_info->image) + UCG_NUM)->mask
-			, ShapeUnion);
-#endif
     } else {
       XShapeCombineMask(DISPLAY, XtWindow(XtParent(xhw)), ShapeBounding, 0, 0
 			,((xhw->xhisho.i_info->image) + CG_NUM)->mask, ShapeSet);
     }
-#else
-    XShapeCombineMask(DISPLAY, XtWindow(XtParent(xhw)), ShapeBounding, 0, 0
-		      ,((xhw->xhisho.i_info->image) + CG_NUM)->mask, ShapeSet);
-#endif
   }
 }
 

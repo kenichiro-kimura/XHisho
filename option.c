@@ -9,9 +9,7 @@
 #include <signal.h>
 
 static Widget top,label,local_option;
-#ifdef USE_UNYUU
 static Widget utop,ulabel,ulocal_option;
-#endif
 static XtInputId OptionId;
 static int virgine = 1;
 static XtIntervalId OptionTimeoutId = 0;
@@ -19,11 +17,14 @@ static XtIntervalId MessageWaitId = 0;
 #ifdef USE_KAWARI
 static XtIntervalId KAWARITimeoutId = 0;
 #endif
-static messageBuffer mbuf,mdest;
+static messageBuffer mbuf;
 
 static void Destroy(Widget,XEvent *, String *, unsigned int *);
 static void CommandInit();
 static void CheckOption(Widget, int *, XtInputId *);
+#ifdef USE_KAWARI
+static void GetMessageFromKawari();
+#endif
 static int Option_exit(Display *);
 static char* or2string(char*);
 static void ORParser(char*);
@@ -33,17 +34,16 @@ static messageStack* messageStack_pop(messageStack**);
 static void messageStack_push(messageStack**,char*);
 static void ChangeBadKanjiCode(char *);
 static void ClearMessage(Widget);
-static void InsertMessage(Widget,char*,int);
-static void _InsertMessage(XtPointer,XtIntervalId*);
-static void InsertReturn(char*,char*,int,int);
-static void RemoveStr(char*,char*);
+static void InsertMessage(XtPointer,XtIntervalId*);
 static void AddBuffer(messageBuffer*,char*);
 static void GetBuffer(messageBuffer*,char*);
 static void HeadOfBuffer(messageBuffer*,char*);
 static void _GetBuffer(messageBuffer*,char*,int);
-static void SakuraParser(char*);
 extern char* RandomMessage(char*);
 static void SJIS2EUC(char*);
+
+static void SakuraParser(char*); /* only for reference */
+
 
 static XtActionsRec actionTable[] = {
   {"Destroy", Destroy},
@@ -141,10 +141,8 @@ static void Destroy(Widget w, XEvent * event, String * params, unsigned int *num
   }
   XtPopdown(top);
   ClearMessage(label);
-#ifdef USE_UNYUU
   XtPopdown(utop);
   ClearMessage(ulabel);
-#endif
 }
 
 
@@ -165,10 +163,6 @@ Widget CreateOptionWindow(Widget w){
     mbuf.size = BUFSIZ * 10;
     *mbuf.buffer = '\0';
 
-    mdest.buffer = (unsigned char*)malloc(BUFSIZ);
-    mdest.size = BUFSIZ;
-    *mdest.buffer = '\0';
-
     virgine = 0;
   }
 
@@ -177,6 +171,8 @@ Widget CreateOptionWindow(Widget w){
   XtGetApplicationResources(top, &opr, resources, XtNumber(resources), NULL, 0);
   local_option = XtVaCreateManagedWidget("option", msgwinWidgetClass, top
   				 ,NULL);
+
+  if(opr.m_wait < 1) opr.m_wait = 1;
 
   label = XtVaCreateManagedWidget("optionLabel", asciiTextWidgetClass
 				  ,local_option
@@ -209,7 +205,6 @@ Widget CreateOptionWindow(Widget w){
   trans_table = XtParseTranslationTable(defaultTranslations);
   XtOverrideTranslations(local_option,trans_table);
 
-#ifdef USE_UNYUU
   utop = XtVaCreatePopupShell("UOptionWindow", transientShellWidgetClass
 			     ,w,NULL);
   XtGetApplicationResources(utop, &uopr, resources, XtNumber(resources), NULL, 0);
@@ -248,23 +243,20 @@ Widget CreateOptionWindow(Widget w){
   trans_table = XtParseTranslationTable(defaultTranslations);
   XtOverrideTranslations(ulocal_option,trans_table);
 
+  CommandInit();
+#ifdef USE_KAWARI
+  GetMessageFromKawari();
 #endif
 
-  CommandInit();
-
-  if(opr.m_wait)
-    MessageWaitId = XtAppAddTimeOut(XtWidgetToApplicationContext(local_option)
-				    , opr.m_wait * 10
-				    , (XtTimerCallbackProc) _InsertMessage
-				    , NULL);
+  MessageWaitId = XtAppAddTimeOut(XtWidgetToApplicationContext(local_option)
+				  , opr.m_wait * 10
+				  , (XtTimerCallbackProc) InsertMessage
+				  , NULL);
   return(local_option);
 }
 
 static void CommandInit()
 {
-#ifdef USE_KAWARI
-  CheckOption(top,NULL,NULL);
-#else
   if(strlen(opr.o_command) < 1) return;
 
   if (virgine) {
@@ -279,75 +271,28 @@ static void CommandInit()
 			   fileno(option_fd), (XtPointer) XtInputReadMask,
 			   (XtInputCallbackProc) CheckOption, NULL);
   XSetIOErrorHandler(Option_exit);	/** child process¤ò»¦¤¹ **/
-#endif
 }
 
 static void CheckOption(Widget w, int *fid, XtInputId * id)
 {
-  static unsigned char *message_buffer;
-#ifdef USE_UNYUU
-  static unsigned char *umessage_buffer;
-  static int last_message;
-#endif
   static unsigned char *_buffer;
-  static unsigned char *buffer;
   static int x = 0;
   int len;
   int message_buffer_size = BUFSIZ * 20;
-  unsigned char* chr_ptr;
-  unsigned char* next_ptr;
   unsigned char* message_ptr;
-  unsigned char* c_ptr;
-  static int is_end = 0;
-  XFontSet fset;
-  XRectangle ink, log;
-  int max_len;
-  Dimension width;
-  int sakura;
-  int chr_length,dword,pos,mpos;
-  XawTextPosition current,last;
-  XawTextBlock textblock;
-  int cg_num = -1;
-  int u_cg_num = -1;
-  unsigned char str_num[128];
-
-#ifdef EXT_FILTER
-  char command[128];
-  char t_filename[BUFSIZ];
-  char d_buffer[BUFSIZ * 5];
-  FILE* t_file;
-  FILE* in;
-#endif			
 
   if(OptionTimeoutId){
     XtRemoveTimeOut(OptionTimeoutId);
     OptionTimeoutId = 0;
   }
-#ifdef USE_KAWARI
-  if(KAWARITimeoutId){
-    XtRemoveTimeOut(KAWARITimeoutId);
-    KAWARITimeoutId = 0;
-  }
-#endif
 
   if(x == 0){
-    message_buffer = (char *)malloc(message_buffer_size);
-#ifdef USE_UNYUU
-    umessage_buffer = (char *)malloc(message_buffer_size);
-#endif
     _buffer = (char *)malloc(message_buffer_size);
-    buffer = (char *)malloc(message_buffer_size);
   }
   x = 1;
 
-  memset(message_buffer,'\0',message_buffer_size);
-#ifdef USE_UNYUU
-  memset(umessage_buffer,'\0',message_buffer_size);
-#endif
   memset(_buffer,'\0',message_buffer_size);
-  memset(buffer,'\0',message_buffer_size);
 
-#ifndef USE_KAWARI
   if ((len = read(*fid,_buffer,message_buffer_size)) == 0) {
     XtRemoveInput(OptionId);
     OptionId = 0;
@@ -361,205 +306,65 @@ static void CheckOption(Widget w, int *fid, XtInputId * id)
 
   if(len == 0) return;
   _buffer[len] = '\0';
-#endif
 
-  if(is_end && opr.m_wait == 0){
-    ClearMessage(label);
-#ifdef USE_UNYUU
-    ClearMessage(ulabel);
-#endif
-    is_end = 0;
-  }
-
-#ifdef USE_KAWARI
-  ClearMessage(label);
-#ifdef USE_UNYUU
-  ClearMessage(ulabel);
-#endif
-  message_ptr = RandomMessage(opr.kawari_dir);
-  strcpy(_buffer,message_ptr);
-  free(message_ptr);
-#endif
+  //  ClearMessage(label);
+  //  ClearMessage(ulabel);
 
   SJIS2EUC(_buffer);
-  strcpy(buffer, _buffer);
-
-#if 0
-#ifdef EXT_FILTER
-  len = 0;
-  strcpy(t_filename, tempnam(Tmp_dir, "xhtmp"));
-  if ((t_file = fopen(t_filename, "w")) == NULL) {
-    fprintf(stderr, "can't open temporary file,%s\n", t_filename);
-  } else {
-    fprintf(t_file, "%s", _buffer);
-    fclose(t_file);
-
-    sprintf(command, "%s %s", FilterCommand, t_filename);
-    if ((in = popen(command, "r")) == NULL) {
-      fprintf(stderr, "no such filter command:%s\n", command);
-      exit(1);
-    }
-
-    while((fgets(d_buffer, BUFSIZ * 5, in)) != NULL){
-      strcat(buffer,d_buffer);
-      if((len += strlen(d_buffer)) >= message_buffer_size) break;
-    }
-    pclose(in);
-    unlink(t_filename);
-  }
-#else
-  strcpy(buffer, _buffer);
-#endif
-#endif
-
-  /* here is script decoder .. */
 
 #ifdef DEBUG
   printf("#%s\n",buffer);
 #endif
 
-  while((chr_ptr = strstr(buffer,"\\n")) != NULL){
-    strcpy(_buffer,chr_ptr +2);
-    sprintf(chr_ptr,"\n%s",_buffer);
+  ChangeBadKanjiCode(_buffer);
+  ORParser(_buffer);
+
+  AddBuffer(&mbuf,_buffer);
+
+}
+
+static void GetMessageFromKawari(){
+  static unsigned char *_buffer;
+  static int x = 0;
+  int len;
+  int message_buffer_size = BUFSIZ * 20;
+  unsigned char* message_ptr;
+
+  if(OptionTimeoutId){
+    XtRemoveTimeOut(OptionTimeoutId);
+    OptionTimeoutId = 0;
   }
 
-  ChangeBadKanjiCode(buffer);
-#ifdef USE_KAWARI
-  SakuraParser(buffer);
-#endif
-
-  XtVaGetValues(label, XtNfontSet, &fset, XtNwidth,&width,NULL);
-  XmbTextExtents(fset, "a", 1, &ink, &log);
-  max_len = width / log.width - 2;
-
-
-  chr_ptr = buffer;
-  next_ptr = strtok(buffer,"\n");
-  while(*chr_ptr){
-    if(next_ptr == NULL){
-#ifdef USE_UNYUU
-      if(strstr(chr_ptr,"sakura:")){
-	strcpy(message_buffer,chr_ptr);
-	message_ptr = message_buffer;
-	last_message = SAKURA;
-      } else if(strstr(chr_ptr,"unyuu:")){
-	strcpy(message_buffer,chr_ptr);
-	message_ptr = message_buffer;
-	last_message = UNYUU;
-      } else {
-	if(last_message == SAKURA){
-	  strcpy(message_buffer,chr_ptr);
-	  message_ptr = message_buffer;
-	} else {
-	  strcpy(umessage_buffer,chr_ptr);
-	  message_ptr = umessage_buffer;
-	}
-      }
-#else
-      strcpy(message_buffer,chr_ptr);
-      message_ptr = message_buffer;      
-#endif
-    } else {
-#ifdef USE_UNYUU
-      if(strstr(chr_ptr,"sakura:")){
-	strcpy(message_buffer,chr_ptr);
-	message_ptr = message_buffer;
-	last_message = SAKURA;
-      } else if(strstr(chr_ptr,"unyuu:")){
-	strcpy(message_buffer,chr_ptr);
-	message_ptr = message_buffer;
-	last_message = UNYUU;
-      } else {
-	if(last_message == SAKURA){
-	  strncpy(message_buffer,chr_ptr,next_ptr - chr_ptr);
-	  message_ptr = message_buffer;
-	} else {
-	  strncpy(umessage_buffer,chr_ptr,next_ptr - chr_ptr);
-	  message_ptr = umessage_buffer;
-	}
-      }
-#else
-      strncpy(message_buffer,chr_ptr,next_ptr - chr_ptr);
-      message_ptr = message_buffer;
-#endif
-      message_ptr[next_ptr - chr_ptr] = '\0';
-    }
-    
-    /* surface changer */
-
-    while((chr_ptr = strstr(message_ptr,"(Surface:")) != NULL){
-      if(*(chr_ptr - 2) == 'a')
-	sakura = 1;
-      else 
-	sakura = 0;
-
-      c_ptr = chr_ptr + strlen("(Surface:");
-      while(isdigit((unsigned char)(*c_ptr))) c_ptr++;
-      strncpy(str_num,chr_ptr + strlen("(Surface:")
-	      ,c_ptr - chr_ptr - strlen("(Surface:"));
-      if(sakura)
-	cg_num = atoi(str_num);
-      else 
-	u_cg_num = atoi(str_num) + 10;
-
-      if(opr.m_wait)
-	sprintf(_buffer,"\\%d%s",atoi(str_num),c_ptr + 1);
-      else
-	strcpy(_buffer,c_ptr + 1);
-      strcpy(strstr(message_ptr,"(Surface:"),_buffer);
-    }
-
-    if(c_ptr = strstr(message_ptr,"\\e")){
-      is_end = 1;
-      if(opr.m_wait == 0){
-	*c_ptr = '\n';
-	*(c_ptr + 1) = '\0';
-      } else {
-	*(c_ptr + 2) = '\0';
-      }
-    }
-
-    ORParser(message_ptr);
-    strcpy(_buffer,message_ptr);
-
-#ifdef USE_UNYUU
-    if(last_message == SAKURA)
-      RemoveStr(_buffer,"sakura:");
-    else
-      RemoveStr(_buffer,"unyuu:");
-#endif
-    *message_ptr = '\0';
-    InsertReturn(message_ptr,_buffer,max_len,message_buffer_size);
-
-    if((cg_num != -1 || u_cg_num != -1) && opr.m_wait == 0)
-      XtVaSetValues(xhisho,XtNforceCG,True,XtNcgNumber,cg_num
-		    ,XtNucgNumber,u_cg_num
-		    ,NULL);
-    cg_num = u_cg_num = -1;
-
-#ifdef USE_UNYUU
-    if(last_message == SAKURA)
-      InsertMessage(label,message_ptr,SAKURA);
-    else 
-      InsertMessage(ulabel,message_ptr,UNYUU);
-#else
-    InsertMessage(label,message_ptr,SAKURA);
-#endif
-
-    if((chr_ptr = next_ptr) == NULL) break;
-    next_ptr = strtok(NULL,"\n");
-    XFlush(XtDisplay(label));
+  if(KAWARITimeoutId){
+    XtRemoveTimeOut(KAWARITimeoutId);
+    KAWARITimeoutId = 0;
   }
 
-
-  if(is_end && opr.timeout > 0 && opr.m_wait == 0){
-    OptionTimeoutId = XtAppAddTimeOut(XtWidgetToApplicationContext(local_option)
-				      , opr.timeout * 1000
-				      , (XtTimerCallbackProc) Destroy
-				      , NULL);
+  if(x == 0){
+    _buffer = (char *)malloc(message_buffer_size);
   }
+  x = 1;
 
-#ifdef USE_KAWARI
+  memset(_buffer,'\0',message_buffer_size);
+
+  //  ClearMessage(label);
+  //  ClearMessage(ulabel);
+
+  message_ptr = RandomMessage(opr.kawari_dir);
+  strcpy(_buffer,message_ptr);
+  free(message_ptr);
+
+  SJIS2EUC(_buffer);
+
+#ifdef DEBUG
+  printf("#%s\n",buffer);
+#endif
+
+  ChangeBadKanjiCode(_buffer);
+  ORParser(_buffer);
+
+  AddBuffer(&mbuf,_buffer);
+
   if(opr.k_wait == 0)
     opr.k_wait = 60;
 
@@ -568,8 +373,8 @@ static void CheckOption(Widget w, int *fid, XtInputId * id)
 				    , (XtTimerCallbackProc) CheckOption
 				    , NULL
 				    );
-#endif
 }
+
 
 static int Option_exit(Display * disp)
 {
@@ -690,8 +495,9 @@ static char* or2string(char* in)
 
 static char* nstrncpy(char* dst, const char* src, size_t n){
   /*
-    strncpy, but not '\n'
-  */
+   * strncpy, but not '\n'.
+   * original code is in FreeBSD's library.
+   */
 
   if (n != 0) {
     register char *d = dst;
@@ -807,6 +613,9 @@ static void ChangeBadKanjiCode(char *source)
 
 static void ClearMessage(Widget w)
 {
+  /*
+   * clear message window
+   */
   static XawTextPosition current,last;
   static XawTextBlock textblock;
 
@@ -822,65 +631,53 @@ static void ClearMessage(Widget w)
   XtVaSetValues(w,XtNeditType,XawtextRead,NULL);
 }
 
-static void InsertMessage(Widget w,char* message_buffer,int mode)
+static void InsertMessage(XtPointer cl,XtIntervalId* id)
 {
-  static XawTextPosition current,last;
-  static XawTextBlock textblock;
-  char* chr_ptr;
-
-  if(strlen(message_buffer) > 0){
-    if(!IsPopped(XtParent(w)))
-      XtPopup(XtParent(XtParent(w)), XtGrabNone);
-  } else {
-    return;
-  }
-  XtVaSetValues(XtParent(w),XtNwindowMode,-1,NULL);
-  XFlush(XtDisplay(XtParent(w)));
-
-  current = XawTextGetInsertionPoint(w);
-  if(opr.m_wait){
-    AddBuffer(&mbuf,message_buffer);
-    AddBuffer(&mbuf,"$");
-    if(mode == SAKURA)
-      AddBuffer(&mdest,"s");
-    else
-      AddBuffer(&mdest,"u");
-  } else {
-    last = XawTextSourceScan (XawTextGetSource (w),(XawTextPosition) 0,
-			      XawstAll, XawsdRight, 1, TRUE);
-    textblock.firstPos = 0;
-    textblock.length = strlen(message_buffer);
-    textblock.ptr = message_buffer;
-    textblock.format = FMT8BIT;
-    XtVaSetValues(w,XtNeditType,XawtextEdit,NULL);
-    XawTextReplace(w,last,last,&textblock);
-    XtVaSetValues(w,XtNeditType,XawtextRead,NULL);
-    XFlush(XtDisplay(XtParent(w)));
-    XawTextSetInsertionPoint(w , last + textblock.length);
-  }
-}
-
-static void _InsertMessage(XtPointer cl,XtIntervalId* id)
-{
+  /*
+   * if there is any string in message buffer,
+   * get a string from buffer and insert into window
+   *
+   * a string is one of follows:
+   *  1. a command like "\u" , "\w10" , etc.
+   *  2. a 1-byte letter, mainly alphabet.
+   *  3. a 2-byte letter, mainly Japanese letter.
+   */
   static XawTextPosition current,last;
   static XawTextBlock textblock;
   Widget w;
   unsigned char chr_ptr[BUFSIZ];
-  char dest[BUFSIZ];
+  unsigned char buffer[BUFSIZ + 1];
   int cg_num;
+  static int dest_win = SAKURA;
+  XFontSet fset;
+  XRectangle ink, log;
+  int max_len;
+  Dimension width;
+  static int pos = 0;
+  int is_display = 0;
+  static int is_end = 0;
 
   HeadOfBuffer(&mbuf,chr_ptr);
-  HeadOfBuffer(&mdest,dest);
 
-  if(*chr_ptr && *dest){
+  if(*chr_ptr){
     GetBuffer(&mbuf,chr_ptr);
     switch(*chr_ptr){
-    case '$':
-      GetBuffer(&mdest,dest);
-      break;
     case '\\':
       switch(*(chr_ptr + 1)){
+      case 'h':
+	dest_win = SAKURA;
+	pos = 0;
+	break;
+      case 'u':
+	dest_win = UNYUU;
+	pos = 0;
+	break;
+      case 'n':
+	is_display = 2;
+	pos = 0;
+	break;
       case 'e':
+	is_end = 1;
 	if(opr.timeout > 0){
 	  if(OptionTimeoutId){
 	    XtRemoveTimeOut(OptionTimeoutId);
@@ -896,26 +693,53 @@ static void _InsertMessage(XtPointer cl,XtIntervalId* id)
 	cg_num = atoi(chr_ptr + 2);
 	usleep(cg_num * 50 * 1000);
 	break;
-      default:
-	cg_num = atoi(chr_ptr + 1);
-	if (*dest == 'u') cg_num += 10;
+      case 's':
+	cg_num = atoi(chr_ptr + 2);
+	if (dest_win == UNYUU) cg_num += 10;
 	XtVaSetValues(xhisho,XtNforceCG,True
-		      ,(*dest == 's')? XtNcgNumber:XtNucgNumber
+		      ,(dest_win == SAKURA)? XtNcgNumber:XtNucgNumber
 		      ,cg_num
 		      ,NULL);
       }
       break;
     default:
-      w = (*dest == 's')? label:ulabel;
+      is_display = 1;
+    }
+
+    if(is_display){
+      w = (dest_win == SAKURA)? label:ulabel;
+      if(is_end && *chr_ptr != '\n'){
+	ClearMessage(label);
+	ClearMessage(ulabel);
+	is_end = 0;
+      }
+
+      XtVaGetValues(w, XtNfontSet, &fset, XtNwidth,&width,NULL);
+      XmbTextExtents(fset, "a", 1, &ink, &log);
+      max_len = width / log.width - 2;
+
+      if(!IsPopped(XtParent(w)))
+	XtPopup(XtParent(XtParent(w)), XtGrabNone);
+
       last = XawTextSourceScan (XawTextGetSource (w),(XawTextPosition) 0,
 				XawstAll, XawsdRight, 1, TRUE);
+
+      if(*chr_ptr == '\n') pos = 0;
+
+      if(is_display == 2){
+	strcpy(buffer,"\n");
+      } else {
+	if((pos += strlen(chr_ptr)) > max_len){
+	  pos = strlen(chr_ptr);
+	  sprintf(buffer,"\n%s",chr_ptr);
+	} else {
+	  strcpy(buffer,chr_ptr);
+	}
+      }
+	
       textblock.firstPos = 0;
-      if ((*chr_ptr >= 0xa1 && *chr_ptr <= 0xfe) ||
-	  (*chr_ptr == 0x8e) || (*chr_ptr == 0x8f))
-	textblock.length = 2;
-      else 
-	textblock.length = 1;
-      textblock.ptr = chr_ptr;
+      textblock.length = strlen(buffer);
+      textblock.ptr = buffer;
       textblock.format = FMT8BIT;
       XtVaSetValues(w,XtNeditType,XawtextEdit,NULL);
       XawTextReplace(w,last,last,&textblock);
@@ -932,79 +756,18 @@ static void _InsertMessage(XtPointer cl,XtIntervalId* id)
 
   MessageWaitId = XtAppAddTimeOut(XtWidgetToApplicationContext(local_option)
 				  , opr.m_wait * 10
-				  , (XtTimerCallbackProc) _InsertMessage
+				  , (XtTimerCallbackProc) InsertMessage
 				  , NULL);
-}
-
-static void InsertReturn(char* message_buffer,char* chr_ptr,int max_len,int message_buffer_size)
-{
-  /*
-    insert '\n' into lineend
-    (with check EUC kanji code)
-  */
-
-  int pos;
-  int chr_length;
-  int len = 0;
-
-  chr_length = strlen(chr_ptr);
-  for(pos = 0;pos < chr_length;pos++){
-    unsigned char first_byte;
-
-    first_byte = chr_ptr[pos];
-    if ((first_byte >= 0xa1 && first_byte <= 0xfe) ||
-	(first_byte == 0x8e) || (first_byte == 0x8f))
-      pos += 2;
-
-    if(chr_ptr[pos] == '\n'){
-      if(pos > 0){
-	strncat(message_buffer,chr_ptr, pos);
-	if((len += pos) >= message_buffer_size) break;
-	chr_ptr += pos;
-	chr_length -= pos;
-	chr_length--;
-      } else{
-	chr_ptr++;
-	chr_length--;
-	strcat(message_buffer,"\n");
-	if((len ++) >= message_buffer_size) break;
-      }
-      pos = -1;
-    } else if(pos >= max_len){
-      strncat(message_buffer,chr_ptr, pos);
-      if((len += pos) >= message_buffer_size) break;
-      strcat(message_buffer,"\n");
-      if((len ++) >= message_buffer_size) break;
-      chr_ptr += pos;
-      chr_length -= pos;
-      pos = -1;
-    } else {
-      if ((first_byte >= 0xa1 && first_byte <= 0xfe) ||
-	  (first_byte == 0x8e) || (first_byte == 0x8f))
-	pos--;
-    }
-  }
-
-  strncat(message_buffer,chr_ptr,MIN(message_buffer_size,strlen(chr_ptr)));
-  if(message_buffer[strlen(message_buffer) - 1] != '\n'){
-    if(strlen(message_buffer) >= message_buffer_size){
-      message_buffer[strlen(message_buffer) - 1] = '\n';
-    } else {
-      strcat(message_buffer,"\n");
-    }
-  }
-}
-
-static void RemoveStr(char* message_buffer,char* str)
-{
-  char* chr_ptr;
-
-  while((chr_ptr = strstr(message_buffer,str)) != NULL)
-    strcpy(chr_ptr,chr_ptr + strlen(str));
 }
 
 static void AddBuffer(messageBuffer* buffer,char* message)
 {
+  /*
+   * add message int message buffer.
+   * if buffer is too small to add message,
+   *  make larger buffer automatically.
+   */
+
   size_t newsize;
   char* b;
 
@@ -1023,6 +786,10 @@ static void AddBuffer(messageBuffer* buffer,char* message)
 
 static void _GetBuffer(messageBuffer* buffer,char* ret,int mode)
 {
+  /*
+    do not invoke this function. this function should be
+     invoked by GetBuffer() or HeadOfBuffer().
+  */
   unsigned char first_byte;
   int is_wbyte = 0;
   unsigned char str_num[128];
@@ -1043,29 +810,37 @@ static void _GetBuffer(messageBuffer* buffer,char* ret,int mode)
     ret[1] = *(buffer->buffer + 1);
     ret[2] = '\0';
 
-    if(strncmp(ret,"\\w",strlen("\\w")) == 0){
-      c_ptr = buffer->buffer + 2;
-      while(isdigit(*c_ptr) || *c_ptr == '\n'){
-	/*
-	 * by InsertReturn(), if "\w10HOGE" -> "\w1\n0HOGE" ,
-	 *  this function return "\w10" 
-	 *     and rest of message should be "\nHOGE".
-	 */
-	if(*c_ptr == '\n'){
-	  skip_return++;
-	  strcpy(c_ptr,c_ptr + 1);
-	} else {
-	  c_ptr++;
-	  is_wbyte++;
+    if(first_byte == '\\'){
+      c_ptr = buffer->buffer + 1;
+      switch(*c_ptr){
+      case 'w':
+      case 's':
+	c_ptr = buffer->buffer + 2;
+	while(isdigit(*c_ptr) || *c_ptr == '\n'){
+	  /*
+	   * if "\w10HOGE" -> "\w1\n0HOGE" ,
+	   *  this function return "\w10" 
+	   *     and rest of message should be "\nHOGE".
+	   */
+	  if(*c_ptr == '\n'){
+	    skip_return++;
+	    strcpy(c_ptr,c_ptr + 1);
+	  } else {
+	    c_ptr++;
+	    is_wbyte++;
+	  }
 	}
-      }
-      strncpy(str_num,buffer->buffer + 2
-	      ,is_wbyte);
+	strncpy(str_num,buffer->buffer + 2
+		,is_wbyte);
 
-      sprintf(ret,"\\w%d",atoi(str_num));
-      
-      for(i = 0; i < skip_return;i++)
-	*(--c_ptr) = '\n';
+	sprintf(ret + 2,"%d",atoi(str_num));
+	
+	for(i = 0; i < skip_return;i++)
+	  *(--c_ptr) = '\n';
+	break;
+      default:
+	break;
+      }
     }
   } else {
     ret[1] = '\0';
@@ -1080,21 +855,33 @@ static void _GetBuffer(messageBuffer* buffer,char* ret,int mode)
   
 static void HeadOfBuffer(messageBuffer* buffer,char* ret)
 {
+  /*
+   * get string at head of buffer.
+   * (buffer does not modify)
+   */
   return _GetBuffer(buffer,ret,0);
 }
 
 static void GetBuffer(messageBuffer* buffer,char* ret)
 {
+  /*
+   * get string at head of buffer.
+   * (string is removed from buffer)
+   */
   return _GetBuffer(buffer,ret,1);
 }
 
 static void SakuraParser(char* in_ptr)
 {
   /*
+   *    *Warning* 
+   *  this function is obsolete (for reference only)
+   *
+   *
    * Sakura Script parser
    *
    * parsed script -> works(sleep,change cg,etc) is done
-   *  in _InsertMessage()
+   *  in InsertMessage()
    */
 
   messageBuffer kbuf;
@@ -1191,6 +978,10 @@ static void SakuraParser(char* in_ptr)
 }
 
 static void SJIS2EUC(char* in) {
+  /*
+   * change SJIS to EUC. original is in xakane by NAO.
+   */
+
   unsigned char c1;
   unsigned char c2;
   unsigned char* in_ptr;
