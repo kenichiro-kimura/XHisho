@@ -1,4 +1,5 @@
 #define _MAIL_GLOBAL
+/*#define YOUBIN3*/
 #include "globaldefs.h"
 #include "mail.h"
 #include "petname.h"
@@ -841,7 +842,11 @@ static void YoubinInit()
       close(1);
       dup(youbin_pfp[1]);
       close(youbin_pfp[1]);
+#ifdef YOUBIN3
+      execl(mar.y_command,"youbin","-o5","-b","From:,Subject:","-s",mar.y_server,NULL);
+#else
       execl(mar.y_command,"youbin","-b","-s",mar.y_server,NULL);
+#endif
       exit(1);
     }
     close(youbin_pfp[1]);
