@@ -183,7 +183,6 @@ int CheckSchedule(OpenMessageRes * l_omr, Schedule * schedule, int WeeklyCheck, 
 #endif
 
   while (fgets(tmp1, BUFSIZ, inputfile) != NULL && (i < MAX_SCHED_NUM)) {
-
     /**
      * もし # で始まっていたらコメントとみなし、その後1行を無視する。
      * 空行も同様。
@@ -192,12 +191,24 @@ int CheckSchedule(OpenMessageRes * l_omr, Schedule * schedule, int WeeklyCheck, 
     if (tmp1[0] != '#' && tmp1[0] != '\0' && tmp1[0] != '\n') {
       sscanf(tmp1, "%s %s %s %s", tmp4, tmp2, leave, tmp3);
 
-      if (!atoi(leave)) {
-	sscanf(tmp1, "%s %s", tmp2, tmp3);
+      if (!isdigit(leave[0])) {
+	sscanf(tmp1, "%s %s %s", tmp4, tmp2, tmp3);
+	for ( j = 0; j < strlen(tmp1);j++)
+	  if(isspace(tmp1[j])) break;
+	for ( j++; j < strlen(tmp1);j++)
+	  if(isspace(tmp1[j])) break;
 	schedule[i].leave = omr.leave_t;
       } else {
+	for ( j = 0; j < strlen(tmp1);j++)
+	  if(isspace(tmp1[j])) break;
+	for ( j++; j < strlen(tmp1);j++)
+	  if(isspace(tmp1[j])) break;
+	for ( j++; j < strlen(tmp1);j++)
+	  if(isspace(tmp1[j])) break;
 	schedule[i].leave = atoi(leave);
       }
+
+      string_index = tmp1 + j + 1;
 
       /**
        * 該当日かどうかのチェック
@@ -221,22 +232,6 @@ int CheckSchedule(OpenMessageRes * l_omr, Schedule * schedule, int WeeklyCheck, 
 	strncpy(schedule[i].hour, tdate, sizeof(char) * 2);
 	strncpy(schedule[i].min, tdate + 2, sizeof(char) * 2);
 
-
-	/**
-         * 開始時刻とleaveを読み飛ばす。
-         **/
-
-	for (j = 0; j < strlen(tmp1); j++)
-	  if (isspace(tmp1[j]))
-	    break;
-	for (j++; j < strlen(tmp1); j++)
-	  if (isspace(tmp1[j]))
-	    break;
-	for (j++; j < strlen(tmp1); j++)
-	  if (isspace(tmp1[j]))
-	    break;
-
-	string_index = tmp1 + j + 1;
 
 	if (string_index) {
 	  Escape2Return(string_index);
@@ -281,6 +276,7 @@ static int SafeTimeFormat(Schedule schedule)
       atoi(schedule.min) <= 59) {
     return 1;
   } else {
+    if(schedule.hour[0] == '*') return 1;
     return 0;
   }
 }

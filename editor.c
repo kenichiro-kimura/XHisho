@@ -537,10 +537,16 @@ Widget CreateEditorWindow(Widget w, int Mode, struct tm tm_now)
       l = CheckIsSchedPast(j, schedule);
       sprintf(since_minutes[j], "%d", l);
 
-      if (*messages[5]) {
-	sprintf(tmpstring, messages[5], argarray[0], argarray[1], argarray[2], argarray[3]);
+      if (schedule[j].hour[0] == '*'){
+	sprintf(tmpstring,"%s",schedule[j].ev);
       } else {
-	sprintf(tmpstring, omr.message_f, argarray[0], argarray[1], argarray[2], argarray[3]);
+	if (*messages[5]) {
+	  sprintf(tmpstring, messages[5], argarray[0], argarray[1]
+		  , argarray[2], argarray[3]);
+	} else {
+	  sprintf(tmpstring, omr.message_f, argarray[0], argarray[1]
+		  , argarray[2], argarray[3]);
+	}
       }
 
       /**
@@ -598,6 +604,7 @@ Widget CreateEditorWindow(Widget w, int Mode, struct tm tm_now)
       memset(tmpstring, 0, BUFSIZ * 2);
       strcpy(tmpstring, "00000");
       memset(daystring[j], 0, 256);
+      daystring[j][0] = '*';
 
       XmbTextExtents(fset, tmpstring, strlen(tmpstring), &ink, &log);
 
@@ -886,9 +893,11 @@ static int WriteSchedule(struct tm tm_now)
     ChangeReturn(ebuf, etmp);
 
 
-    if (dtmp[0] != '\0' && etmp[0] != '\0' && strlen(dtmp) == 4) {
+    if (dtmp[0] != '\0' && etmp[0] != '\0'&& 
+	(strlen(dtmp) == 4 || dtmp[0] == '*')) {
       l = atoi(lbuf);
       l = (l > 0 && l < 60 * 24) ? l : omr.leave_t;
+      if (dtmp[0] == '*') l = 0;
       fprintf(outputfile, "%s %d %s\n", dtmp, l, etmp);
     }
   }
@@ -943,7 +952,10 @@ static int CheckIsSchedPast(int i, Schedule * sc)
   struct tm *tmp;
 
   if (i >= MAX_SCHED_NUM || i < 0)
-    return (0);
+    return 0;
+
+  if ( *((sc+i)->hour) == '*') return omr.leave_t + 1;
+
   time(&sched);
   tmp = localtime(&sched);
   tmp->tm_min = atoi((sc + i)->min);
