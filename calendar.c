@@ -171,7 +171,6 @@ Widget CreateCalendarWindow(Widget w, int Month, struct tm tm_now)
   Dimension Label_width, DayWidth;
   char *message;
   int uru_adjust;
-  XFontSet fontset;
 
   static Arg calargs[] = {
     {XtNwindowMode, 0},
