@@ -189,11 +189,17 @@ static void CommandInit()
   char *command;
   struct stat Ystat;
 
-  command = (char*)malloc(256);
-
+  command = (char*)malloc(strlen(opr.o_command) + 1);
+  if(strchr(opr.o_command,' ') != NULL){
+    strncpy(command,opr.o_command
+	    ,strlen(opr.o_command) - strlen(strchr(opr.o_command,' ')));
+    command[strlen(opr.o_command) - strlen(strchr(opr.o_command,' '))] = '\0';
+  } else {
+    strcpy(command,opr.o_command);
+  }
   if(strlen(opr.o_command) < 1) return;
-  if (stat(opr.o_command, &Ystat) == -1) {
-    fprintf(stderr, "no such option command, \"%s\"\n", opr.o_command);
+  if (stat(command, &Ystat) == -1) {
+    fprintf(stderr, "no such option command, \"%s\"\n", command);
     exit(1);
   }
 
