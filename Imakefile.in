@@ -48,20 +48,25 @@ DEFINES = $(FILTER) $(PET) $(ADD)
 
 EXTRA_LIBRARIES = @LIBS@
 
+#ifdef LIBMHC
+MHCLIBDIR = libmhc
+MHCLIB = $(MHCLIBDIR)/libmhc.a
+#endif
+
 IMAGELIBDIR = image
 IMAGELIB = $(IMAGELIBDIR)/libimage.a
-STD_INCLUDES = -I$(IMAGELIBDIR) -I/usr/local/include
+STD_INCLUDES = -I$(IMAGELIBDIR) -I/usr/local/include -I$(MHCLIBDIR)
 EXTRA_LDOPTIONS = -L/usr/local/lib
 
 #define IHaveSubdirs
-SUBDIRS = $(IMAGELIBDIR) xadl
+SUBDIRS = $(IMAGELIBDIR) $(MHCLIBDIR) xadl
 #define PassCDebugFlags
 
 MakeSubdirs($(SUBDIRS))
 DependSubdirs($(SUBDIRS))
 
-DEPLIBS = XawClientDepLibs $(IMAGELIB)
-LOCAL_LIBRARIES = XawClientLibs $(IMAGELIB)
+DEPLIBS = XawClientDepLibs $(IMAGELIB) $(MHCLIB)
+LOCAL_LIBRARIES = XawClientLibs $(IMAGELIB) $(MHCLIB)
 
 BASE_OBJS =  mail.o main.o Msgwin.o XHisho.o about.o editor.o schedule.o calendar.o menu.o ResEdit.o message.o pop.o md5c.o sound.o
 

@@ -18,6 +18,9 @@
 /* Define for XAkari :-) */
 #undef AKARI
 
+/* Define for libmhc :-) */
+#undef LIBMHC
+
 /* Define PREFIX */
 #undef PREF
 

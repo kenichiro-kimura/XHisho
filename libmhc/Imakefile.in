@@ -7,5 +7,5 @@ OBJS = $(libmhc.o)
 
 SRCS = $(OBJS:.o=.c)
 
-NormalLibraryTarget(image,$(OBJS))
+NormalLibraryTarget(mhc,$(OBJS))
 

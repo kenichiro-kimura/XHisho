@@ -1,10 +1,11 @@
 all: Makefile xadl/Makefile
 	make -f Makefile
 
-Makefile: makefile Imakefile config.h image/Imakefile xadl/Imakefile
+Makefile: makefile Imakefile config.h image/Imakefile xadl/Imakefile libmhc/Imakefile
 	xmkmf
 	cd image;xmkmf
 	cd xadl;xmkmf
+	cd libmhc;xmkmf
 
 makefile: makefile.in
 	./configure
@@ -19,6 +20,9 @@ image/Imakefile: image/Imakefile.in
 	./configure
 
 xadl/Imakefile: xadl/Imakefile.in
+	./configure
+
+libmhc/Imakefile: libmhc/Imakefile.in
 	./configure
 
 clean: Makefile
