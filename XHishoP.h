@@ -8,6 +8,7 @@
 #define _XHISHOP_H
 
 #include "XHisho.h"
+#include "image.h"
 
 #include <X11/Xaw/LabelP.h>
 #include <X11/Xmu/Converters.h>
@@ -26,6 +27,8 @@ typedef struct _XHishoClassRec {
 extern XHishoClassRec xHishoClassRec;
 
 typedef struct _XHishoPart {
+  Display *d;
+  Window w;
   String cg_file;
   String m_file;
   String ext_filter;
@@ -36,18 +39,13 @@ typedef struct _XHishoPart {
   String clock_arg;
   Boolean c_draw;
   Boolean focuswin;
+  Boolean is_shape;
   int yoff;
   XtJustify just;
-  Boolean is_shape;
   String ext_soundcommand;
 
   /* private data */
-  Display *d;
-  Window w;
-  GC  gc;
-  int width, height;
-  Pixmap pixmap;
-  Pixmap pmask;
+  ImageInfo* i_info;
   Window focus;
   int old_x, old_y;
 }   XHishoPart;

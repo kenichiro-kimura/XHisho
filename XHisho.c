@@ -29,12 +29,11 @@
 
 #define DISPLAY (xhw->xhisho.d)
 #define WINDOW  (xhw->xhisho.w)
-#define XH_GC      (xhw->xhisho.gc)
+#define XH_GC      (xhw->xhisho.i_info->gc)
 #define BCG     (xhw->xhisho.cg_file)
-#define WIDTH  (xhw->xhisho.width)
-#define HEIGHT  (xhw->xhisho.height)
-#define PIXMAP  (xhw->xhisho.pixmap)
-#define PIXMASK (xhw->xhisho.pmask)
+#define WIDTH  (xhw->xhisho.i_info->width)
+#define HEIGHT  (xhw->xhisho.i_info->height)
+#define PIXMAP  (xhw->xhisho.i_info->pixmap)
 #define FRAME_WIDTH 1
 
 static void Initialize(Widget, Widget, ArgList, Cardinal *);
@@ -46,7 +45,7 @@ static void ClassInit();
 static Boolean SetValues(Widget, Widget, Widget, ArgList, Cardinal *);
 static void NewInterval(XHishoWidget);
 
-extern int LoadImage(Widget, GC *, Pixmap *, char *, int *, int *, int, Boolean);
+extern int LoadImage(ImageInfo *);
 
 static XtResource resources[] = {
   {
@@ -234,6 +233,9 @@ static void Initialize(Widget request, Widget new, ArgList args, Cardinal * num_
 {
   XHishoWidget xhw = (XHishoWidget) new;
 
+  xhw->xhisho.i_info = (ImageInfo*)malloc(sizeof(ImageInfo));
+  WIDTH = HEIGHT = 0;
+
   XH_GC = XCreateGC(XtDisplay(xhw), RootWindowOfScreen(XtScreen(xhw)), (unsigned long) NULL, NULL);
 
   xhw->xhisho.intervalId = 0;
@@ -258,11 +260,22 @@ static void Realize(Widget w, XtValueMask * valueMask, XSetWindowAttributes * at
     clock_height = xhw->label.label_height + 4;
   }
 
-  if (LoadImage(XtParent((Widget) xhw), &(XH_GC), &(PIXMAP), BCG, &WIDTH
-		,&HEIGHT, clock_height, xhw->xhisho.is_shape) != 0) {
+  /**
+   * ImageInfoに必要なデータを与える
+   **/
+
+  xhw->xhisho.i_info->d = XtDisplay(XtParent(w));
+  xhw->xhisho.i_info->w = XtWindow(XtParent(w));
+  xhw->xhisho.i_info->filename = malloc(strlen(BCG) + 1);
+  strcpy(xhw->xhisho.i_info->filename,BCG);
+  xhw->xhisho.i_info->is_shape = xhw->xhisho.is_shape;
+  xhw->xhisho.i_info->ext_height = clock_height;
+
+  if (LoadImage(xhw->xhisho.i_info) != 0) {
     fprintf(stderr, "fail read CG data,%s\n", BCG);
     exit(1);
   }
+
   XtResizeWidget(XtParent(xhw), WIDTH, HEIGHT + clock_height, FRAME_WIDTH);
   XtResizeWidget((Widget) xhw, WIDTH, HEIGHT + clock_height
 		 ,FRAME_WIDTH);

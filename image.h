@@ -1,6 +1,7 @@
 #ifndef _IMAGE_H
 #define _IMAGE_H
 
+#include <X11/Xlib.h>
 enum {
   /**
    * BMP用の定数定義
@@ -28,13 +29,19 @@ typedef struct _ImageInfo {
    * 画像データ受け渡し用
    */
 
+  Display *d;
+  Window w;
+  GC  gc;
+  Pixmap pixmap;
   unsigned char *ImageData;
   struct palette *ImagePalette;
   int colorsuu;
-  int width, height;
-  int depth;
+  unsigned int width, height;
   short BitCount;
   int trans_pix;
+  int is_shape;
+  int ext_height;
+  char* filename;
 } ImageInfo;
 
 

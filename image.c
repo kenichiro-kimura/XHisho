@@ -3,7 +3,6 @@
 #include <string.h>
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
-#include <X11/Intrinsic.h>
 #include <X11/extensions/shape.h>
 #include "image.h"
 #include "config.h"
@@ -227,18 +226,27 @@ int ExecLoader(ImageInfo * i_info, char *filename)
   return -1;
 }
 
-int LoadImage(Widget xhw, GC * gc, Pixmap * pmap, char *fname, int *width, int *height, int ext_height, Boolean is_shape)
+int LoadImage(ImageInfo* i_info)
 {
   /**
-   * fnameで指定されたファイルを読み込む。描画対象になる
-   * Widget(DisplayをWindowを得るのに使う),GC,Pixmapが必要。widthと
-   * heightはファイルから取得され、セットされる。ext_heightはmaskをか
-   * けるとき、mask以外の部分の高さ。
-   * よーするにXHishoWidgetから呼ぶときに時計の分の高さを無視するため
-   * に,時計の高さを指定するだけ。普通は0でよろし。is_shape はshapeす
-   * るかどうか。0以外でshape,
+   * ImageInfoを引数に与える。ImageInfoに必要なデータをセットしておく
+   * のを忘れない。必要なのは
+   *
+   * Display* i_info->d;
+   * Window   i_info->w;
+   * int      i_info->is_shape;
+   * int      i_info->ext_height;
+   * char*    filename;
+   *
+   * の5つ。filenameはちゃんとmallocしてからセットするよーに。     
+   * 
+   * i_info->ext_heightはmaskをかけるとき、mask以外の部分の高さ。よー
+   * するにXHishoWidgetから呼ぶときに時計の分の高さを無視するために,時
+   * 計の高さを指定するだけ。普通は0でよろし。i_info->is_shape はshape
+   * するかどうか。0以外でshape。
    *
    * 読み込みに成功したら0,失敗したら-1を返す。
+   *
    **/
 
   Display *d;
@@ -252,35 +260,33 @@ int LoadImage(Widget xhw, GC * gc, Pixmap * pmap, char *fname, int *width, int *
   Pixmap mask;
   GC  mask_gc;
   struct palette *pal;
-  Window mask_win;
-  Widget top;
   int i,j, depth, matched;
+  unsigned int width,height;
   int colorsuu;
   unsigned long pixel_value[256];
   int cells;
   unsigned long trans_pix;
-  ImageInfo i_info;
 
-  i_info.trans_pix = -1;
-  d = XtDisplay(xhw);
-  w = XtWindow(xhw);
+  i_info->trans_pix = -1;
+  d = i_info->d;
+  w = i_info->w;
   vis = DefaultVisual(d, 0);
-  i_info.depth = depth = DefaultDepth(d, 0);
+  depth = DefaultDepth(d, 0);
   vinfo.screen = DefaultScreen(d);
-  i = j = *height = trans_pix = 0;
-  i_info.ImagePalette = (struct palette *) malloc(sizeof(struct palette));
+  i = j = height = trans_pix = 0;
+  i_info->ImagePalette = (struct palette *) malloc(sizeof(struct palette));
   pal = (struct palette *) malloc(sizeof(struct palette));
 
   /**
    * ローダを呼び出す
-   */
+   **/
 
-  if (ExecLoader(&i_info, fname) == -1)
+  if (ExecLoader(i_info, i_info->filename) == -1)
     return -1;
 
-  *width = i_info.width;
-  *height = i_info.height;
-  colorsuu = i_info.colorsuu;
+  width = i_info->width;
+  height = i_info->height;
+  colorsuu = i_info->colorsuu;
 
   /**
    * VisualInfoを取得し、最適なものを選択する。
@@ -298,18 +304,14 @@ int LoadImage(Widget xhw, GC * gc, Pixmap * pmap, char *fname, int *width, int *
 
   cells = vinfo.colormap_size;	/** size of colormap **/
 
-  *pmap = XCreatePixmap(d, w, *width, *height, depth);
-  image = XGetImage(d, *pmap, 0, 0, *width, *height, AllPlanes, ZPixmap);
+  i_info->pixmap = XCreatePixmap(d, w, width, height, depth);
+  image = XGetImage(d, i_info->pixmap, 0, 0, width, height, AllPlanes, ZPixmap);
 
-  if (is_shape) {
-    top = xhw;
-    while (XtParent(top))
-      top = XtParent(top);
-    mask_win = XtWindow(top);
-    mask = XCreatePixmap(d, w, *width, *height + ext_height, 1);
-    mask_image = XGetImage(d, mask, 0, 0, *width, *height + ext_height, 1, ZPixmap);
+  if (i_info->is_shape) {
+    mask = XCreatePixmap(d, w, width, height + i_info->ext_height, 1);
+    mask_image = XGetImage(d, mask, 0, 0, width, height + i_info->ext_height, 1, ZPixmap);
   }
-  switch (i_info.BitCount) {
+  switch (i_info->BitCount) {
   case 1:
   case 4:
   case 8:
@@ -317,30 +319,30 @@ int LoadImage(Widget xhw, GC * gc, Pixmap * pmap, char *fname, int *width, int *
       int i;
 
       for (i = 0; i < colorsuu; i++)
-	pixel_value[i] = GetPixelFromRGB(i_info.ImagePalette + i, vinfo);
+	pixel_value[i] = GetPixelFromRGB(i_info->ImagePalette + i, vinfo);
 
       for (; i < 256; i++)
 	pixel_value[i] = 0L;
 
       /**
-       * i_info.trans_pixがセットされていればそちらを透明色として使う。
+       * i_info->trans_pixがセットされていればそちらを透明色として使う。
        * セットされていなければ、左上隅の色を透明色として使う。
        *
-       * i_info.trans_pixはXPMの"None"で指定される。もしGIFローダを実
+       * i_info->trans_pixはXPMの"None"で指定される。もしGIFローダを実
        * 装したら、GIFの透明色(のパレット番号)をセットする。
        **/
 
-      if (i_info.trans_pix != -1) {
-	trans_pix = pixel_value[i_info.trans_pix];
+      if (i_info->trans_pix != -1) {
+	trans_pix = pixel_value[i_info->trans_pix];
       } else {
-	trans_pix = pixel_value[i_info.ImageData[0]];
+	trans_pix = pixel_value[i_info->ImageData[0]];
       }
 
-      for (i = 0; i < *height; i++) {
-	for (j = 0; j < *width; j++) {
-	  XPutPixel(image, j, i, pixel_value[i_info.ImageData[i * *width + j]]);
-	  if (is_shape) {
-	    if (pixel_value[i_info.ImageData[i * *width + j]] == trans_pix)
+      for (i = 0; i < height; i++) {
+	for (j = 0; j < width; j++) {
+	  XPutPixel(image, j, i, pixel_value[i_info->ImageData[i * width + j]]);
+	  if (i_info->is_shape) {
+	    if (pixel_value[i_info->ImageData[i * width + j]] == trans_pix)
 	      XPutPixel(mask_image, j, i, 0);
 	    else
 	      XPutPixel(mask_image, j, i, 1);
@@ -348,9 +350,9 @@ int LoadImage(Widget xhw, GC * gc, Pixmap * pmap, char *fname, int *width, int *
 	}
       }
 
-      if (is_shape) {
-	for (i = *height; i < *height + ext_height; i++)
-	  for (j = 0; j < *width; j++)
+      if (i_info->is_shape) {
+	for (i = height; i < height + i_info->ext_height; i++)
+	  for (j = 0; j < width; j++)
 	    XPutPixel(mask_image, j, i, 1);
       }
     } else {
@@ -360,24 +362,24 @@ int LoadImage(Widget xhw, GC * gc, Pixmap * pmap, char *fname, int *width, int *
 
       cm = DefaultColormap(d, 0);
 
-      GetPseudoPixelFromRGB(d, cm, i_info.ImagePalette, pixel_value, colorsuu, cells);
+      GetPseudoPixelFromRGB(d, cm, i_info->ImagePalette, pixel_value, colorsuu, cells);
 
       /**
        * change pixels to matched color index
        **/
 
-      if (i_info.trans_pix != -1) {
+      if (i_info->trans_pix != -1) {
 	trans_pix = pixel_value[i];
       } else {
-	trans_pix = pixel_value[i_info.ImageData[0]];
+	trans_pix = pixel_value[i_info->ImageData[0]];
       }
 
-      for (i = 0; i < *height; i++)
-	for (j = 0; j < *width; j++) {
-	  XPutPixel(image, j, i, pixel_value[i_info.ImageData[i * *width + j]]);
+      for (i = 0; i < height; i++)
+	for (j = 0; j < width; j++) {
+	  XPutPixel(image, j, i, pixel_value[i_info->ImageData[i * width + j]]);
 
-	  if (is_shape) {
-	    if (pixel_value[i_info.ImageData[i * *width + j]] == trans_pix) {
+	  if (i_info->is_shape) {
+	    if (pixel_value[i_info->ImageData[i * width + j]] == trans_pix) {
 	      XPutPixel(mask_image, j, i, 0);
 	    } else {
 	      XPutPixel(mask_image, j, i, 1);
@@ -385,9 +387,9 @@ int LoadImage(Widget xhw, GC * gc, Pixmap * pmap, char *fname, int *width, int *
 	  }
 	}
 
-      if (is_shape) {
-	for (i = *height; i < *height + ext_height; i++)
-	  for (j = 0; j < *width; j++)
+      if (i_info->is_shape) {
+	for (i = height; i < height + i_info->ext_height; i++)
+	  for (j = 0; j < width; j++)
 	    XPutPixel(mask_image, j, i, 1);
       }
     }
@@ -397,12 +399,12 @@ int LoadImage(Widget xhw, GC * gc, Pixmap * pmap, char *fname, int *width, int *
       fprintf(stderr, "no supported mode...\n");
       return -1;
     }
-    for (i = 0; i < *height; i++) {
+    for (i = 0; i < height; i++) {
       char *ptr;
 
-      ptr = (char *) i_info.ImageData + (*height - i - 1) * *width * 3;
+      ptr = (char *) i_info->ImageData + (height - i - 1) * width * 3;
 
-      for (j = 0; j < *width; j++) {
+      for (j = 0; j < width; j++) {
 	pal->r = (unsigned char) ptr[0];
 	pal->g = (unsigned char) ptr[1];
 	pal->b = (unsigned char) ptr[2];
@@ -413,18 +415,18 @@ int LoadImage(Widget xhw, GC * gc, Pixmap * pmap, char *fname, int *width, int *
 	if (i == 0 && j == 0)
 	  trans_pix = pixel_value[0];
 
-	if (is_shape) {
+	if (i_info->is_shape) {
 	  if (pixel_value[0] == trans_pix)
-	    XPutPixel(mask_image, j, *height - i - 1, 0);
+	    XPutPixel(mask_image, j, height - i - 1, 0);
 	  else
-	    XPutPixel(mask_image, j, *height - i - 1, 1);
+	    XPutPixel(mask_image, j, height - i - 1, 1);
 	}
-	XPutPixel(image, j, *height - i - 1, pixel_value[0]);
+	XPutPixel(image, j, height - i - 1, pixel_value[0]);
       }
     }
-    if (is_shape) {
-      for (i = *height; i < *height + ext_height; i++)
-	for (j = 0; j < *width; j++)
+    if (i_info->is_shape) {
+      for (i = height; i < height + i_info->ext_height; i++)
+	for (j = 0; j < width; j++)
 	  XPutPixel(mask_image, j, i, 1);
     }
     break;
@@ -433,21 +435,21 @@ int LoadImage(Widget xhw, GC * gc, Pixmap * pmap, char *fname, int *width, int *
     return -1;
   }
 
-  XFreeGC(d, *gc);
-  *gc = XCreateGC(d, *pmap, 0, NULL);
+  XFreeGC(d, i_info->gc);
+  i_info->gc = XCreateGC(d, i_info->pixmap, 0, NULL);
 
-  XPutImage(d, *pmap, *gc, image, 0, 0, 0, 0, *width, *height);
+  XPutImage(d, i_info->pixmap, i_info->gc, image, 0, 0, 0, 0, width, height);
 
-  if (is_shape) {
+  if (i_info->is_shape) {
     mask_gc = XCreateGC(d, mask, 0, NULL);
-    XPutImage(d, mask, mask_gc, mask_image, 0, 0, 0, 0, *width, *height + ext_height);
-    XShapeCombineMask(d, mask_win, ShapeBounding, 0, 0, mask, ShapeSet);
+    XPutImage(d, mask, mask_gc, mask_image, 0, 0, 0, 0, width, height + i_info->ext_height);
+    XShapeCombineMask(d, w, ShapeBounding, 0, 0, mask, ShapeSet);
     XFreePixmap(d, mask);
     XFreeGC(d, mask_gc);
   }
-  free(i_info.ImageData);
+  free(i_info->ImageData);
 
-  free(i_info.ImagePalette);
+  free(i_info->ImagePalette);
   free(pal);
 
   return 0;
