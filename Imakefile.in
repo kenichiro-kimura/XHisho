@@ -21,9 +21,7 @@ LOCALEDIR = $(HOME)/$(LANG)/
 
 #ifdef PREF
 BINDIR	= $(PREFIX)/bin
-XHISHODIR = $(PREFIX)/xhisho
-XAPPLOADDIR = $(PREFIX)/app-defaults
-LOCALEDIR = $(PREFIX)/$(LANG)/app-defaults
+XHISHODIR = $(PREFIX)/share/xhisho
 #endif
 
 #ifdef EXT_FILTER
@@ -91,7 +89,7 @@ XHisho.ad:: XHisho.ad.sed
 
 #ifdef I18N
 XHisho.jp:: XHisho.jp.sed
-	sed 's!XHISHODIR!$(XHISHODIR)!' XHisho.jp.sed | sed 's!IXHISHODIR!$(IXHISHODIR)!' >$@
+	sed 's!IXHISHODIR!$(IXHISHODIR)!' XHisho.jp.sed | sed 's!XHISHODIR!$(XHISHODIR)!' >$@
 #endif
 
 xhisho.man:: man1/xhisho.1
@@ -99,7 +97,7 @@ xhisho.man:: man1/xhisho.1
 
 #ifdef AKARI
 sample/Messages.akari:: sample/Messages.akari.sed
-	sed 's!XHISHODIR!$(XHISHODIR)!' sample/Messages.akari.sed | sed 's!YOUR_NAME!$(YOUR_NAME)!' >$@
+	sed 's!YOUR_NAME!$(YOUR_NAME)!' sample/Messages.akari.sed >$@
 
 clean:: 
 	$(RM) XHisho.ad sample/Messages.akari
