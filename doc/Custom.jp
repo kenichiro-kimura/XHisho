@@ -462,6 +462,7 @@ XHishoのアクションには以下のものがあります。
 
 Quit()                : XHishoを終了する
 ScheduleWindowPopup() : 今日のスケジュールを表示する
+OpeningWindowPopup()  : 起動時の挨拶ウインドを表示する
 CalendarWindowPopup() : 予定編集ウインドを表示する
 AboutWindowPopup()    : 「XHishoについて」を表示する
 MenuWindowPopup()     : メニューウインドを表示する

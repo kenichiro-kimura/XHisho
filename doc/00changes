@@ -1,5 +1,21 @@
 				<Change Log>
 
+1.50[lime Release 5]
+
+・Translationに"OpeningWindowPopup"を追加
+
+
+
+
+
+1.41[Lime Release 4 PL 1]
+
+・環境によってxadlがコンパイルに失敗するのを修正
+・リソースファイルが読めなかったときに起動できないのを修正
+
+
+
+
 
 
 1.40[Lime Release 4]
