@@ -453,7 +453,8 @@ static void CheckOption(Widget w, int *fid, XtInputId * id)
 
     if(c_ptr = strstr(message_ptr,"\\e")){
       is_end = 1;
-      *c_ptr = '\0';
+      *c_ptr = '\n';
+      *(c_ptr + 1) = '\0';
     }
 
     SakuraParser(message_ptr);
@@ -737,9 +738,7 @@ static void InsertMessage(Widget w,char* message_buffer,int mode)
 {
   XawTextPosition current,last;
   XawTextBlock textblock;
-  int true_length;
   char* chr_ptr;
-  int i;
 
   if(strlen(message_buffer) > 0){
     if(!IsPopped(XtParent(w)))
@@ -788,9 +787,13 @@ static void _InsertMessage(XtPointer cl,XtIntervalId* id)
   dest = HeadOfBuffer(&mdest);
 
   if(chr_ptr && dest){
+    free(chr_ptr);
     switch(*(chr_ptr = GetBuffer(&mbuf))){
     case '$':
+      free(dest);
       dest = GetBuffer(&mdest);
+      free(dest);
+      free(chr_ptr);
       break;
     case '\\':
       cg_num = atoi(chr_ptr + 1);
@@ -799,6 +802,8 @@ static void _InsertMessage(XtPointer cl,XtIntervalId* id)
 		    ,(*dest == 's')? XtNcgNumber:XtNucgNumber
 		    ,cg_num
 		    ,NULL);
+      free(dest);
+      free(chr_ptr);
       break;
     default:
       w = (*dest == 's')? label:ulabel;
@@ -817,6 +822,8 @@ static void _InsertMessage(XtPointer cl,XtIntervalId* id)
       XtVaSetValues(w,XtNeditType,XawtextRead,NULL);
       XFlush(XtDisplay(XtParent(w)));
       XawTextSetInsertionPoint(w , last + textblock.length);
+      free(dest);
+      free(chr_ptr);
     }
   }
   
