@@ -97,7 +97,7 @@ Widget CreateOptionWindow(Widget w){
 				  ,XtNresize,XawtextResizeWidth
 				  ,XtNscrollHorizontal,XawtextScrollWhenNeeded
 				  */
-				  ,XtNscrollVertical,XawtextScrollWhenNeeded
+				  ,XtNscrollVertical,XawtextScrollAlways
 				  ,XtNautoFill,True
 				  ,XtNeditType,XawtextEdit
 				  ,NULL);
@@ -152,7 +152,7 @@ static void CommandInit()
   OptionId = XtAppAddInput(XtWidgetToApplicationContext(top),
 			   fileno(option_fd), (XtPointer) XtInputReadMask,
 			   (XtInputCallbackProc) CheckOption, NULL);
-  XSetIOErrorHandler(Option_exit);	/** child process $B$N(B youbin $B$r;&$9(B **/
+  XSetIOErrorHandler(Option_exit);	/** child process ¤Î youbin ¤ò»¦¤¹ **/
   free(command);
 }
 
@@ -165,14 +165,14 @@ static void CheckOption(Widget w, int *fid, XtInputId * id)
   int len;
   char* chr_ptr;
   char* next_ptr;
-  int is_end;
+  static int is_end = 0;
   XFontSet fset;
   XRectangle ink, log;
   int max_len;
   Dimension width;
   int sakura;
   int chr_length,dword,pos,mpos;
-  long current,last;
+  XawTextPosition current,last;
   XawTextBlock textblock;
 #ifdef EXT_FILTER
   char command[128];
@@ -185,7 +185,8 @@ static void CheckOption(Widget w, int *fid, XtInputId * id)
 
   if ((len = read(*fid,_buffer,BUFSIZ * 5)) == 0) {
     fprintf(stderr, "option command died!\n");
-    CommandInit();
+    XtDestroyWidget(optionwin);
+    optionwin = CreateOptionWindow(XtParent(xhisho));
     return;
   } else if (len == -1) {
     fprintf(stderr, "Can't read from option command!\n");
@@ -195,8 +196,20 @@ static void CheckOption(Widget w, int *fid, XtInputId * id)
 
   memset(message_buffer,'\0',BUFSIZ * 20);
 
-  is_end = 0;
   x = 1;
+
+  if(is_end){
+    last = XawTextSourceScan (XawTextGetSource (label),(XawTextPosition) 0,
+			      XawstAll, XawsdRight, 1, TRUE);
+    //    last = XawTextGetInsertionPoint(XawTextGetSource(label));
+    textblock.ptr = "";
+    textblock.firstPos = 0;
+    textblock.length = 0;
+    textblock.format = FMT8BIT;
+    XawTextReplace (label, 0, last, &textblock);
+    XawTextSetInsertionPoint(label,0);
+    is_end = 0;
+  }
 
 #ifdef EXT_FILTER
   strcpy(t_filename, tempnam(Tmp_dir, "xhtmp"));
@@ -272,7 +285,7 @@ static void CheckOption(Widget w, int *fid, XtInputId * id)
   }
 
   /**
-   * font$B$NBg$-$5$r<hF@$7!"I=<(NN0h$NBg$-$5$r7h$a$k(B
+   * font
    **/
 
   XtVaGetValues(label, XtNfontSet, &fset, XtNwidth,&width,NULL);
@@ -284,36 +297,47 @@ static void CheckOption(Widget w, int *fid, XtInputId * id)
   */
 
   SakuraParser(chr_ptr);
+
   max_len = width / log.width - 1;
   chr_length = strlen(chr_ptr);
 
-  for(dword = pos = 0;pos < chr_length;pos++){
+  for(dword = pos = 0;pos < chr_length;){
     if(((signed char)chr_ptr[pos]) < 0) dword ++;
-    if(pos >= max_len && dword % 2 == 0){
+    if(strncmp(chr_ptr + pos, "\n",1) == 0){
+      strcat(message_buffer,"\n");
+      if(pos < 1)
+	chr_ptr++;
+      else 
+	chr_ptr += pos;
+      chr_length = strlen(chr_ptr);
+      pos = 0;
+      dword = 0;
+    } else if(pos >= max_len && dword % 2 == 0){
       strncat(message_buffer,chr_ptr, pos - 1);
       strcat(message_buffer,"\n");
       chr_ptr += pos;
       chr_ptr--;
       chr_length = strlen(chr_ptr);
-      pos = -1;
+      pos = 0;
       dword = 0;
+    } else {
+      pos++;
     }
   }
   strcat(message_buffer,chr_ptr);
 
-  current = XawTextGetInsertionPoint(XawTextGetSource(label));
+  current = XawTextGetInsertionPoint(label);
   last = XawTextSourceScan (XawTextGetSource (label),(XawTextPosition) 0,
 			    XawstAll, XawsdRight, 1, TRUE);
 
-  printf("insert into %d\n",current);
   textblock.firstPos = 0;
   textblock.length = strlen(message_buffer);
   textblock.ptr = message_buffer;
   textblock.format = FMT8BIT;
   XawTextReplace(label,last,last,&textblock);
   if (current == last)
-    XawTextSetInsertionPoint(XawTextGetSource(label)
-			     ,last + textblock.length);
+    XawTextSetInsertionPoint(label
+			     , last + textblock.length);
 
   /*
   chr_ptr = strtok(message_buffer,"\n");
@@ -341,18 +365,6 @@ static void CheckOption(Widget w, int *fid, XtInputId * id)
   */
   XtPopup(XtParent(local_option), XtGrabNone);
 
-  if(is_end){
-    printf("en-e\n");
-    last = XawTextSourceScan (XawTextGetSource (label),(XawTextPosition) 0,
-			      XawstAll, XawsdRight, 1, TRUE);
-    //    last = XawTextGetInsertionPoint(XawTextGetSource(label));
-    textblock.ptr = "";
-    textblock.firstPos = 0;
-    textblock.length = 0;
-    textblock.format = FMT8BIT;
-    XawTextReplace (label, 0, last, &textblock);
-    XawTextSetInsertionPoint(label,0);
-  }
 }
 
 static int Option_exit(Display * disp)
