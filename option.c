@@ -42,6 +42,7 @@ static void HeadOfBuffer(messageBuffer*,char*);
 static void _GetBuffer(messageBuffer*,char*,int);
 static void SakuraParser(char*);
 extern char* RandomMessage(char*);
+static void SJIS2EUC(char*);
 
 static XtActionsRec actionTable[] = {
   {"Destroy", Destroy},
@@ -377,8 +378,11 @@ static void CheckOption(Widget w, int *fid, XtInputId * id)
   free(message_ptr);
 #endif
 
-#ifdef EXT_FILTER
+  SJIS2EUC(_buffer);
+  strcpy(buffer, _buffer);
 
+#if 0
+#ifdef EXT_FILTER
   len = 0;
   strcpy(t_filename, tempnam(Tmp_dir, "xhtmp"));
   if ((t_file = fopen(t_filename, "w")) == NULL) {
@@ -400,9 +404,9 @@ static void CheckOption(Widget w, int *fid, XtInputId * id)
     pclose(in);
     unlink(t_filename);
   }
-  
 #else
   strcpy(buffer, _buffer);
+#endif
 #endif
 
   /* here is script decoder .. */
@@ -1158,4 +1162,61 @@ static void SakuraParser(char* in_ptr)
   free(buffer);
   free(kbuf.buffer);
   return ;
+}
+
+static void SJIS2EUC(char* in) {
+  unsigned char* out;
+  unsigned char c1;
+  unsigned char c2;
+  unsigned char* in_ptr;
+  unsigned char* out_ptr;
+  unsigned char first_byte;
+
+  out = (unsigned char*)malloc(strlen(in) + 1);
+  in_ptr = in;
+  out_ptr = out;
+
+  while(*in_ptr != '\0'){
+    first_byte = *in_ptr;
+    if(first_byte < 0x80){
+      *out_ptr++ = *in_ptr++;
+    } else {
+      c1 = first_byte;
+      in_ptr++;
+      if(*in_ptr == '\0') break;
+      c2 = (*in_ptr);
+
+      if( c2 < 0x9f ) {
+	if( c1 < 0xa0 ) {
+	  c1 -= 0x81;
+	  c1 *= 2;
+	  c1 += 0xa1;
+	} else {
+	  c1 -= 0xe0;
+	  c1 *= 2;
+	  c1 += 0xdf;
+	}
+	if( c2 > 0x7f ) { --c2; }
+	c2 += 0x61;
+      } else {
+	if( c1 < 0xa0 ) {
+	  c1 -= 0x81;
+	  c1 *= 2;
+	  c1 += 0xa2;
+	} else {
+	  c1 -= 0xe0;
+	  c1 *= 2;
+	  c1 += 0xe0;
+	}
+	c2 += 2;
+      }
+
+      *out_ptr++ = c1;
+      *out_ptr++ = c2;
+      in_ptr++;
+    }
+  }
+  *out_ptr = '\0';
+  strcpy(in,out);
+  free(out);
 }
