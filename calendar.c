@@ -2,6 +2,9 @@
 #include "globaldefs.h"
 #include "Msgwin.h"
 #include "calendar.h"
+#ifdef LIBMHC
+#include "mhc.h"
+#endif
 
 /**
  * 各種変数の宣言
@@ -172,6 +175,13 @@ Widget CreateCalendarWindow(Widget w, int Month, struct tm tm_now)
   Dimension Label_width, DayWidth;
   char *message;
   int uru_adjust;
+  int exist_schedule = 0;
+#ifdef LIBMHC
+  int exist_mhc[31];
+  MHC* mhc_ptr;
+  mhcent* ent_ptr;
+  char home[BUFSIZ];
+#endif
 
   static Arg calargs[] = {
     {XtNwindowMode, 0},
@@ -240,6 +250,20 @@ Widget CreateCalendarWindow(Widget w, int Month, struct tm tm_now)
    **/
 
   uru_adjust = ((tm_now.tm_year % 4) == 0 && Month == 1) ? 1 : 0;
+
+#ifdef LIBMHC
+  sprintf(home,"%s/Mail/schedule/",getenv("HOME"));
+  mhc_ptr = OpenMHC(home,tm_now.tm_year + 1900,Month + 1);
+  for(i = 0; i < 31;i++){
+    SetMHC(mhc_ptr,i + 1);
+    if(ReadMHC(mhc_ptr) != NULL){
+      exist_mhc[i] = 1;
+    }else{
+      exist_mhc[i] = 0;      
+    }
+  }
+  CloseMHC(mhc_ptr);
+#endif
 
   /**
    * Popdown処理のための準備
@@ -377,7 +401,9 @@ Widget CreateCalendarWindow(Widget w, int Month, struct tm tm_now)
 	 * 予定のある日の色を変える
 	 **/
 
-	if (ExistSchedule(Edited_Month, l - 1))
+	exist_schedule = ExistSchedule(Edited_Month,l - 1) + exist_mhc[l - 2];
+
+	if (exist_schedule)
 	  XtVaSetValues(day[k], XtNbackground, GetColor(XtDisplay(top), cres.color), NULL);
 
 	/**
