@@ -352,6 +352,7 @@ static void ShapeWindow(MsgwinWidget msw)
     SwapFrameInfo(&mask_point[1].y, &mask_point[2].y);
     break;
   default:
+    break;
   }
 
   /**

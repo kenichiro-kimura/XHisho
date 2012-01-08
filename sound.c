@@ -17,7 +17,7 @@
 #include <X11/Intrinsic.h>
 
 #if defined (__FreeBSD__)
-#include <machine/soundcard.h>
+#include <sys/soundcard.h>
 #define NORMAL_SOUND_PLAY
 #elif defined (linux)
 #include <linux/soundcard.h>

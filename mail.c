@@ -377,6 +377,7 @@ int CheckPOP3(int mode)
     ret_value = pop3(POP_AUTH, mar.p_server, buf);
     break;
   default:
+    break;
   }
 
   ReadRcdata("newmail",tmp,BUFSIZ);
