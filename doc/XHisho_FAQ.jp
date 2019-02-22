@@ -1,6 +1,6 @@
 ******************************************************************
  XHisho Ver. 1.80 [Lime Release 8]
- Copyright(c) 1998-2002 Ken'ichirou Kimura (kimura@db.is.kyushu-u.ac.jp)
+ Copyright(c) 1998-2019 Ken'ichirou Kimura (kimura@sokohiki.org)
     ******************************************************************
 
 
@@ -255,7 +255,3 @@
      □ A.XHisho Ver.1系列の開発コードです。由来はVer.2系列の開発コードを見
         たとき明らかになるでしょう。
         ＃既にバレバレ？ ^^;
-26.
-     □ Q.XAkariってなんですか？
-     □ A.XHishoの初期開発コードです。詳しくはREADME.mowemoweをご覧下さい ^^;
-
