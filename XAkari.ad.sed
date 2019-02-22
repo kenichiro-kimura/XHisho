@@ -111,7 +111,7 @@ XHisho*kawariDir: XHISHODIR
 XHisho.About.aboutLabel:\
 \                 XAkari Ver.%s \n\
 \n\
-Copyright(c) 1998-2002  木村健一郎<Ken'ichirou Kimura>\n\
+Copyright(c) 1998-2019  木村健一郎<Ken'ichirou Kimura>\n\
 \n\
 \n\
 XAkariはあなたのデスクトップに常駐するあかりちゃんです。\n\

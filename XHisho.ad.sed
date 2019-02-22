@@ -105,7 +105,7 @@ XHisho*kawariDir: XHISHODIR
 XHisho.About.aboutLabel:\
 \              XHisho Ver.%s\n\
 \n\
-Copyright(c) 1998-2002  Ken'ichirou Kimura\n\
+Copyright(c) 1998-2019  Ken'ichirou Kimura\n\
 \n\
 \n\
 XHisho is your private secretary on X Window System.\n\
