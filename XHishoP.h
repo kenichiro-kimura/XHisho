@@ -1,7 +1,7 @@
 /**
  * 画像張り付け & 時計表示 Widget 「XHisho Widget」 プライベートヘッダファイル
  * 
- * copyright(c) 1998-2001  Ken'ichirou Kimura(kimura@db.is.kyushu-u.ac.jp)
+ * copyright(c) 1998-2019  Ken'ichirou Kimura(kimura@db.is.kyushu-u.ac.jp)
  **/
 
 #ifndef _XHISHOP_H

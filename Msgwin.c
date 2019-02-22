@@ -1,7 +1,7 @@
 /**
  * ふきだし型Form Widget 「Msgwin Widget」 Widget本体処理ファイル
  *
- * copyright(c) 1998-2002   Ken'ichirou Kimura(kimura@db.is.kyushu-u.ac.jp)
+ * copyright(c) 1998-2019   Ken'ichirou Kimura(kimura@db.is.kyushu-u.ac.jp)
  *
  * Msgwinでは、From Widgetをふきだしの形にshapeして表示する。親になるウ
  * インドの位置によって画面を4分割し、それをWindowModeとする。Modeによっ
