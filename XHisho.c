@@ -302,13 +302,13 @@ XHishoClassRec xHishoClassRec = {
    * LabelPart
    **/
   {
-    (int) NULL,
+    NULL,
   },
   /**
    * XHishoPart
    **/
   {
-    (int) NULL,
+    (intptr_t) NULL,
   },
 };
 

@@ -158,13 +158,13 @@ static void SetPrefVal(int i, float p)
 
   rer.Pref[i].param = p;
   param = (rer.Pref[i].param - rer.Pref[i].offset) / rer.Pref[i].max;
-  ChangeBar(NULL, (caddr_t) i, (int) (XtPointer) (&param));
+  ChangeBar(NULL, (caddr_t)(intptr_t) i, (intptr_t) (XtPointer)(intptr_t) (&param));
   MoveBar(i, param);
 }
 
 static void Destroy(Widget w, caddr_t client_data, caddr_t call_data)
 {
-  int Mode = (int) (client_data);
+  int Mode = (intptr_t) (client_data);
 
   if (!Mode) {
     isMailChecked = 0;
@@ -621,7 +621,7 @@ Widget CreateMailAlert(Widget w, int Mode)
 				 ,XtNvertDistance, 20 * (Mode + 1)
 				 ,XtNleft, XtChainLeft, XtNright, XtChainLeft
 				 ,XtNinternalHeight, FONT_OFFSET, NULL);
-    XtAddCallback(ok, XtNcallback, (XtCallbackProc) Destroy, (XtPointer) Mode);
+    XtAddCallback(ok, XtNcallback, (XtCallbackProc) Destroy, (XtPointer)(intptr_t) Mode);
   } else {
     /**
      * fontの大きさを取得し、fromの大きさを決める
@@ -653,7 +653,7 @@ Widget CreateMailAlert(Widget w, int Mode)
 				 ,XtNvertDistance, 20
 				 ,XtNleft, XtChainLeft, XtNright, XtChainLeft
 				 ,XtNinternalHeight, FONT_OFFSET, NULL);
-    XtAddCallback(ok, XtNcallback, (XtCallbackProc) Destroy, (XtPointer) Mode);
+    XtAddCallback(ok, XtNcallback, (XtCallbackProc) Destroy, (XtPointer)(intptr_t) Mode);
     AddMailTimeout();
   }
 
@@ -666,16 +666,16 @@ Widget CreateMailAlert(Widget w, int Mode)
     switch (Biff) {
     case YOUBIN:
       YoubinInit();
-      CheckYoubinNowTimer((XtPointer) (w), (XtIntervalId) NULL);
+      CheckYoubinNowTimer((XtPointer) (w), (XtIntervalId*) NULL);
       XSetIOErrorHandler(Youbin_exit);	/** child process の youbin を殺す **/
       break;
     case POP:
     case APOP:
     case IMAP:
-      CheckPOP3Timer((XtPointer) (w), (XtIntervalId) NULL);
+      CheckPOP3Timer((XtPointer) (w), (XtIntervalId*) NULL);
       break;
     default:
-      CheckMailTimer((XtPointer) (w), (XtIntervalId) NULL);
+      CheckMailTimer((XtPointer) (w), (XtIntervalId*) NULL);
     }
   }
   for (i = 0; i < 2; i++)

@@ -188,7 +188,7 @@ MsgwinClassRec msgwinClassRec = {
    * MsgwinPart
    **/
   {
-    (int) NULL,
+    (intptr_t) NULL,
   },
 };
 

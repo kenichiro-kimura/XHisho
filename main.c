@@ -154,7 +154,7 @@ static void Wait(Widget w, XEvent * e, String * s, unsigned int *i)
      * 起動時のスケジュール時間のチェック
      **/
 
-    CheckTimeForSchedule((XtPointer) toplevel, (XtIntervalId) NULL);
+    CheckTimeForSchedule((XtPointer) toplevel, (XtIntervalId*) NULL);
 
     IsSet = 1;
   }
@@ -370,7 +370,7 @@ void CloseEditWindow()
 
   XtDestroyWidget(XtParent(openwin));
   openwin = CreateEditorWindow(toplevel, 0, *tm_now);
-  CheckTimeForSchedule((XtPointer) toplevel, (XtIntervalId) NULL);
+  CheckTimeForSchedule((XtPointer) toplevel, (XtIntervalId*) NULL);
 }
 
 int IsPopped(Widget w)

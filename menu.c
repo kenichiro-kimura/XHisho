@@ -122,7 +122,7 @@ static void Destroy(Widget w, caddr_t client_data, caddr_t call_data)
 static void SubWindowPopup(Widget w, caddr_t client_data, caddr_t call_data)
 {
   int menu_pos;
-  menu_pos = (int) client_data;
+  menu_pos = (intptr_t) client_data;
   XtPopdown(XtParent(XtParent(w)));
 
   if(menu_pos > 0 && menu_pos <= MENU_NUM){
@@ -238,7 +238,7 @@ Widget CreateMenuWindow(Widget w)
     }
 
     XtAddCallback(item[i], XtNcallback,
-		  (XtCallbackProc) SubWindowPopup, (XtPointer)i);
+		  (XtCallbackProc) SubWindowPopup, (XtPointer)(intptr_t)i);
   }
   
   /*

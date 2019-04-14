@@ -100,7 +100,7 @@ static void EditorWindowPopup(Widget w, caddr_t client_data, caddr_t call_data)
   tm_now = localtime(&tval);
   tm_now->tm_year = Edited_Year;
   tm_now->tm_mon = Edited_Month;
-  tm_now->tm_mday = (int) client_data;
+  tm_now->tm_mday = (intptr_t) client_data;
   tval = mktime(tm_now);
   tm_now = localtime(&tval);
 
@@ -420,7 +420,7 @@ Widget CreateCalendarWindow(Widget w, int Month, struct tm tm_now)
 				       ,labelargs, XtNumber(labelargs));
 	XtVaSetValues(day[k], XtNborderColor, bg_color, NULL);
 	XtAddCallback(day[k], XtNcallback, (XtCallbackProc) EditorWindowPopup
-		      ,(XtPointer) (l - 1));
+		      ,(XtPointer)(intptr_t)(l - 1));
 
 	/**
 	 * 予定のある日の色を変える
