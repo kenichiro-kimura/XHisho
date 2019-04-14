@@ -15,3 +15,10 @@
 
 
 インストール等については doc ディレクトリ以下をご覧下さい。
+
+取りあえず最近の環境でもコンパイルできるよう、FreeBSD12.0-RELEASE-p3(amd64)で
+調整だけしてます。ccがclangな環境でxmkmfでエラーが出る場合はdoc/README.jpを
+ご一読下さい。
+あと、UTF8な環境だと文字化けするので
+%env LANG=ja_JP.eucJP xhisho
+とかしてあげてください。
