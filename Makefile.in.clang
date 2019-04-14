@@ -1,6 +1,6 @@
 all: Imakefile config.h image/Imakefile xadl/Imakefile libmhc/Imakefile
-	xmkmf
-	cd image;xmkmf
-	cd xadl;xmkmf
-	cd libmhc;xmkmf
+	IMAKECPP=gcpp xmkmf
+	cd image;IMAKECPP=gcpp xmkmf
+	cd xadl;IMAKECPP=gcpp xmkmf
+	cd libmhc;IMAKECPP=gcpp xmkmf
 	make
