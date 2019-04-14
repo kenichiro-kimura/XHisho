@@ -159,7 +159,7 @@ typedef struct _hlist {
 RESEDIT_GLOBAL Widget CreateResEditWindow(Widget);
 RESEDIT_GLOBAL void ReadPrefFile();
 RESEDIT_GLOBAL void WritePrefFile();
-RESEDIT_GLOBAL void ChangeBar(Widget, caddr_t, int);
+RESEDIT_GLOBAL void ChangeBar(Widget, caddr_t, intptr_t);
 RESEDIT_GLOBAL void MoveBar(int i, float p);
 
 ABOUT_GLOBAL Widget CreateAboutWindow(Widget);

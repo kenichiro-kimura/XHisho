@@ -255,6 +255,16 @@ README.optionをご覧下さい。
 
 (--enable-personalならsuは不要)
 で終りです。
+
+ccがclangになってるような環境(主にFreeBSD)ですと、xmkmfで「fatal error: ' X11 .rules' file not found」というエラーが出ることがあります。
+この場合はgccをインストールした上で以下の手順をお試し下さい。
+--
+#cp Makefile.in.clang
+#cp gcpp (パスの通った適当なディレクトリ)
+#configure;make
+--
+
+
 makeに失敗したときは、もう一度makeを実行してみてください。
 
 また、背景に張り付ける絵のデータは必須です。無いと起動しません。サポー

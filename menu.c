@@ -3,7 +3,7 @@
 #include "Msgwin.h"
 #include "menu.h"
 
-static Widget top, menu, item[MENU_NUM + 1], head[MENU_NUM + 1], ok;
+static Widget top, item[MENU_NUM + 1], head[MENU_NUM + 1], ok;
 static char Menu[MENU_NUM][256];
 static MenuRes mres;
 static const char ResName[][128] = {"menul", "menu0", "menu1", "menu2"

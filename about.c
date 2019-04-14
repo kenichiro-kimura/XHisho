@@ -7,7 +7,7 @@
  * local variable
  **/
 
-static Widget top, about, label, ok;
+static Widget top, label, ok;
 static AboutRes abr;
 
 /**

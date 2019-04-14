@@ -256,7 +256,7 @@ static void DestroyEdit(Widget w, caddr_t client_data, caddr_t call_data)
     fprintf(stderr, "fail write schedule file\n");
   }
   for (i = 0; i < MAX_SCHED_NUM; i++)
-    (int) schedule[i].is_checked = 0;
+    schedule[i].is_checked = 0;
 
   XtPopdown(XtParent(XtParent(w)));
   CloseEditWindow();

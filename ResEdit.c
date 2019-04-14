@@ -4,7 +4,7 @@
 #include "ResEdit.h"
 #include "mail.h"
 
-static Widget top, resedit, ok, scrollbar[MAX_PREF_NUM], label[MAX_PREF_NUM], parameter[MAX_PREF_NUM], toplabel,
+static Widget top, ok, scrollbar[MAX_PREF_NUM], label[MAX_PREF_NUM], parameter[MAX_PREF_NUM], toplabel,
     cancel;
 
 static int PrefHash(char *);
@@ -205,7 +205,7 @@ static XtResource resources[] = {
 static void Destroy(Widget w, caddr_t cdata, caddr_t p)
 {
 
-  if ((int) cdata) {
+  if ((intptr_t) cdata) {
     ReadPrefFile();
   } else {
     WritePrefFile();
@@ -214,17 +214,17 @@ static void Destroy(Widget w, caddr_t cdata, caddr_t p)
   XtPopdown(XtParent(XtParent(w)));
 }
 
-void ChangeBar(Widget w, caddr_t cdata, int p)
+void ChangeBar(Widget w, caddr_t cdata, intptr_t p)
 {
   char *tmp_string;
 
   tmp_string = (char*)malloc(20);
 
-  sprintf(tmp_string, "%3d", (int) (*(float *) p * rer.Pref[(int) cdata].max
-				    + rer.Pref[(int) cdata].offset));
-  rer.Pref[(int) cdata].param = *(float *) p *rer.Pref[(int) cdata].max
-  +   rer.Pref[(int) cdata].offset;
-  XtVaSetValues(parameter[(int) cdata], XtNlabel, XtNewString(tmp_string), NULL);
+  sprintf(tmp_string, "%3d", (int) (*(float *) p * rer.Pref[(intptr_t) cdata].max
+				    + rer.Pref[(intptr_t) cdata].offset));
+  rer.Pref[(intptr_t) cdata].param = *(float *) p *rer.Pref[(intptr_t) cdata].max
+  +   rer.Pref[(intptr_t) cdata].offset;
+  XtVaSetValues(parameter[(intptr_t) cdata], XtNlabel, XtNewString(tmp_string), NULL);
   free(tmp_string);
 }
 
@@ -236,10 +236,11 @@ void MoveBar(int i, float p)
 Widget CreateResEditWindow(Widget w)
 {
   static XtPopdownIDRec pdrec;
-  int i;
+  uint i;
   Dimension tmp_height, Longest_label;
   char tmp_string[20];
-  float t_top, t_shown;
+  float t_top;
+  int t_shown;
   char *message;
 
   static Arg resargs[] = {
@@ -338,13 +339,13 @@ Widget CreateResEditWindow(Widget w)
     XawScrollbarSetThumb(scrollbar[i], t_top, 0);
 
     XtVaSetValues(scrollbar[i], XtNwidth, 100, XtNheight, tmp_height,
-		  XtNorientation, XtorientHorizontal,
-		  XtNshown, t_shown,
+    		  XtNorientation, XtorientHorizontal,
+    		  XtNshown, t_shown,
 		  NULL);
 
     XtVaGetValues(scrollbar[i], XtNtopOfThumb, &t_top, XtNshown, &t_shown, NULL);
 
-    XtAddCallback(scrollbar[i], XtNjumpProc, (XtCallbackProc) ChangeBar, (XtPointer) i);
+    XtAddCallback(scrollbar[i], XtNjumpProc, (XtCallbackProc) ChangeBar, (XtPointer) (intptr_t)i);
   }
 
   for (i = 0; i < MAX_PREF_NUM; i++) {
@@ -370,9 +371,9 @@ Widget CreateResEditWindow(Widget w)
 				   ,XtNinternalHeight, FONT_OFFSET, NULL);
 
   i = 0;
-  XtAddCallback(ok, XtNcallback, (XtCallbackProc) Destroy, (XtPointer) i);
+  XtAddCallback(ok, XtNcallback, (XtCallbackProc) Destroy, (XtPointer)(intptr_t) i);
   i++;
-  XtAddCallback(cancel, XtNcallback, (XtCallbackProc) Destroy, (XtPointer) i);
+  XtAddCallback(cancel, XtNcallback, (XtCallbackProc) Destroy, (XtPointer)(intptr_t) i);
 
   free(message);
   return (resedit);
